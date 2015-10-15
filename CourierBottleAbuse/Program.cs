@@ -55,7 +55,7 @@ namespace CourierBottleAbuse {
 					_following = false;
 				}
 
-				if (courier.Distance2D(hero) < 200 && !_following && courier.FindItem("item_bottle").Purchaser.Equals(hero)) {
+				if (courier.Distance2D(hero) < 200 && !_following) {
 					courier.FindSpell("courier_return_to_base").UseAbility();
 					if (courier.IsFlying) courier.FindSpell("courier_burst").UseAbility();
 					courier.FindSpell("courier_take_stash_items").UseAbility(true);
