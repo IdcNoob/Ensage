@@ -38,7 +38,7 @@ namespace CourierBottleAbuse {
 			var courier = ObjectMgr.GetEntities<Courier>().FirstOrDefault();
 			var courBottle = courier.FindItem("item_bottle");
 
-            if ((bottle == null && courBottle == null) || courier == null) {
+			if ((bottle == null && courBottle == null) || courier == null) {
 				_enabled = false;
 				return;
 			}
