@@ -66,7 +66,6 @@ namespace CourierBottleAbuse {
 
 			}
 
-
 			Utils.Sleep(250, "delay");
 		}
 
