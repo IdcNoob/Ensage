@@ -145,8 +145,10 @@ namespace HpMpAbuse {
 				hero.DropItem(item, hero.NetworkPosition);
 			}
 
-			if (arcaneBoots != null && arcaneBoots.CanBeCasted())
+			if (arcaneBoots != null && arcaneBoots.CanBeCasted()) {
 				arcaneBoots.UseAbility();
+				return;
+			}
 
 			if (soulRing != null && soulRing.CanBeCasted())
 				soulRing.UseAbility();
