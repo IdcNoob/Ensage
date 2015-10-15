@@ -15,7 +15,7 @@ namespace HpMpAbuse {
 
 		//private static int lastPtState = 0;
 
-		private static readonly string[] BonusMotherFuckingItems = {  // dont fucking know how to make it ez in e#
+		private static readonly string[] BonusStatsMotherFuckingItems = {  // dont fucking know how to make it ez in e#
 			"item_branches",
 			"item_arcane_boots",
 			"item_magic_wand",
@@ -136,7 +136,7 @@ namespace HpMpAbuse {
 
 			var items = hero.Inventory.Items.ToList();
 
-			foreach (var item in items.Where(item => BonusMotherFuckingItems.Any(item.Name.Contains))) {
+			foreach (var item in items.Where(item => BonusStatsMotherFuckingItems.Any(item.Name.Contains))) {
 				if (item.Equals(arcaneBoots) && arcaneBoots.CanBeCasted())
 					continue;
 				if (item.Equals(stick) && stick.CanBeCasted() && stick.CurrentCharges != 0)
