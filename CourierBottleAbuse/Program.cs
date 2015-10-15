@@ -3,7 +3,6 @@ using System.Linq;
 using Ensage;
 using Ensage.Common;
 using Ensage.Common.Extensions;
-using SharpDX;
 
 namespace CourierBottleAbuse {
 	class Program {
@@ -36,34 +35,33 @@ namespace CourierBottleAbuse {
 			var hero = ObjectMgr.LocalHero;
 
 			var bottle = hero.FindItem("item_bottle");
+			var courier = ObjectMgr.GetEntities<Courier>().FirstOrDefault();
+			var courBottle = courier.FindItem("item_bottle");
 
-			if (bottle != null) {
-				var courier = ObjectMgr.GetEntities<Courier>().FirstOrDefault();
+            if ((bottle == null && courBottle == null) || courier == null) {
+				_enabled = false;
+				return;
+			}
+			var distance = hero.Distance2D(courier);
 
-				if (courier == null) {
-					_enabled = false;
-					return;
-				}
+			if (distance > 200 && !_following) {
+				courier.Follow(hero);
+				_following = true;
+			}
 
-				if (!_following) {
-					courier.Follow(hero);
-					_following = true;
-				}
+			if (distance <= 200 && _following) {
+				hero.Stop();
+				hero.GiveItem(bottle, courier);
+				_following = false;
+			}
 
-				if (courier.Distance2D(hero) < 200 && _following) {
-					hero.GiveItem(bottle, courier);
-					_following = false;
-				}
+			if (distance <= 200 && !_following && courBottle != null) {
+				courier.FindSpell("courier_return_to_base").UseAbility();
+				if (courier.IsFlying) courier.FindSpell("courier_burst").UseAbility();
+				courier.FindSpell("courier_take_stash_items").UseAbility(true);
+				courier.FindSpell("courier_transfer_items").UseAbility(true);
 
-				if (courier.Distance2D(hero) < 200 && !_following) {
-					courier.FindSpell("courier_return_to_base").UseAbility();
-					if (courier.IsFlying) courier.FindSpell("courier_burst").UseAbility();
-					courier.FindSpell("courier_take_stash_items").UseAbility(true);
-					courier.FindSpell("courier_transfer_items").UseAbility(true);
-
-					_enabled = false;
-				}
-
+				_enabled = false;
 			}
 
 			Utils.Sleep(250, "delay");
