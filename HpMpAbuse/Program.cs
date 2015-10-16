@@ -113,7 +113,7 @@ namespace HpMpAbuse {
 			var arcaneBoots = hero.FindItem("item_arcane_boots");
 			var soulRing = hero.FindItem("item_soul_ring");
 			var bottle = hero.FindItem("item_bottle");
-			var stick = hero.Inventory.Items.FirstOrDefault(x => x.Name.Substring(0, 11) == "item_magic_");
+			var stick = hero.FindItem("item_magic_stick") ?? hero.FindItem("item_magic_wand");
 
 			//var powerTreads = hero.FindItem("item_power_treads");
 
