@@ -15,7 +15,7 @@ namespace HpMpAbuse {
 
 		//private static int lastPtState = 0;
 
-		private static readonly string[] BonusStatsMotherFuckingItems = {  // dont fucking know how to make it ez in e#
+		private static readonly string[] BonusMotherFuckingItems = {  // dont fucking know how to make it ez in e#
 			"item_branches",
 			"item_arcane_boots",
 			"item_magic_wand",
@@ -109,11 +109,10 @@ namespace HpMpAbuse {
 			if (hero.Mana == hero.MaximumMana && hero.Health == hero.MaximumHealth)
 				return;
 
-
 			var arcaneBoots = hero.FindItem("item_arcane_boots");
 			var soulRing = hero.FindItem("item_soul_ring");
 			var bottle = hero.FindItem("item_bottle");
-			var stick = hero.Inventory.Items.FirstOrDefault(x => x.Name.Substring(0, 11) == "item_magic_");
+			var stick = hero.FindItem("item_magic_stick") ?? hero.FindItem("item_magic_wand");
 
 			//var powerTreads = hero.FindItem("item_power_treads");
 
@@ -136,7 +135,7 @@ namespace HpMpAbuse {
 
 			var items = hero.Inventory.Items.ToList();
 
-			foreach (var item in items.Where(item => BonusStatsMotherFuckingItems.Any(item.Name.Contains))) {
+			foreach (var item in items.Where(item => BonusMotherFuckingItems.Any(item.Name.Contains))) {
 				if (item.Equals(arcaneBoots) && arcaneBoots.CanBeCasted())
 					continue;
 				if (item.Equals(stick) && stick.CanBeCasted() && stick.CurrentCharges != 0)
