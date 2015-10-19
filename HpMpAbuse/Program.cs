@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Ensage;
 using Ensage.Common;
@@ -7,15 +7,14 @@ using Ensage.Common.Extensions;
 namespace HpMpAbuse {
 	class Program {
 
-		private const int WM_KEYDOWN = 0x0100;
-
 		private static bool _enabled = false;
 
 		private static bool _stopAttack = true;
 
-		//private static int lastPtState = 0;
+		private static int _lastPtState = 0;
+		private static bool _ptChanged = false;
 
-		private static readonly string[] BonusStatsMotherFuckingItems = {  // dont fucking know how to make it ez in e#
+		private static readonly string[] BonusMotherFuckingItems = {  // dont fucking know how to make it ez in e#
 			"item_branches",
 			"item_arcane_boots",
 			"item_magic_wand",
@@ -80,7 +79,7 @@ namespace HpMpAbuse {
 		}
 		private static void Game_OnWndProc(WndEventArgs args) {
 			if (args.WParam == 'T' && !Game.IsChatOpen) {
-				_enabled = args.Msg == WM_KEYDOWN ? true : false;
+				_enabled = args.Msg == (uint) Utils.WindowsMessages.WM_KEYDOWN ? true : false;
 
 				if (_stopAttack) {
 					Game.ExecuteCommand("dota_player_units_auto_attack_after_spell 0");
@@ -109,37 +108,18 @@ namespace HpMpAbuse {
 			if (hero.Mana == hero.MaximumMana && hero.Health == hero.MaximumHealth)
 				return;
 
-
 			var arcaneBoots = hero.FindItem("item_arcane_boots");
 			var soulRing = hero.FindItem("item_soul_ring");
 			var bottle = hero.FindItem("item_bottle");
 			var stick = hero.FindItem("item_magic_stick") ?? hero.FindItem("item_magic_wand");
-
-			//var powerTreads = hero.FindItem("item_power_treads");
-
-			//if (powerTreads != null) {
-			//	switch (((Ensage.Items.PowerTreads) powerTreads).ActiveAttribute) {
-			//		case Attribute.Intelligence:
-			//			powerTreads.ToggleAbility();
-			//			lastPtState = 2;
-			//			break;
-			//		case Attribute.Strength:
-			//			powerTreads.UseAbility();
-			//			powerTreads.ToggleAbility(true);
-			//			lastPtState = 1;
-			//			break;
-			//		case Attribute.Agility:
-			//			lastPtState = 0;
-			//			break;
-			//	}
-			//}
+			var powerTreads = hero.FindItem("item_power_treads");
 
 			var items = hero.Inventory.Items.ToList();
 
-			foreach (var item in items.Where(item => BonusStatsMotherFuckingItems.Any(item.Name.Contains))) {
-				if (item.Equals(arcaneBoots) && arcaneBoots.CanBeCasted())
+			foreach (var item in items.Where(item => BonusMotherFuckingItems.Any(item.Name.Contains))) {
+				if (item.Equals(arcaneBoots) && arcaneBoots != null && arcaneBoots.CanBeCasted())
 					continue;
-				if (item.Equals(stick) && stick.CanBeCasted() && stick.CurrentCharges != 0)
+				if (item.Equals(stick) && stick != null && stick.CanBeCasted() && stick.CurrentCharges != 0)
 					continue;
 
 				hero.DropItem(item, hero.NetworkPosition);
@@ -147,12 +127,52 @@ namespace HpMpAbuse {
 
 			if (arcaneBoots != null && arcaneBoots.CanBeCasted()) {
 				arcaneBoots.UseAbility();
+				hero.DropItem(arcaneBoots, hero.NetworkPosition);
+				Utils.Sleep(100, "delay");
 				return;
 			}
 
-			if (soulRing != null && soulRing.CanBeCasted())
-				soulRing.UseAbility();
+			if (powerTreads != null && !_ptChanged) {
+				var sr = soulRing != null && soulRing.CanBeCasted();
 
+				switch (((Ensage.Items.PowerTreads) powerTreads).ActiveAttribute) {
+					case Ensage.Attribute.Intelligence: // agi
+						if (sr) {
+							powerTreads.ToggleAbility(true);
+							soulRing.UseAbility();
+							powerTreads.ToggleAbility(true);
+							powerTreads.ToggleAbility(true);
+						}
+						_lastPtState = 0;
+					break;
+					case Ensage.Attribute.Strength:
+						if (sr) {
+							soulRing.UseAbility();
+						}
+						powerTreads.ToggleAbility(true);
+						powerTreads.ToggleAbility(true);
+						_lastPtState = 1;
+					break;
+					case Ensage.Attribute.Agility:  // int
+						if (sr) {
+							powerTreads.ToggleAbility(true);
+							powerTreads.ToggleAbility(true);
+							soulRing.UseAbility();
+							powerTreads.ToggleAbility(true);
+							powerTreads.ToggleAbility(true);
+						}
+						else {
+							powerTreads.ToggleAbility(true);
+						}
+						_lastPtState = 2;
+					break;
+				}
+				_ptChanged = true;
+			}
+
+			if (soulRing != null && soulRing.CanBeCasted() && powerTreads == null)
+				soulRing.UseAbility();
+				
 			if (bottle != null && bottle.CanBeCasted() && bottle.CurrentCharges != 0 && hero.Modifiers.All(x => x.Name != "modifier_bottle_regeneration"))
 				bottle.UseAbility();
 
@@ -163,7 +183,7 @@ namespace HpMpAbuse {
 		}
 
 		private static void PickUpItems() {
-		
+
 			var hero = ObjectMgr.LocalHero;
 
 			var droppedItems = ObjectMgr.GetEntities<PhysicalItem>().Where(x => x.Distance2D(hero) < 200).ToList();
@@ -172,13 +192,14 @@ namespace HpMpAbuse {
 				hero.PickUpItem(item, true);
 			}
 
-			//var powerTreads = hero.FindItem("item_power_treads");
+			var powerTreads = hero.FindItem("item_power_treads");
 
-			//if (powerTreads != null) {
-			//	for (int i = 0; i < lastPtState; i++) {
-			//		powerTreads.ToggleAbility(true);
-			//	}
-			//}
+			if (powerTreads != null && _ptChanged) {
+				for (var i = 0; i < _lastPtState; i++) {
+					powerTreads.ToggleAbility(true);
+				}
+				_ptChanged = false;
+			}
 
 		}
 
