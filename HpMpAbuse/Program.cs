@@ -108,6 +108,12 @@ namespace HpMpAbuse {
 			if (hero.Mana == hero.MaximumMana && hero.Health == hero.MaximumHealth)
 				return;
 
+			if (hero.NetworkActivity == NetworkActivity.Move || ObjectMgr.GetEntities<Hero>().Any(x => x.IsAlive && x.IsVisible && x.Team == hero.GetEnemyTeam() && x.Distance2D(hero) < 400)) {
+				PickUpItems();
+				Utils.Sleep(1000, "delay");
+				return;
+			}
+
 			var arcaneBoots = hero.FindItem("item_arcane_boots") ?? hero.FindItem("item_guardian_greaves");
 			var soulRing = hero.FindItem("item_soul_ring");
 			var bottle = hero.FindItem("item_bottle");
@@ -186,10 +192,10 @@ namespace HpMpAbuse {
 
 			var hero = ObjectMgr.LocalHero;
 
-			var droppedItems = ObjectMgr.GetEntities<PhysicalItem>().Where(x => x.Distance2D(hero) < 200).ToList();
+			var droppedItems = ObjectMgr.GetEntities<PhysicalItem>().Where(x => x.Distance2D(hero) < 250).ToList();
 
 			foreach (var item in droppedItems) {
-				hero.PickUpItem(item, true);
+				hero.PickUpItem(item);
 			}
 
 			var powerTreads = hero.FindItem("item_power_treads");
