@@ -108,7 +108,7 @@ namespace HpMpAbuse {
 			if (hero.Mana == hero.MaximumMana && hero.Health == hero.MaximumHealth)
 				return;
 
-			var arcaneBoots = hero.FindItem("item_arcane_boots");
+			var arcaneBoots = hero.FindItem("item_arcane_boots") ?? hero.FindItem("item_guardian_greaves");
 			var soulRing = hero.FindItem("item_soul_ring");
 			var bottle = hero.FindItem("item_bottle");
 			var stick = hero.FindItem("item_magic_stick") ?? hero.FindItem("item_magic_wand");
