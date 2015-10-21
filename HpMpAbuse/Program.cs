@@ -91,7 +91,7 @@ namespace HpMpAbuse {
 				meka.UseAbility(true);
 			}
 
-			if (arcaneBoots != null && arcaneBoots.CanBeCasted() && hero.Mana != hero.MaximumHealth) {
+			if (arcaneBoots != null && arcaneBoots.CanBeCasted() && hero.Mana != hero.MaximumMana) {
 				if (powerTreads != null)
 					ChangePt(powerTreads, Ensage.Attribute.Agility);
 				DropItems(bonusMana, arcaneBoots);
