@@ -13,66 +13,7 @@ namespace HpMpAbuse {
 
 		private static int _lastPtState = 0;
 		private static bool _ptChanged = false;
-
-		private static readonly string[] BonusMotherFuckingItems = {  // dont fucking know how to make it ez in e#
-			"item_branches",
-			"item_arcane_boots",
-			"item_magic_wand",
-			"item_belt_of_strength",
-			"item_circlet",
-			"item_energy_booster",
-			"item_gauntlets",
-			"item_ghost",
-			"item_mantle",
-			"item_mystic_staff",
-			"item_ogre_axe",
-			"item_point_booster",
-			"item_reaver",
-			"item_robe",
-			"item_staff_of_wizardry",
-			"item_ultimate_orb",
-			"item_vitality_booster",
-			"item_ultimate_scepter",
-			"item_black_king_bar",
-			"item_bloodstone",
-			"item_bracer",
-			"item_crimson_guard",
-			"item_dagon_1",
-			"item_dagon_2",
-			"item_dagon_3",
-			"item_dagon_4",
-			"item_dagon_5",
-			"item_diffusal_blade_1",
-			"item_diffusal_blade_2",
-			"item_cyclone",
-			"item_ancient_janggo",
-			"item_skadi",
-			"item_force_staff",
-			"item_heavens_halberd",
-			"item_sphere",
-			"item_manta",
-			"item_guardian_greaves",
-			"item_necronomicon_1",
-			"item_necronomicon_2",
-			"item_necronomicon_3",
-			"item_null_talisman",
-			"item_oblivion_staff",
-			"item_octarine_core",
-			"item_orchid",
-			"item_ring_of_aquila",
-			"item_rod_of_atos",
-			"item_sange",
-			"item_sange_and_yasha",
-			"item_satanic",
-			"item_sheepstick",
-			"item_shivas_guard",
-			"item_soul_booster",
-			"item_urn_of_shadows",
-			"item_vanguard",
-			"item_veil_of_discord",
-			"item_wraith_band",
-		};
-
+	
 		private static void Main() {
 			Game.OnUpdate += Game_OnUpdate;
 			Game.OnWndProc += Game_OnWndProc;
@@ -108,7 +49,13 @@ namespace HpMpAbuse {
 			if (hero.Mana == hero.MaximumMana && hero.Health == hero.MaximumHealth)
 				return;
 
-			var arcaneBoots = hero.FindItem("item_arcane_boots");
+			if (hero.NetworkActivity == NetworkActivity.Move || ObjectMgr.GetEntities<Hero>().Any(x => x.IsAlive && x.IsVisible && x.Team == hero.GetEnemyTeam() && x.Distance2D(hero) < 400)) {
+				PickUpItems();
+				Utils.Sleep(1000, "delay");
+				return;
+			}
+
+			var arcaneBoots = hero.FindItem("item_arcane_boots") ?? hero.FindItem("item_guardian_greaves");
 			var soulRing = hero.FindItem("item_soul_ring");
 			var bottle = hero.FindItem("item_bottle");
 			var stick = hero.FindItem("item_magic_stick") ?? hero.FindItem("item_magic_wand");
@@ -116,10 +63,10 @@ namespace HpMpAbuse {
 
 			var items = hero.Inventory.Items.ToList();
 
-			foreach (var item in items.Where(item => BonusMotherFuckingItems.Any(item.Name.Contains))) {
-				if (item.Equals(arcaneBoots) && arcaneBoots != null && arcaneBoots.CanBeCasted())
+			foreach (var item in items.Where(item => item.AbilityData.Any(x => (x.Name == "bonus_intellect" || x.Name == "bonus_strength" || x.Name == "bonus_all_stats" || x.Name == "bonus_health" || x.Name == "bonus_mana")))) {
+				if (arcaneBoots != null && item.Equals(arcaneBoots) && arcaneBoots.CanBeCasted())
 					continue;
-				if (item.Equals(stick) && stick != null && stick.CanBeCasted() && stick.CurrentCharges != 0)
+				if (stick != null && item.Equals(stick) && stick.CanBeCasted() && stick.CurrentCharges != 0)
 					continue;
 
 				hero.DropItem(item, hero.NetworkPosition);
@@ -186,10 +133,10 @@ namespace HpMpAbuse {
 
 			var hero = ObjectMgr.LocalHero;
 
-			var droppedItems = ObjectMgr.GetEntities<PhysicalItem>().Where(x => x.Distance2D(hero) < 200).ToList();
+			var droppedItems = ObjectMgr.GetEntities<PhysicalItem>().Where(x => x.Distance2D(hero) < 250).ToList();
 
 			foreach (var item in droppedItems) {
-				hero.PickUpItem(item, true);
+				hero.PickUpItem(item);
 			}
 
 			var powerTreads = hero.FindItem("item_power_treads");
