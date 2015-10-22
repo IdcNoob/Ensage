@@ -14,7 +14,7 @@ namespace CourierBottleAbuse {
 			Game.OnIngameUpdate += Game_OnIngameUpdate;
 			Game.OnWndProc += Game_OnWndProc;
 		}
-		
+
 		private static void Game_OnWndProc(WndEventArgs args) {
 			if (args.WParam == 'Z' && !Game.IsChatOpen && args.Msg == (uint) Utils.WindowsMessages.WM_KEYUP) {
 				_enabled = true;
@@ -49,14 +49,11 @@ namespace CourierBottleAbuse {
 				_following = true;
 			}
 
-			if (distance <= 200 && _following) {
+			if (distance <= 200 && _following/* && bottle != null && bottle.CurrentCharges == 0*/) {
 				hero.Stop();
 				hero.GiveItem(bottle, courier);
 				_following = false;
 			}
-
-			if (bottle != null && bottle.CurrentCharges != 0)
-				return;
 
 			if (distance <= 200 && !_following && courBottle != null) {
 				courier.Spellbook.SpellQ.UseAbility();
