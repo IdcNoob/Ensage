@@ -7,8 +7,8 @@ using Ensage.Common.Extensions;
 namespace CourierBottleAbuse {
 	class Program {
 
-		private static bool _enabled = false;
-		private static bool _following = false;
+		private static bool _enabled;
+		private static bool _following;
 
 		private static void Main() {
 			Game.OnIngameUpdate += Game_OnIngameUpdate;
@@ -33,29 +33,27 @@ namespace CourierBottleAbuse {
 				return;
 			}
 
-			var bottle = hero.FindItem("item_bottle");
 			var courier = ObjectMgr.GetEntities<Courier>().FirstOrDefault(x => x.IsAlive && x.Team == hero.Team);
+			var bottle = hero.FindItem("item_bottle");
 			var courBottle = courier.FindItem("item_bottle");
 
 			if ((bottle == null && courBottle == null) || courier == null) {
 				_enabled = false;
 				return;
 			}
-
+			
 			var distance = hero.Distance2D(courier);
 
 			if (distance > 200 && !_following) {
 				courier.Follow(hero);
 				_following = true;
 			}
-
-			if (distance <= 200 && _following/* && bottle != null && bottle.CurrentCharges == 0*/) {
+			else if (distance <= 200 && _following && bottle != null && bottle.CurrentCharges == 0) {
 				hero.Stop();
 				hero.GiveItem(bottle, courier);
 				_following = false;
 			}
-
-			if (distance <= 200 && !_following && courBottle != null) {
+			else if (distance <= 200 && !_following && courBottle != null) {
 				courier.Spellbook.SpellQ.UseAbility();
 				if (courier.IsFlying) courier.Spellbook.SpellR.UseAbility();
 				courier.Spellbook.SpellD.UseAbility(true);
@@ -63,8 +61,8 @@ namespace CourierBottleAbuse {
 				_enabled = false;
 			}
 
-			Utils.Sleep(250, "delay");
-		}
+			Utils.Sleep(333, "delay");
 
+		}
 	}
 }
