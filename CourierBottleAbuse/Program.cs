@@ -11,7 +11,7 @@ namespace CourierBottleAbuse {
 		private static bool _following;
 
 		private static void Main() {
-			Game.OnIngameUpdate += Game_OnIngameUpdate;
+			Game.OnUpdate += Game_OnUpdate;
 			Game.OnWndProc += Game_OnWndProc;
 		}
 
@@ -22,8 +22,8 @@ namespace CourierBottleAbuse {
 			}
 		}
 
-		private static void Game_OnIngameUpdate(EventArgs args) {
-			if (Game.IsPaused || !_enabled || !Utils.SleepCheck("delay"))
+		private static void Game_OnUpdate(EventArgs args) {
+			if (Game.IsPaused || !Game.IsInGame || !_enabled || !Utils.SleepCheck("delay"))
 				return;
 
 			var hero = ObjectMgr.LocalHero;
@@ -41,7 +41,7 @@ namespace CourierBottleAbuse {
 				_enabled = false;
 				return;
 			}
-			
+
 			var distance = hero.Distance2D(courier);
 
 			if (distance > 200 && !_following) {

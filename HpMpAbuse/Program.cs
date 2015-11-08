@@ -8,18 +8,17 @@ using Ensage.Common.Extensions;
 namespace HpMpAbuse {
 	class Program {
 
-		private static bool _enabled = false;
-
+		private static bool _enabled;
 		private static bool _stopAttack = true;
 
 		private static Ensage.Attribute _lastPtState;
-		private static bool _ptChanged = false;
+		private static bool _ptChanged;
 
-		private static readonly string[] bonusHealth = { "bonus_strength", "bonus_all_stats", "bonus_health" };
-		private static readonly string[] bonusMana = { "bonus_intellect", "bonus_all_stats", "bonus_mana" };
+		private static readonly string[] BonusHealth = { "bonus_strength", "bonus_all_stats", "bonus_health" };
+		private static readonly string[] BonusMana = { "bonus_intellect", "bonus_all_stats", "bonus_mana" };
 
 		private static void Main() {
-			Game.OnIngameUpdate += Game_OnIngameUpdate;
+			Game.OnUpdate += Game_OnUpdate;
 			Game.OnWndProc += Game_OnWndProc;
 		}
 
@@ -40,8 +39,8 @@ namespace HpMpAbuse {
 			}
 		}
 
-		private static void Game_OnIngameUpdate(EventArgs args) {
-			if (Game.IsPaused || !_enabled || !Utils.SleepCheck("delay"))
+		private static void Game_OnUpdate(EventArgs args) {
+			if (Game.IsPaused || !Game.IsInGame || !_enabled || !Utils.SleepCheck("delay"))
 				return;
 
 			var hero = ObjectMgr.LocalHero;
@@ -84,25 +83,25 @@ namespace HpMpAbuse {
 
 			if (meka != null && meka.CanBeCasted() && hero.Health != hero.MaximumHealth) {
 				ChangePt(powerTreads, Ensage.Attribute.Intelligence);
-				DropItems(bonusHealth, meka);
+				DropItems(BonusHealth, meka);
 				meka.UseAbility(true);
 			}
 
 			if (arcaneBoots != null && arcaneBoots.CanBeCasted() && hero.Mana != hero.MaximumMana) {
 				ChangePt(powerTreads, Ensage.Attribute.Agility);
-				DropItems(bonusMana, arcaneBoots);
+				DropItems(BonusMana, arcaneBoots);
 				arcaneBoots.UseAbility(true);
 			}
 
 			if (greaves != null && greaves.CanBeCasted()) {
 				ChangePt(powerTreads, Ensage.Attribute.Agility);
-				DropItems(bonusHealth.Concat(bonusMana), greaves);
+				DropItems(BonusHealth.Concat(BonusMana), greaves);
 				greaves.UseAbility(true);
 			}
 
 			if (soulRing != null && soulRing.CanBeCasted()) {
 				ChangePt(powerTreads, Ensage.Attribute.Strength);
-				DropItems(bonusMana);
+				DropItems(BonusMana);
 				soulRing.UseAbility(true);
 			}
 
@@ -110,9 +109,9 @@ namespace HpMpAbuse {
 				ChangePt(powerTreads, Ensage.Attribute.Agility);
 
 				if (hero.Health / hero.MaximumHealth < 0.9)
-					DropItems(bonusHealth);
+					DropItems(BonusHealth);
 				if (hero.Mana / hero.MaximumMana < 0.9)
-					DropItems(bonusMana);
+					DropItems(BonusMana);
 
 				bottle.UseAbility(true);
 			}
@@ -121,31 +120,31 @@ namespace HpMpAbuse {
 				ChangePt(powerTreads, Ensage.Attribute.Agility);
 
 				if (hero.Health / hero.MaximumHealth < 0.9)
-					DropItems(bonusHealth, stick);
+					DropItems(BonusHealth, stick);
 				if (hero.Mana / hero.MaximumMana < 0.9)
-					DropItems(bonusMana, stick);
+					DropItems(BonusMana, stick);
 
 				stick.UseAbility(true);
 			}
 
 			if (urn != null && urn.CanBeCasted() && urn.CurrentCharges != 0 && hero.Modifiers.All(x => x.Name != "modifier_item_urn_heal") && hero.Health / hero.MaximumHealth < 0.9) {
 				ChangePt(powerTreads, Ensage.Attribute.Agility);
-				DropItems(bonusHealth, urn);
+				DropItems(BonusHealth, urn);
 				urn.UseAbility(hero, true);
 			}
 
 			if (hero.Modifiers.Any(x => (x.Name == "modifier_item_urn_heal" || x.Name == "modifier_flask_healing"))) {
 				ChangePt(powerTreads, Ensage.Attribute.Agility);
-				DropItems(bonusHealth);
+				DropItems(BonusHealth);
 			}
 
 			if (hero.Modifiers.Any(x => x.Name == "modifier_bottle_regeneration")) {
 				ChangePt(powerTreads, Ensage.Attribute.Agility);
 
 				if (hero.Health / hero.MaximumHealth < 0.9)
-					DropItems(bonusHealth);
-				if (hero.Mana / hero.MaximumMana < 0.9)
-					DropItems(bonusMana);
+					DropItems(BonusHealth);
+				if (hero.Mana/hero.MaximumMana < 0.9)
+					DropItems(BonusMana);
 			}
 
 			var allies = ObjectMgr.GetEntities<Hero>().Where(x => x.Distance2D(hero) <= 900 && x.IsAlive && x.Team == hero.Team);
@@ -157,17 +156,17 @@ namespace HpMpAbuse {
 
 				if (allyArcaneBoots != null && allyArcaneBoots.AbilityState == AbilityState.Ready) {
 					ChangePt((Ensage.Items.PowerTreads) powerTreads, Ensage.Attribute.Agility);
-					DropItems(bonusMana);
+					DropItems(BonusMana);
 				}
 
 				if (allyMeka != null && allyMeka.AbilityState == AbilityState.Ready) {
 					ChangePt((Ensage.Items.PowerTreads) powerTreads, Ensage.Attribute.Agility);
-					DropItems(bonusHealth);
+					DropItems(BonusHealth);
 				}
 
 				if (allyGreaves != null && allyGreaves.AbilityState == AbilityState.Ready) {
 					ChangePt((Ensage.Items.PowerTreads) powerTreads, Ensage.Attribute.Agility);
-					DropItems(bonusMana.Concat(bonusHealth));
+					DropItems(BonusMana.Concat(BonusHealth));
 				}
 			}
 
