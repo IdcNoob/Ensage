@@ -3,6 +3,7 @@ using System.Linq;
 using Ensage;
 using Ensage.Common;
 using Ensage.Common.Extensions;
+using System.Windows.Input;
 
 namespace PTSwitcher {
 	class Program {
