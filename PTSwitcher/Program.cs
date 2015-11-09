@@ -1,33 +1,55 @@
-﻿using System;
+using System;
 using System.Linq;
 using Ensage;
 using Ensage.Common;
 using Ensage.Common.Extensions;
+using Ensage.Items;
+using Attribute = Ensage.Attribute;
 
 namespace PTSwitcher {
-	class Program {
+	internal class Program {
 
-		private static Ensage.Attribute _lastPtState;
+		private static Attribute _lastPtState;
 		private static bool _ptChanged;
-		private static bool _regen;
+		private static bool _healActive;
+		private static bool _disableSwitchBack;
 
 		private static readonly string[] IgnoredSpells = {
 			"item_tpscroll",
 			"item_travel_boots",
 			"item_travel_boots_2",
+			"brewmaster_storm_dispel_magic",
+			"brewmaster_storm_cyclone",
+			"brewmaster_storm_wind_walk",
 			"legion_commander_duel",
-			"clinkz_searing_arrows"
+			"clinkz_searing_arrows",
+			"pudge_dismember",
+			"chaos_knight_phantasm",
+			"drow_ranger_frost_arrows",
+			"lion_mana_drain",
+			"ogre_magi_unrefined_fireblast",
+			"templar_assassin_meld",
+			"tusk_walrus_punch"
 		};
 
 		private static readonly string[] HealModifiers = {
 			"modifier_item_urn_heal",
 			"modifier_flask_healing",
-			"modifier_bottle_regeneration"
+			"modifier_bottle_regeneration",
+			"modifier_voodoo_restoration_heal"
+		};
+
+		private static readonly string[] DisableSwitchBackModifiers = {
+			"modifier_leshrac_pulse_nova",
+			"modifier_morphling_morph_agi",
+			"modifier_morphling_morph_str",
+			"modifier_voodoo_restoration_aura",
+			"modifier_brewmaster_primal_split"
 		};
 
 		private static void Main(string[] args) {
 			Player.OnExecuteOrder += Player_OnExecuteAction;
-			Game.OnIngameUpdate += Game_OnIngameUpdate;
+			Game.OnUpdate += Game_OnUpdate;
 			//Game.OnWndProc += Game_OnWndProc;
 		}
 
@@ -57,67 +79,82 @@ namespace PTSwitcher {
 		//}
 		//}
 
-		private static void CastSpell(Ability spell, ExecuteOrderEventArgs args) {
+		private static void Player_OnExecuteAction(Player sender, ExecuteOrderEventArgs args) {
+			if (args.Order == Order.AbilityTarget || args.Order == Order.AbilityLocation || args.Order == Order.Ability ||
+			    args.Order == Order.ToggleAbility)
+				if (!Game.IsKeyDown(16))
+					CastSpell(sender.Hero, args);
+		}
 
-			var hero = ObjectMgr.LocalHero;
+		private static void CastSpell(Unit hero, ExecuteOrderEventArgs args) {
 
-			if (hero == null || spell == null || !hero.IsAlive || !hero.CanCast() || spell.ManaCost <= 5 || IgnoredSpells.Any(spell.Name.Contains))
+			var spell = args.Ability;
+
+			if (hero == null || spell == null || spell.ManaCost <= 5 || IgnoredSpells.Any(spell.Name.Contains))
 				return;
 
 			var powerTreads = hero.FindItem("item_power_treads");
 
-			if (powerTreads == null || ((Ensage.Items.PowerTreads) powerTreads).ActiveAttribute == Ensage.Attribute.Agility) { // INT
+			if (powerTreads == null || ((PowerTreads) powerTreads).ActiveAttribute == Attribute.Agility) // INT
 				return;
-			}
+
 			args.Process = false;
 
-			var sleep = spell.FindCastPoint() * 1000 + 800;
+			var sleep = spell.FindCastPoint() * 1000 + 500;
 
-			if (spell.AbilityBehavior.HasFlag(AbilityBehavior.NoTarget)) {
-				ChangePt(powerTreads, Ensage.Attribute.Intelligence);
-				spell.UseAbility();
-			}
-			else {
-				var target = (Unit) args.Target;
-				if (target != null && target.IsAlive) {
+			switch (args.Order) {
+				case Order.AbilityTarget: {
+					var target = (Unit) args.Target;
+					if (target != null && target.IsAlive) {
 
-					//var castRange = spell.CastRange + 35;
+						var castRange = spell.CastRange + 300;
 
-					//if (spell.Name == "dragon_knight_dragon_tail" && hero.Modifiers.Any(x => x.Name == "modifier_dragon_knight_dragon_form"))
-					//	castRange = 435;
-					
-					
+						if (spell.Name == "dragon_knight_dragon_tail" &&
+						    hero.Modifiers.Any(x => x.Name == "modifier_dragon_knight_dragon_form"))
+							castRange += 350;
 
-					//if (hero.Distance2D(target) <= castRange || spell.CastRange == 0) {
-						ChangePt(powerTreads, Ensage.Attribute.Intelligence);
-					//}
-					spell.UseAbility(target);
-				}
-				else {
+						if (hero.Distance2D(target) <= castRange || castRange == 300) {
+							ChangePt(powerTreads, Attribute.Intelligence);
+							sleep += hero.GetTurnTime(target) * 1000;
+						}
 
-					if (spell.Name == "phantom_lancer_doppelwalk") {
-						sleep += 1000;
+						spell.UseAbility(target);
+
 					}
-					//if (hero.Distance2D(Game.MousePosition) <= spell.CastRange + 35 || spell.CastRange == 0) {
-						ChangePt(powerTreads, Ensage.Attribute.Intelligence);
-					//}
-					spell.UseAbility(Game.MousePosition);
+					break;
 				}
-				sleep += hero.GetTurnTime(Game.MousePosition) * 1000;
+				case Order.AbilityLocation: {
+					if (spell.Name == "phantom_lancer_doppelwalk")
+						sleep += 1000;
+
+					var castRange = spell.CastRange + 300;
+
+					if (hero.Distance2D(Game.MousePosition) <= castRange + 300 || castRange == 300) {
+						ChangePt(powerTreads, Attribute.Intelligence);
+						sleep += hero.GetTurnTime(Game.MousePosition) * 1000;
+					}
+
+					spell.UseAbility(Game.MousePosition);
+
+					break;
+				}
+				case Order.Ability: {
+					ChangePt(powerTreads, Attribute.Intelligence);
+					spell.UseAbility();
+					break;
+				}
+				case Order.ToggleAbility: {
+					ChangePt(powerTreads, Attribute.Intelligence);
+					spell.ToggleAbility();
+					break;
+				}
 			}
 
 			Utils.Sleep(sleep, "delay");
 
 		}
 
-		static void Player_OnExecuteAction(Player sender, ExecuteOrderEventArgs args) {
-			if (args.Order == Order.AbilityTarget || args.Order == Order.AbilityLocation || args.Order == Order.Ability) {
-				if (!Game.IsKeyDown(16))
-					CastSpell(args.Ability, args);
-			}
-		}
-
-		private static void Game_OnIngameUpdate(EventArgs args) {
+		private static void Game_OnUpdate(EventArgs args) {
 			if (Game.IsPaused || !Game.IsInGame || !Utils.SleepCheck("delay"))
 				return;
 
@@ -131,44 +168,49 @@ namespace PTSwitcher {
 			if (powerTreads == null)
 				return;
 
-			if (!_regen && !_ptChanged) {
-				switch (((Ensage.Items.PowerTreads) powerTreads).ActiveAttribute) {
-					case Ensage.Attribute.Intelligence: // agi
-					_lastPtState = Ensage.Attribute.Agility;
-					break;
-					case Ensage.Attribute.Strength:
-					_lastPtState = Ensage.Attribute.Strength;
-					break;
-					case Ensage.Attribute.Agility: // int
-					_lastPtState = Ensage.Attribute.Intelligence;
-					break;
+			if (!_healActive && !_ptChanged) {
+				switch (((PowerTreads) powerTreads).ActiveAttribute) {
+					case Attribute.Intelligence: // agi
+						_lastPtState = Attribute.Agility;
+						break;
+					case Attribute.Strength:
+						_lastPtState = Attribute.Strength;
+						break;
+					case Attribute.Agility: // int
+						_lastPtState = Attribute.Intelligence;
+						break;
 				}
 			}
 
-			if (hero.Modifiers.Any(x => HealModifiers.Any(x.Name.Contains))) {
-				_regen = true;
-				ChangePt(powerTreads, Ensage.Attribute.Agility);
-			}
-			else {
-				_regen = false;
+			_disableSwitchBack = hero.Modifiers.Any(x => DisableSwitchBackModifiers.Any(x.Name.Contains));
+
+			if (hero.Modifiers.Any(x => HealModifiers.Any(x.Name.Contains)) && !_disableSwitchBack) {
+				_healActive = true;
+				ChangePt(powerTreads, Attribute.Agility);
+			} else {
+				_healActive = false;
 			}
 
-			if (_ptChanged && !hero.IsChanneling() && !hero.IsInvisible() && !_regen && hero.CanMove()) {
+			if (_ptChanged && !_healActive && !_disableSwitchBack) {
 
 				foreach (var spell in hero.Spellbook.Spells.Where(spell => spell.IsInAbilityPhase)) {
 					Utils.Sleep(spell.FindCastPoint() * 1000 + 300, "delay");
 					return;
 				}
 
-				ChangePt(powerTreads, _lastPtState);
-				_ptChanged = false;
+				ChangePt(powerTreads, _lastPtState, false);
 			}
 
 			Utils.Sleep(200, "delay");
 		}
 
-		private static void ChangePt(Ensage.Item pt, Ensage.Attribute atrb) {
+		private static void ChangePt(Item pt, Attribute atrb, bool changed = true) {
 			if (pt == null)
+				return;
+
+			var hero = ObjectMgr.LocalHero;
+
+			if (hero == null || hero.IsChanneling() || hero.IsInvisible() || !hero.CanUseItems())
 				return;
 
 			//var ptNow = (int) ((Ensage.Items.PowerTreads) pt).ActiveAttribute + 1;
@@ -178,29 +220,29 @@ namespace PTSwitcher {
 			var ptTo = 0;
 
 			//some random fixes
-			switch (((Ensage.Items.PowerTreads) pt).ActiveAttribute) {
-				case Ensage.Attribute.Intelligence: // agi
-				ptNow = 3;
-				break;
-				case Ensage.Attribute.Strength:
-				ptNow = 1;
-				break;
-				case Ensage.Attribute.Agility:  // int
-				ptNow = 2;
-				break;
+			switch (((PowerTreads) pt).ActiveAttribute) {
+				case Attribute.Intelligence: // agi
+					ptNow = 3;
+					break;
+				case Attribute.Strength:
+					ptNow = 1;
+					break;
+				case Attribute.Agility: // int
+					ptNow = 2;
+					break;
 			}
 
 			// more fixes
 			switch (atrb) {
-				case Ensage.Attribute.Intelligence:
-				ptTo = 2;
-				break;
-				case Ensage.Attribute.Strength:
-				ptTo = 1;
-				break;
-				case Ensage.Attribute.Agility:
-				ptTo = 3;
-				break;
+				case Attribute.Intelligence:
+					ptTo = 2;
+					break;
+				case Attribute.Strength:
+					ptTo = 1;
+					break;
+				case Attribute.Agility:
+					ptTo = 3;
+					break;
 			}
 
 			if (ptNow == ptTo)
@@ -211,11 +253,10 @@ namespace PTSwitcher {
 			if (ptNow == 2 && ptTo == 1)
 				change = 2;
 
-			_ptChanged = true;
+			_ptChanged = changed;
 
 			for (var i = 0; i < change; i++)
 				pt.UseAbility();
-
 		}
 	}
 }
