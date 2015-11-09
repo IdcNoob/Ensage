@@ -27,9 +27,11 @@ namespace PTSwitcher {
 			"chaos_knight_phantasm",
 			"drow_ranger_frost_arrows",
 			"lion_mana_drain",
-			"ogre_magi_unrefined_fireblast",
+			"ogre_magi_unrefined_fireblast", // aghanim stun
 			"templar_assassin_meld",
-			"tusk_walrus_punch"
+			"tusk_walrus_punch",
+			"item_invis_sword", //shadow blade
+			"item_silver_edge"
 		};
 
 		private static readonly string[] HealModifiers = {
@@ -90,7 +92,7 @@ namespace PTSwitcher {
 
 			var spell = args.Ability;
 
-			if (hero == null || spell == null || spell.ManaCost <= 5 || IgnoredSpells.Any(spell.Name.Contains))
+			if (hero == null || spell == null || spell.ManaCost <= 25 || IgnoredSpells.Any(spell.Name.Contains))
 				return;
 
 			var powerTreads = hero.FindItem("item_power_treads");
