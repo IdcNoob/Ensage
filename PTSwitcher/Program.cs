@@ -22,15 +22,15 @@ namespace PTSwitcher {
 			"brewmaster_storm_cyclone",
 			"brewmaster_storm_wind_walk",
 			"legion_commander_duel",
-			"clinkz_searing_arrows",
+			//"clinkz_searing_arrows",
 			"pudge_dismember",
 			"chaos_knight_phantasm",
-			"drow_ranger_frost_arrows",
-			"lion_mana_drain",
+			//"drow_ranger_frost_arrows",
+			//"lion_mana_drain",
 			"ogre_magi_unrefined_fireblast", // aghanim stun
 			"templar_assassin_meld",
 			"tusk_walrus_punch",
-			"item_invis_sword", //shadow blade
+			"item_invis_sword", // shadow blade
 			"item_silver_edge"
 		};
 
@@ -97,25 +97,21 @@ namespace PTSwitcher {
 
 			var powerTreads = hero.FindItem("item_power_treads");
 
-			if (powerTreads == null || ((PowerTreads) powerTreads).ActiveAttribute == Attribute.Agility) // INT
+			if (powerTreads == null)
 				return;
 
 			args.Process = false;
 
-			var sleep = spell.FindCastPoint() * 1000 + 500;
+			var sleep = spell.FindCastPoint() * 1000 + 555;
 
 			switch (args.Order) {
 				case Order.AbilityTarget: {
 					var target = (Unit) args.Target;
 					if (target != null && target.IsAlive) {
 
-						var castRange = spell.CastRange + 300;
-
-						if (spell.Name == "dragon_knight_dragon_tail" &&
-						    hero.Modifiers.Any(x => x.Name == "modifier_dragon_knight_dragon_form"))
-							castRange += 350;
-
-						if (hero.Distance2D(target) <= castRange || castRange == 300) {
+						var castRange = spell.GetCastRange() + 300;
+						
+						if (hero.Distance2D(target) <= castRange) {
 							ChangePt(powerTreads, Attribute.Intelligence);
 							sleep += hero.GetTurnTime(target) * 1000;
 						}
@@ -126,12 +122,9 @@ namespace PTSwitcher {
 					break;
 				}
 				case Order.AbilityLocation: {
-					if (spell.Name == "phantom_lancer_doppelwalk")
-						sleep += 1000;
+					var castRange = spell.GetCastRange() + 300;
 
-					var castRange = spell.CastRange + 300;
-
-					if (hero.Distance2D(Game.MousePosition) <= castRange + 300 || castRange == 300) {
+					if (hero.Distance2D(Game.MousePosition) <= castRange) {
 						ChangePt(powerTreads, Attribute.Intelligence);
 						sleep += hero.GetTurnTime(Game.MousePosition) * 1000;
 					}
@@ -153,7 +146,6 @@ namespace PTSwitcher {
 			}
 
 			Utils.Sleep(sleep, "delay");
-
 		}
 
 		private static void Game_OnUpdate(EventArgs args) {
