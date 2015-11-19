@@ -3,46 +3,51 @@ using System.Linq;
 using Ensage;
 using Ensage.Common;
 using Ensage.Common.Extensions;
+using Ensage.Common.Menu;
 using SharpDX;
 
 namespace MoveSpeedDifference {
 	internal class Program {
 
-		private static bool _enabled;
+		private static bool enabled;
+
+		private static readonly Menu Menu = new Menu("Move Speed Difference", "moveSpeed", true);
 
 		private static void Main() {
-			Game.OnWndProc += Game_OnWndProc;
 			Drawing.OnDraw += Drawing_OnDraw;
-		}
 
-		private static void Game_OnWndProc(WndEventArgs args) {
-			if (args.WParam == 18 && Game.IsInGame) {
-				_enabled = args.Msg == 260;
-			}
+			Menu.AddItem(new MenuItem("hotkey", "Change hotkey").SetValue(new KeyBind(18, KeyBindType.Press)));
+			Menu.AddItem(new MenuItem("ally", "Show on allies").SetValue(false));
+			Menu.AddToMainMenu();
 		}
 
 		private static void Drawing_OnDraw(EventArgs args) {
-			if (!Game.IsInGame || !_enabled)
+			if (!Game.IsInGame || !Menu.Item("hotkey").GetValue<KeyBind>().Active)
 				return;
 
 			var hero = ObjectMgr.LocalHero;
 			if (hero == null)
 				return;
 
-			var enemies =
+			var heroes =
 				ObjectMgr.GetEntities<Hero>()
-					.Where(x => !x.IsIllusion && x.IsVisible && x.IsAlive && x.Team == hero.GetEnemyTeam())
+					.Where(x => !x.IsIllusion && x.IsVisible && x.IsAlive && !x.Equals(hero))
 					.ToList();
 
-			foreach (var enemy in enemies) {
-				var screenPosition = HUDInfo.GetHPbarPosition(enemy);
+			if (!Menu.Item("ally").GetValue<bool>()) {
+				heroes = heroes.Where(x => x.Team == hero.GetEnemyTeam()).ToList();
+			}
+
+			foreach (var unit in heroes) {
+				var screenPosition = HUDInfo.GetHPbarPosition(unit);
 				if (screenPosition.IsZero)
 					continue;
 
 				var ratio = HUDInfo.RatioPercentage();
-				var diff = enemy.MovementSpeed - hero.MovementSpeed;
+				var diff = unit.MovementSpeed - hero.MovementSpeed;
 
-				Drawing.DrawRect(screenPosition + new Vector2(24 * ratio, -28 * ratio), new Vector2(45 * ratio, 25 * ratio), new Color(0, 100, 100, 255));
+				Drawing.DrawRect(screenPosition + new Vector2(24 * ratio, -28 * ratio), new Vector2(45 * ratio, 25 * ratio),
+					new Color(0, 100, 100, 255));
 
 				Drawing.DrawText(diff > 0 ? "+" + diff : diff.ToString(), "Arial",
 					screenPosition + new Vector2(30 * ratio, -25 * ratio),
