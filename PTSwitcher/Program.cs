@@ -31,7 +31,8 @@ namespace PTSwitcher {
 			"templar_assassin_meld",
 			"tusk_walrus_punch",
 			"item_invis_sword", // shadow blade
-			"item_silver_edge"
+			"item_silver_edge",
+			"ember_spirit_sleight_of_fist"
 		};
 
 		private static readonly string[] HealModifiers = {
