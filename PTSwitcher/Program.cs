@@ -13,7 +13,9 @@ namespace PTSwitcher {
 		private static bool _ptChanged;
 		private static bool _healActive;
 		private static bool _disableSwitchBack;
-
+		
+		private static bool update = true;
+		
 		private static readonly string[] IgnoredSpells = {
 			"item_tpscroll",
 			"item_travel_boots",
@@ -150,6 +152,11 @@ namespace PTSwitcher {
 		}
 
 		private static void Game_OnUpdate(EventArgs args) {
+
+			if (!Game.IsInGame && !update) {
+				update = true;
+			}
+
 			if (Game.IsPaused || !Game.IsInGame || !Utils.SleepCheck("delay"))
 				return;
 
@@ -157,6 +164,11 @@ namespace PTSwitcher {
 
 			if (hero == null || !hero.IsAlive)
 				return;
+			
+			if (update) {
+				Game.PrintMessage("<font color='#ff0000'>PT Switcher is no longer supported!!!<br/>Use merged Smart HP/MP Abuse instead and delete this assembly</font>", MessageType.LogMessage);
+				update = false;
+			}
 
 			var powerTreads = hero.FindItem("item_power_treads");
 
