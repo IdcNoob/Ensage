@@ -6,6 +6,8 @@ using Ensage.Common;
 using Ensage.Common.Extensions;
 using Ensage.Common.Menu;
 using Ensage.Items;
+using SharpDX;
+using SharpDX.Direct3D9;
 using Attribute = Ensage.Attribute;
 
 namespace HpMpAbuse {
@@ -13,10 +15,14 @@ namespace HpMpAbuse {
 
 		private static bool stopAttack = true;
 		private static bool ptChanged, healActive, disableSwitchBack, autoDisablePT, attacking, enabledRecovery;
+		private static bool inGame;
 
-		private static Attribute lastPtAttribute = Attribute.Strength;
+		private static Attribute lastPtAttribute;
 		private static PowerTreads powerTreads;
 		private static Hero hero;
+
+		private static Font manaCheckText;
+		private static int manaLeft;
 
 		private static readonly string[] BonusHealth = {"bonus_strength", "bonus_all_stats", "bonus_health"};
 		private static readonly string[] BonusMana = {"bonus_intellect", "bonus_all_stats", "bonus_mana"};
@@ -26,9 +32,11 @@ namespace HpMpAbuse {
 		private static readonly Menu PTMenu = new Menu("PT Switcher", "ptSwitcher");
 		private static readonly Menu RecoveryMenu = new Menu("Recovery Abuse", "recoveryAbuse");
 		private static readonly Menu SoulRingMenu = new Menu("Auto Soul Ring", "soulringAbuse");
+		private static readonly Menu ManaCheckMenu = new Menu("Mana Combo Checker", "manaChecker");
 
 		private static readonly Dictionary<string, bool> AbilitiesPT = new Dictionary<string, bool>();
 		private static readonly Dictionary<string, bool> AbilitiesSR = new Dictionary<string, bool>();
+		private static readonly Dictionary<string, bool> AbilitiesMC = new Dictionary<string, bool>();
 
 		private static readonly string[] AttackSpells = {
 			"windrunner_focusfire",
@@ -66,10 +74,6 @@ namespace HpMpAbuse {
 		};
 
 		private static void Main() {
-			Game.OnUpdate += Game_OnUpdate;
-			Game.OnWndProc += Game_OnWndProc;
-			Player.OnExecuteOrder += Player_OnExecuteAction;
-
 			RecoveryMenu.AddItem(new MenuItem("hotkey", "Change hotkey").SetValue(new KeyBind('T', KeyBindType.Press)));
 
 			var forcePick = new Menu("Force item picking", "forcePick");
@@ -105,14 +109,50 @@ namespace HpMpAbuse {
 			SoulRingMenu.AddItem(new MenuItem("soulringHPThreshold", "HP threshold").SetValue(new Slider(30))
 				.SetTooltip("Don't use soul ring if HP % less than X"));
 
+			ManaCheckMenu.AddItem(new MenuItem("enabledMC", "Enabled").SetValue(false));
+			ManaCheckMenu.AddItem(new MenuItem("enabledMCAbilities", "Enabled for").SetValue(new AbilityToggler(AbilitiesMC)))
+				.DontSave();
+			ManaCheckMenu.AddItem(new MenuItem("mcManaInfo", "Show mana info").SetValue(true)
+				.SetTooltip("Will show how much mana left/needed after/before casting combo"));
+			ManaCheckMenu.AddItem(new MenuItem("mcPTcalculations", "Include PT switcher calculations").SetValue(true)
+				.SetTooltip("Will include in calculations mana gained from PT switching"));
+			ManaCheckMenu.AddItem(new MenuItem("mcSize", "Size").SetValue(new Slider(8, 1, 10)))
+				.SetTooltip("Reload assembly to apply new size");
+			ManaCheckMenu.AddItem(new MenuItem("mcX", "Position X").SetValue(new Slider(0, 0, (int) HUDInfo.ScreenSizeX())));
+			ManaCheckMenu.AddItem(new MenuItem("mcY", "Position Y").SetValue(new Slider(0, 0, (int) HUDInfo.ScreenSizeY())));
+
 			Menu.AddSubMenu(PTMenu);
 			Menu.AddSubMenu(RecoveryMenu);
 			Menu.AddSubMenu(SoulRingMenu);
+			Menu.AddSubMenu(ManaCheckMenu);
 
 			Menu.AddItem(new MenuItem("checkPTdelay", "PT check delay").SetValue(new Slider(250, 200, 500))
 				.SetTooltip("Make delay bigger if PT constantly switching when using bottle for example"));
 
 			Menu.AddToMainMenu();
+
+			manaCheckText = new Font(
+				Drawing.Direct3DDevice9,
+				new FontDescription {
+					FaceName = "Tahoma",
+					Height = 13 * (ManaCheckMenu.Item("mcSize").GetValue<Slider>().Value / 2),
+					OutputPrecision = FontPrecision.Raster,
+					Quality = FontQuality.ClearTypeNatural,
+					CharacterSet = FontCharacterSet.Hangul,
+					MipLevels = 3,
+					PitchAndFamily = FontPitchAndFamily.Modern,
+					Weight = FontWeight.Heavy,
+					Width = 5 * (ManaCheckMenu.Item("mcSize").GetValue<Slider>().Value / 2)
+				});
+
+			Game.OnUpdate += Game_OnUpdate;
+			Game.OnWndProc += Game_OnWndProc;
+
+			Player.OnExecuteOrder += Player_OnExecuteAction;
+
+			Drawing.OnPreReset += Drawing_OnPreReset;
+			Drawing.OnPostReset += Drawing_OnPostReset;
+			Drawing.OnEndScene += Drawing_OnEndScene;
 		}
 
 		private static void Game_OnWndProc(WndEventArgs args) {
@@ -133,6 +173,7 @@ namespace HpMpAbuse {
 		}
 
 		private static void Player_OnExecuteAction(Player sender, ExecuteOrderEventArgs args) {
+
 			switch (args.Order) {
 				case Order.AttackTarget:
 				case Order.AttackLocation:
@@ -161,25 +202,37 @@ namespace HpMpAbuse {
 			if (!Utils.SleepCheck("delay"))
 				return;
 
-			if (!Game.IsInGame) {
-				if (AbilitiesPT.Count > 0) {
-					AbilitiesPT.Clear();
-					AbilitiesSR.Clear();
-					hero = null;
+			if (!inGame) {
+				hero = ObjectMgr.LocalHero;
+
+				if (!Game.IsInGame || hero == null) {
+					Utils.Sleep(1000, "delay");
+					return;
 				}
+
+				AbilitiesPT.Clear();
+				AbilitiesSR.Clear();
+				AbilitiesMC.Clear();
+
+				lastPtAttribute = Attribute.Strength;
+				stopAttack = true;
+				ptChanged = healActive = disableSwitchBack = attacking = enabledRecovery = false;
+
 				if (autoDisablePT) {
-					PTMenu.Item("enabledPT").SetValue(false).DontSave();
+					PTMenu.Item("enabledPT").SetValue(true).DontSave();
 					autoDisablePT = false;
 				}
-				Utils.Sleep(1111, "delay");
+
+				inGame = true;
+			}
+
+			if (!Game.IsInGame) {
+				inGame = false;
 				return;
 			}
 
-			if (hero == null)
-				hero = ObjectMgr.LocalHero;
-
-			if (hero == null || !hero.IsAlive || Game.IsPaused) {
-				Utils.Sleep(555, "delay");
+			if (!hero.IsAlive || Game.IsPaused) {
+				Utils.Sleep(Menu.Item("checkPTdelay").GetValue<Slider>().Value, "delay");
 				return;
 			}
 
@@ -188,18 +241,21 @@ namespace HpMpAbuse {
 			foreach (var spell in hero.Spellbook.Spells.Where(CheckAbility)) {
 				AbilitiesPT.Add(spell.Name, true);
 				AbilitiesSR.Add(spell.Name, true);
+				AbilitiesMC.Add(spell.Name, false);
 				reloadMenu = true;
 			}
 
 			foreach (var item in hero.Inventory.Items.Where(CheckAbility)) {
 				AbilitiesPT.Add(item.Name, true);
 				AbilitiesSR.Add(item.Name, true);
+				AbilitiesMC.Add(item.Name, false);
 				reloadMenu = true;
 			}
 
 			if (reloadMenu) {
 				PTMenu.Item("enabledPTAbilities").SetValue((new AbilityToggler(AbilitiesPT))).DontSave();
 				SoulRingMenu.Item("enabledSRAbilities").SetValue((new AbilityToggler(AbilitiesSR))).DontSave();
+				ManaCheckMenu.Item("enabledMCAbilities").SetValue((new AbilityToggler(AbilitiesMC))).DontSave();
 			}
 
 			if (!autoDisablePT && Game.GameTime / 60 > PTMenu.Item("autoPTdisable").GetValue<Slider>().Value &&
@@ -230,6 +286,22 @@ namespace HpMpAbuse {
 
 			if (attacking)
 				ChangePtOnAction("switchPTonAttack", true);
+
+			if (ManaCheckMenu.Item("enabledMC").GetValue<bool>()) {
+				var heroMana = hero.Mana;
+
+				var manaCost = (from ability in AbilitiesMC
+				                where ManaCheckMenu.Item("enabledMCAbilities").GetValue<AbilityToggler>().IsEnabled(ability.Key)
+				                select hero.FindSpell(ability.Key) ?? hero.FindItem(ability.Key)).Aggregate<Ability, uint>(0,
+					                (current, spell) => current + spell.ManaCost);
+
+				if (powerTreads != null && lastPtAttribute != Attribute.Intelligence &&
+				    ManaCheckMenu.Item("mcPTcalculations").GetValue<bool>()) {
+					heroMana += heroMana / hero.MaximumMana * 117;
+				}
+
+				manaLeft = (int) Math.Ceiling(heroMana - manaCost);
+			}
 
 			if (enabledRecovery && (hero.Mana < hero.MaximumMana || hero.Health < hero.MaximumHealth)) {
 
@@ -500,23 +572,23 @@ namespace HpMpAbuse {
 			var ptTo = 0;
 
 			switch (powerTreads.ActiveAttribute) {
-				case Attribute.Intelligence: // agi
-					ptNow = 3;
-					break;
 				case Attribute.Strength:
 					ptNow = 1;
 					break;
 				case Attribute.Agility: // int
 					ptNow = 2;
 					break;
+				case Attribute.Intelligence: // agi
+					ptNow = 3;
+					break;
 			}
 
 			switch (attribute) {
-				case Attribute.Intelligence:
-					ptTo = 2;
-					break;
 				case Attribute.Strength:
 					ptTo = 1;
+					break;
+				case Attribute.Intelligence:
+					ptTo = 2;
 					break;
 				case Attribute.Agility:
 					ptTo = 3;
@@ -585,13 +657,38 @@ namespace HpMpAbuse {
 			var items = hero.Inventory.Items;
 
 			foreach (var item in
-					items.Where(item => !item.Equals(ignoredItem) && item.AbilityData.Any(x => bonusStats.Any(x.Name.Contains))))
+				items.Where(item => !item.Equals(ignoredItem) && item.AbilityData.Any(x => bonusStats.Any(x.Name.Contains))))
 				hero.DropItem(item, hero.NetworkPosition, true);
 		}
 
 		private static bool CheckAbility(Ability ability) {
 			return ability.ManaCost > 0 && !AbilitiesPT.ContainsKey(ability.Name) && !IgnoredSpells.Any(ability.Name.Contains) &&
 			       ability.AbilityBehavior != AbilityBehavior.Passive;
+		}
+
+		private static void Drawing_OnEndScene(EventArgs args) {
+			if (Drawing.Direct3DDevice9 == null || !ManaCheckMenu.Item("enabledMC").GetValue<bool>() || !inGame)
+				return;
+
+			var text = manaLeft >= 0 ? "Yes" : "No";
+
+			if (ManaCheckMenu.Item("mcManaInfo").GetValue<bool>())
+				text += " (" + manaLeft + ")";
+
+			manaCheckText.DrawText(
+				null,
+				text,
+				ManaCheckMenu.Item("mcX").GetValue<Slider>().Value,
+				ManaCheckMenu.Item("mcY").GetValue<Slider>().Value,
+				manaLeft >= 0 ? Color.Yellow : Color.DarkOrange);
+		}
+
+		private static void Drawing_OnPostReset(EventArgs args) {
+			manaCheckText.OnResetDevice();
+		}
+
+		private static void Drawing_OnPreReset(EventArgs args) {
+			manaCheckText.OnLostDevice();
 		}
 	}
 }
