@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using Ensage;
 using Ensage.Common;
 using Ensage.Common.Extensions;
@@ -27,7 +28,7 @@ namespace WinterIsComing {
 			Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
 			Menu.AddItem(new MenuItem("autoHealWhenDisabled", "Auto heal when ally is disabled").SetValue(true))
 				.SetTooltip("Stun, hex etc.");
-			Menu.AddItem(new MenuItem("autoHealWhenLowHP", "Auto heal ally when HP% lower").SetValue(new Slider(20)))
+			Menu.AddItem(new MenuItem("autoHealWhenLowHP", "Auto heal ally when HP% lower").SetValue(new Slider(30, 0, 99)))
 				.SetTooltip("This option also includes your hero");
 			Menu.AddItem(new MenuItem("autoUlt", "Auto ultimate"))
 				.SetValue(new HeroToggler(EnemiesMenu, true, false, false)).DontSave();
@@ -76,8 +77,8 @@ namespace WinterIsComing {
 			if (reloadMenu)
 				Menu.Item("autoUlt").SetValue(new HeroToggler(EnemiesMenu, true, false, false)).DontSave();
 
-			if (!hero.IsAlive || Game.IsPaused) {
-				Utils.Sleep(1000, "delay");
+			if (!hero.IsAlive || Game.IsPaused || !hero.CanCast()) {
+				Utils.Sleep(250, "delay");
 				return;
 			}
 
@@ -85,17 +86,16 @@ namespace WinterIsComing {
 			var heal = hero.Spellbook.SpellE;
 
 			if (ult.CanBeCasted()) {
-
-				var enemies = allEnemies.Where(x => x.IsVisible && x.IsAlive).ToList();
+				
+                var enemies = allEnemies.Where(x => x.IsVisible && x.IsAlive).ToList();
 
 				var ultTarget = enemies.FirstOrDefault(enemy =>
-					enemy.Distance2D(hero) < ult.CastRange + 100 &&
-					Menu.Item("autoUlt").GetValue<HeroToggler>().IsEnabled(enemy.Name) &&
-					enemies.Count(x => x.Distance2D(enemy) <= 400) - 1 >= Menu.Item("autoUltEnemies").GetValue<Slider>().Value);
+					Menu.Item("autoUlt").GetValue<HeroToggler>().IsEnabled(enemy.Name) && enemy.IsValidTarget(ult.CastRange, false, hero.NetworkPosition) &&
+                    enemies.Count(x => x.Distance2D(enemy) <= 400) - 1 >= Menu.Item("autoUltEnemies").GetValue<Slider>().Value);
 
 				if (ultTarget != null) {
 					if (ultTarget.IsLinkensProtected()) {
-						//remove linkens ?
+						//break linkens ?
 						//ult.UseAbility(ultTarget, true);
 					} else {
 						ult.UseAbility(ultTarget);
@@ -108,10 +108,11 @@ namespace WinterIsComing {
 
 				var allies =
 					ObjectMgr.GetEntities<Hero>()
-						.Where(
-							x =>
-								x.Team == hero.Team && x.IsAlive && !x.IsIllusion && x.Distance2D(hero) <= heal.CastRange + 100 &&
-								!x.IsMagicImmune())
+						.Where(x =>
+							x.Team == hero.Team
+							&& x.IsValidTarget(heal.CastRange, false, hero.NetworkPosition)
+							&& !x.IsIllusion
+							&& !x.IsChanneling())
 						.OrderBy(x => (float) x.Health / x.MaximumHealth)
 						.ToList();
 
@@ -120,7 +121,8 @@ namespace WinterIsComing {
 
 				if (disabledTarget != null && Menu.Item("autoHealWhenDisabled").GetValue<bool>()) {
 					heal.UseAbility(disabledTarget);
-				} else if (lowHpTarget != null) {
+					Console.WriteLine("use");
+				} else if (lowHpTarget != null && !lowHpTarget.IsMagicImmune()) {
 					heal.UseAbility(lowHpTarget);
 				}
 			}
