@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using Ensage;
 using Ensage.Common;
 using Ensage.Common.Extensions;
@@ -24,7 +23,6 @@ namespace WinterIsComing {
 		};
 
 		private static void Main() {
-
 			Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
 			Menu.AddItem(new MenuItem("autoHealWhenDisabled", "Auto heal when ally is disabled").SetValue(true))
 				.SetTooltip("Stun, hex etc.");
@@ -57,7 +55,6 @@ namespace WinterIsComing {
 				}
 
 				EnemiesMenu.Clear();
-
 				inGame = true;
 			}
 
@@ -86,12 +83,14 @@ namespace WinterIsComing {
 			var heal = hero.Spellbook.SpellE;
 
 			if (ult.CanBeCasted()) {
-				
-                var enemies = allEnemies.Where(x => x.IsVisible && x.IsAlive).ToList();
+				var enemies = allEnemies.Where(x => x.IsVisible && x.IsAlive).ToList();
 
-				var ultTarget = enemies.FirstOrDefault(enemy =>
-					Menu.Item("autoUlt").GetValue<HeroToggler>().IsEnabled(enemy.Name) && enemy.IsValidTarget(ult.CastRange, false, hero.NetworkPosition) &&
-                    enemies.Count(x => x.Distance2D(enemy) <= 400) - 1 >= Menu.Item("autoUltEnemies").GetValue<Slider>().Value);
+				var ultTarget =
+					enemies.FirstOrDefault(
+						enemy =>
+							Menu.Item("autoUlt").GetValue<HeroToggler>().IsEnabled(enemy.Name) &&
+							enemy.IsValidTarget(ult.CastRange, false, hero.NetworkPosition) &&
+							enemies.Count(x => x.Distance2D(enemy) <= 400) - 1 >= Menu.Item("autoUltEnemies").GetValue<Slider>().Value);
 
 				if (ultTarget != null) {
 					if (ultTarget.IsLinkensProtected()) {
@@ -105,14 +104,13 @@ namespace WinterIsComing {
 			}
 
 			if (heal.CanBeCasted()) {
-
 				var allies =
 					ObjectMgr.GetEntities<Hero>()
 						.Where(x =>
-							x.Team == hero.Team
-							&& x.IsValidTarget(heal.CastRange, false, hero.NetworkPosition)
-							&& !x.IsIllusion
-							&& !x.IsChanneling())
+							x.Team == hero.Team && 
+							x.IsValidTarget(heal.CastRange, false, hero.NetworkPosition) && 
+							!x.IsIllusion &&
+							!x.IsChanneling())
 						.OrderBy(x => (float) x.Health / x.MaximumHealth)
 						.ToList();
 
@@ -121,7 +119,6 @@ namespace WinterIsComing {
 
 				if (disabledTarget != null && Menu.Item("autoHealWhenDisabled").GetValue<bool>()) {
 					heal.UseAbility(disabledTarget);
-					Console.WriteLine("use");
 				} else if (lowHpTarget != null && !lowHpTarget.IsMagicImmune()) {
 					heal.UseAbility(lowHpTarget);
 				}
