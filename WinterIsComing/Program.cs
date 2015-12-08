@@ -25,7 +25,8 @@ namespace WinterIsComing {
 		private static void Main() {
 
 			Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
-			Menu.AddItem(new MenuItem("autoHealWhenDisabled", "Auto heal ally when disabled").SetValue(true));
+			Menu.AddItem(new MenuItem("autoHealWhenDisabled", "Auto heal when ally is disabled").SetValue(true))
+				.SetTooltip("Stun, hex etc.");
 			Menu.AddItem(new MenuItem("autoHealWhenLowHP", "Auto heal ally when HP% lower").SetValue(new Slider(20)))
 				.SetTooltip("This option also includes your hero");
 			Menu.AddItem(new MenuItem("autoUlt", "Auto ultimate"))
@@ -80,45 +81,62 @@ namespace WinterIsComing {
 				return;
 			}
 
-			var enemies = allEnemies.Where(x => x.IsVisible && x.IsAlive).ToList();
 			var ult = hero.Spellbook.SpellR;
 			var heal = hero.Spellbook.SpellE;
 
 			if (ult.CanBeCasted()) {
-				foreach (var enemy in enemies.Where(enemy =>
-						 enemy.Distance2D(hero) < ult.CastRange + 100 &&
-						 Menu.Item("autoUlt").GetValue<HeroToggler>().IsEnabled(enemy.Name))) {
-					if (enemies.Count(x => x.Distance2D(enemy) <= 400) - 1 >= Menu.Item("autoUltEnemies").GetValue<Slider>().Value && !enemy.IsLinkensProtected()) {
-						ult.UseAbility(enemy);
+
+				var enemies = allEnemies.Where(x => x.IsVisible && x.IsAlive).ToList();
+
+				var ultTarget = enemies.FirstOrDefault(enemy =>
+					enemy.Distance2D(hero) < ult.CastRange + 100 &&
+					Menu.Item("autoUlt").GetValue<HeroToggler>().IsEnabled(enemy.Name) &&
+					enemies.Count(x => x.Distance2D(enemy) <= 400) - 1 >= Menu.Item("autoUltEnemies").GetValue<Slider>().Value);
+
+				if (ultTarget != null) {
+					if (ultTarget.IsLinkensProtected()) {
+						//remove linkens ?
+						//ult.UseAbility(ultTarget, true);
+					} else {
+						ult.UseAbility(ultTarget);
 					}
 				}
+
 			}
 
-			var allies =
-				ObjectMgr.GetEntities<Hero>()
-					.Where(x => x.Team == hero.Team && x.IsAlive && !x.IsIllusion)
-					.OrderBy(x => (float) x.Health / x.MaximumHealth)
-					.ToList();
-
 			if (heal.CanBeCasted()) {
-				foreach (var ally in allies.Where(ally => ally.Distance2D(hero) <= heal.CastRange + 100)) {
-					if ((((float) ally.Health / ally.MaximumHealth) * 100 <= Menu.Item("autoHealWhenLowHP").GetValue<Slider>().Value) ||
-						(IsDisbled(ally) && ally.IsValid && Menu.Item("autoHealWhenDisabled").GetValue<bool>())) {
-							heal.UseAbility(ally);
-					}
+
+				var allies =
+					ObjectMgr.GetEntities<Hero>()
+						.Where(
+							x =>
+								x.Team == hero.Team && x.IsAlive && !x.IsIllusion && x.Distance2D(hero) <= heal.CastRange + 100 &&
+								!x.IsMagicImmune())
+						.OrderBy(x => (float) x.Health / x.MaximumHealth)
+						.ToList();
+
+				var disabledTarget = allies.FirstOrDefault(IsDisbled);
+				var lowHpTarget = allies.FirstOrDefault(IsLowHp);
+
+				if (disabledTarget != null && Menu.Item("autoHealWhenDisabled").GetValue<bool>()) {
+					heal.UseAbility(disabledTarget);
+				} else if (lowHpTarget != null) {
+					heal.UseAbility(lowHpTarget);
 				}
-				
 			}
 
 			Utils.Sleep(250, "delay");
 		}
 
-		private static bool IsDisbled(Hero unit) {
-			return unit.IsHexed() 
-				|| unit.IsStunned() 
-				|| (unit.IsSilenced() && unit.PrimaryAttribute == Attribute.Intelligence) 
-				|| unit.Modifiers.Any(x => AdditionalDisableModifiers.Any(x.Name.Contains));
+		private static bool IsLowHp(Hero unit) {
+			return ((float) unit.Health / unit.MaximumHealth) * 100 <= Menu.Item("autoHealWhenLowHP").GetValue<Slider>().Value;
 		}
 
+		private static bool IsDisbled(Hero unit) {
+			return unit.IsHexed()
+			       || unit.IsStunned()
+			       || (unit.IsSilenced() && unit.PrimaryAttribute == Attribute.Intelligence)
+			       || unit.Modifiers.Any(x => AdditionalDisableModifiers.Any(x.Name.Contains));
+		}
 	}
 }
