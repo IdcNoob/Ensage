@@ -17,12 +17,6 @@ namespace WinterIsComing {
         private static readonly Dictionary<string, bool> AlliesLowHp = new Dictionary<string, bool>();
         private static readonly Dictionary<string, bool> AlliesDisabled = new Dictionary<string, bool>();
 
-        private static readonly string[] AdditionalDisableModifiers = {
-            "modifier_doom_bringer_doom",
-            "modifier_axe_berserkers_call",
-            "modifier_legion_commander_duel"
-        };
-
         private static void Main() {
             var autoHealMenu = new Menu("Auto heal", "autoHeal");
 
@@ -124,7 +118,7 @@ namespace WinterIsComing {
                         enemy =>
                             Menu.Item("autoUlt").GetValue<HeroToggler>().IsEnabled(enemy.Name) &&
                             enemy.IsValidTarget(ult.CastRange, false, hero.NetworkPosition) &&
-                            !enemy.Modifiers.Any(mod => mod.Name.StartsWith("modifier_winter_wyvern_winters_curse")) &&
+                            enemy.Modifiers.All(mod => !mod.Name.StartsWith("modifier_winter_wyvern_winters_curse_aura")) &&
                             enemies.Count(x => x.Distance2D(enemy) <= 400) >
                             Menu.Item("autoUltEnemies").GetValue<Slider>().Value);
 
@@ -172,12 +166,15 @@ namespace WinterIsComing {
         }
 
         private static bool IsDisbled(Hero unit) {
-            return (unit.IsHexed() ||
-                    unit.IsStunned() ||
+            return (unit.IsHexed() || unit.IsStunned() ||
                     (unit.IsSilenced() && unit.PrimaryAttribute == Attribute.Intelligence) ||
-                    unit.Modifiers.Any(x => AdditionalDisableModifiers.Any(x.Name.Equals))) &&
-                   Menu.Item("autoHealWhenDisabled").GetValue<HeroToggler>().IsEnabled(unit.Name);
-            //modifier_winter_wyvern_cold_embrace?
+                    unit.Modifiers.Any(
+                        x =>
+                            x.Name == "modifier_doom_bringer_doom" || x.Name == "modifier_axe_berserkers_call" ||
+                            (x.Name == "modifier_legion_commander_duel" &&
+                             unit.ClassID != ClassID.CDOTA_Unit_Hero_Legion_Commander)) &&
+                    Menu.Item("autoHealWhenDisabled").GetValue<HeroToggler>().IsEnabled(unit.Name)) &&
+                   unit.Modifiers.All(x => x.Name != "modifier_winter_wyvern_cold_embrace");
         }
     }
 }

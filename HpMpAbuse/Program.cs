@@ -189,7 +189,6 @@ namespace HpMpAbuse {
                     if (!Game.IsKeyDown(16))
                         CastSpell(args);
                     break;
-                case Order.MoveItem:
                 case Order.MoveLocation:
                 case Order.MoveTarget:
                     ChangePtOnAction("switchPTonMove");
@@ -637,7 +636,9 @@ namespace HpMpAbuse {
                 default:
                     return;
             }
+
             attacking = isAttacking;
+
             Utils.Sleep(500, "HpMpAbuseDelay");
         }
 
@@ -645,7 +646,8 @@ namespace HpMpAbuse {
             if (moving)
                 hero.Stop();
 
-            var droppedItems = ObjectMgr.GetEntities<PhysicalItem>().Where(x => x.Distance2D(hero) < 250).ToList();
+            var droppedItems =
+                ObjectMgr.GetEntities<PhysicalItem>().Where(x => x.Distance2D(hero) < 250).Reverse().ToList();
 
             for (var i = 0; i < droppedItems.Count; i++)
                 hero.PickUpItem(droppedItems[i], i != 0);
@@ -661,11 +663,12 @@ namespace HpMpAbuse {
 
         private static void DropItems(IEnumerable<string> bonusStats, Item ignoredItem = null) {
             var items = hero.Inventory.Items;
-
-            foreach (var item in
-                items.Where(
-                    item => !item.Equals(ignoredItem) && item.AbilityData.Any(x => bonusStats.Any(x.Name.Equals))))
+            foreach (
+                var item in
+                    items.Where(
+                        item => !item.Equals(ignoredItem) && item.AbilityData.Any(x => bonusStats.Any(x.Name.Equals)))) {
                 hero.DropItem(item, hero.NetworkPosition, true);
+            }
         }
 
         private static bool CheckAbility(Ability ability) {
