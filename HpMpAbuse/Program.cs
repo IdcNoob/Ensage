@@ -199,14 +199,14 @@ namespace HpMpAbuse {
 
 		private static void Game_OnUpdate(EventArgs args) {
 
-			if (!Utils.SleepCheck("delay"))
+			if (!Utils.SleepCheck("HpMpAbuseDelay"))
 				return;
 
 			if (!inGame) {
 				hero = ObjectMgr.LocalHero;
 
 				if (!Game.IsInGame || hero == null) {
-					Utils.Sleep(1000, "delay");
+					Utils.Sleep(1000, "HpMpAbuseDelay");
 					return;
 				}
 
@@ -232,7 +232,7 @@ namespace HpMpAbuse {
 			}
 
 			if (!hero.IsAlive || Game.IsPaused) {
-				Utils.Sleep(Menu.Item("checkPTdelay").GetValue<Slider>().Value, "delay");
+				Utils.Sleep(Menu.Item("checkPTdelay").GetValue<Slider>().Value, "HpMpAbuseDelay");
 				return;
 			}
 
@@ -307,7 +307,7 @@ namespace HpMpAbuse {
 
 				if (hero.NetworkActivity == NetworkActivity.Move && RecoveryMenu.Item("forcePickMoved").GetValue<bool>()) {
 					PickUpItems(true);
-					Utils.Sleep(1000, "delay");
+					Utils.Sleep(1000, "HpMpAbuseDelay");
 					return;
 				}
 
@@ -316,7 +316,7 @@ namespace HpMpAbuse {
 					x.Distance2D(hero) <= RecoveryMenu.Item("forcePickEnemyNearDistance").GetValue<Slider>().Value) &&
 				    RecoveryMenu.Item("forcePickEnemyNear").GetValue<bool>()) {
 					PickUpItems();
-					Utils.Sleep(1000, "delay");
+					Utils.Sleep(1000, "HpMpAbuseDelay");
 					return;
 				}
 
@@ -414,7 +414,7 @@ namespace HpMpAbuse {
 			}
 
 			if (powerTreads == null) {
-				Utils.Sleep(Menu.Item("checkPTdelay").GetValue<Slider>().Value, "delay");
+				Utils.Sleep(Menu.Item("checkPTdelay").GetValue<Slider>().Value, "HpMpAbuseDelay");
 				return;
 			}
 
@@ -465,14 +465,14 @@ namespace HpMpAbuse {
 			if (ptChanged && !healActive && !disableSwitchBack && !enabledRecovery && !attacking) {
 
 				foreach (var spell in hero.Spellbook.Spells.Where(spell => spell.IsInAbilityPhase)) {
-					Utils.Sleep(spell.FindCastPoint() * 1000 + PTMenu.Item("switchbackPTdelay").GetValue<Slider>().Value, "delay");
+					Utils.Sleep(spell.FindCastPoint() * 1000 + PTMenu.Item("switchbackPTdelay").GetValue<Slider>().Value, "HpMpAbuseDelay");
 					return;
 				}
 
 				ChangePowerTreads(lastPtAttribute, false);
 			}
 
-			Utils.Sleep(Menu.Item("checkPTdelay").GetValue<Slider>().Value, "delay");
+			Utils.Sleep(Menu.Item("checkPTdelay").GetValue<Slider>().Value, "HpMpAbuseDelay");
 		}
 
 		private static void CastSpell(ExecuteOrderEventArgs args) {
@@ -556,7 +556,7 @@ namespace HpMpAbuse {
 					break;
 				}
 			}
-			Utils.Sleep(sleep, "delay");
+			Utils.Sleep(sleep, "HpMpAbuseDelay");
 		}
 
 		private static void ChangePowerTreads(Attribute attribute, bool switchBack = true, bool healing = false) {
@@ -631,7 +631,7 @@ namespace HpMpAbuse {
 					return;
 			}
 			attacking = isAttacking;
-			Utils.Sleep(500, "delay");
+			Utils.Sleep(500, "HpMpAbuseDelay");
 		}
 
 		private static void PickUpItems(bool moving = false) {

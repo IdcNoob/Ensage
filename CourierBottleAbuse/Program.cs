@@ -41,8 +41,13 @@ namespace CourierBottleAbuse {
 		}
 
 		private static void Game_OnUpdate(EventArgs args) {
-			if (Game.IsPaused || !Game.IsInGame || !enabled || !Utils.SleepCheck("delay"))
+			if (!Utils.SleepCheck("CourierAbuseDelay"))
 				return;
+
+			if (Game.IsPaused || !Game.IsInGame || !enabled) {
+				Utils.Sleep(1000, "CourierAbuseDelay");
+				return;
+			}
 
 			var hero = ObjectMgr.LocalHero;
 
@@ -56,10 +61,6 @@ namespace CourierBottleAbuse {
 			if (courier == null) {
 				enabled = false;
 				return;
-			}
-
-			foreach (var modifier in courier.Modifiers) {
-				Console.WriteLine(modifier.Name);
 			}
 
 			var bottle = hero.FindItem("item_bottle");
@@ -91,16 +92,16 @@ namespace CourierBottleAbuse {
 				hero.GiveItem(bottle, courier);
 			} else if (courBottle != null) {
 				courier.Spellbook.SpellQ.UseAbility();
-				if (courier.IsFlying)
-					courier.Spellbook.SpellR.UseAbility();
+				var burst = courier.Spellbook.SpellR;
+                if (courier.IsFlying && burst.CanBeCasted())
+					burst.UseAbility();
 				if (Menu.Item("stashAfter").GetValue<bool>())
 					courier.Spellbook.SpellD.UseAbility(true);
 				courier.Spellbook.SpellF.UseAbility(true);
 				enabled = false;
-				following = false;
 			}
 
-			Utils.Sleep(333, "delay");
+			Utils.Sleep(333, "CourierAbuseDelay");
 
 		}
 	}

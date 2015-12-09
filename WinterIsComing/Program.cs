@@ -12,7 +12,7 @@ namespace WinterIsComing {
 		private static bool inGame;
 		private static Hero hero;
 
-		private static readonly Menu Menu = new Menu("Winter is Coming", "winter", true);
+		private static readonly Menu Menu = new Menu("Winter is Coming", "winterIsComing", true);
 		private static readonly Dictionary<string, bool> EnemiesMenu = new Dictionary<string, bool>();
 
 		private static readonly string[] AdditionalDisableModifiers = {
@@ -25,7 +25,7 @@ namespace WinterIsComing {
 		private static void Main() {
 			Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
 			Menu.AddItem(new MenuItem("autoHealWhenDisabled", "Auto heal when ally is disabled").SetValue(true))
-				.SetTooltip("Stun, hex etc.");
+				.SetTooltip("Stunned, hexed etc.");
 			Menu.AddItem(new MenuItem("autoHealWhenLowHP", "Auto heal ally when HP% lower").SetValue(new Slider(30, 0, 99)))
 				.SetTooltip("This option also includes your hero");
 			Menu.AddItem(new MenuItem("autoUlt", "Auto ultimate"))
@@ -38,11 +38,11 @@ namespace WinterIsComing {
 		}
 
 		private static void Game_OnUpdate(EventArgs args) {
-			if (!Utils.SleepCheck("delay"))
+			if (!Utils.SleepCheck("WinterIsComingDelay"))
 				return;
 
 			if (!Menu.Item("enabled").GetValue<bool>()) {
-				Utils.Sleep(1000, "delay");
+				Utils.Sleep(1000, "WinterIsComingDelay");
 				return;
 			}
 
@@ -50,7 +50,7 @@ namespace WinterIsComing {
 				hero = ObjectMgr.LocalHero;
 
 				if (!Game.IsInGame || hero == null || hero.ClassID != ClassID.CDOTA_Unit_Hero_Winter_Wyvern) {
-					Utils.Sleep(1000, "delay");
+					Utils.Sleep(1000, "WinterIsComingDelay");
 					return;
 				}
 
@@ -75,7 +75,7 @@ namespace WinterIsComing {
 				Menu.Item("autoUlt").SetValue(new HeroToggler(EnemiesMenu, true, false, false)).DontSave();
 
 			if (!hero.IsAlive || Game.IsPaused || !hero.CanCast()) {
-				Utils.Sleep(250, "delay");
+				Utils.Sleep(250, "WinterIsComingDelay");
 				return;
 			}
 
@@ -124,7 +124,7 @@ namespace WinterIsComing {
 				}
 			}
 
-			Utils.Sleep(250, "delay");
+			Utils.Sleep(250, "WinterIsComingDelay");
 		}
 
 		private static bool IsLowHp(Hero unit) {
@@ -132,10 +132,10 @@ namespace WinterIsComing {
 		}
 
 		private static bool IsDisbled(Hero unit) {
-			return unit.IsHexed()
-			       || unit.IsStunned()
-			       || (unit.IsSilenced() && unit.PrimaryAttribute == Attribute.Intelligence)
-			       || unit.Modifiers.Any(x => AdditionalDisableModifiers.Any(x.Name.Contains));
+			return unit.IsHexed() ||
+				   unit.IsStunned() ||
+				   (unit.IsSilenced() && unit.PrimaryAttribute == Attribute.Intelligence) ||
+				   unit.Modifiers.Any(x => AdditionalDisableModifiers.Any(x.Name.Contains));
 		}
 	}
 }
