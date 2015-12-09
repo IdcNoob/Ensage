@@ -8,134 +8,176 @@ using Ensage.Common.Menu;
 using Attribute = Ensage.Attribute;
 
 namespace WinterIsComing {
-	internal class Program {
-		private static bool inGame;
-		private static Hero hero;
+    internal class Program {
+        private static bool inGame;
+        private static Hero hero;
 
-		private static readonly Menu Menu = new Menu("Winter is Coming", "winterIsComing", true);
-		private static readonly Dictionary<string, bool> EnemiesMenu = new Dictionary<string, bool>();
+        private static readonly Menu Menu = new Menu("Winter is Coming", "winterIsComing", true);
+        private static readonly Dictionary<string, bool> EnemiesUlt = new Dictionary<string, bool>();
+        private static readonly Dictionary<string, bool> AlliesLowHp = new Dictionary<string, bool>();
+        private static readonly Dictionary<string, bool> AlliesDisabled = new Dictionary<string, bool>();
 
-		private static readonly string[] AdditionalDisableModifiers = {
-			"modifier_slark_pounce_leash",
-			"modifier_doom_bringer_doom",
-			"modifier_axe_berserkers_call",
-			"modifier_legion_commander_duel"
-		};
+        private static readonly string[] AdditionalDisableModifiers = {
+            "modifier_doom_bringer_doom",
+            "modifier_axe_berserkers_call",
+            "modifier_legion_commander_duel"
+        };
 
-		private static void Main() {
-			Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
-			Menu.AddItem(new MenuItem("autoHealWhenDisabled", "Auto heal when ally is disabled").SetValue(true))
-				.SetTooltip("Stunned, hexed etc.");
-			Menu.AddItem(new MenuItem("autoHealWhenLowHP", "Auto heal ally when HP% lower").SetValue(new Slider(30, 0, 99)))
-				.SetTooltip("This option also includes your hero");
-			Menu.AddItem(new MenuItem("autoUlt", "Auto ultimate"))
-				.SetValue(new HeroToggler(EnemiesMenu, true, false, false)).DontSave();
-			Menu.AddItem(new MenuItem("autoUltEnemies", "When enemies near").SetValue(new Slider(2, 0, 4)));
+        private static void Main() {
+            var autoHealMenu = new Menu("Auto heal", "autoHeal");
 
-			Menu.AddToMainMenu();
+            autoHealMenu.AddItem(new MenuItem("autoHealWhenDisabled", "When disabled"));
+            autoHealMenu.AddItem(new MenuItem("autoHealWhenLowHP", "When low HP"));
+            autoHealMenu.AddItem(
+                new MenuItem("autoHealWhenLowHPThreshold", "Low HP% threshold").SetValue(new Slider(30, 0, 99)));
+            autoHealMenu.AddItem(
+                new MenuItem("autoHealWhenLowHPRange", "Auto heal low HP if enemy in range").SetValue(new Slider(500, 0,
+                    2000)).SetTooltip("If set to 0 range will be ignored"));
 
-			Game.OnUpdate += Game_OnUpdate;
-		}
+            var autoUltMenu = new Menu("Auto ultimate", "autoUltMenu");
 
-		private static void Game_OnUpdate(EventArgs args) {
-			if (!Utils.SleepCheck("WinterIsComingDelay"))
-				return;
+            autoUltMenu.AddItem(new MenuItem("autoUlt", "Auto ultimate"))
+                .SetValue(new HeroToggler(EnemiesUlt, true, false, false)).DontSave();
+            autoUltMenu.AddItem(new MenuItem("autoUltEnemies", "When enemies near").SetValue(new Slider(2, 0, 4)));
 
-			if (!Menu.Item("enabled").GetValue<bool>()) {
-				Utils.Sleep(1000, "WinterIsComingDelay");
-				return;
-			}
+            Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
 
-			if (!inGame) {
-				hero = ObjectMgr.LocalHero;
+            Menu.AddSubMenu(autoHealMenu);
+            Menu.AddSubMenu(autoUltMenu);
+            Menu.AddToMainMenu();
 
-				if (!Game.IsInGame || hero == null || hero.ClassID != ClassID.CDOTA_Unit_Hero_Winter_Wyvern) {
-					Utils.Sleep(1000, "WinterIsComingDelay");
-					return;
-				}
+            Game.OnUpdate += Game_OnUpdate;
+        }
 
-				EnemiesMenu.Clear();
-				inGame = true;
-			}
+        private static void Game_OnUpdate(EventArgs args) {
+            if (!Utils.SleepCheck("WinterIsComingDelay"))
+                return;
 
-			if (!Game.IsInGame) {
-				inGame = false;
-				return;
-			}
+            if (!Menu.Item("enabled").GetValue<bool>()) {
+                Utils.Sleep(1000, "WinterIsComingDelay");
+                return;
+            }
 
-			var reloadMenu = false;
-			var allEnemies = ObjectMgr.GetEntities<Hero>().Where(x => x.Team == hero.GetEnemyTeam() && !x.IsIllusion).ToList();
+            if (!inGame) {
+                hero = ObjectMgr.LocalHero;
 
-			foreach (var enemy in allEnemies.Where(enemy => !EnemiesMenu.ContainsKey(enemy.Name))) {
-				EnemiesMenu.Add(enemy.Name, false);
-				reloadMenu = true;
-			}
+                if (!Game.IsInGame || hero == null || hero.ClassID != ClassID.CDOTA_Unit_Hero_Winter_Wyvern) {
+                    Utils.Sleep(1000, "WinterIsComingDelay");
+                    return;
+                }
 
-			if (reloadMenu)
-				Menu.Item("autoUlt").SetValue(new HeroToggler(EnemiesMenu, true, false, false)).DontSave();
+                EnemiesUlt.Clear();
+                AlliesLowHp.Clear();
+                AlliesDisabled.Clear();
 
-			if (!hero.IsAlive || Game.IsPaused || !hero.CanCast()) {
-				Utils.Sleep(250, "WinterIsComingDelay");
-				return;
-			}
+                inGame = true;
+            }
 
-			var ult = hero.Spellbook.SpellR;
-			var heal = hero.Spellbook.SpellE;
+            if (!Game.IsInGame) {
+                inGame = false;
+                return;
+            }
 
-			if (ult.CanBeCasted()) {
-				var enemies = allEnemies.Where(x => x.IsVisible && x.IsAlive).ToList();
+            var sleep = 250;
 
-				var ultTarget =
-					enemies.FirstOrDefault(
-						enemy =>
-							Menu.Item("autoUlt").GetValue<HeroToggler>().IsEnabled(enemy.Name) &&
-							enemy.IsValidTarget(ult.CastRange, false, hero.NetworkPosition) &&
-							enemies.Count(x => x.Distance2D(enemy) <= 400) - 1 >= Menu.Item("autoUltEnemies").GetValue<Slider>().Value);
+            var reloadEnemyMenu = false;
+            var reloadAllyMenu = false;
 
-				if (ultTarget != null) {
-					if (ultTarget.IsLinkensProtected()) {
-						//break linkens ?
-						//ult.UseAbility(ultTarget, true);
-					} else {
-						ult.UseAbility(ultTarget);
-					}
-				}
+            var allHeroes = ObjectMgr.GetEntities<Hero>().Where(x => !x.IsIllusion).ToList();
 
-			}
+            var allEnemies = allHeroes.Where(x => x.Team == hero.GetEnemyTeam()).ToList();
+            var allAllies = allHeroes.Where(x => x.Team == hero.Team).ToList();
 
-			if (heal.CanBeCasted()) {
-				var allies =
-					ObjectMgr.GetEntities<Hero>()
-						.Where(x =>
-							x.Team == hero.Team && 
-							x.IsValidTarget(heal.CastRange, false, hero.NetworkPosition) && 
-							!x.IsIllusion &&
-							!x.IsChanneling())
-						.OrderBy(x => (float) x.Health / x.MaximumHealth)
-						.ToList();
+            foreach (var enemy in allEnemies.Where(enemy => !EnemiesUlt.ContainsKey(enemy.Name))) {
+                EnemiesUlt.Add(enemy.Name, false);
+                reloadEnemyMenu = true;
+            }
 
-				var disabledTarget = allies.FirstOrDefault(IsDisbled);
-				var lowHpTarget = allies.FirstOrDefault(IsLowHp);
+            foreach (var ally in allAllies.Where(enemy => !AlliesLowHp.ContainsKey(enemy.Name))) {
+                AlliesLowHp.Add(ally.Name, true);
+                AlliesDisabled.Add(ally.Name, true);
 
-				if (disabledTarget != null && Menu.Item("autoHealWhenDisabled").GetValue<bool>()) {
-					heal.UseAbility(disabledTarget);
-				} else if (lowHpTarget != null && !lowHpTarget.IsMagicImmune()) {
-					heal.UseAbility(lowHpTarget);
-				}
-			}
+                reloadAllyMenu = true;
+            }
 
-			Utils.Sleep(250, "WinterIsComingDelay");
-		}
+            if (reloadEnemyMenu)
+                Menu.Item("autoUlt").SetValue(new HeroToggler(EnemiesUlt, true, false, false)).DontSave();
 
-		private static bool IsLowHp(Hero unit) {
-			return ((float) unit.Health / unit.MaximumHealth) * 100 <= Menu.Item("autoHealWhenLowHP").GetValue<Slider>().Value;
-		}
+            if (reloadAllyMenu) {
+                Menu.Item("autoHealWhenDisabled").SetValue(new HeroToggler(AlliesDisabled, false, true)).DontSave();
+                Menu.Item("autoHealWhenLowHP").SetValue(new HeroToggler(AlliesLowHp, false, true)).DontSave();
+            }
 
-		private static bool IsDisbled(Hero unit) {
-			return unit.IsHexed() ||
-				   unit.IsStunned() ||
-				   (unit.IsSilenced() && unit.PrimaryAttribute == Attribute.Intelligence) ||
-				   unit.Modifiers.Any(x => x.IsDebuff && AdditionalDisableModifiers.Any(x.Name.Contains));
-		}
-	}
+            if (!hero.IsAlive || Game.IsPaused || !hero.CanCast()) {
+                Utils.Sleep(sleep, "WinterIsComingDelay");
+                return;
+            }
+
+            var ult = hero.Spellbook.SpellR;
+            var heal = hero.Spellbook.SpellE;
+
+            var enemies = allEnemies.Where(x => x.IsVisible && x.IsAlive).ToList();
+
+            if (ult.CanBeCasted()) {
+                var ultTarget =
+                    enemies.FirstOrDefault(
+                        enemy =>
+                            Menu.Item("autoUlt").GetValue<HeroToggler>().IsEnabled(enemy.Name) &&
+                            enemy.IsValidTarget(ult.CastRange, false, hero.NetworkPosition) &&
+                            !enemy.Modifiers.Any(mod => mod.Name.StartsWith("modifier_winter_wyvern_winters_curse")) &&
+                            enemies.Count(x => x.Distance2D(enemy) <= 400) >
+                            Menu.Item("autoUltEnemies").GetValue<Slider>().Value);
+
+                if (ultTarget != null) {
+                    if (ultTarget.IsLinkensProtected()) {
+                        //break linkens ?
+                        //ult.UseAbility(ultTarget, true);
+                    } else {
+                        ult.UseAbility(ultTarget);
+                    }
+                }
+            }
+
+            var allies =
+                allAllies.Where(x => x.IsValidTarget(2000, false, hero.NetworkPosition))
+                    .OrderBy(x => (float) x.Health / x.MaximumHealth)
+                    .ToList();
+
+            var lowHpAlly = allies.FirstOrDefault(x => IsLowHp(x) && IsEnemyNear(x, enemies));
+            var disabledAlly = allies.FirstOrDefault(IsDisbled);
+
+            if (heal.CanBeCasted()) {
+                if (lowHpAlly != null && !lowHpAlly.IsMagicImmune() && !lowHpAlly.IsChanneling() &&
+                    hero.Distance2D(lowHpAlly) <= heal.CastRange) {
+                    heal.UseAbility(lowHpAlly);
+                    sleep = 400;
+                } else if (disabledAlly != null && hero.Distance2D(disabledAlly) <= heal.CastRange) {
+                    heal.UseAbility(disabledAlly);
+                    sleep = 400;
+                }
+            }
+
+            Utils.Sleep(sleep, "WinterIsComingDelay");
+        }
+
+        private static bool IsLowHp(Entity unit) {
+            return ((float) unit.Health / unit.MaximumHealth) * 100 <=
+                   Menu.Item("autoHealWhenLowHPThreshold").GetValue<Slider>().Value &&
+                   Menu.Item("autoHealWhenLowHP").GetValue<HeroToggler>().IsEnabled(unit.Name);
+        }
+
+        private static bool IsEnemyNear(Entity unit, IEnumerable<Hero> enemies) {
+            var range = Menu.Item("autoHealWhenLowHPRange").GetValue<Slider>().Value;
+            return range == 0 || enemies.Any(x => x.IsValidTarget(range, false, unit.NetworkPosition));
+        }
+
+        private static bool IsDisbled(Hero unit) {
+            return (unit.IsHexed() ||
+                    unit.IsStunned() ||
+                    (unit.IsSilenced() && unit.PrimaryAttribute == Attribute.Intelligence) ||
+                    unit.Modifiers.Any(x => AdditionalDisableModifiers.Any(x.Name.Equals))) &&
+                   Menu.Item("autoHealWhenDisabled").GetValue<HeroToggler>().IsEnabled(unit.Name);
+            //modifier_winter_wyvern_cold_embrace?
+        }
+    }
 }
