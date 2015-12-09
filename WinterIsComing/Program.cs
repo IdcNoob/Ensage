@@ -135,7 +135,7 @@ namespace WinterIsComing {
 			return unit.IsHexed() ||
 				   unit.IsStunned() ||
 				   (unit.IsSilenced() && unit.PrimaryAttribute == Attribute.Intelligence) ||
-				   unit.Modifiers.Any(x => AdditionalDisableModifiers.Any(x.Name.Contains));
+				   unit.Modifiers.Any(x => x.IsDebuff && AdditionalDisableModifiers.Any(x.Name.Contains));
 		}
 	}
 }
