@@ -23,8 +23,8 @@ namespace HpMpAbuse {
         private static Font manaCheckText;
         private static int manaLeft;
 
-        private static readonly string[] BonusHealth = {"bonus_strength", "bonus_all_stats", "bonus_health"};
-        private static readonly string[] BonusMana = {"bonus_intellect", "bonus_all_stats", "bonus_mana"};
+        private static readonly string[] BonusHealth = {"bonus_strength", "bonus_all_stats", "bonus_stats", "bonus_health"};
+        private static readonly string[] BonusMana = {"bonus_intellect", "bonus_all_stats", "bonus_stats", "bonus_mana"};
 
         private static readonly Menu Menu = new Menu("Smart HP/MP Abuse", "smartAbuse", true);
 
