@@ -23,8 +23,8 @@ namespace HpMpAbuse {
         private static Font manaCheckText;
         private static int manaLeft;
 
-        private static readonly string[] BonusHealth = {"bonus_strength", "bonus_all_stats", "bonus_stats", "bonus_health"};
-        private static readonly string[] BonusMana = {"bonus_intellect", "bonus_all_stats", "bonus_stats", "bonus_mana"};
+        private static readonly string[] BonusHealth = {"bonus_strength", "bonus_health", "bonus_all_stats", "bonus_stats"};
+        private static readonly string[] BonusMana = {"bonus_intellect", "bonus_mana", "bonus_all_stats", "bonus_stats"};
 
         private static readonly Menu Menu = new Menu("Smart HP/MP Abuse", "smartAbuse", true);
 
@@ -240,8 +240,10 @@ namespace HpMpAbuse {
             var reloadMenu = false;
 
             foreach (var spell in hero.Spellbook.Spells.Where(CheckAbility)) {
-                AbilitiesPT.Add(spell.Name, true);
-                AbilitiesSR.Add(spell.Name, true);
+                if (spell.ClassID != ClassID.CDOTA_Ability_SkeletonKing_Reincarnation) {
+                    AbilitiesPT.Add(spell.Name, true);
+                    AbilitiesSR.Add(spell.Name, true);
+                }
                 AbilitiesMC.Add(spell.Name, false);
                 reloadMenu = true;
             }
@@ -672,9 +674,8 @@ namespace HpMpAbuse {
         }
 
         private static bool CheckAbility(Ability ability) {
-            return ability.ManaCost > 0 && !AbilitiesPT.ContainsKey(ability.Name) &&
-                   !IgnoredSpells.Any(ability.Name.Equals) &&
-                   ability.AbilityBehavior != AbilityBehavior.Passive;
+            return ability.ManaCost > 0 && !AbilitiesMC.ContainsKey(ability.Name) &&
+                   !IgnoredSpells.Any(ability.Name.Equals);
         }
 
         private static void Drawing_OnEndScene(EventArgs args) {
