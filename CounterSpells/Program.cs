@@ -161,16 +161,12 @@ namespace CounterSpells {
                         if (spell.IsInAbilityPhase) {
                             spellCastRange = spell.GetCastRange();
 
-                            if (distance > spellCastRange)
-                                continue;
-
-                            if (angle > 0.03)
+                            if (distance > spellCastRange || angle > 0.03)
                                 continue;
 
                             if (Blink()) return;
                             if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(DeffVsPhys).Concat(DeffVsTarget).Concat(Invis)))) return;
-                            if (UseOnTarget(OffVsPhys.Concat(Off), enemy, distance))
-                                return;
+                            if (UseOnTarget(OffVsPhys.Concat(Off), enemy, distance)) return;
                         }
 
                         break;
@@ -550,7 +546,7 @@ namespace CounterSpells {
                         if (spell.IsInAbilityPhase) {
                             spellCastRange = spell.GetCastRange();
 
-                            if (distance > spellCastRange || angle > 1)
+                            if (distance > spellCastRange || angle > 0.4)
                                 continue;
 
                             if (Blink()) return;
@@ -558,10 +554,8 @@ namespace CounterSpells {
                             if (UseOnTarget(OffVsPhys.Concat(Off), enemy, distance)) return;
                         }
 
-                        if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
-
-                            if (distance > spellCastRange || angle > 1)
+                        if (enemy.Modifiers.Any(x => x.Name == "modifier_juggernaut_omnislash")) {
+                            if (distance > 500)
                                 continue;
 
                             if (Blink()) return;
@@ -1357,7 +1351,7 @@ namespace CounterSpells {
         }
 
         private static bool IsCasted(Ability spell) {
-            return Math.Ceiling(spell.CooldownLength).Equals(Math.Ceiling(spell.Cooldown));
+            return spell.Level > 0 && Math.Ceiling(spell.CooldownLength).Equals(Math.Ceiling(spell.Cooldown));
         }
 
         private static void Drawing_OnEndScene(EventArgs args) {
