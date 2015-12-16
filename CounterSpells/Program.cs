@@ -10,27 +10,26 @@ using SharpDX.Direct3D9;
 
 namespace CounterSpells {
     internal class Program {
-        private static readonly string[] Deff = {
-            "puck_phase_shift",
+
+        private static readonly string[] DeffVsDamage = {
             "nyx_assassin_spiked_carapace",
             "templar_assassin_refraction",
-            "item_cyclone",
-            "item_blade_mail",
             "abaddon_aphotic_shield",
-            "alchemist_chemical_rage",
-            "phantom_lancer_doppelwalk",
-            "enchantress_natures_attendants",
-            "huskar_inner_vitality",
-            "legion_commander_press_the_attack",
+            "item_blade_mail",
         };
 
         private static readonly string[] DeffVsDisable = {
             "slark_dark_pact",
+            "alchemist_chemical_rage",
+            "juggernaut_blade_fury",
+            "life_stealer_rage",
+            "enchantress_natures_attendants",
+            "omniknight_repel",
+            "huskar_inner_vitality",
+            "legion_commander_press_the_attack",
+            "phantom_lancer_doppelwalk",
+            "doom_bringer_scorched_earth",
             "item_manta"
-        };
-
-        private static readonly string[] DeffVsTarget = {
-            "item_lotus_orb"
         };
 
         private static readonly string[] DeffVsMagic = {
@@ -46,13 +45,12 @@ namespace CounterSpells {
         private static readonly string[] Invis = {
             "bounty_hunter_wind_walk",
             "clinkz_wind_walk",
-            "item_glimmer_cape",
-            "item_invis_sword",
-            "item_silver_edge",
-            "nyx_assassin_vendetta",
             "sandking_sand_storm",
             "templar_assassin_meld",
-            "weaver_shukuchi"
+            "weaver_shukuchi",
+            "item_glimmer_cape",
+            "item_invis_sword",
+            "item_silver_edge"
         };
 
         private static readonly string[] DeffVsPhys = {
@@ -63,11 +61,9 @@ namespace CounterSpells {
             "lich_frost_armor"
         };
 
-        private static readonly string[] Off = {
-            "item_cyclone",
+        private static readonly string[] InstaDisable = {
             "item_sheepstick",
             "item_orchid",
-            "item_abyssal_blade",
             "puck_waning_rift",
             "dragon_knight_dragon_tail",
             "lion_voodoo",
@@ -75,18 +71,41 @@ namespace CounterSpells {
             "shadow_shaman_shackles",
             "rubick_telekinesis",
             "skywrath_mage_ancient_seal",
-            "tusk_snowball",
-            "keeper_of_the_light_mana_leak"
+            "keeper_of_the_light_mana_leak",
+            "item_abyssal_blade",
+        };
+
+        private static readonly string[] SlowDisable = {
+            "shadow_demon_disruption",
+            "obsidian_destroyer_astral_imprisonment",
+            "bane_nightmare"
         };
 
         private static readonly string[] OffVsPhys = {
             "item_ethereal_blade",
             "item_heavens_halberd",
             "item_solar_crest",
+            "item_rod_of_atos",
             "keeper_of_the_light_blinding_light",
             "razor_static_link",
             "shadow_demon_demonic_purge",
             "brewmaster_drunken_haze"
+        };
+
+        private static readonly string[] Shift = {
+            "puck_phase_shift"
+        };
+
+        private static readonly string[] Eul = {
+            "item_cyclone"
+        };
+
+        private static readonly string[] SnowBall = {
+            "tusk_snowball"
+        };
+
+        private static readonly string[] Lotus = {
+            "item_lotus_orb"
         };
 
         private static readonly string[] IgnoresMagicImmunity = {
@@ -114,6 +133,12 @@ namespace CounterSpells {
         private static bool dodge = true;
         private static Font text;
 
+        private static Ability spell;
+        private static float spellCastRange;
+        private static float distance;
+        private static double castPoint;
+        private static double angle;
+
         private static void Game_OnUpdate(EventArgs args) {
             if (!Utils.SleepCheck("CounterDelay"))
                 return;
@@ -139,23 +164,19 @@ namespace CounterSpells {
                 return;
             }
 
-            if (!hero.CanUseItems() || hero.IsChanneling() || hero.IsInvisible())
+            if (!hero.CanUseItems() || hero.IsChanneling() || (hero.IsInvisible() && !hero.IsVisibleToEnemies))
                 return;
 
             var enemies =
                 ObjectMgr.GetEntities<Hero>()
-                    .Where(x => x.IsVisible && x.IsAlive && x.Team == hero.GetEnemyTeam() && !x.IsIllusion);
+                    .Where(x => x.IsVisible && x.IsAlive && !x.IsIllusion && x.Team == hero.GetEnemyTeam());
 
             foreach (var enemy in enemies) {
-                Ability spell;
-                float spellCastRange, distance = hero.Distance2D(enemy);
-                double castPoint;
-                var angle =
-                    Math.Abs(enemy.FindAngleR() - Utils.DegreeToRadian(enemy.FindAngleForTurnTime(hero.NetworkPosition)));
+                distance = hero.Distance2D(enemy);
+                angle = Math.Abs(enemy.FindAngleR() - Utils.DegreeToRadian(enemy.FindAngleForTurnTime(hero.NetworkPosition)));
 
                 switch (enemy.ClassID) {
-                    case ClassID.CDOTA_Unit_Hero_Alchemist:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Alchemist: {
                         spell = enemy.FindSpell("alchemist_unstable_concoction_throw");
 
                         if (spell.IsInAbilityPhase) {
@@ -165,14 +186,33 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink()) return;
-                            if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(DeffVsPhys).Concat(DeffVsTarget).Concat(Invis)))) return;
-                            if (UseOnTarget(OffVsPhys.Concat(Off), enemy, distance)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDisable.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsPhys.Concat(
+                                Lotus.Concat(
+                                Invis)))))))) return;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                SnowBall.Concat(
+                                OffVsPhys)), enemy)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_AntiMage:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_AntiMage: {
+                        spell = enemy.Spellbook.SpellW;
+
+                        if (spell.IsInAbilityPhase) {
+                            castPoint = spell.FindCastPoint();
+
+                            if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
+                        }
+
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
@@ -182,15 +222,20 @@ namespace CounterSpells {
                             if (distance > spellCastRange || angle > 0.8)
                                 continue;
 
-                            if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic).Concat(DeffVsTarget))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage.Concat(
+                                Lotus))))) return;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                Eul), enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Axe:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Axe: {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
@@ -200,20 +245,32 @@ namespace CounterSpells {
                             if (distance > spellCastRange)
                                 continue;
 
-                            if (Blink(castPoint)) return;
-                            if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(DeffVsPhys)))) return;
-                            if (UseOnTarget(OffVsPhys.Concat(Off), enemy, distance, castPoint)) return;
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDisable.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsPhys)))))) return;
+
+                            if (UseOnTarget(
+                                OffVsPhys.Concat(
+                                InstaDisable.Concat(
+                                SnowBall)), enemy, castPoint)) return;
+                        }
+
+                        spell = enemy.Spellbook.SpellR;
+
+                        if (spell.IsInAbilityPhase) {
+                            castPoint = spell.FindCastPoint();
+
+                            if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Bane:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Bane: {
                         spell = enemy.FindSpell("bane_nightmare");
 
-                        if (!spell.IsInAbilityPhase)
-                            spell = enemy.Spellbook.SpellR;
-
                         if (spell.IsInAbilityPhase) {
                             spellCastRange = spell.GetCastRange();
                             castPoint = spell.FindCastPoint();
@@ -222,14 +279,19 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(DeffVsMagic).Concat(Invis).Concat(DeffVsTarget)))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
-                        }
 
-                        break;
-                    }
-                    case ClassID.CDOTA_Unit_Hero_Batrider:
-                    {
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDisable.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis.Concat(
+                                Lotus)))))))) return;
+
+                            if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
+                        }
+                        
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
@@ -240,14 +302,29 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(DeffVsMagic).Concat(Invis).Concat(DeffVsTarget)))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDisable.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis.Concat(
+                                Lotus))))))))  return;
+
+                            if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
+                        }
+
+                        if (spell.IsChanneling) {
+                            if (UseOnTarget(
+                                Eul.Concat(
+                                InstaDisable.Concat(
+                                SlowDisable)), enemy)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Beastmaster:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Batrider: {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
@@ -258,36 +335,102 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(DeffVsMagic).Concat(Invis).Concat(DeffVsTarget).Concat(DeffVsPhys))))
-                                return;
-                            if (UseOnTarget(Off.Concat(OffVsPhys), enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDisable.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis.Concat(
+                                Lotus)))))))) return;
+
+                            if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
+                        }
+
+                        if (enemy.Modifiers.Any(x => x.Name == "modifier_batrider_flaming_lasso_self")) {
+                            if (UseOnTarget(
+                                Eul.Concat(
+                                InstaDisable.Concat(
+                                SlowDisable)), enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Bloodseeker:
-                    {
-                        spell = enemy.Spellbook.SpellR;
-
-                        if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
-                            castPoint = spell.FindCastPoint();
-
-                            if (distance > spellCastRange || angle > 0.03)
-                                continue;
-
-                            if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsPhys).Concat(Invis).Concat(DeffVsTarget))) return;
-                            if (UseOnTarget(Off.Concat(OffVsPhys), enemy, distance, castPoint)) return;
-                        }
-
-                        break;
-                    }
-                    case ClassID.CDOTA_Unit_Hero_BountyHunter:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Beastmaster: {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.1)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsDamage)))
+                                return;
+                        }
+
+                        spell = enemy.Spellbook.SpellR;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.03)
+                                continue;
+
+                            if (Blink(castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDisable.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis.Concat(
+                                Lotus.Concat(
+                                DeffVsPhys))))))))) return;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                OffVsPhys), enemy, castPoint)) return;
+                        }
+
+                        break;
+                    }
+                    case ClassID.CDOTA_Unit_Hero_Bloodseeker: {
+                        spell = enemy.Spellbook.SpellR;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.03)
+                                continue;
+
+                            if (Blink(castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsPhys.Concat(
+                                Invis.Concat(
+                                Lotus)))))) return;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                OffVsPhys), enemy, castPoint)) return;
+                        }
+
+                        break;
+                    }
+                    case ClassID.CDOTA_Unit_Hero_BountyHunter: {
+                        spell = enemy.Spellbook.SpellQ;
+
+                        if (IsCasted(spell)) {
                             spellCastRange = spell.GetCastRange();
                             castPoint = spell.FindCastPoint();
 
@@ -295,15 +438,14 @@ namespace CounterSpells {
                                 (hero.Modifiers.All(x => x.Name != "modifier_bounty_hunter_track") || distance > 1000))
                                 continue;
 
-                            if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic).Concat(DeffVsTarget))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul))) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Brewmaster:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Brewmaster: {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
@@ -313,15 +455,22 @@ namespace CounterSpells {
                             if (distance > spellCastRange)
                                 continue;
 
-                            if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic))))) return;
+                        }
+
+                        spell = enemy.Spellbook.SpellR;
+
+                        if (spell.IsInAbilityPhase) {
+                            if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Broodmother:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Broodmother: {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
@@ -331,14 +480,18 @@ namespace CounterSpells {
                             if (distance > spellCastRange || angle > 0.03)
                                 continue;
 
-                            if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic))) return;
+                            if (UseOnSelf(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic))) return;
+                        }
+
+                        if (enemy.Modifiers.Any(x => x.Name == "broodmother_insatiable_hunger")) {
+                            if (UseOnTarget(Eul, enemy)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Centaur:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Centaur: {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
@@ -349,14 +502,38 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(DeffVsMagic).Concat(Invis)))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDisable.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis))))))) return;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                SnowBall), enemy, castPoint)) return;
+                        }
+
+                        spell = enemy.Spellbook.SpellW;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage)))) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_ChaosKnight:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_ChaosKnight: {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
@@ -367,7 +544,20 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(DeffVsPhys).Concat(Invis).Concat(DeffVsTarget)))) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDisable.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsPhys.Concat(
+                                Invis.Concat(
+                                Lotus)))))))) return;
+
+                            if (UseOnTarget(
+                                OffVsPhys.Concat(
+                                InstaDisable.Concat(
+                                SnowBall)), enemy, castPoint)) return;
                         }
 
                         spell = enemy.Spellbook.SpellW;
@@ -380,14 +570,39 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsPhys).Concat(Invis).Concat(DeffVsTarget))) return;
-                            if (UseOnTarget(Off.Concat(OffVsPhys), enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsPhys.Concat(
+                                Invis.Concat(
+                                Lotus))))))) return;
+
+                            if (UseOnTarget(
+                                OffVsPhys.Concat(
+                                InstaDisable), enemy, castPoint)) return;
+                        }
+
+                        spell = enemy.Spellbook.SpellR;
+
+                        if (spell.IsInAbilityPhase) {
+                            if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_CrystalMaiden:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Clinkz: {
+                        if (enemy.Modifiers.Any(x => x.Name == "modifier_clinkz_strafe")) {
+                            if (UseOnTarget(
+                                Eul.Concat(
+                                InstaDisable.Concat(
+                                SlowDisable)), enemy, castPoint)) return;
+                        }
+
+                        break;
+                    }
+                    case ClassID.CDOTA_Unit_Hero_CrystalMaiden: {
                         spell = enemy.Spellbook.SpellW;
 
                         if (spell.IsInAbilityPhase) {
@@ -398,8 +613,16 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(DeffVsMagic).Concat(Invis).Concat(DeffVsTarget)))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsDisable.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis.Concat(
+                                Lotus))))))) return;
+
+                            if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
                         }
 
                         spell = enemy.Spellbook.SpellR;
@@ -412,14 +635,22 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic).Concat(Invis))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
-                        }
 
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis))))) return;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                Eul.Concat(
+                                SlowDisable.Concat(
+                                SnowBall))), enemy, castPoint)) return;
+                        }
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_DarkSeer:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_DarkSeer: {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
@@ -430,14 +661,56 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic).Concat(Invis))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis)))))) return;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                SnowBall), enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_DoomBringer:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Tinker: {
+                        spell = enemy.Spellbook.SpellQ;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.03)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis)))))) return;
+
+                        }
+
+                        break;
+                    }
+                    case ClassID.CDOTA_Unit_Hero_Dazzle: {
+                        spell = enemy.Spellbook.SpellW;
+
+                        if (spell.IsInAbilityPhase) {
+                            castPoint = spell.FindCastPoint();
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                Eul), enemy, castPoint)) return;
+                        }
+
+                        break;
+                    }
+                    case ClassID.CDOTA_Unit_Hero_DoomBringer: {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
@@ -448,14 +721,72 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic).Concat(Invis).Concat(DeffVsTarget))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis.Concat(
+                                Lotus)))))) return;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                Eul.Concat(
+                                OffVsPhys.Concat(
+                                SnowBall))), enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Earthshaker:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_DeathProphet: {
+                        spell = enemy.Spellbook.SpellQ;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.1)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic)))) return;
+                        }
+
+                        spell = enemy.Spellbook.SpellW;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange() + spell.GetRadius();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.3)
+                                continue;
+
+                            if (UseOnSelf(Shift)) return;
+                        }
+
+                        spell = enemy.Spellbook.SpellE;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.1)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic))))) return;
+
+                            if (UseOnTarget(Eul, enemy, castPoint)) return;
+                        }
+
+                        break;
+                    }
+                    case ClassID.CDOTA_Unit_Hero_Earthshaker: {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
@@ -465,9 +796,26 @@ namespace CounterSpells {
                             if (distance > spellCastRange || angle > 0.5)
                                 continue;
 
-                            if (Blink(castPoint)) return;
-                            if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(DeffVsMagic).Concat(Invis)))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDisable.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage.Concat(
+                                Invis))))))) return;
+                        }
+
+                        spell = enemy.Spellbook.SpellW;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange)
+                                continue;
+
+                            if (UseOnSelf(Shift))
+                                return;
                         }
 
                         spell = enemy.Spellbook.SpellR;
@@ -480,35 +828,67 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic).Concat(Invis))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis)))))) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Enigma:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Enigma: {
+                        spell = enemy.Spellbook.SpellQ;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.03)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsDisable.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis)))))) return;
+                        }
+
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase || spell.IsChanneling) {
                             spellCastRange = spell.GetCastRange() + spell.GetRadius();
                             castPoint = spell.FindCastPoint();
 
-                            if (distance > spellCastRange || angle > 0.8)
-                                continue;
+                            if (distance <= spellCastRange && angle < 0.8) {
 
-                            if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic).Concat(Invis))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+                                if (Blink()) return;
+
+                                if (UseOnSelf(
+                                    Shift.Concat(
+                                    Eul.Concat(
+                                    DeffVsDamage.Concat(
+                                    DeffVsMagic.Concat(
+                                    Invis.Concat(
+                                    DeffVsDisable))))))) return;
+                            }
+
+                            if (UseOnTarget(
+                                Eul.Concat(
+                                InstaDisable.Concat(
+                                SlowDisable.Concat(
+                                SnowBall))), enemy)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_FacelessVoid:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_FacelessVoid: {
                         spell = enemy.Spellbook.SpellR;
 
-                        if (spell.IsInAbilityPhase) {
+                        if (IsCasted(enemy.Spellbook.SpellQ) && spell.AbilityState == AbilityState.Ready || spell.IsInAbilityPhase) {
                             spellCastRange = spell.GetCastRange() + spell.GetRadius();
                             castPoint = spell.FindCastPoint();
 
@@ -516,14 +896,59 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsPhys))) return;
-                            if (UseOnTarget(OffVsPhys.Concat(Off), enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsPhys))))) return;
+
+                            if (UseOnTarget(
+                                OffVsPhys.Concat(
+                                InstaDisable.Concat(
+                                SnowBall.Concat(
+                                SlowDisable))), enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Huskar:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Gyrocopter: {
+                        spell = enemy.Spellbook.SpellQ;
+
+                        if (IsCasted(spell)) {
+                            spellCastRange = spell.GetCastRange();
+
+                            if (distance > spellCastRange || angle > 0.3)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis)))))) return;
+                        }
+
+                        break;
+                    }
+                    case ClassID.CDOTA_Unit_Hero_DrowRanger: {
+                        spell = enemy.Spellbook.SpellW;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+
+                            if (distance > spellCastRange || angle > 0.3)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsPhys.Concat(
+                                Invis)))) return;
+                        }
+
+                        break;
+                    }
+                    case ClassID.CDOTA_Unit_Hero_Huskar: {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
@@ -534,13 +959,43 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsPhys))) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsPhys.Concat(
+                                Invis.Concat(
+                                Lotus))))))) return;
+
+                            if (UseOnTarget(
+                                OffVsPhys.Concat(
+                                InstaDisable), enemy, castPoint)) return;
+                        }
+
+                        if (enemy.Modifiers.Any(x => x.Name == "modifier_huskar_inner_vitality")) {
+                            if (UseOnTarget(Eul, enemy)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Juggernaut:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Juggernaut: {
+
+                        spell = enemy.Spellbook.SpellQ;
+
+                        if (IsCasted(spell)) {
+                            spellCastRange = spell.GetCastRange();
+
+                            if (distance > spellCastRange)
+                                continue;
+
+                            if (UseOnSelf(
+                                Eul.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage.Concat(
+                                Invis))))) return;
+                        }
+
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
@@ -550,22 +1005,31 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink()) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsPhys).Concat(Invis))) return;
-                            if (UseOnTarget(OffVsPhys.Concat(Off), enemy, distance)) return;
+
+                            if (UseOnSelf(
+                                DeffVsDamage.Concat(
+                                DeffVsPhys.Concat(
+                                Lotus.Concat(
+                                Invis.Concat(
+                                SlowDisable)))))) return;
+
+                            if (UseOnTarget(
+                                OffVsPhys.Concat(
+                                InstaDisable), enemy)) return;
                         }
 
                         if (enemy.Modifiers.Any(x => x.Name == "modifier_juggernaut_omnislash")) {
-                            if (distance > 500)
-                                continue;
-
-                            if (Blink()) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsPhys).Concat(Invis))) return;
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsPhys.Concat(
+                                DeffVsDamage.Concat(
+                                Invis)))))) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Kunkka:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Kunkka: {
                         spell = enemy.FindSpell("kunkka_x_marks_the_spot");
 
                         if (spell.IsInAbilityPhase) {
@@ -576,8 +1040,16 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(DeffVsMagic.Concat(Invis).Concat(DeffVsTarget))) return;
-                            if (UseOnTarget(OffVsPhys.Concat(Off), enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsMagic.Concat(
+                                Invis.Concat(
+                                Lotus))))) return;
+
+                            if (UseOnTarget(
+                                OffVsPhys.Concat(
+                                InstaDisable), enemy, castPoint)) return;
                         }
 
                         var xMark = hero.Modifiers.FirstOrDefault(x => x.Name == "modifier_kunkka_x_marks_the_spot");
@@ -587,18 +1059,44 @@ namespace CounterSpells {
 
                         spell = enemy.FindSpell("kunkka_return");
 
-                        if (spell.IsInAbilityPhase || xMark.RemainingTime < 0.10) {
+                        if (spell.IsInAbilityPhase || xMark.RemainingTime < 0.1) {
                             castPoint = 0.1;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(DeffVsMagic).Concat(Invis)))) return;
-                            if (UseOnTarget(OffVsPhys.Concat(Off), enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDisable.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis))))))) return;
+
+                            if (UseOnTarget(
+                                OffVsPhys.Concat(
+                                InstaDisable.Concat(
+                                SnowBall)), enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Legion_Commander:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Legion_Commander: {
+                        spell = enemy.Spellbook.SpellQ;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.1)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis))))) return;
+                        }
+
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
@@ -609,32 +1107,86 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsPhys).Concat(Invis))) return;
-                            if (UseOnTarget(OffVsPhys.Concat(Off), enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsPhys.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsDisable.Concat(
+                                Invis))))))) return;
+
+                            if (UseOnTarget(
+                                OffVsPhys.Concat(
+                                InstaDisable.Concat(
+                                SnowBall)), enemy, castPoint)) return;
+                        }
+
+                        if (enemy.Modifiers.Any(x => x.Name == "modifier_legion_commander_duel")) {
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                OffVsPhys), enemy)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Lich:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Lich: {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
                             spellCastRange = spell.GetCastRange();
                             castPoint = spell.FindCastPoint();
 
-                            if (distance > spellCastRange || angle > 0.6)
+                            if (distance > spellCastRange || angle > 0.3)
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic).Concat(DeffVsTarget).Concat(Invis))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage.Concat(
+                                Lotus.Concat(
+                                Invis))))) return;
+
+                            if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
+                        }
+
+                        if (IsCasted(spell)) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.3)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                SlowDisable.Concat(
+                                Invis)))))  return;
+
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Lion:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Lina: {
+                        spell = enemy.Spellbook.SpellQ;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.3)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic)))) return;
+                        }
+
+                        break;
+                    }
+                    case ClassID.CDOTA_Unit_Hero_Lion: {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
@@ -645,14 +1197,24 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(DeffVsMagic).Concat(DeffVsTarget).Concat(Invis)))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDisable.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage.Concat(
+                                Lotus.Concat(
+                                Invis)))))))) return;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                SnowBall), enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Luna:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Luna: {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
@@ -663,14 +1225,20 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic).Concat(Invis))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage.Concat(
+                                Invis)))))) return;
+
+                            if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Magnataur:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Magnataur: {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
@@ -681,14 +1249,105 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(DeffVsMagic).Concat(Invis)))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDisable.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis))))))) return;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                SnowBall), enemy, castPoint)) return;
+                        }
+
+                        spell = enemy.Spellbook.SpellE;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = 300;
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange)
+                                continue;
+
+                            if (angle < 0.03) {
+                                if (UseOnSelf(
+                                    Shift.Concat(
+                                    DeffVsDisable.Concat(
+                                    DeffVsDamage.Concat(
+                                    DeffVsMagic.Concat(
+                                    Invis)))))) return;
+                            }
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                SnowBall), enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Necrolyte:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Meepo: {
+                        spell = enemy.Spellbook.SpellQ;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange() + spell.GetRadius();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.3)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis))))) return;
+
+                            if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
+                        }
+
+                        spell = enemy.Spellbook.SpellW;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = 400;
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage.Concat(
+                                Invis))))) return;
+
+                            if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
+                        }
+
+                        break;
+                    }
+                    case ClassID.CDOTA_Unit_Hero_Morphling: {
+                        spell = enemy.Spellbook.SpellQ;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle < 0.3)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis))))) return;
+
+                        }
+
+                        break;
+                    }
+                    case ClassID.CDOTA_Unit_Hero_Necrolyte: {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
@@ -699,14 +1358,21 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic).Concat(Invis).Concat(DeffVsTarget))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage.Concat(
+                                Invis.Concat(
+                                Lotus))))))) return;
+
+                            if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Nyx_Assassin:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Nyx_Assassin: {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
@@ -717,18 +1383,24 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(DeffVsMagic).Concat(Invis)))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDisable.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis))))))) return;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                SnowBall), enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Ogre_Magi:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Ogre_Magi: {
                         spell = enemy.Spellbook.SpellQ;
-
-                        if (!spell.IsInAbilityPhase)
-                            spell = enemy.Spellbook.SpellD;
 
                         if (spell.IsInAbilityPhase) {
                             spellCastRange = spell.GetCastRange();
@@ -738,15 +1410,55 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(DeffVsMagic).Concat(Invis).Concat(DeffVsTarget)))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                DeffVsDisable.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage.Concat(
+                                Invis.Concat(
+                                Lotus)))))) return;
+
+                            if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
+                        }
+
+                        spell = enemy.Spellbook.SpellD;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.03)
+                                continue;
+
+                            if (Blink(castPoint)) return;
+
+                            if (UseOnSelf(
+                                DeffVsDisable.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage.Concat(
+                                Invis.Concat(
+                                Lotus))))))
+                                return;
+
+                            if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
+                        }
+
+                        spell = enemy.Spellbook.SpellW;
+
+                        if (IsCasted(spell)) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.3)
+                                continue;
+
+                            if (UseOnSelf(Shift)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Oracle:
-                    {
-                        spell = enemy.Spellbook.SpellQ;
+                    case ClassID.CDOTA_Unit_Hero_Oracle: {
+                        spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
                             spellCastRange = spell.GetCastRange();
@@ -755,13 +1467,14 @@ namespace CounterSpells {
                             if (distance > spellCastRange)
                                 continue;
 
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                Eul), enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Obsidian_Destroyer:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Obsidian_Destroyer: {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
@@ -772,14 +1485,72 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage))) return;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                SnowBall), enemy, castPoint)) return;
+                        }
+
+                        spell = enemy.Spellbook.SpellW;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.03)
+                                continue;
+
+                            if (UseOnSelf(Shift)) return;
+
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_PhantomLancer:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_PhantomAssassin: {
+                        spell = enemy.Spellbook.SpellQ;
+
+                        if (IsCasted(spell)) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.3)
+                                continue;
+
+                            if (UseOnSelf(Shift))
+                                return;
+
+                        }
+
+                        spell = enemy.Spellbook.SpellW;
+
+                        if (IsCasted(spell)) {
+
+                            if (distance > spellCastRange)
+                                continue;
+
+                            if (angle < 0.03) {
+                                if (Blink(castPoint)) return;
+
+                                if (UseOnSelf(
+                                    Shift.Concat(
+                                    DeffVsPhys.Concat(
+                                    DeffVsDamage.Concat(
+                                    Invis))))) return;
+                            }
+
+                            if (UseOnTarget(
+                                OffVsPhys.Concat(
+                                InstaDisable.Concat(
+                                Eul)), enemy, castPoint)) return;
+                        }
+
+                        break;
+                    }
+                    case ClassID.CDOTA_Unit_Hero_PhantomLancer: {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
@@ -789,25 +1560,41 @@ namespace CounterSpells {
                             if (distance > spellCastRange || angle > 0.03)
                                 continue;
 
-                            if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic))) return;
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage.Concat(
+                                Invis))))) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Pudge:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Phoenix: {
+                        spell = enemy.FindSpell("phoenix_icarus_dive");
+
+                        if (spell.IsHidden || spell.IsInAbilityPhase) {
+                            if (UseOnTarget(
+                                Eul.Concat(
+                                InstaDisable), enemy)) return;
+                        }
+
+                        break;
+                    }
+                    case ClassID.CDOTA_Unit_Hero_Pudge: {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
                             spellCastRange = spell.GetCastRange();
 
-                            if (distance > spellCastRange || angle > 0.3)
+                            if (distance > spellCastRange || angle > 0.2)
                                 continue;
 
                             if (Blink()) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic))) return;
-                            if (UseOnTarget(Off, enemy, distance)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsDamage.Concat(
+                                Invis)))) return;
                         }
 
                         spell = enemy.Spellbook.SpellR;
@@ -820,14 +1607,22 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(DeffVsMagic).Concat(DeffVsTarget).Concat(Invis)))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDisable.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage.Concat(
+                                Lotus.Concat(
+                                Invis)))))))) return;
+
+                            if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_QueenOfPain:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_QueenOfPain: {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
@@ -837,8 +1632,12 @@ namespace CounterSpells {
                             if (distance > spellCastRange || angle > 0.03)
                                 continue;
 
-                            if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic).Concat(DeffVsTarget))) return;
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis.Concat(
+                                Lotus)))))) return;
                         }
 
                         spell = enemy.Spellbook.SpellW;
@@ -850,8 +1649,10 @@ namespace CounterSpells {
                             if (distance > spellCastRange)
                                 continue;
 
-                            if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic))) return;
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic)))) return;
                         }
 
                         spell = enemy.Spellbook.SpellR;
@@ -864,14 +1665,32 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(Invis))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDamage.Concat(
+                                Invis))))) return;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                SnowBall), enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_SandKing:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Razor: {
+                        if (enemy.Modifiers.Any(x => x.Name == "modifier_razor_static_link_buff")) {
+                            if (UseOnTarget(
+                                Eul.Concat(
+                                InstaDisable.Concat(
+                                SlowDisable.Concat(
+                                OffVsPhys))), enemy)) return;
+                        }
+
+                        break;
+                    }
+                    case ClassID.CDOTA_Unit_Hero_SandKing: {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
@@ -882,7 +1701,13 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic).Concat(DeffVsTarget))) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis.Concat(
+                                Lotus)))))) return;
                         }
 
                         spell = enemy.Spellbook.SpellR;
@@ -894,15 +1719,77 @@ namespace CounterSpells {
                             if (distance > spellCastRange)
                                 continue;
 
-                            if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic).Concat(Invis))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+                            if (UseOnTarget(
+                                Eul.Concat(
+                                InstaDisable.Concat(
+                                SnowBall)), enemy, castPoint)) return;
+                        }
+
+                        if (enemy.Modifiers.Any(x => x.Name == "modifier_sand_king_epicenter")) {
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis))))))  return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Slardar:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Nevermore: {
+                        spell = enemy.Spellbook.SpellQ;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange() + spell.GetRadius();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.3)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage.Concat(
+                                Invis))))) return;
+                        }
+
+                        spell = enemy.Spellbook.SpellW;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange() + spell.GetRadius();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.3)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage.Concat(
+                                Invis)))))
+                                return;
+                        }
+
+                        spell = enemy.Spellbook.SpellE;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange() + spell.GetRadius();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.3)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage.Concat(
+                                Invis)))))
+                                return;
+                        }
+
+                        break;
+                    }
+                    case ClassID.CDOTA_Unit_Hero_Slardar: {
                         spell = enemy.Spellbook.SpellW;
 
                         if (spell.IsInAbilityPhase) {
@@ -913,14 +1800,24 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(DeffVsPhys).Concat(Invis)))) return;
-                            if (UseOnTarget(OffVsPhys.Concat(Off), enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDisable.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsPhys.Concat(
+                                Invis))))))) return;
+
+                            if (UseOnTarget(
+                                OffVsPhys.Concat(
+                                InstaDisable.Concat(
+                                SnowBall)), enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_SpiritBreaker:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_SpiritBreaker: {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
@@ -931,31 +1828,52 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(DeffVsPhys).Concat(Invis)))) return;
-                            if (UseOnTarget(OffVsPhys.Concat(Off), enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsDisable.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsPhys.Concat(
+                                Invis)))))) return;
+
+                            if (UseOnTarget(
+                                Eul.Concat(
+                                OffVsPhys.Concat(
+                                InstaDisable)), enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Sven:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Sven: {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
                             spellCastRange = spell.GetCastRange();
                             castPoint = distance / 1000;
 
-                            if (distance > spellCastRange || angle > 0.03)
+                            if (distance > spellCastRange || angle > 0.1)
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(DeffVsPhys).Concat(Invis).Concat(DeffVsTarget)))) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDisable.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsPhys.Concat(
+                                Invis.Concat(
+                                Lotus)))))))) return;
+
+                            if (UseOnTarget(
+                                OffVsPhys.Concat(
+                                InstaDisable.Concat(
+                                SnowBall)), enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Terrorblade:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Terrorblade: {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
@@ -966,13 +1884,21 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnTarget(Off.Concat(OffVsPhys), enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                Lotus.Concat(
+                                Invis))))) return;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                OffVsPhys), enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Tidehunter:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Tidehunter: {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
@@ -983,14 +1909,23 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(DeffVsMagic).Concat(Invis)))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDisable.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage.Concat(
+                                Invis))))))) return;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                SnowBall), enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Tiny:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Tiny: {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
@@ -1001,14 +1936,70 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic).Concat(Invis))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage.Concat(
+                                Invis)))))) return;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                OffVsPhys.Concat(
+                                SnowBall)), enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_VengefulSpirit:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Ursa: {
+                        spell = enemy.Spellbook.SpellQ;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange)
+                                continue;
+
+                            if (Blink(castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage)))) return;
+
+                            if (UseOnTarget(OffVsPhys, enemy, castPoint)) return;
+                        }
+
+                        if (enemy.Modifiers.Any(x => x.Name == "modifier_ursa_enrage")) {
+
+                            if (UseOnTarget(
+                                Eul.Concat(
+                                InstaDisable.Concat(
+                                SlowDisable.Concat(
+                                OffVsPhys))), enemy)) return;
+                        }
+
+                        if (enemy.Modifiers.Any(x => x.Name == "modifier_ursa_overpower")) {
+
+                            if (distance < 300) {
+                                if (UseOnSelf(
+                                    Shift.Concat(
+                                    DeffVsPhys.Concat(
+                                    DeffVsDamage)))) return;
+                            }
+
+                            if (UseOnTarget(
+                                Eul.Concat(
+                                InstaDisable.Concat(
+                                SlowDisable.Concat(
+                                OffVsPhys))), enemy))  return;
+                        }
+
+                        break;
+                    }
+                    case ClassID.CDOTA_Unit_Hero_VengefulSpirit: {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
@@ -1019,13 +2010,36 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(DeffVsMagic).Concat(Invis).Concat(DeffVsTarget)))) return;
+
+                            if (UseOnSelf(
+                                DeffVsDisable.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage.Concat(
+                                Invis.Concat(
+                                Lotus)))))) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Venomancer:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Venomancer: {
+                        spell = enemy.Spellbook.SpellQ;
+
+                        if (IsCasted(spell)) {
+
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = distance / 1200;
+
+                            if (distance > spellCastRange || angle > 0.3)
+                                continue;
+
+                            if (Blink(castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage)))) return;
+                        }
+
                         spell = enemy.Spellbook.SpellR;
 
                         if (IsCasted(spell)) {
@@ -1036,13 +2050,17 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic))) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage))))) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Viper:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Viper: {
                         spell = enemy.Spellbook.SpellR;
 
                         if (IsCasted(spell)) {
@@ -1053,13 +2071,38 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic).Concat(Invis).Concat(DeffVsTarget))) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage.Concat(
+                                Invis.Concat(
+                                Lotus))))))) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Warlock:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Visage: {
+                        spell = enemy.Spellbook.SpellW;
+
+                        if (IsCasted(spell)) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = distance / 1000;
+
+                            if (distance > spellCastRange || angle > 0.03)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage.Concat(
+                                Lotus))))) return;
+                        }
+
+                        break;
+                    }
+                    case ClassID.CDOTA_Unit_Hero_Warlock: {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
@@ -1070,32 +2113,91 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(DeffVsMagic).Concat(Invis)))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDisable.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage.Concat(
+                                Invis))))))) return;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                SnowBall), enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Windrunner:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Windrunner: {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange() + 600;
-                            castPoint = distance / 1515;
+                            spellCastRange = spell.GetCastRange() + 500;
+                            castPoint = distance / 1650;
 
-                            if (distance > spellCastRange || angle > 0.03)
+                            if (distance > spellCastRange || angle > 0.1)
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(Invis).Concat(DeffVsTarget).Concat(DeffVsPhys)))) return;
-                            if (UseOnTarget(Off.Concat(OffVsPhys), enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDisable.Concat(
+                                DeffVsPhys.Concat(
+                                Invis.Concat(
+                                Lotus.Concat(
+                                DeffVsDamage)))))))) return;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                OffVsPhys.Concat(
+                                SnowBall)), enemy, castPoint)) return;
+                        }
+
+                        spell = enemy.Spellbook.SpellW;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.1)
+                                continue;
+
+                            if (UseOnSelf(Shift))  return;
+                        }
+
+                        if (enemy.Modifiers.Any(x => x.Name == "modifier_windrunner_focusfire")) {
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                Eul.Concat(
+                                SlowDisable.Concat(
+                                OffVsPhys))), enemy)) return;
+   
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Winter_Wyvern:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Winter_Wyvern: {
+                        spell = enemy.Spellbook.SpellW;
+
+                        if (IsCasted(spell)) {
+                            spellCastRange = spell.GetCastRange() + 300;
+                            castPoint = distance / 800;
+
+                            if (distance > spellCastRange || angle > 0.3)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsMagic.Concat(
+                                DeffVsDamage.Concat(
+                                Lotus))))) return;
+
+                        }
+
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
@@ -1106,14 +2208,23 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic).Concat(DeffVsTarget).Concat(DeffVsPhys))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Lotus.Concat(
+                                Invis))))))) return;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                SnowBall), enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_WitchDoctor:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_WitchDoctor: {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
@@ -1124,7 +2235,14 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic).Concat(Invis).Concat(DeffVsTarget))) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis.Concat(
+                                Lotus))))))) return;
                         }
 
                         spell = enemy.Spellbook.SpellR;
@@ -1141,14 +2259,22 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic).Concat(Invis))) return;
-                            if (UseOnTarget(Off, enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsPhys.Concat(
+                                Invis))))) return;
+
+                            if (UseOnTarget(
+                                Eul.Concat(
+                                InstaDisable.Concat(
+                                SnowBall)), enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_SkeletonKing:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_SkeletonKing: {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
@@ -1159,18 +2285,63 @@ namespace CounterSpells {
                                 continue;
 
                             if (Blink(castPoint)) return;
-                            if (UseOnSelf(DeffVsDisable.Concat(Deff.Concat(DeffVsPhys).Concat(Invis).Concat(DeffVsTarget)))) return;
-                            if (UseOnTarget(OffVsPhys.Concat(Off), enemy, distance, castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDisable.Concat(
+                                DeffVsPhys.Concat(
+                                DeffVsDamage.Concat(
+                                Invis.Concat(
+                                Lotus)))))))) return;
+
+                            if (UseOnTarget(
+                                OffVsPhys.Concat(
+                                InstaDisable.Concat(
+                                SnowBall)), enemy, castPoint)) return;
                         }
 
                         break;
                     }
-                    case ClassID.CDOTA_Unit_Hero_Zuus:
-                    {
+                    case ClassID.CDOTA_Unit_Hero_Zuus: {
+                        spell = enemy.Spellbook.SpellW;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.03)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Lotus)))))) return;
+
+                        }
+
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            if (UseOnSelf(Deff.Concat(Invis).Concat(DeffVsMagic))) return;
+
+                            int[] damage = { 225, 350, 475 };
+
+                            if (enemy.AghanimState()) {
+                                damage[0] = 440;
+                                damage[1] = 540;
+                                damage[2] = 640;
+                            }
+
+                            if (hero.Health <= hero.DamageTaken(damage[spell.Level - 1], DamageType.Magical, enemy)) {
+                                if (UseOnSelf(
+                                    Shift.Concat(
+                                    Eul.Concat(
+                                    DeffVsDamage.Concat(
+                                    Invis.Concat(
+                                    DeffVsMagic)))))) return;
+                            }
                         }
 
                         break;
@@ -1181,14 +2352,17 @@ namespace CounterSpells {
             foreach (var modifier in hero.Modifiers) {
                 switch (modifier.Name) {
                     case "modifier_lina_laguna_blade":
-                    case "modifier_lion_finger_of_death":
-                    {
-                        if (UseOnSelf(Deff.Concat(Invis).Concat(DeffVsMagic)))
-                            return;
+                    case "modifier_lion_finger_of_death": {
+                        if (UseOnSelf(
+                            Shift.Concat(
+                            Eul.Concat(
+                            DeffVsDamage.Concat(
+                            DeffVsMagic.Concat(
+                            Lotus.Concat(
+                            Invis))))))) return;
                         break;
                     }
-                    case "modifier_spirit_breaker_charge_of_darkness_vision":
-                    {
+                    case "modifier_spirit_breaker_charge_of_darkness_vision": {
                         var bara =
                             ObjectMgr.GetEntities<Hero>()
                                 .FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Unit_Hero_SpiritBreaker);
@@ -1196,41 +2370,134 @@ namespace CounterSpells {
                         if (bara == null)
                             continue;
 
-                        var distance = hero.Distance2D(bara);
+                        distance = hero.Distance2D(bara);
 
-                        if (distance <= 500 && UseOnSelf(Deff.Concat(Invis)))
-                            return;
+                        if (distance <= 500) {
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic.Concat(
+                                Invis)))))) return;
+                        }
 
-                        if (UseOnTarget(Off, bara, hero.Distance2D(bara)))
+                        if (UseOnTarget(Eul.Concat(InstaDisable), bara, hero.Distance2D(bara)))
                             return;
 
                         break;
                     }
-                    case "modifier_sniper_assassinate":
-                    {
+                    case "modifier_sniper_assassinate": {
                         if (modifier.RemainingTime < 2) {
+
                             if (Blink()) return;
-                            if (UseOnSelf(Deff.Concat(DeffVsMagic))) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DeffVsDamage.Concat(
+                                DeffVsMagic)))))
+                                return;
                         }
 
                         break;
+                    }
+                    case "modifier_earth_spirit_magnetize": {
+                        if (UseOnSelf(
+                            Eul.Concat(
+                            DeffVsMagic.Concat(
+                            DeffVsDamage)))) return;
+                        break;
+                    }
+                }
+            }
+
+            var units =
+                ObjectMgr.GetEntities<Unit>()
+                    .Where(x => x.ClassID == ClassID.CDOTA_BaseNPC && x.Team == hero.GetEnemyTeam());
+
+            foreach (var unit in units) {
+                foreach (var modifier in unit.Modifiers) {
+                    switch (modifier.Name) {
+                        case "modifier_lina_light_strike_array": {
+                            if (hero.Distance2D(unit) <= 250) {
+
+                                if (Blink(0.5 - modifier.ElapsedTime)) return;
+
+                                if (UseOnSelf(
+                                    DeffVsDisable.Concat(
+                                    DeffVsMagic.Concat(
+                                    DeffVsDamage.Concat(
+                                    Invis))))) return;
+                            }
+
+                            break;
+                        }
+                        case "modifier_kunkka_torrent_thinker": {
+                            var time = modifier.ElapsedTime;
+
+                            if (hero.Distance2D(unit) <= 250 && time > 1) {
+
+                                if (Blink(1.6 - time)) return;
+
+                                if (UseOnSelf(
+                                    DeffVsDisable.Concat(
+                                    DeffVsMagic.Concat(
+                                    DeffVsDamage.Concat(
+                                    Invis))))) return;
+                            }
+
+                            break;
+                        }
+                        case "modifier_leshrac_split_earth_thinker": {
+                            if (hero.Distance2D(unit) <= 250) {
+
+                                if (Blink(0.35 - modifier.ElapsedTime)) return;
+
+                                if (UseOnSelf(
+                                    DeffVsDisable.Concat(
+                                    DeffVsMagic.Concat(
+                                    DeffVsDamage.Concat(
+                                    Invis))))) return;
+                            }
+
+                            break;
+                        }
+                        case "modifier_bloodseeker_bloodbath_thinker": {
+                            var time = modifier.ElapsedTime;
+
+                            if (hero.Distance2D(unit) <= 250 && time > 2) {
+
+                                if (Blink(2.6 - time)) return;
+
+                                if (UseOnSelf(
+                                    DeffVsDisable.Concat(
+                                    DeffVsMagic.Concat(
+                                    DeffVsDamage.Concat(
+                                    Invis)))))
+                                    return;
+                            }
+
+                            break;
+                        }
                     }
                 }
             }
 
             if (hero.IsSilenced()) {
                 if (Blink()) return;
-                if (UseOnSelf(Deff)) return;
+
+                if (UseOnSelf(new[] { "item_cyclone", "item_guardian_greaves" }.Concat(Lotus).Concat(DeffVsMagic))) return;
 
                 if (!hero.Modifiers.Any(
                     x => x.Name == "modifier_riki_smoke_screen" || x.Name == "modifier_disruptor_static_storm")) {
                     if (UseOnSelf(new[] { "item_manta" })) return;
-                    //if (UseOnSelf(new[] {"item_diffusal_blade", "item_diffusal_blade_2"})) return;
+                    if (Menu.Item("diffusal").GetValue<bool>())
+                        UseOnSelf(new[] { "item_diffusal_blade", "item_diffusal_blade_2" });
                 }
             }
         }
 
-        private static bool Blink(double castPoint = 5) {
+        private static bool Blink(double castpoint = 5) {
             if (!Menu.Item("blink").GetValue<bool>())
                 return false;
 
@@ -1253,35 +2520,39 @@ namespace CounterSpells {
                 ObjectMgr.GetEntities<Entity>()
                     .FirstOrDefault(x => x.Team == hero.Team && x.ClassID == ClassID.CDOTA_Unit_Fountain);
 
-            if (hero.GetTurnTime(home) + blink.FindCastPoint() > castPoint || home == null)
+            if (hero.GetTurnTime(home) + blink.FindCastPoint() > castpoint || home == null)
                 return false;
 
-            var angle = hero.NetworkPosition.ToVector2().FindAngleBetween(home.NetworkPosition.ToVector2(), true);
-            var position = new Vector3(hero.Position.X + castRange * (float) Math.Cos(angle),
-                hero.Position.Y + castRange * (float) Math.Sin(angle), hero.Position.Z);
+            var findangle = hero.NetworkPosition.ToVector2().FindAngleBetween(home.NetworkPosition.ToVector2(), true);
+            var position = new Vector3(hero.Position.X + castRange * (float) Math.Cos(findangle),
+                hero.Position.Y + castRange * (float) Math.Sin(findangle), hero.Position.Z);
             blink.UseAbility(position);
 
             Utils.Sleep(1000, "CounterDelay");
             return true;
         }
 
-        private static bool UseOnTarget(IEnumerable<string> abilitiesNames, Unit target, float distance,
-            double castPoint = 5) {
+        private static bool UseOnTarget(IEnumerable<string> abilitiesNames, Unit target, double castpoint = 5) {
+            if (!Menu.Item("disable").GetValue<bool>())
+                return false;
+
             foreach (
                 var ability in
                     abilitiesNames.Select(ability => hero.FindItem(ability) ?? hero.FindSpell(ability))
                         .Where(
                             ability => ability != null && ability.CanBeCasted() && (ability is Item || hero.CanCast()))) {
+
                 if (ability.IsAbilityBehavior(AbilityBehavior.NoTarget)) {
                     ability.UseAbility();
-                } else if (hero.GetTurnTime(target) <= castPoint &&
-                           target.IsValidTarget(distance, false, hero.NetworkPosition) &&
-                           (!target.IsMagicImmune() || IgnoresMagicImmunity.Any(ability.Name.Equals))) {
-                    if (ability.IsAbilityBehavior(AbilityBehavior.UnitTarget))
-                        ability.UseAbility(target);
-                    else
-                        ability.UseAbility(target.NetworkPosition);
-                } else continue;
+                } else if (ability.IsAbilityBehavior(AbilityBehavior.UnitTarget)) {
+                    if (ability.GetCastDelay(hero, target, true) <= castpoint &&
+                        target.IsValidTarget(ability.GetCastRange(), false, hero.NetworkPosition) &&
+                        (!target.IsMagicImmune() || IgnoresMagicImmunity.Any(ability.Name.Equals))) {
+                            ability.UseAbility(target);
+                    } else continue;
+                } else {
+                    ability.UseAbility(hero.Position);
+                }
 
                 Utils.Sleep(1000, "CounterDelay");
                 return true;
@@ -1301,7 +2572,7 @@ namespace CounterSpells {
                 else if (ability.AbilityBehavior.HasFlag(AbilityBehavior.UnitTarget))
                     ability.UseAbility(hero);
                 else
-                    ability.UseAbility(hero.NetworkPosition);
+                    ability.UseAbility(hero.Position);
 
                 Utils.Sleep(1000, "CounterDelay");
                 return true;
@@ -1313,6 +2584,9 @@ namespace CounterSpells {
             Menu.AddItem(new MenuItem("key", "Change hotkey").SetValue(new KeyBind('P', KeyBindType.Press)));
             Menu.AddItem(new MenuItem("blink", "Use blink").SetValue(true)
                 .SetTooltip("Suports blink dagger and most of blink type spells"));
+            Menu.AddItem(new MenuItem("disable", "Disable enemy if can't dodge").SetValue(false)
+                .SetTooltip("Use hex, stun, silence when you don't have eul, dagger, dark pact etc. to dodge stun"));
+            Menu.AddItem(new MenuItem("diffusal", "Use diffusal when silenced").SetValue(false));
             Menu.AddItem(new MenuItem("size", "Size").SetValue(new Slider(6, 1, 10)))
                 .SetTooltip("Reload assembly to apply new size");
             Menu.AddItem(
@@ -1350,8 +2624,8 @@ namespace CounterSpells {
             }
         }
 
-        private static bool IsCasted(Ability spell) {
-            return spell.Level > 0 && Math.Ceiling(spell.CooldownLength).Equals(Math.Ceiling(spell.Cooldown));
+        private static bool IsCasted(Ability ability) {
+            return ability.Level > 0 && Math.Ceiling(ability.CooldownLength).Equals(Math.Ceiling(ability.Cooldown));
         }
 
         private static void Drawing_OnEndScene(EventArgs args) {
