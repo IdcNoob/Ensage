@@ -14,8 +14,9 @@ namespace CounterSpells {
         private static readonly string[] DeffVsDamage = {
             "nyx_assassin_spiked_carapace",
             "templar_assassin_refraction",
+            "treant_living_armor",
             "abaddon_aphotic_shield",
-            "item_blade_mail",
+            "item_blade_mail"
         };
 
         private static readonly string[] DeffVsDisable = {
@@ -75,7 +76,7 @@ namespace CounterSpells {
             "item_abyssal_blade",
         };
 
-        private static readonly string[] SlowDisable = {
+        private static readonly string[] Invul = {
             "shadow_demon_disruption",
             "obsidian_destroyer_astral_imprisonment",
             "bane_nightmare"
@@ -89,7 +90,8 @@ namespace CounterSpells {
             "keeper_of_the_light_blinding_light",
             "razor_static_link",
             "shadow_demon_demonic_purge",
-            "brewmaster_drunken_haze"
+            "brewmaster_drunken_haze",
+            "tinker_laser"
         };
 
         private static readonly string[] Shift = {
@@ -117,12 +119,13 @@ namespace CounterSpells {
             "mirana_leap",
             "antimage_blink",
             "magnataur_skewer",
+            "item_force_staff",
             "queenofpain_blink",
             "morphling_waveform",
             "sandking_burrowstrike",
             "faceless_void_time_walk",
             "earth_spirit_rolling_boulder",
-            "ember_spirit_activate_fire_remnant"
+            "ember_spirit_activate_fire_remnant",
         };
 
         private static bool inGame;
@@ -131,6 +134,7 @@ namespace CounterSpells {
         private static readonly Menu Menu = new Menu("Counter Spells", "counterSpells", true);
 
         private static bool dodge = true;
+        private static bool cameraCentered;
         private static Font text;
 
         private static Ability spell;
@@ -164,6 +168,11 @@ namespace CounterSpells {
                 return;
             }
 
+            if (cameraCentered) {
+                cameraCentered = false;
+                Game.ExecuteCommand("-dota_camera_center_on_hero");
+            }
+
             if (!hero.CanUseItems() || hero.IsChanneling() || (hero.IsInvisible() && !hero.IsVisibleToEnemies))
                 return;
 
@@ -176,6 +185,21 @@ namespace CounterSpells {
                 angle = Math.Abs(enemy.FindAngleR() - Utils.DegreeToRadian(enemy.FindAngleForTurnTime(hero.NetworkPosition)));
 
                 switch (enemy.ClassID) {
+                    case ClassID.CDOTA_Unit_Hero_ArcWarden: {
+                        spell = enemy.Spellbook.SpellQ;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.03)
+                                continue;
+
+                            if (UseOnSelf(Shift.Concat(Lotus))) return;
+                        }
+
+                        break;
+                    }
                     case ClassID.CDOTA_Unit_Hero_Alchemist: {
                         spell = enemy.FindSpell("alchemist_unstable_concoction_throw");
 
@@ -239,11 +263,14 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
+
                             spellCastRange = spell.GetCastRange();
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange)
                                 continue;
+
+                            if (Blink(castPoint)) return;
 
                             if (UseOnSelf(
                                 Shift.Concat(
@@ -319,7 +346,7 @@ namespace CounterSpells {
                             if (UseOnTarget(
                                 Eul.Concat(
                                 InstaDisable.Concat(
-                                SlowDisable)), enemy)) return;
+                                Invul)), enemy)) return;
                         }
 
                         break;
@@ -352,7 +379,7 @@ namespace CounterSpells {
                             if (UseOnTarget(
                                 Eul.Concat(
                                 InstaDisable.Concat(
-                                SlowDisable)), enemy, castPoint)) return;
+                                Invul)), enemy, castPoint)) return;
                         }
 
                         break;
@@ -597,7 +624,7 @@ namespace CounterSpells {
                             if (UseOnTarget(
                                 Eul.Concat(
                                 InstaDisable.Concat(
-                                SlowDisable)), enemy, castPoint)) return;
+                                Invul)), enemy, castPoint)) return;
                         }
 
                         break;
@@ -645,7 +672,7 @@ namespace CounterSpells {
                             if (UseOnTarget(
                                 InstaDisable.Concat(
                                 Eul.Concat(
-                                SlowDisable.Concat(
+                                Invul.Concat(
                                 SnowBall))), enemy, castPoint)) return;
                         }
                         break;
@@ -768,7 +795,7 @@ namespace CounterSpells {
 
                         spell = enemy.Spellbook.SpellE;
 
-                        if (spell.IsInAbilityPhase) {
+                        if (IsCasted(spell)) {
                             spellCastRange = spell.GetCastRange();
                             castPoint = spell.FindCastPoint();
 
@@ -879,7 +906,7 @@ namespace CounterSpells {
                             if (UseOnTarget(
                                 Eul.Concat(
                                 InstaDisable.Concat(
-                                SlowDisable.Concat(
+                                Invul.Concat(
                                 SnowBall))), enemy)) return;
                         }
 
@@ -907,7 +934,7 @@ namespace CounterSpells {
                                 OffVsPhys.Concat(
                                 InstaDisable.Concat(
                                 SnowBall.Concat(
-                                SlowDisable))), enemy, castPoint)) return;
+                                Invul))), enemy, castPoint)) return;
                         }
 
                         break;
@@ -1011,7 +1038,7 @@ namespace CounterSpells {
                                 DeffVsPhys.Concat(
                                 Lotus.Concat(
                                 Invis.Concat(
-                                SlowDisable)))))) return;
+                                Invul)))))) return;
 
                             if (UseOnTarget(
                                 OffVsPhys.Concat(
@@ -1161,7 +1188,7 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                SlowDisable.Concat(
+                                Invul.Concat(
                                 Invis)))))  return;
 
                         }
@@ -1342,6 +1369,18 @@ namespace CounterSpells {
                                 DeffVsDamage.Concat(
                                 DeffVsMagic.Concat(
                                 Invis))))) return;
+
+                        }
+
+                        spell = enemy.Spellbook.SpellW;
+
+                        if (IsCasted(spell)) {
+                            spellCastRange = spell.GetCastRange();
+
+                            if (distance > spellCastRange || angle < 0.3)
+                                continue;
+
+                            if (UseOnSelf(Shift)) return;
 
                         }
 
@@ -1684,7 +1723,7 @@ namespace CounterSpells {
                             if (UseOnTarget(
                                 Eul.Concat(
                                 InstaDisable.Concat(
-                                SlowDisable.Concat(
+                                Invul.Concat(
                                 OffVsPhys))), enemy)) return;
                         }
 
@@ -1977,7 +2016,7 @@ namespace CounterSpells {
                             if (UseOnTarget(
                                 Eul.Concat(
                                 InstaDisable.Concat(
-                                SlowDisable.Concat(
+                                Invul.Concat(
                                 OffVsPhys))), enemy)) return;
                         }
 
@@ -1993,7 +2032,7 @@ namespace CounterSpells {
                             if (UseOnTarget(
                                 Eul.Concat(
                                 InstaDisable.Concat(
-                                SlowDisable.Concat(
+                                Invul.Concat(
                                 OffVsPhys))), enemy))  return;
                         }
 
@@ -2173,7 +2212,7 @@ namespace CounterSpells {
                             if (UseOnTarget(
                                 InstaDisable.Concat(
                                 Eul.Concat(
-                                SlowDisable.Concat(
+                                Invul.Concat(
                                 OffVsPhys))), enemy)) return;
    
                         }
@@ -2299,6 +2338,36 @@ namespace CounterSpells {
                                 OffVsPhys.Concat(
                                 InstaDisable.Concat(
                                 SnowBall)), enemy, castPoint)) return;
+                        }
+
+                        break;
+                    }
+                    case ClassID.CDOTA_Unit_Hero_Silencer:  {
+                        spell = enemy.Spellbook.SpellQ;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange() + spell.GetRadius();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.5)
+                                continue;
+
+                            if (UseOnSelf(Shift)) return;
+
+                        }
+
+                        spell = enemy.Spellbook.SpellR;
+
+                        if (spell.IsInAbilityPhase) {
+                            castPoint = spell.FindCastPoint();
+
+                            if (UseOnTarget(
+                                Eul.Concat(
+                                InstaDisable), enemy, castPoint)) return;
+
+                            if (distance < 1000)
+                                if (UseOnSelf(Shift.Concat(DeffVsDisable))) return;
+
                         }
 
                         break;
@@ -2473,8 +2542,7 @@ namespace CounterSpells {
                                     DeffVsDisable.Concat(
                                     DeffVsMagic.Concat(
                                     DeffVsDamage.Concat(
-                                    Invis)))))
-                                    return;
+                                    Invis))))) return;
                             }
 
                             break;
@@ -2486,20 +2554,32 @@ namespace CounterSpells {
             if (hero.IsSilenced()) {
                 if (Blink()) return;
 
-                if (UseOnSelf(new[] { "item_cyclone", "item_guardian_greaves" }.Concat(Lotus).Concat(DeffVsMagic))) return;
+                if (UseOnSelf(new[] {"item_cyclone", "item_guardian_greaves"}.Concat(Lotus).Concat(DeffVsMagic)))
+                    return;
 
                 if (!hero.Modifiers.Any(
                     x => x.Name == "modifier_riki_smoke_screen" || x.Name == "modifier_disruptor_static_storm")) {
-                    if (UseOnSelf(new[] { "item_manta" })) return;
+                    if (UseOnSelf(new[] {"item_manta"})) return;
                     if (Menu.Item("diffusal").GetValue<bool>())
-                        UseOnSelf(new[] { "item_diffusal_blade", "item_diffusal_blade_2" });
+                        if (UseOnSelf(new[] {"item_diffusal_blade", "item_diffusal_blade_2"})) return;
                 }
+            }
+
+            if (hero.IsRooted()) {
+                if (Blink()) return;
+
+                if (UseOnSelf(new[] {"item_manta", "item_guardian_greaves"}.Concat(Eul.Concat(Lotus)))) return;
             }
         }
 
         private static bool Blink(double castpoint = 5) {
             if (!Menu.Item("blink").GetValue<bool>())
                 return false;
+
+            if (Menu.Item("center").GetValue<bool>()) {
+                cameraCentered = true;
+                Game.ExecuteCommand("+dota_camera_center_on_hero");
+            }
 
             var blink =
                 hero.Inventory.Items.Concat(hero.Spellbook.Spells)
@@ -2520,13 +2600,37 @@ namespace CounterSpells {
                 ObjectMgr.GetEntities<Entity>()
                     .FirstOrDefault(x => x.Team == hero.Team && x.ClassID == ClassID.CDOTA_Unit_Fountain);
 
-            if (hero.GetTurnTime(home) + blink.FindCastPoint() > castpoint || home == null)
+            if (hero.GetTurnTime(home) + blink.FindCastPoint() > castpoint && 
+                blink.ClassID != ClassID.CDOTA_Ability_EmberSpirit_Activate_FireRemnant || home == null)
                 return false;
+
+            if (blink.IsAbilityBehavior(AbilityBehavior.NoTarget) || blink.ClassID == ClassID.CDOTA_Item_ForceStaff)
+                castRange = 40;
 
             var findangle = hero.NetworkPosition.ToVector2().FindAngleBetween(home.NetworkPosition.ToVector2(), true);
             var position = new Vector3(hero.Position.X + castRange * (float) Math.Cos(findangle),
                 hero.Position.Y + castRange * (float) Math.Sin(findangle), hero.Position.Z);
-            blink.UseAbility(position);
+        
+            if (blink.ClassID == ClassID.CDOTA_Ability_EmberSpirit_Activate_FireRemnant)
+                position = hero.Position;
+
+            if (blink.ClassID == ClassID.CDOTA_Item_ForceStaff) {
+                if (hero.GetTurnTime(home) > 0) {
+                    hero.Move(position);
+                    blink.UseAbility(hero, true);
+                } else {
+                    blink.UseAbility(hero);
+                }
+            } else if (blink.IsAbilityBehavior(AbilityBehavior.NoTarget)) {
+                if (hero.GetTurnTime(home) > 0) {
+                    hero.Move(position);
+                    blink.UseAbility(true);
+                } else {
+                    blink.UseAbility();
+                }
+            } else {
+                blink.UseAbility(position);
+            }
 
             Utils.Sleep(1000, "CounterDelay");
             return true;
@@ -2584,6 +2688,7 @@ namespace CounterSpells {
             Menu.AddItem(new MenuItem("key", "Change hotkey").SetValue(new KeyBind('P', KeyBindType.Press)));
             Menu.AddItem(new MenuItem("blink", "Use blink").SetValue(true)
                 .SetTooltip("Suports blink dagger and most of blink type spells"));
+            Menu.AddItem(new MenuItem("center", "Center camera on blink").SetValue(true));
             Menu.AddItem(new MenuItem("disable", "Disable enemy if can't dodge").SetValue(false)
                 .SetTooltip("Use hex, stun, silence when you don't have eul, dagger, dark pact etc. to dodge stun"));
             Menu.AddItem(new MenuItem("diffusal", "Use diffusal when silenced").SetValue(false));
