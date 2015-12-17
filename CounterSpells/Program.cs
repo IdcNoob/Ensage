@@ -35,12 +35,14 @@ namespace CounterSpells {
 
         private static readonly string[] DeffVsMagic = {
             "item_glimmer_cape",
+            "item_hood_of_defiance",
             "oracle_fates_edict",
             "ember_spirit_flame_guard",
             "life_stealer_rage",
             "juggernaut_blade_fury",
             "omniknight_repel",
-            "pugna_nether_ward"
+            "pugna_nether_ward",
+            "item_pipe"
         };
 
         private static readonly string[] Invis = {
@@ -59,7 +61,10 @@ namespace CounterSpells {
             "pugna_decrepify",
             "windrunner_windrun",
             "winter_wyvern_cold_embrace",
-            "lich_frost_armor"
+            "lich_frost_armor",
+            "item_crimson_guard",
+            "item_shivas_guard",
+            "item_buckler"
         };
 
         private static readonly string[] InstaDisable = {
@@ -89,7 +94,6 @@ namespace CounterSpells {
             "item_rod_of_atos",
             "keeper_of_the_light_blinding_light",
             "razor_static_link",
-            "shadow_demon_demonic_purge",
             "brewmaster_drunken_haze",
             "tinker_laser"
         };
@@ -124,6 +128,7 @@ namespace CounterSpells {
             "morphling_waveform",
             "sandking_burrowstrike",
             "faceless_void_time_walk",
+            "phantom_lancer_doppelwalk",
             "earth_spirit_rolling_boulder",
             "ember_spirit_activate_fire_remnant",
         };
@@ -291,6 +296,8 @@ namespace CounterSpells {
                             castPoint = spell.FindCastPoint();
 
                             if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
+
+                            if (UseOnSelf(Shift)) return;
                         }
 
                         break;
@@ -892,7 +899,7 @@ namespace CounterSpells {
 
                             if (distance <= spellCastRange && angle < 0.8) {
 
-                                if (Blink()) return;
+                                if (Blink(castPoint)) return;
 
                                 if (UseOnSelf(
                                     Shift.Concat(
@@ -907,7 +914,7 @@ namespace CounterSpells {
                                 Eul.Concat(
                                 InstaDisable.Concat(
                                 Invul.Concat(
-                                SnowBall))), enemy)) return;
+                                SnowBall))), enemy, castPoint)) return;
                         }
 
                         break;
@@ -2576,6 +2583,8 @@ namespace CounterSpells {
             if (!Menu.Item("blink").GetValue<bool>())
                 return false;
 
+            castpoint -= 0.05;
+
             if (Menu.Item("center").GetValue<bool>()) {
                 cameraCentered = true;
                 Game.ExecuteCommand("+dota_camera_center_on_hero");
@@ -2598,9 +2607,9 @@ namespace CounterSpells {
 
             var home =
                 ObjectMgr.GetEntities<Entity>()
-                    .FirstOrDefault(x => x.Team == hero.Team && x.ClassID == ClassID.CDOTA_Unit_Fountain);
+                    .FirstOrDefault(x => x.Team == hero.Team && x.ClassID == ClassID.CDOTA_Unit_Fountain) as Unit;
 
-            if (hero.GetTurnTime(home) + blink.FindCastPoint() > castpoint && 
+            if (blink.GetCastDelay(hero, home, true) > castpoint && 
                 blink.ClassID != ClassID.CDOTA_Ability_EmberSpirit_Activate_FireRemnant || home == null)
                 return false;
 
