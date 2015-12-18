@@ -91,6 +91,7 @@ namespace CounterSpells {
             "item_ethereal_blade",
             "item_heavens_halberd",
             "item_solar_crest",
+            "pugna_decrepify",
             "item_rod_of_atos",
             "keeper_of_the_light_blinding_light",
             "razor_static_link",
@@ -569,6 +570,18 @@ namespace CounterSpells {
                     }
                     case ClassID.CDOTA_Unit_Hero_ChaosKnight: {
                         spell = enemy.Spellbook.SpellQ;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.03)
+                                continue;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                OffVsPhys), enemy, castPoint)) return;
+                        }
 
                         if (IsCasted(spell)) {
                             spellCastRange = spell.GetCastRange();
@@ -1688,6 +1701,14 @@ namespace CounterSpells {
 
                         spell = enemy.Spellbook.SpellW;
 
+                        if (spell.IsInAbilityPhase) {
+                            castPoint = spell.FindCastPoint();
+
+                            if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
+                        }
+
+                        spell = enemy.Spellbook.SpellE;
+
                         if (IsCasted(spell)) {
                             spellCastRange = spell.GetCastRange();
                             castPoint = spell.FindCastPoint();
@@ -1893,6 +1914,19 @@ namespace CounterSpells {
                     case ClassID.CDOTA_Unit_Hero_Sven: {
                         spell = enemy.Spellbook.SpellQ;
 
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.1)
+                                continue;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                Eul.Concat(
+                                OffVsPhys)), enemy, castPoint)) return;
+                        }
+
                         if (IsCasted(spell)) {
                             spellCastRange = spell.GetCastRange();
                             castPoint = distance / 1000;
@@ -1911,10 +1945,7 @@ namespace CounterSpells {
                                 Invis.Concat(
                                 Lotus)))))))) return;
 
-                            if (UseOnTarget(
-                                OffVsPhys.Concat(
-                                InstaDisable.Concat(
-                                SnowBall)), enemy, castPoint)) return;
+                            if (UseOnTarget(SnowBall, enemy, castPoint)) return;
                         }
 
                         break;
@@ -1945,10 +1976,29 @@ namespace CounterSpells {
                         break;
                     }
                     case ClassID.CDOTA_Unit_Hero_Tidehunter: {
+                        spell = enemy.Spellbook.SpellQ;
+
+                        if (IsCasted(spell)) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange)
+                                continue;
+
+                            if (enemy.AghanimState()) {
+                                if (angle > 0.4) return;
+                            } else {
+                                if (angle > 0.03) return;
+                            }
+
+                            if (UseOnSelf(Shift)) return;
+                        }
+
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+
+                            spellCastRange = 1050;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange)
@@ -2047,6 +2097,18 @@ namespace CounterSpells {
                     }
                     case ClassID.CDOTA_Unit_Hero_VengefulSpirit: {
                         spell = enemy.Spellbook.SpellQ;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.1)
+                                continue;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                Eul), enemy, castPoint)) return;
+                        }
 
                         if (IsCasted(spell)) {
                             spellCastRange = spell.GetCastRange();
@@ -2177,6 +2239,19 @@ namespace CounterSpells {
                     }
                     case ClassID.CDOTA_Unit_Hero_Windrunner: {
                         spell = enemy.Spellbook.SpellQ;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.1)
+                                continue;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                Eul.Concat(
+                                OffVsPhys)), enemy, castPoint)) return;
+                        }
 
                         if (IsCasted(spell)) {
                             spellCastRange = spell.GetCastRange() + 500;
@@ -2322,6 +2397,19 @@ namespace CounterSpells {
                     }
                     case ClassID.CDOTA_Unit_Hero_SkeletonKing: {
                         spell = enemy.Spellbook.SpellQ;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.03)
+                                continue;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                Eul.Concat(
+                                OffVsPhys)), enemy, castPoint)) return;
+                        }
 
                         if (IsCasted(spell)) {
                             spellCastRange = spell.GetCastRange();
@@ -2559,7 +2647,8 @@ namespace CounterSpells {
             }
 
             if (hero.IsSilenced()) {
-                if (Blink()) return;
+                if (Menu.Item("blinkSilenced").GetValue<bool>())
+                    if (Blink()) return;
 
                 if (UseOnSelf(new[] {"item_cyclone", "item_guardian_greaves"}.Concat(Lotus).Concat(DeffVsMagic)))
                     return;
@@ -2585,11 +2674,6 @@ namespace CounterSpells {
 
             castpoint -= 0.05;
 
-            if (Menu.Item("center").GetValue<bool>()) {
-                cameraCentered = true;
-                Game.ExecuteCommand("+dota_camera_center_on_hero");
-            }
-
             var blink =
                 hero.Inventory.Items.Concat(hero.Spellbook.Spells)
                     .FirstOrDefault(x => BlinkAbilities.Any(x.Name.Equals) && x.CanBeCasted());
@@ -2609,11 +2693,18 @@ namespace CounterSpells {
                 ObjectMgr.GetEntities<Entity>()
                     .FirstOrDefault(x => x.Team == hero.Team && x.ClassID == ClassID.CDOTA_Unit_Fountain) as Unit;
 
+
+            if (blink.ClassID == ClassID.CDOTA_Item_ForceStaff) {
+                castRange = 40;
+                castPoint -= 0.5;
+            }
+
             if (blink.GetCastDelay(hero, home, true) > castpoint && 
                 blink.ClassID != ClassID.CDOTA_Ability_EmberSpirit_Activate_FireRemnant || home == null)
                 return false;
 
-            if (blink.IsAbilityBehavior(AbilityBehavior.NoTarget) || blink.ClassID == ClassID.CDOTA_Item_ForceStaff)
+
+            if (blink.IsAbilityBehavior(AbilityBehavior.NoTarget))
                 castRange = 40;
 
             var findangle = hero.NetworkPosition.ToVector2().FindAngleBetween(home.NetworkPosition.ToVector2(), true);
@@ -2639,6 +2730,11 @@ namespace CounterSpells {
                 }
             } else {
                 blink.UseAbility(position);
+            }
+
+            if (Menu.Item("center").GetValue<bool>()) {
+                cameraCentered = true;
+                Game.ExecuteCommand("+dota_camera_center_on_hero");
             }
 
             Utils.Sleep(1000, "CounterDelay");
@@ -2697,6 +2793,8 @@ namespace CounterSpells {
             Menu.AddItem(new MenuItem("key", "Change hotkey").SetValue(new KeyBind('P', KeyBindType.Press)));
             Menu.AddItem(new MenuItem("blink", "Use blink").SetValue(true)
                 .SetTooltip("Suports blink dagger and most of blink type spells"));
+            Menu.AddItem(new MenuItem("blinkSilenced", "Use blink when silenced").SetValue(true)
+               .SetTooltip("Blink usage should be enabled too"));
             Menu.AddItem(new MenuItem("center", "Center camera on blink").SetValue(true));
             Menu.AddItem(new MenuItem("disable", "Disable enemy if can't dodge").SetValue(false)
                 .SetTooltip("Use hex, stun, silence when you don't have eul, dagger, dark pact etc. to dodge stun"));
