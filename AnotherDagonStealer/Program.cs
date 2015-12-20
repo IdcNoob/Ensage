@@ -109,7 +109,7 @@ namespace AnotherDagonStealer {
                 return false;
 
             return enemy.Health <
-                   enemy.DamageTaken(DagonDamage[dagon.Level - 1] * (doubleOwnage ? 2 : 1), DamageType.Magical, enemy);
+                   enemy.DamageTaken(DagonDamage[dagon.Level - 1] * (doubleOwnage ? 2 : 1), DamageType.Magical, hero);
         }
     }
 }
