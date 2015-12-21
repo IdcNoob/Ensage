@@ -64,8 +64,8 @@ namespace CourierBottleAbuse {
                 return;
             }
 
-            var bottle = hero.FindItem("item_bottle");
-            var courBottle = courier.FindItem("item_bottle");
+            var bottle = hero.Inventory.Items.FirstOrDefault(x => x.Name == "item_bottle");
+            var courBottle = courier.Inventory.Items.FirstOrDefault(x => x.Name == "item_bottle");
 
             if (bottle == null && courBottle == null) {
                 enabled = false;
