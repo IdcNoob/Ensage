@@ -36,6 +36,7 @@ namespace HpMpAbuse {
         private static readonly Dictionary<string, bool> AbilitiesPT = new Dictionary<string, bool>();
         private static readonly Dictionary<string, bool> AbilitiesSR = new Dictionary<string, bool>();
         private static readonly Dictionary<string, bool> AbilitiesMC = new Dictionary<string, bool>();
+        private static readonly Dictionary<ItemSlot, Item> ItemSlots = new Dictionary<ItemSlot, Item>();
 
         private static readonly string[] AttackSpells = {
             "windrunner_focusfire",
@@ -214,6 +215,7 @@ namespace HpMpAbuse {
                 AbilitiesPT.Clear();
                 AbilitiesSR.Clear();
                 AbilitiesMC.Clear();
+                ItemSlots.Clear();
 
                 lastPtAttribute = Attribute.Strength;
                 stopAttack = true;
@@ -654,6 +656,11 @@ namespace HpMpAbuse {
             for (var i = 0; i < droppedItems.Count; i++)
                 hero.PickUpItem(droppedItems[i], i != 0);
 
+            foreach (var itemSlot in ItemSlots)
+                itemSlot.Value.MoveItem(itemSlot.Key);
+
+            ItemSlots.Clear();
+
             if (moving)
                 hero.Move(Game.MousePosition, true);
 
@@ -669,7 +676,22 @@ namespace HpMpAbuse {
                 var item in
                     items.Where(
                         item => !item.Equals(ignoredItem) && item.AbilityData.Any(x => bonusStats.Any(x.Name.Equals)))) {
+                SaveItemSlot(item);
                 hero.DropItem(item, hero.NetworkPosition, true);
+            }
+        }
+
+        private static void SaveItemSlot(Item item) {
+            if (!hero.Inventory.FreeSlots.Any())
+                return;
+
+            for (var i = 0; i < 6; i++) {
+                var currentItem = hero.Inventory.GetItem((ItemSlot) i);
+
+                if (currentItem == null || !currentItem.Equals(item) || ItemSlots.ContainsKey((ItemSlot) i)) continue;
+
+                ItemSlots.Add((ItemSlot) i, item);
+                break;
             }
         }
 
