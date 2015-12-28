@@ -11,7 +11,7 @@ using SharpDX.Direct3D9;
 namespace CounterSpells {
     internal class Program {
 
-        private static readonly string[] DeffVsDamage = {
+        private static readonly string[] DefVsDamage = {
             "nyx_assassin_spiked_carapace",
             "templar_assassin_refraction",
             "treant_living_armor",
@@ -19,21 +19,21 @@ namespace CounterSpells {
             "item_blade_mail"
         };
 
-        private static readonly string[] DeffVsDisable = {
+        private static readonly string[] DefVsDisable = {
             "slark_dark_pact",
-            "alchemist_chemical_rage",
+            //"alchemist_chemical_rage",
             "juggernaut_blade_fury",
             "life_stealer_rage",
-            "enchantress_natures_attendants",
+            //"enchantress_natures_attendants",
             "omniknight_repel",
-            "huskar_inner_vitality",
-            "legion_commander_press_the_attack",
+            //"huskar_inner_vitality",
+            //"legion_commander_press_the_attack",
             "phantom_lancer_doppelwalk",
-            "doom_bringer_scorched_earth",
+            //"doom_bringer_scorched_earth",
             "item_manta"
         };
 
-        private static readonly string[] DeffVsMagic = {
+        private static readonly string[] DefVsMagic = {
             "item_glimmer_cape",
             "item_hood_of_defiance",
             "oracle_fates_edict",
@@ -56,7 +56,7 @@ namespace CounterSpells {
             "item_silver_edge"
         };
 
-        private static readonly string[] DeffVsPhys = {
+        private static readonly string[] DefVsPhys = {
             "item_ghost",
             "pugna_decrepify",
             "windrunner_windrun",
@@ -201,7 +201,9 @@ namespace CounterSpells {
                             if (distance > spellCastRange || angle > 0.03)
                                 continue;
 
-                            if (UseOnSelf(Shift.Concat(Lotus))) return;
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Lotus))) return;
                         }
 
                         break;
@@ -220,9 +222,9 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDisable.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsPhys.Concat(
+                                DefVsDisable.Concat(
+                                DefVsDamage.Concat(
+                                DefVsPhys.Concat(
                                 Lotus.Concat(
                                 Invis)))))))) return;
 
@@ -254,13 +256,11 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsMagic.Concat(
+                                DefVsDamage.Concat(
                                 Lotus))))) return;
 
-                            if (UseOnTarget(
-                                InstaDisable.Concat(
-                                Eul), enemy, castPoint)) return;
+                            if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
                         }
 
                         break;
@@ -269,7 +269,6 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-
                             spellCastRange = spell.GetCastRange();
                             castPoint = spell.FindCastPoint();
 
@@ -281,9 +280,9 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDisable.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsPhys)))))) return;
+                                DefVsDisable.Concat(
+                                DefVsDamage.Concat(
+                                DefVsPhys)))))) return;
 
                             if (UseOnTarget(
                                 OffVsPhys.Concat(
@@ -318,9 +317,9 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDisable.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDisable.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Invis.Concat(
                                 Lotus)))))))) return;
 
@@ -341,9 +340,9 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDisable.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDisable.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Invis.Concat(
                                 Lotus))))))))  return;
 
@@ -374,9 +373,9 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDisable.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDisable.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Invis.Concat(
                                 Lotus)))))))) return;
 
@@ -404,8 +403,7 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsDamage)))
-                                return;
+                                DefVsDamage))) return;
                         }
 
                         spell = enemy.Spellbook.SpellR;
@@ -422,12 +420,10 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDisable.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDisable.Concat(
+                                DefVsDamage.Concat(
                                 Invis.Concat(
-                                Lotus.Concat(
-                                DeffVsPhys))))))))) return;
+                                Lotus))))))) return;
 
                             if (UseOnTarget(
                                 InstaDisable.Concat(
@@ -450,8 +446,8 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsPhys.Concat(
+                                DefVsDamage.Concat(
+                                DefVsPhys.Concat(
                                 Invis.Concat(
                                 Lotus)))))) return;
 
@@ -493,8 +489,8 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic))))) return;
+                                DefVsDamage.Concat(
+                                DefVsMagic))))) return;
                         }
 
                         spell = enemy.Spellbook.SpellR;
@@ -516,8 +512,8 @@ namespace CounterSpells {
                                 continue;
 
                             if (UseOnSelf(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic))) return;
+                                DefVsDamage.Concat(
+                                DefVsMagic))) return;
                         }
 
                         if (enemy.Modifiers.Any(x => x.Name == "broodmother_insatiable_hunger")) {
@@ -541,9 +537,9 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDisable.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDisable.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Invis))))))) return;
 
                             if (UseOnTarget(
@@ -562,8 +558,8 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage)))) return;
+                                DefVsMagic.Concat(
+                                DefVsDamage)))) return;
                         }
 
                         break;
@@ -595,9 +591,9 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDisable.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsPhys.Concat(
+                                DefVsDisable.Concat(
+                                DefVsDamage.Concat(
+                                DefVsPhys.Concat(
                                 Invis.Concat(
                                 Lotus)))))))) return;
 
@@ -621,8 +617,8 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsPhys.Concat(
+                                DefVsDamage.Concat(
+                                DefVsPhys.Concat(
                                 Invis.Concat(
                                 Lotus))))))) return;
 
@@ -663,9 +659,9 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsDisable.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDisable.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Invis.Concat(
                                 Lotus))))))) return;
 
@@ -685,8 +681,8 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Invis))))) return;
 
                             if (UseOnTarget(
@@ -712,8 +708,8 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Invis)))))) return;
 
                             if (UseOnTarget(
@@ -736,8 +732,8 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Invis)))))) return;
 
                         }
@@ -771,8 +767,8 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Invis.Concat(
                                 Lotus)))))) return;
 
@@ -797,8 +793,8 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic)))) return;
+                                DefVsDamage.Concat(
+                                DefVsMagic)))) return;
                         }
 
                         spell = enemy.Spellbook.SpellW;
@@ -825,8 +821,8 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic))))) return;
+                                DefVsDamage.Concat(
+                                DefVsMagic))))) return;
 
                             if (UseOnTarget(Eul, enemy, castPoint)) return;
                         }
@@ -846,9 +842,9 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDisable.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsDisable.Concat(
+                                DefVsMagic.Concat(
+                                DefVsDamage.Concat(
                                 Invis))))))) return;
                         }
 
@@ -879,8 +875,8 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Invis)))))) return;
                         }
 
@@ -898,9 +894,9 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsDisable.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDisable.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Invis)))))) return;
                         }
 
@@ -916,16 +912,23 @@ namespace CounterSpells {
 
                                 if (UseOnSelf(
                                     Shift.Concat(
-                                    Eul.Concat(
-                                    DeffVsDamage.Concat(
-                                    DeffVsMagic.Concat(
+                                    DefVsDamage.Concat(
+                                    DefVsMagic.Concat(
                                     Invis.Concat(
-                                    DeffVsDisable))))))) return;
+                                    DefVsDisable)))))) return;
+
+                                if (UseOnTarget(
+                                    InstaDisable.Concat(
+                                    Eul.Concat(
+                                    Invul.Concat(
+                                    SnowBall))), enemy, castPoint)) return;
+
+                                if (UseOnSelf(Eul)) return;
                             }
 
                             if (UseOnTarget(
-                                Eul.Concat(
                                 InstaDisable.Concat(
+                                Eul.Concat(
                                 Invul.Concat(
                                 SnowBall))), enemy, castPoint)) return;
                         }
@@ -935,7 +938,7 @@ namespace CounterSpells {
                     case ClassID.CDOTA_Unit_Hero_FacelessVoid: {
                         spell = enemy.Spellbook.SpellR;
 
-                        if (IsCasted(enemy.Spellbook.SpellQ) && spell.AbilityState == AbilityState.Ready || spell.IsInAbilityPhase) {
+                        if (spell.IsInAbilityPhase) {
                             spellCastRange = spell.GetCastRange() + spell.GetRadius();
                             castPoint = spell.FindCastPoint();
 
@@ -946,15 +949,17 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                Eul.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsPhys))))) return;
+                                DefVsDamage.Concat(
+                                DefVsPhys)))) return;
 
                             if (UseOnTarget(
+                                Eul.Concat(
                                 OffVsPhys.Concat(
                                 InstaDisable.Concat(
                                 SnowBall.Concat(
-                                Invul))), enemy, castPoint)) return;
+                                Invul)))), enemy, castPoint)) return;
+
+                            if (UseOnSelf(Eul)) return;
                         }
 
                         break;
@@ -971,8 +976,8 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Invis)))))) return;
                         }
 
@@ -989,7 +994,7 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsPhys.Concat(
+                                DefVsPhys.Concat(
                                 Invis)))) return;
                         }
 
@@ -1010,8 +1015,8 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsPhys.Concat(
+                                DefVsDamage.Concat(
+                                DefVsPhys.Concat(
                                 Invis.Concat(
                                 Lotus))))))) return;
 
@@ -1038,8 +1043,8 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Eul.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsMagic.Concat(
+                                DefVsDamage.Concat(
                                 Invis))))) return;
                         }
 
@@ -1054,8 +1059,8 @@ namespace CounterSpells {
                             if (Blink()) return;
 
                             if (UseOnSelf(
-                                DeffVsDamage.Concat(
-                                DeffVsPhys.Concat(
+                                DefVsDamage.Concat(
+                                DefVsPhys.Concat(
                                 Lotus.Concat(
                                 Invis.Concat(
                                 Invul)))))) return;
@@ -1069,8 +1074,8 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsPhys.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsPhys.Concat(
+                                DefVsDamage.Concat(
                                 Invis)))))) return;
                         }
 
@@ -1090,7 +1095,7 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsMagic.Concat(
                                 Invis.Concat(
                                 Lotus))))) return;
 
@@ -1114,9 +1119,9 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDisable.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDisable.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Invis))))))) return;
 
                             if (UseOnTarget(
@@ -1139,8 +1144,8 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Invis))))) return;
                         }
 
@@ -1158,9 +1163,9 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsPhys.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsDisable.Concat(
+                                DefVsPhys.Concat(
+                                DefVsDamage.Concat(
+                                DefVsDisable.Concat(
                                 Invis))))))) return;
 
                             if (UseOnTarget(
@@ -1190,8 +1195,8 @@ namespace CounterSpells {
                             if (Blink(castPoint)) return;
 
                             if (UseOnSelf(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsMagic.Concat(
+                                DefVsDamage.Concat(
                                 Lotus.Concat(
                                 Invis))))) return;
 
@@ -1227,8 +1232,8 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic)))) return;
+                                DefVsDamage.Concat(
+                                DefVsMagic)))) return;
                         }
 
                         break;
@@ -1248,9 +1253,9 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDisable.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsDisable.Concat(
+                                DefVsMagic.Concat(
+                                DefVsDamage.Concat(
                                 Lotus.Concat(
                                 Invis)))))))) return;
 
@@ -1276,8 +1281,8 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsMagic.Concat(
+                                DefVsDamage.Concat(
                                 Invis)))))) return;
 
                             if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
@@ -1300,9 +1305,9 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDisable.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDisable.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Invis))))))) return;
 
                             if (UseOnTarget(
@@ -1322,9 +1327,9 @@ namespace CounterSpells {
                             if (angle < 0.03) {
                                 if (UseOnSelf(
                                     Shift.Concat(
-                                    DeffVsDisable.Concat(
-                                    DeffVsDamage.Concat(
-                                    DeffVsMagic.Concat(
+                                    DefVsDisable.Concat(
+                                    DefVsDamage.Concat(
+                                    DefVsMagic.Concat(
                                     Invis)))))) return;
                             }
 
@@ -1347,8 +1352,8 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Invis))))) return;
 
                             if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
@@ -1365,8 +1370,8 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsMagic.Concat(
+                                DefVsDamage.Concat(
                                 Invis))))) return;
 
                             if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
@@ -1386,8 +1391,8 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Invis))))) return;
 
                         }
@@ -1421,8 +1426,8 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsMagic.Concat(
+                                DefVsDamage.Concat(
                                 Invis.Concat(
                                 Lotus))))))) return;
 
@@ -1446,9 +1451,9 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDisable.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDisable.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Invis))))))) return;
 
                             if (UseOnTarget(
@@ -1471,9 +1476,9 @@ namespace CounterSpells {
                             if (Blink(castPoint)) return;
 
                             if (UseOnSelf(
-                                DeffVsDisable.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsDisable.Concat(
+                                DefVsMagic.Concat(
+                                DefVsDamage.Concat(
                                 Invis.Concat(
                                 Lotus)))))) return;
 
@@ -1492,9 +1497,9 @@ namespace CounterSpells {
                             if (Blink(castPoint)) return;
 
                             if (UseOnSelf(
-                                DeffVsDisable.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsDisable.Concat(
+                                DefVsMagic.Concat(
+                                DefVsDamage.Concat(
                                 Invis.Concat(
                                 Lotus))))))
                                 return;
@@ -1546,8 +1551,8 @@ namespace CounterSpells {
                             if (Blink(castPoint)) return;
 
                             if (UseOnSelf(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage))) return;
+                                DefVsMagic.Concat(
+                                DefVsDamage))) return;
 
                             if (UseOnTarget(
                                 InstaDisable.Concat(
@@ -1596,8 +1601,8 @@ namespace CounterSpells {
 
                                 if (UseOnSelf(
                                     Shift.Concat(
-                                    DeffVsPhys.Concat(
-                                    DeffVsDamage.Concat(
+                                    DefVsPhys.Concat(
+                                    DefVsDamage.Concat(
                                     Invis))))) return;
                             }
 
@@ -1621,8 +1626,8 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsMagic.Concat(
+                                DefVsDamage.Concat(
                                 Invis))))) return;
                         }
 
@@ -1652,7 +1657,7 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsDamage.Concat(
                                 Invis)))) return;
                         }
 
@@ -1670,9 +1675,9 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDisable.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsDisable.Concat(
+                                DefVsMagic.Concat(
+                                DefVsDamage.Concat(
                                 Lotus.Concat(
                                 Invis)))))))) return;
 
@@ -1693,8 +1698,8 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Invis.Concat(
                                 Lotus)))))) return;
                         }
@@ -1718,8 +1723,8 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic)))) return;
+                                DefVsDamage.Concat(
+                                DefVsMagic)))) return;
                         }
 
                         spell = enemy.Spellbook.SpellR;
@@ -1736,7 +1741,7 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsDamage.Concat(
                                 Invis))))) return;
 
                             if (UseOnTarget(
@@ -1771,8 +1776,8 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Invis.Concat(
                                 Lotus)))))) return;
                         }
@@ -1796,8 +1801,8 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Invis))))))  return;
                         }
 
@@ -1815,8 +1820,8 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsMagic.Concat(
+                                DefVsDamage.Concat(
                                 Invis))))) return;
                         }
 
@@ -1831,8 +1836,8 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsMagic.Concat(
+                                DefVsDamage.Concat(
                                 Invis)))))
                                 return;
                         }
@@ -1848,8 +1853,8 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsMagic.Concat(
+                                DefVsDamage.Concat(
                                 Invis)))))
                                 return;
                         }
@@ -1871,9 +1876,9 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDisable.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsPhys.Concat(
+                                DefVsDisable.Concat(
+                                DefVsDamage.Concat(
+                                DefVsPhys.Concat(
                                 Invis))))))) return;
 
                             if (UseOnTarget(
@@ -1898,9 +1903,9 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsDisable.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsPhys.Concat(
+                                DefVsDisable.Concat(
+                                DefVsDamage.Concat(
+                                DefVsPhys.Concat(
                                 Invis)))))) return;
 
                             if (UseOnTarget(
@@ -1939,9 +1944,9 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDisable.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsPhys.Concat(
+                                DefVsDisable.Concat(
+                                DefVsDamage.Concat(
+                                DefVsPhys.Concat(
                                 Invis.Concat(
                                 Lotus)))))))) return;
 
@@ -1986,9 +1991,9 @@ namespace CounterSpells {
                                 continue;
 
                             if (enemy.AghanimState()) {
-                                if (angle > 0.4) return;
+                                if (angle > 0.4) continue;
                             } else {
-                                if (angle > 0.03) return;
+                                if (angle > 0.03) continue;
                             }
 
                             if (UseOnSelf(Shift)) return;
@@ -1997,7 +2002,6 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-
                             spellCastRange = 1050;
                             castPoint = spell.FindCastPoint();
 
@@ -2008,15 +2012,17 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                Eul.Concat(
-                                DeffVsDisable.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage.Concat(
-                                Invis))))))) return;
+                                DefVsDisable.Concat(
+                                DefVsMagic.Concat(
+                                DefVsDamage.Concat(
+                                Invis)))))) return;
 
                             if (UseOnTarget(
                                 InstaDisable.Concat(
-                                SnowBall), enemy, castPoint)) return;
+                                Eul.Concat(
+                                SnowBall)), enemy, castPoint)) return;
+
+                            if (UseOnSelf(Eul)) return;
                         }
 
                         break;
@@ -2036,8 +2042,8 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsMagic.Concat(
+                                DefVsDamage.Concat(
                                 Invis)))))) return;
 
                             if (UseOnTarget(
@@ -2062,14 +2068,13 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage)))) return;
+                                DefVsMagic.Concat(
+                                DefVsDamage)))) return;
 
                             if (UseOnTarget(OffVsPhys, enemy, castPoint)) return;
                         }
 
                         if (enemy.Modifiers.Any(x => x.Name == "modifier_ursa_enrage")) {
-
                             if (UseOnTarget(
                                 Eul.Concat(
                                 InstaDisable.Concat(
@@ -2077,20 +2082,17 @@ namespace CounterSpells {
                                 OffVsPhys))), enemy)) return;
                         }
 
-                        if (enemy.Modifiers.Any(x => x.Name == "modifier_ursa_overpower")) {
-
-                            if (distance < 300) {
-                                if (UseOnSelf(
-                                    Shift.Concat(
-                                    DeffVsPhys.Concat(
-                                    DeffVsDamage)))) return;
-                            }
+                        if (enemy.Modifiers.Any(x => x.Name == "modifier_ursa_overpower") && distance < 300) {
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DefVsPhys.Concat(
+                                DefVsDamage)))) return;
 
                             if (UseOnTarget(
                                 Eul.Concat(
                                 InstaDisable.Concat(
                                 Invul.Concat(
-                                OffVsPhys))), enemy))  return;
+                                OffVsPhys))), enemy)) return;
                         }
 
                         break;
@@ -2120,9 +2122,9 @@ namespace CounterSpells {
                             if (Blink(castPoint)) return;
 
                             if (UseOnSelf(
-                                DeffVsDisable.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsDisable.Concat(
+                                DefVsMagic.Concat(
+                                DefVsDamage.Concat(
                                 Invis.Concat(
                                 Lotus)))))) return;
                         }
@@ -2133,7 +2135,6 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
-
                             spellCastRange = spell.GetCastRange();
                             castPoint = distance / 1200;
 
@@ -2144,8 +2145,8 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage)))) return;
+                                DefVsMagic.Concat(
+                                DefVsDamage)))) return;
                         }
 
                         spell = enemy.Spellbook.SpellR;
@@ -2162,8 +2163,8 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage))))) return;
+                                DefVsMagic.Concat(
+                                DefVsDamage))))) return;
                         }
 
                         break;
@@ -2183,8 +2184,8 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsMagic.Concat(
+                                DefVsDamage.Concat(
                                 Invis.Concat(
                                 Lotus))))))) return;
                         }
@@ -2203,8 +2204,8 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsMagic.Concat(
+                                DefVsDamage.Concat(
                                 Lotus))))) return;
                         }
 
@@ -2225,9 +2226,9 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDisable.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsDisable.Concat(
+                                DefVsMagic.Concat(
+                                DefVsDamage.Concat(
                                 Invis))))))) return;
 
                             if (UseOnTarget(
@@ -2265,11 +2266,11 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDisable.Concat(
-                                DeffVsPhys.Concat(
+                                DefVsDisable.Concat(
+                                DefVsPhys.Concat(
                                 Invis.Concat(
                                 Lotus.Concat(
-                                DeffVsDamage)))))))) return;
+                                DefVsDamage)))))))) return;
 
                             if (UseOnTarget(
                                 InstaDisable.Concat(
@@ -2290,13 +2291,11 @@ namespace CounterSpells {
                         }
 
                         if (enemy.Modifiers.Any(x => x.Name == "modifier_windrunner_focusfire")) {
-
                             if (UseOnTarget(
                                 InstaDisable.Concat(
                                 Eul.Concat(
                                 Invul.Concat(
                                 OffVsPhys))), enemy)) return;
-   
                         }
 
                         break;
@@ -2313,8 +2312,8 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DeffVsMagic.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsMagic.Concat(
+                                DefVsDamage.Concat(
                                 Lotus))))) return;
 
                         }
@@ -2333,8 +2332,8 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Lotus.Concat(
                                 Invis))))))) return;
 
@@ -2360,8 +2359,8 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Invis.Concat(
                                 Lotus))))))) return;
                         }
@@ -2371,26 +2370,19 @@ namespace CounterSpells {
                         if (spell.IsInAbilityPhase || spell.IsChanneling) {
                             spellCastRange = spell.GetCastRange();
 
-                            if (enemy.AghanimState())
-                                spellCastRange += 500;
-
-                            castPoint = spell.FindCastPoint();
-
                             if (distance > spellCastRange || angle > 1)
                                 continue;
 
-                            if (Blink(castPoint)) return;
-
                             if (UseOnSelf(
-                                Shift.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsPhys.Concat(
-                                Invis))))) return;
+                                DefVsDamage.Concat(
+                                DefVsPhys.Concat(
+                                Invis)))) return;
 
                             if (UseOnTarget(
                                 Eul.Concat(
                                 InstaDisable.Concat(
-                                SnowBall)), enemy, castPoint)) return;
+                                SnowBall.Concat(
+                                Invul))), enemy)) return;
                         }
 
                         break;
@@ -2423,9 +2415,9 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDisable.Concat(
-                                DeffVsPhys.Concat(
-                                DeffVsDamage.Concat(
+                                DefVsDisable.Concat(
+                                DefVsPhys.Concat(
+                                DefVsDamage.Concat(
                                 Invis.Concat(
                                 Lotus)))))))) return;
 
@@ -2448,7 +2440,6 @@ namespace CounterSpells {
                                 continue;
 
                             if (UseOnSelf(Shift)) return;
-
                         }
 
                         spell = enemy.Spellbook.SpellR;
@@ -2461,8 +2452,9 @@ namespace CounterSpells {
                                 InstaDisable), enemy, castPoint)) return;
 
                             if (distance < 1000)
-                                if (UseOnSelf(Shift.Concat(DeffVsDisable))) return;
-
+                                if (UseOnSelf(
+                                    Shift.Concat(
+                                    DefVsDisable))) return;
                         }
 
                         break;
@@ -2479,11 +2471,9 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                Eul.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
-                                Lotus)))))) return;
-
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
+                                Lotus))))) return;
                         }
 
                         spell = enemy.Spellbook.SpellR;
@@ -2502,9 +2492,13 @@ namespace CounterSpells {
                                 if (UseOnSelf(
                                     Shift.Concat(
                                     Eul.Concat(
-                                    DeffVsDamage.Concat(
+                                    DefVsDamage.Concat(
                                     Invis.Concat(
-                                    DeffVsMagic)))))) return;
+                                    DefVsMagic)))))) return;
+
+                                if (UseOnTarget(
+                                    InstaDisable.Concat(
+                                    SnowBall), enemy, castPoint)) return;
                             }
                         }
 
@@ -2520,10 +2514,11 @@ namespace CounterSpells {
                         if (UseOnSelf(
                             Shift.Concat(
                             Eul.Concat(
-                            DeffVsDamage.Concat(
-                            DeffVsMagic.Concat(
+                            DefVsDamage.Concat(
+                            DefVsMagic.Concat(
                             Lotus.Concat(
                             Invis))))))) return;
+
                         break;
                     }
                     case "modifier_spirit_breaker_charge_of_darkness_vision": {
@@ -2540,8 +2535,8 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Invis)))))) return;
                         }
 
@@ -2558,9 +2553,8 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
-                                DeffVsDamage.Concat(
-                                DeffVsMagic)))))
-                                return;
+                                DefVsDamage.Concat(
+                                DefVsMagic))))) return;
                         }
 
                         break;
@@ -2568,8 +2562,9 @@ namespace CounterSpells {
                     case "modifier_earth_spirit_magnetize": {
                         if (UseOnSelf(
                             Eul.Concat(
-                            DeffVsMagic.Concat(
-                            DeffVsDamage)))) return;
+                            DefVsMagic.Concat(
+                            DefVsDamage)))) return;
+
                         break;
                     }
                 }
@@ -2588,9 +2583,9 @@ namespace CounterSpells {
                                 if (Blink(0.5 - modifier.ElapsedTime)) return;
 
                                 if (UseOnSelf(
-                                    DeffVsDisable.Concat(
-                                    DeffVsMagic.Concat(
-                                    DeffVsDamage.Concat(
+                                    DefVsDisable.Concat(
+                                    DefVsMagic.Concat(
+                                    DefVsDamage.Concat(
                                     Invis))))) return;
                             }
 
@@ -2604,9 +2599,9 @@ namespace CounterSpells {
                                 if (Blink(1.6 - time)) return;
 
                                 if (UseOnSelf(
-                                    DeffVsDisable.Concat(
-                                    DeffVsMagic.Concat(
-                                    DeffVsDamage.Concat(
+                                    DefVsDisable.Concat(
+                                    DefVsMagic.Concat(
+                                    DefVsDamage.Concat(
                                     Invis))))) return;
                             }
 
@@ -2618,9 +2613,9 @@ namespace CounterSpells {
                                 if (Blink(0.35 - modifier.ElapsedTime)) return;
 
                                 if (UseOnSelf(
-                                    DeffVsDisable.Concat(
-                                    DeffVsMagic.Concat(
-                                    DeffVsDamage.Concat(
+                                    DefVsDisable.Concat(
+                                    DefVsMagic.Concat(
+                                    DefVsDamage.Concat(
                                     Invis))))) return;
                             }
 
@@ -2634,9 +2629,9 @@ namespace CounterSpells {
                                 if (Blink(2.6 - time)) return;
 
                                 if (UseOnSelf(
-                                    DeffVsDisable.Concat(
-                                    DeffVsMagic.Concat(
-                                    DeffVsDamage.Concat(
+                                    DefVsDisable.Concat(
+                                    DefVsMagic.Concat(
+                                    DefVsDamage.Concat(
                                     Invis))))) return;
                             }
 
@@ -2650,7 +2645,7 @@ namespace CounterSpells {
                 if (Menu.Item("blinkSilenced").GetValue<bool>())
                     if (Blink()) return;
 
-                if (UseOnSelf(new[] {"item_cyclone", "item_guardian_greaves"}.Concat(Lotus).Concat(DeffVsMagic)))
+                if (UseOnSelf(new[] {"item_cyclone", "item_guardian_greaves"}.Concat(Lotus).Concat(DefVsMagic)))
                     return;
 
                 if (!hero.Modifiers.Any(
@@ -2662,8 +2657,6 @@ namespace CounterSpells {
             }
 
             if (hero.IsRooted()) {
-                if (Blink()) return;
-
                 if (UseOnSelf(new[] {"item_manta", "item_guardian_greaves"}.Concat(Eul.Concat(Lotus)))) return;
             }
         }
