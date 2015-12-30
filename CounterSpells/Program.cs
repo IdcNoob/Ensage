@@ -137,7 +137,6 @@ namespace CounterSpells {
         private static bool inGame;
         private static Hero hero;
 
-        private static bool dodge = true;
         private static bool cameraCentered;
         private static Font text;
 
@@ -150,7 +149,7 @@ namespace CounterSpells {
         private static readonly Menu Menu = new Menu("Counter Spells", "counterSpells", true);
 
         private static void Main() {
-            Menu.AddItem(new MenuItem("key", "Change hotkey").SetValue(new KeyBind('P', KeyBindType.Press)));
+            Menu.AddItem(new MenuItem("key", "Enabled").SetValue(new KeyBind('P', KeyBindType.Toggle, true)));
             Menu.AddItem(new MenuItem("blink", "Use blink").SetValue(true)
                 .SetTooltip("Suports blink dagger and most of blink type spells"));
             Menu.AddItem(new MenuItem("blinkSilenced", "Use blink when silenced").SetValue(true)
@@ -181,18 +180,11 @@ namespace CounterSpells {
                     Width = 5 * (Menu.Item("size").GetValue<Slider>().Value / 2)
                 });
 
-            Game.OnWndProc += Game_OnWndProc;
             Game.OnUpdate += Game_OnUpdate;
 
             Drawing.OnPreReset += Drawing_OnPreReset;
             Drawing.OnPostReset += Drawing_OnPostReset;
             Drawing.OnEndScene += Drawing_OnEndScene;
-        }
-        private static void Game_OnWndProc(WndEventArgs args) {
-            if (inGame && !Game.IsChatOpen && args.Msg == (ulong) Utils.WindowsMessages.WM_KEYUP &&
-                args.WParam == Menu.Item("key").GetValue<KeyBind>().Key) {
-                dodge = !dodge;
-            }
         }
 
         private static void Game_OnUpdate(EventArgs args) {
@@ -215,7 +207,7 @@ namespace CounterSpells {
                 return;
             }
 
-            if (!hero.IsAlive || Game.IsPaused || !dodge) {
+            if (!hero.IsAlive || Game.IsPaused || !Menu.Item("key").GetValue<KeyBind>().Active) {
                 Utils.Sleep(500, "CounterDelay");
                 return;
             }
@@ -241,7 +233,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -258,7 +250,7 @@ namespace CounterSpells {
                         spell = enemy.FindSpell("alchemist_unstable_concoction_throw");
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
 
                             if (distance > spellCastRange || angle > 0.03)
                                 continue;
@@ -315,7 +307,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange)
@@ -339,7 +331,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.8)
@@ -358,7 +350,7 @@ namespace CounterSpells {
                         spell = enemy.FindSpell("bane_nightmare");
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -381,7 +373,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -414,7 +406,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -447,7 +439,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.1)
@@ -461,7 +453,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -488,7 +480,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -514,7 +506,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if ((distance > spellCastRange || angle > 0.03) &&
@@ -533,7 +525,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
 
                             if (distance > spellCastRange)
                                 continue;
@@ -557,7 +549,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
 
                             if (distance > 400 || angle > 0.03)
                                 continue;
@@ -570,7 +562,7 @@ namespace CounterSpells {
                         }
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = distance / 1200;
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -593,7 +585,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange)
@@ -617,7 +609,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellW;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange)
@@ -638,28 +630,28 @@ namespace CounterSpells {
                         if (spell.IsInAbilityPhase) {
                             castPoint = spell.FindCastPoint();
 
-                            if (distance > 300 || angle > 0.03)
-                                continue;
+                            if (distance <= 300 && angle <= 0.03) {
 
-                            if (Blink(castPoint)) return;
+                                if (Blink(castPoint)) return;
 
-                            if (UseOnSelf(
-                                Shift.Concat(
-                                DefVsDisable.Concat(
-                                DefVsDamage.Concat(
-                                DefVsPhys.Concat(
-                                Invis.Concat(
-                                Lotus))))))) return;
+                                if (UseOnSelf(
+                                    Shift.Concat(
+                                    DefVsDisable.Concat(
+                                    DefVsDamage.Concat(
+                                    DefVsPhys.Concat(
+                                    Invis.Concat(
+                                    Lotus))))))) return;
 
-                            if (UseOnTarget(
-                                InstaDisable.Concat(
-                                Eul.Concat(
-                                OffVsPhys.Concat(
-                                SnowBall))), enemy, castPoint)) return;
+                                if (UseOnTarget(
+                                    InstaDisable.Concat(
+                                    Eul.Concat(
+                                    OffVsPhys.Concat(
+                                    SnowBall))), enemy, castPoint)) return;
+                            }
                         }
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = distance / 1000;
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -685,7 +677,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellW;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -730,7 +722,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellW;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -805,7 +797,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -823,7 +815,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellW;
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
 
                             if (distance > spellCastRange)
                                 continue;
@@ -863,7 +855,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -891,7 +883,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.1)
@@ -918,7 +910,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellE;
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.1)
@@ -939,7 +931,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.5)
@@ -957,7 +949,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellW;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange)
@@ -992,7 +984,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -1073,7 +1065,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
 
                             if (distance > spellCastRange || angle > 0.3)
                                 continue;
@@ -1092,7 +1084,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellW;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
 
                             if (distance > spellCastRange || angle > 0.3)
                                 continue;
@@ -1109,7 +1101,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -1141,7 +1133,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
 
                             if (distance > spellCastRange)
                                 continue;
@@ -1156,7 +1148,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.4)
@@ -1191,7 +1183,7 @@ namespace CounterSpells {
                         spell = enemy.FindSpell("kunkka_x_marks_the_spot");
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -1242,7 +1234,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.1)
@@ -1258,7 +1250,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -1292,7 +1284,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.3)
@@ -1310,7 +1302,7 @@ namespace CounterSpells {
                         }
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
 
                             if (distance > spellCastRange || angle > 0.3)
                                 continue;
@@ -1329,7 +1321,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.3)
@@ -1347,7 +1339,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.3)
@@ -1375,7 +1367,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange)
@@ -1399,7 +1391,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange)
@@ -1488,7 +1480,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle < 0.3)
@@ -1505,7 +1497,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellW;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
 
                             if (distance > 400 || angle < 0.3)
                                 continue;
@@ -1519,7 +1511,7 @@ namespace CounterSpells {
                         }
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
 
                             if (distance > spellCastRange || angle < 0.03)
                                 continue;
@@ -1538,7 +1530,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -1563,7 +1555,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.3)
@@ -1590,7 +1582,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -1611,7 +1603,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellD;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -1632,7 +1624,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellW;
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.3)
@@ -1647,7 +1639,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange)
@@ -1664,7 +1656,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellW;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -1701,7 +1693,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -1738,7 +1730,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = distance / 1000;
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -1769,7 +1761,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
 
                             if (distance > spellCastRange || angle > 0.2)
                                 continue;
@@ -1785,7 +1777,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -1811,7 +1803,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = distance / 900;
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -1836,7 +1828,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellE;
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
 
                             if (distance > spellCastRange)
                                 continue;
@@ -1851,7 +1843,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.5)
@@ -1887,7 +1879,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -1906,7 +1898,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase || spell.IsChanneling) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange)
@@ -1975,7 +1967,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase || spell.IsChanneling) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange)
@@ -1993,7 +1985,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellW;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange)
@@ -2021,7 +2013,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -2048,31 +2040,31 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
-                            if (distance > 300 || angle > 0.1)
-                                continue;
+                            if (distance <= 300 && angle < 0.1) { 
 
-                            if (Blink(castPoint)) return;
+                                if (Blink(castPoint)) return;
 
-                            if (UseOnSelf(
-                                Shift.Concat(
-                                DefVsDisable.Concat(
-                                DefVsDamage.Concat(
-                                DefVsPhys.Concat(
-                                Invis.Concat(
-                                Lotus))))))) return;
+                                if (UseOnSelf(
+                                    Shift.Concat(
+                                    DefVsDisable.Concat(
+                                    DefVsDamage.Concat(
+                                    DefVsPhys.Concat(
+                                    Invis.Concat(
+                                    Lotus))))))) return;
 
-                            if (UseOnTarget(
-                                InstaDisable.Concat(
-                                Eul.Concat(
-                                OffVsPhys.Concat(
-                                SnowBall))), enemy, castPoint)) return;
+                                if (UseOnTarget(
+                                    InstaDisable.Concat(
+                                    Eul.Concat(
+                                    OffVsPhys.Concat(
+                                    SnowBall))), enemy, castPoint)) return;
+                            }
                         }
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = 650;
                             castPoint = distance / 1000;
 
                             if (distance > spellCastRange || angle > 0.1)
@@ -2101,7 +2093,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance <= spellCastRange && angle <= 0.03)
@@ -2122,7 +2114,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange)
@@ -2169,7 +2161,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.5)
@@ -2196,7 +2188,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange)
@@ -2239,29 +2231,28 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
-                            if (distance > 300 || angle > 0.03)
-                                continue;
+                            if (distance <= 300 && angle <= 0.03) {
+                                if (UseOnSelf(
+                                    Shift.Concat(
+                                    DefVsDisable.Concat(
+                                    DefVsMagic.Concat(
+                                    DefVsDamage.Concat(
+                                    Invis.Concat(
+                                    Lotus))))))) return;
 
-                            if (UseOnSelf(
-                                Shift.Concat(
-                                DefVsDisable.Concat(
-                                DefVsMagic.Concat(
-                                DefVsDamage.Concat(
-                                Invis.Concat(
-                                Lotus))))))) return;
-
-                            if (UseOnTarget(
-                                InstaDisable.Concat(
-                                Eul.Concat(
-                                OffVsPhys.Concat(
-                                SnowBall))), enemy, castPoint)) return;
+                                if (UseOnTarget(
+                                    InstaDisable.Concat(
+                                    Eul.Concat(
+                                    OffVsPhys.Concat(
+                                    SnowBall))), enemy, castPoint)) return;
+                            }
                         }
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = 550;
                             castPoint = distance / 1250;
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -2282,7 +2273,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -2306,7 +2297,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = distance / 1200;
 
                             if (distance > spellCastRange || angle > 0.3)
@@ -2323,7 +2314,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = distance / 500;
 
                             if (distance > spellCastRange)
@@ -2344,7 +2335,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = distance / 1200;
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -2367,7 +2358,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellW;
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = distance / 1000;
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -2386,7 +2377,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.8)
@@ -2413,7 +2404,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > 400 || angle > 0.1)
@@ -2463,7 +2454,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellW;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.1)
@@ -2526,7 +2517,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > 400 || angle > 0.3)
@@ -2570,7 +2561,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase || spell.IsChanneling) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
 
                             if (distance > spellCastRange || angle > 1)
                                 continue;
@@ -2593,31 +2584,31 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
-                            if (distance > 300 || angle > 0.03)
-                                continue;
+                            if (distance <= 300 && angle <= 0.03) {
 
-                            if (Blink(castPoint)) return;
+                                if (Blink(castPoint)) return;
 
-                            if (UseOnSelf(
-                                Shift.Concat(
-                                DefVsDisable.Concat(
-                                DefVsPhys.Concat(
-                                DefVsDamage.Concat(
-                                Invis.Concat(
-                                Lotus))))))) return;
+                                if (UseOnSelf(
+                                    Shift.Concat(
+                                    DefVsDisable.Concat(
+                                    DefVsPhys.Concat(
+                                    DefVsDamage.Concat(
+                                    Invis.Concat(
+                                    Lotus))))))) return;
 
-                            if (UseOnTarget(
-                                InstaDisable.Concat(
-                                Eul.Concat(
-                                OffVsPhys.Concat(
-                                SnowBall))), enemy, castPoint)) return;
+                                if (UseOnTarget(
+                                    InstaDisable.Concat(
+                                    Eul.Concat(
+                                    OffVsPhys.Concat(
+                                    SnowBall))), enemy, castPoint)) return;
+                            }
                         }
 
                         if (IsCasted(spell)) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = distance / 1000;
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -2658,7 +2649,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellE;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -2690,7 +2681,7 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellW;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
+                            spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
@@ -3014,7 +3005,7 @@ namespace CounterSpells {
         }
 
         private static void Drawing_OnEndScene(EventArgs args) {
-            if (Drawing.Direct3DDevice9 == null || Drawing.Direct3DDevice9.IsDisposed || !inGame || !dodge)
+            if (Drawing.Direct3DDevice9 == null || Drawing.Direct3DDevice9.IsDisposed || !inGame || !Menu.Item("key").GetValue<KeyBind>().Active)
                 return;
 
             text.DrawText(null, "Dodge enabled", Menu.Item("x").GetValue<Slider>().Value,
