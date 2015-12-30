@@ -137,8 +137,6 @@ namespace CounterSpells {
         private static bool inGame;
         private static Hero hero;
 
-        private static readonly Menu Menu = new Menu("Counter Spells", "counterSpells", true);
-
         private static bool dodge = true;
         private static bool cameraCentered;
         private static Font text;
@@ -148,6 +146,54 @@ namespace CounterSpells {
         private static float distance;
         private static double castPoint;
         private static double angle;
+
+        private static readonly Menu Menu = new Menu("Counter Spells", "counterSpells", true);
+
+        private static void Main() {
+            Menu.AddItem(new MenuItem("key", "Change hotkey").SetValue(new KeyBind('P', KeyBindType.Press)));
+            Menu.AddItem(new MenuItem("blink", "Use blink").SetValue(true)
+                .SetTooltip("Suports blink dagger and most of blink type spells"));
+            Menu.AddItem(new MenuItem("blinkSilenced", "Use blink when silenced").SetValue(true)
+               .SetTooltip("Blink usage should be enabled too"));
+            Menu.AddItem(new MenuItem("center", "Center camera on blink").SetValue(true));
+            Menu.AddItem(new MenuItem("disable", "Disable enemy if can't dodge").SetValue(false)
+                .SetTooltip("Use hex, stun, silence when you don't have eul, dagger, dark pact etc. to dodge stun"));
+            Menu.AddItem(new MenuItem("diffusal", "Use diffusal when silenced").SetValue(false));
+            Menu.AddItem(new MenuItem("size", "Size").SetValue(new Slider(6, 1, 10)))
+                .SetTooltip("Reload assembly to apply new size");
+            Menu.AddItem(
+                new MenuItem("x", "Position X").SetValue(new Slider(0, 0, (int) HUDInfo.ScreenSizeX())));
+            Menu.AddItem(
+                new MenuItem("y", "Position Y").SetValue(new Slider(0, 0, (int) HUDInfo.ScreenSizeY())));
+            Menu.AddToMainMenu();
+
+            text = new Font(
+                Drawing.Direct3DDevice9,
+                new FontDescription {
+                    FaceName = "Tahoma",
+                    Height = 13 * (Menu.Item("size").GetValue<Slider>().Value / 2),
+                    OutputPrecision = FontPrecision.Raster,
+                    Quality = FontQuality.ClearTypeNatural,
+                    CharacterSet = FontCharacterSet.Hangul,
+                    MipLevels = 3,
+                    PitchAndFamily = FontPitchAndFamily.Modern,
+                    Weight = FontWeight.Heavy,
+                    Width = 5 * (Menu.Item("size").GetValue<Slider>().Value / 2)
+                });
+
+            Game.OnWndProc += Game_OnWndProc;
+            Game.OnUpdate += Game_OnUpdate;
+
+            Drawing.OnPreReset += Drawing_OnPreReset;
+            Drawing.OnPostReset += Drawing_OnPostReset;
+            Drawing.OnEndScene += Drawing_OnEndScene;
+        }
+        private static void Game_OnWndProc(WndEventArgs args) {
+            if (inGame && !Game.IsChatOpen && args.Msg == (ulong) Utils.WindowsMessages.WM_KEYUP &&
+                args.WParam == Menu.Item("key").GetValue<KeyBind>().Key) {
+                dodge = !dodge;
+            }
+        }
 
         private static void Game_OnUpdate(EventArgs args) {
             if (!Utils.SleepCheck("CounterDelay"))
@@ -256,8 +302,8 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                DefVsMagic.Concat(
                                 DefVsDamage.Concat(
+                                DefVsMagic.Concat(
                                 Lotus))))) return;
 
                             if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
@@ -293,11 +339,17 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
                             castPoint = spell.FindCastPoint();
 
-                            if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
+                            if (distance > spellCastRange || angle > 0.8)
+                                continue;
 
-                            if (UseOnSelf(Shift)) return;
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Lotus))) return;
+
+                            if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
                         }
 
                         break;
@@ -471,7 +523,8 @@ namespace CounterSpells {
 
                             if (UseOnSelf(
                                 Shift.Concat(
-                                Eul))) return;
+                                Eul.Concat(
+                                Lotus)))) return;
                         }
 
                         break;
@@ -481,7 +534,6 @@ namespace CounterSpells {
 
                         if (spell.IsInAbilityPhase) {
                             spellCastRange = spell.GetCastRange();
-                            castPoint = distance / 1000;
 
                             if (distance > spellCastRange)
                                 continue;
@@ -504,6 +556,19 @@ namespace CounterSpells {
                     case ClassID.CDOTA_Unit_Hero_Broodmother: {
                         spell = enemy.Spellbook.SpellQ;
 
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+
+                            if (distance > 400 || angle > 0.03)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
+                                Lotus))))) return;
+                        }
+
                         if (IsCasted(spell)) {
                             spellCastRange = spell.GetCastRange();
                             castPoint = distance / 1200;
@@ -512,8 +577,10 @@ namespace CounterSpells {
                                 continue;
 
                             if (UseOnSelf(
+                                Shift.Concat(
                                 DefVsDamage.Concat(
-                                DefVsMagic))) return;
+                                DefVsMagic.Concat(
+                                Lotus))))) return;
                         }
 
                         if (enemy.Modifiers.Any(x => x.Name == "broodmother_insatiable_hunger")) {
@@ -559,7 +626,8 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 DefVsMagic.Concat(
-                                DefVsDamage)))) return;
+                                DefVsDamage.Concat(
+                                Lotus))))) return;
                         }
 
                         break;
@@ -568,15 +636,26 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
                             castPoint = spell.FindCastPoint();
 
-                            if (distance > spellCastRange || angle > 0.03)
+                            if (distance > 300 || angle > 0.03)
                                 continue;
+
+                            if (Blink(castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DefVsDisable.Concat(
+                                DefVsDamage.Concat(
+                                DefVsPhys.Concat(
+                                Invis.Concat(
+                                Lotus))))))) return;
 
                             if (UseOnTarget(
                                 InstaDisable.Concat(
-                                OffVsPhys), enemy, castPoint)) return;
+                                Eul.Concat(
+                                OffVsPhys.Concat(
+                                SnowBall))), enemy, castPoint)) return;
                         }
 
                         if (IsCasted(spell)) {
@@ -630,7 +709,9 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                Eul), enemy, castPoint)) return;
                         }
 
                         break;
@@ -691,6 +772,7 @@ namespace CounterSpells {
                                 Invul.Concat(
                                 SnowBall))), enemy, castPoint)) return;
                         }
+
                         break;
                     }
                     case ClassID.CDOTA_Unit_Hero_DarkSeer: {
@@ -735,6 +817,30 @@ namespace CounterSpells {
                                 DefVsDamage.Concat(
                                 DefVsMagic.Concat(
                                 Invis)))))) return;
+
+                        }
+
+                        spell = enemy.Spellbook.SpellW;
+
+                        if (IsCasted(spell)) {
+                            spellCastRange = spell.GetCastRange();
+
+                            if (distance > spellCastRange)
+                                continue;
+
+                            var targets = ObjectMgr.GetEntities<Hero>()
+                                .Where(x => x.IsVisibleToEnemies && x.IsAlive && !x.IsMagicImmune() && x.Team == hero.Team)
+                                .OrderBy(x => enemy.Distance2D(x))
+                                .Take(2);
+
+                            if (targets.Contains(hero)) {
+                                if (UseOnSelf(
+                                    Shift.Concat(
+                                    Eul.Concat(
+                                    DefVsDamage.Concat(
+                                    DefVsMagic.Concat(
+                                    Invis)))))) return;
+                            }
 
                         }
 
@@ -895,9 +1001,8 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 DefVsDisable.Concat(
-                                DefVsDamage.Concat(
-                                DefVsMagic.Concat(
-                                Invis)))))) return;
+                                Lotus.Concat(
+                                Invis))))) return;
                         }
 
                         spell = enemy.Spellbook.SpellR;
@@ -1052,11 +1157,12 @@ namespace CounterSpells {
 
                         if (spell.IsInAbilityPhase) {
                             spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.4)
                                 continue;
 
-                            if (Blink()) return;
+                            if (Blink(castPoint)) return;
 
                             if (UseOnSelf(
                                 DefVsDamage.Concat(
@@ -1067,10 +1173,10 @@ namespace CounterSpells {
 
                             if (UseOnTarget(
                                 OffVsPhys.Concat(
-                                InstaDisable), enemy)) return;
+                                InstaDisable), enemy, castPoint)) return;
                         }
 
-                        if (enemy.Modifiers.Any(x => x.Name == "modifier_juggernaut_omnislash")) {
+                        if (enemy.Modifiers.Any(x => x.Name == "modifier_juggernaut_omnislash") && distance < 300) {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
@@ -1205,7 +1311,6 @@ namespace CounterSpells {
 
                         if (IsCasted(spell)) {
                             spellCastRange = spell.GetCastRange();
-                            castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.3)
                                 continue;
@@ -1399,14 +1504,32 @@ namespace CounterSpells {
 
                         spell = enemy.Spellbook.SpellW;
 
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+
+                            if (distance > 400 || angle < 0.3)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
+                                Lotus.Concat(
+                                Invis)))))) return;
+                        }
+
                         if (IsCasted(spell)) {
                             spellCastRange = spell.GetCastRange();
 
-                            if (distance > spellCastRange || angle < 0.3)
+                            if (distance > spellCastRange || angle < 0.03)
                                 continue;
 
-                            if (UseOnSelf(Shift)) return;
-
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
+                                Lotus.Concat(
+                                Invis)))))) return;
                         }
 
                         break;
@@ -1501,8 +1624,7 @@ namespace CounterSpells {
                                 DefVsMagic.Concat(
                                 DefVsDamage.Concat(
                                 Invis.Concat(
-                                Lotus))))))
-                                return;
+                                Lotus)))))) return;
 
                             if (UseOnTarget(InstaDisable, enemy, castPoint)) return;
                         }
@@ -1539,6 +1661,20 @@ namespace CounterSpells {
                         break;
                     }
                     case ClassID.CDOTA_Unit_Hero_Obsidian_Destroyer: {
+                        spell = enemy.Spellbook.SpellW;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.03)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Lotus))) return;
+                        }
+
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
@@ -1551,25 +1687,12 @@ namespace CounterSpells {
                             if (Blink(castPoint)) return;
 
                             if (UseOnSelf(
-                                DefVsMagic.Concat(
-                                DefVsDamage))) return;
+                                DefVsDamage.Concat(
+                                DefVsMagic))) return;
 
                             if (UseOnTarget(
                                 InstaDisable.Concat(
                                 SnowBall), enemy, castPoint)) return;
-                        }
-
-                        spell = enemy.Spellbook.SpellW;
-
-                        if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange();
-                            castPoint = spell.FindCastPoint();
-
-                            if (distance > spellCastRange || angle > 0.03)
-                                continue;
-
-                            if (UseOnSelf(Shift)) return;
-
                         }
 
                         break;
@@ -1581,30 +1704,27 @@ namespace CounterSpells {
                             spellCastRange = spell.GetCastRange();
                             castPoint = spell.FindCastPoint();
 
-                            if (distance > spellCastRange || angle > 0.3)
+                            if (distance > spellCastRange || angle > 0.03)
                                 continue;
 
-                            if (UseOnSelf(Shift))
-                                return;
-
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Lotus))) return;
                         }
 
                         spell = enemy.Spellbook.SpellW;
 
                         if (IsCasted(spell)) {
-
-                            if (distance > spellCastRange)
+                            if (distance > 300 || angle > 0.03)
                                 continue;
 
-                            if (angle < 0.03) {
-                                if (Blink(castPoint)) return;
+                            if (Blink(castPoint)) return;
 
-                                if (UseOnSelf(
-                                    Shift.Concat(
-                                    DefVsPhys.Concat(
-                                    DefVsDamage.Concat(
-                                    Invis))))) return;
-                            }
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DefVsPhys.Concat(
+                                DefVsDamage.Concat(
+                                Invis))))) return;
 
                             if (UseOnTarget(
                                 OffVsPhys.Concat(
@@ -1628,7 +1748,8 @@ namespace CounterSpells {
                                 Shift.Concat(
                                 DefVsMagic.Concat(
                                 DefVsDamage.Concat(
-                                Invis))))) return;
+                                Lotus.Concat(
+                                Invis)))))) return;
                         }
 
                         break;
@@ -1716,15 +1837,15 @@ namespace CounterSpells {
 
                         if (IsCasted(spell)) {
                             spellCastRange = spell.GetCastRange();
-                            castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange)
                                 continue;
 
                             if (UseOnSelf(
                                 Shift.Concat(
+                                Eul.Concat(
                                 DefVsDamage.Concat(
-                                DefVsMagic)))) return;
+                                DefVsMagic))))) return;
                         }
 
                         spell = enemy.Spellbook.SpellR;
@@ -1797,7 +1918,7 @@ namespace CounterSpells {
                                 SnowBall)), enemy, castPoint)) return;
                         }
 
-                        if (enemy.Modifiers.Any(x => x.Name == "modifier_sand_king_epicenter")) {
+                        if (enemy.Modifiers.Any(x => x.Name == "modifier_sand_king_epicenter") && distance <= spell.GetCastRange()) {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 Eul.Concat(
@@ -1813,7 +1934,6 @@ namespace CounterSpells {
 
                         if (spell.IsInAbilityPhase) {
                             spellCastRange = spell.GetCastRange() + spell.GetRadius();
-                            castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.3)
                                 continue;
@@ -1821,15 +1941,13 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 DefVsMagic.Concat(
-                                DefVsDamage.Concat(
-                                Invis))))) return;
+                                DefVsDamage)))) return;
                         }
 
                         spell = enemy.Spellbook.SpellW;
 
                         if (spell.IsInAbilityPhase) {
                             spellCastRange = spell.GetCastRange() + spell.GetRadius();
-                            castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.3)
                                 continue;
@@ -1837,16 +1955,13 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 DefVsMagic.Concat(
-                                DefVsDamage.Concat(
-                                Invis)))))
-                                return;
+                                DefVsDamage)))) return;
                         }
 
                         spell = enemy.Spellbook.SpellE;
 
                         if (spell.IsInAbilityPhase) {
                             spellCastRange = spell.GetCastRange() + spell.GetRadius();
-                            castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.3)
                                 continue;
@@ -1854,9 +1969,22 @@ namespace CounterSpells {
                             if (UseOnSelf(
                                 Shift.Concat(
                                 DefVsMagic.Concat(
-                                DefVsDamage.Concat(
-                                Invis)))))
-                                return;
+                                DefVsDamage)))) return;
+                        }
+
+                        spell = enemy.Spellbook.SpellR;
+
+                        if (spell.IsInAbilityPhase || spell.IsChanneling) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange)
+                                continue;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                Eul.Concat(
+                                SnowBall)), enemy, castPoint)) return;
                         }
 
                         break;
@@ -1923,13 +2051,24 @@ namespace CounterSpells {
                             spellCastRange = spell.GetCastRange();
                             castPoint = spell.FindCastPoint();
 
-                            if (distance > spellCastRange || angle > 0.1)
+                            if (distance > 300 || angle > 0.1)
                                 continue;
+
+                            if (Blink(castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DefVsDisable.Concat(
+                                DefVsDamage.Concat(
+                                DefVsPhys.Concat(
+                                Invis.Concat(
+                                Lotus))))))) return;
 
                             if (UseOnTarget(
                                 InstaDisable.Concat(
                                 Eul.Concat(
-                                OffVsPhys)), enemy, castPoint)) return;
+                                OffVsPhys.Concat(
+                                SnowBall))), enemy, castPoint)) return;
                         }
 
                         if (IsCasted(spell)) {
@@ -1950,7 +2089,10 @@ namespace CounterSpells {
                                 Invis.Concat(
                                 Lotus)))))))) return;
 
-                            if (UseOnTarget(SnowBall, enemy, castPoint)) return;
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                OffVsPhys.Concat(
+                                SnowBall)), enemy, castPoint)) return;
                         }
 
                         break;
@@ -1962,20 +2104,16 @@ namespace CounterSpells {
                             spellCastRange = spell.GetCastRange();
                             castPoint = spell.FindCastPoint();
 
-                            if (distance > spellCastRange || angle > 0.03)
-                                continue;
-
-                            if (Blink(castPoint)) return;
-
-                            if (UseOnSelf(
-                                Shift.Concat(
-                                Eul.Concat(
-                                Lotus.Concat(
-                                Invis))))) return;
+                            if (distance <= spellCastRange && angle <= 0.03)
+                                if (UseOnSelf(
+                                    Shift.Concat(
+                                    Eul.Concat(
+                                    Lotus.Concat(
+                                    Invis))))) return;
 
                             if (UseOnTarget(
                                 InstaDisable.Concat(
-                                OffVsPhys), enemy, castPoint)) return;
+                                Eul), enemy, castPoint)) return;
                         }
 
                         break;
@@ -2104,12 +2242,22 @@ namespace CounterSpells {
                             spellCastRange = spell.GetCastRange();
                             castPoint = spell.FindCastPoint();
 
-                            if (distance > spellCastRange || angle > 0.1)
+                            if (distance > 300 || angle > 0.03)
                                 continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DefVsDisable.Concat(
+                                DefVsMagic.Concat(
+                                DefVsDamage.Concat(
+                                Invis.Concat(
+                                Lotus))))))) return;
 
                             if (UseOnTarget(
                                 InstaDisable.Concat(
-                                Eul), enemy, castPoint)) return;
+                                Eul.Concat(
+                                OffVsPhys.Concat(
+                                SnowBall))), enemy, castPoint)) return;
                         }
 
                         if (IsCasted(spell)) {
@@ -2122,11 +2270,34 @@ namespace CounterSpells {
                             if (Blink(castPoint)) return;
 
                             if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
                                 DefVsDisable.Concat(
                                 DefVsMagic.Concat(
                                 DefVsDamage.Concat(
                                 Invis.Concat(
-                                Lotus)))))) return;
+                                Lotus)))))))) return;
+                        }
+
+                        spell = enemy.Spellbook.SpellR;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.03)
+                                continue;
+
+                            if (Blink(castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Invis.Concat(
+                                Lotus)))) return;
+
+                            if (UseOnTarget(
+                                InstaDisable.Concat(
+                                Eul), enemy, castPoint)) return;
                         }
 
                         break;
@@ -2245,13 +2416,24 @@ namespace CounterSpells {
                             spellCastRange = spell.GetCastRange();
                             castPoint = spell.FindCastPoint();
 
-                            if (distance > spellCastRange || angle > 0.1)
+                            if (distance > 400 || angle > 0.1)
                                 continue;
+
+                            if (Blink(castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DefVsDisable.Concat(
+                                DefVsPhys.Concat(
+                                Invis.Concat(
+                                Lotus.Concat(
+                                DefVsDamage)))))))) return;
 
                             if (UseOnTarget(
                                 InstaDisable.Concat(
-                                Eul.Concat(
-                                OffVsPhys)), enemy, castPoint)) return;
+                                OffVsPhys.Concat(
+                                SnowBall)), enemy, castPoint)) return;
                         }
 
                         if (IsCasted(spell)) {
@@ -2305,7 +2487,6 @@ namespace CounterSpells {
 
                         if (IsCasted(spell)) {
                             spellCastRange = spell.GetCastRange() + 300;
-                            castPoint = distance / 800;
 
                             if (distance > spellCastRange || angle > 0.3)
                                 continue;
@@ -2315,7 +2496,6 @@ namespace CounterSpells {
                                 DefVsMagic.Concat(
                                 DefVsDamage.Concat(
                                 Lotus))))) return;
-
                         }
 
                         spell = enemy.Spellbook.SpellR;
@@ -2333,9 +2513,7 @@ namespace CounterSpells {
                                 Shift.Concat(
                                 Eul.Concat(
                                 DefVsDamage.Concat(
-                                DefVsMagic.Concat(
-                                Lotus.Concat(
-                                Invis))))))) return;
+                                Lotus))))) return;
 
                             if (UseOnTarget(
                                 InstaDisable.Concat(
@@ -2346,6 +2524,30 @@ namespace CounterSpells {
                     }
                     case ClassID.CDOTA_Unit_Hero_WitchDoctor: {
                         spell = enemy.Spellbook.SpellQ;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > 400 || angle > 0.3)
+                                continue;
+
+                            if (Blink(castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
+                                Invis.Concat(
+                                Lotus))))))) return;
+
+                            if (UseOnTarget(
+                                Eul.Concat(
+                                InstaDisable.Concat(
+                                SnowBall)), enemy)) return;
+
+                        }
 
                         if (IsCasted(spell)) {
                             spellCastRange = spell.GetCastRange() + 600;
@@ -2394,13 +2596,24 @@ namespace CounterSpells {
                             spellCastRange = spell.GetCastRange();
                             castPoint = spell.FindCastPoint();
 
-                            if (distance > spellCastRange || angle > 0.03)
+                            if (distance > 300 || angle > 0.03)
                                 continue;
+
+                            if (Blink(castPoint)) return;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                DefVsDisable.Concat(
+                                DefVsPhys.Concat(
+                                DefVsDamage.Concat(
+                                Invis.Concat(
+                                Lotus))))))) return;
 
                             if (UseOnTarget(
                                 InstaDisable.Concat(
                                 Eul.Concat(
-                                OffVsPhys)), enemy, castPoint)) return;
+                                OffVsPhys.Concat(
+                                SnowBall))), enemy, castPoint)) return;
                         }
 
                         if (IsCasted(spell)) {
@@ -2440,6 +2653,20 @@ namespace CounterSpells {
                                 continue;
 
                             if (UseOnSelf(Shift)) return;
+                        }
+
+                        spell = enemy.Spellbook.SpellE;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange();
+                            castPoint = spell.FindCastPoint();
+
+                            if (distance > spellCastRange || angle > 0.03)
+                                continue;
+
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Lotus))) return;
                         }
 
                         spell = enemy.Spellbook.SpellR;
@@ -2782,55 +3009,8 @@ namespace CounterSpells {
             return false;
         }
 
-        private static void Main() {
-            Menu.AddItem(new MenuItem("key", "Change hotkey").SetValue(new KeyBind('P', KeyBindType.Press)));
-            Menu.AddItem(new MenuItem("blink", "Use blink").SetValue(true)
-                .SetTooltip("Suports blink dagger and most of blink type spells"));
-            Menu.AddItem(new MenuItem("blinkSilenced", "Use blink when silenced").SetValue(true)
-               .SetTooltip("Blink usage should be enabled too"));
-            Menu.AddItem(new MenuItem("center", "Center camera on blink").SetValue(true));
-            Menu.AddItem(new MenuItem("disable", "Disable enemy if can't dodge").SetValue(false)
-                .SetTooltip("Use hex, stun, silence when you don't have eul, dagger, dark pact etc. to dodge stun"));
-            Menu.AddItem(new MenuItem("diffusal", "Use diffusal when silenced").SetValue(false));
-            Menu.AddItem(new MenuItem("size", "Size").SetValue(new Slider(6, 1, 10)))
-                .SetTooltip("Reload assembly to apply new size");
-            Menu.AddItem(
-                new MenuItem("x", "Position X").SetValue(new Slider(0, 0, (int) HUDInfo.ScreenSizeX())));
-            Menu.AddItem(
-                new MenuItem("y", "Position Y").SetValue(new Slider(0, 0, (int) HUDInfo.ScreenSizeY())));
-            Menu.AddToMainMenu();
-
-            text = new Font(
-                Drawing.Direct3DDevice9,
-                new FontDescription {
-                    FaceName = "Tahoma",
-                    Height = 13 * (Menu.Item("size").GetValue<Slider>().Value / 2),
-                    OutputPrecision = FontPrecision.Raster,
-                    Quality = FontQuality.ClearTypeNatural,
-                    CharacterSet = FontCharacterSet.Hangul,
-                    MipLevels = 3,
-                    PitchAndFamily = FontPitchAndFamily.Modern,
-                    Weight = FontWeight.Heavy,
-                    Width = 5 * (Menu.Item("size").GetValue<Slider>().Value / 2)
-                });
-
-            Game.OnUpdate += Game_OnUpdate;
-            Game.OnWndProc += Game_OnWndProc;
-
-            Drawing.OnPreReset += Drawing_OnPreReset;
-            Drawing.OnPostReset += Drawing_OnPostReset;
-            Drawing.OnEndScene += Drawing_OnEndScene;
-        }
-
-        private static void Game_OnWndProc(WndEventArgs args) {
-            if (inGame && !Game.IsChatOpen && args.Msg == (ulong) Utils.WindowsMessages.WM_KEYUP &&
-                args.WParam == Menu.Item("key").GetValue<KeyBind>().Key) {
-                dodge = !dodge;
-            }
-        }
-
         private static bool IsCasted(Ability ability) {
-            return ability.Level > 0 && Math.Ceiling(ability.CooldownLength).Equals(Math.Ceiling(ability.Cooldown));
+            return ability.Level > 0 && ability.CooldownLength > 0 && Math.Ceiling(ability.CooldownLength).Equals(Math.Ceiling(ability.Cooldown));
         }
 
         private static void Drawing_OnEndScene(EventArgs args) {
