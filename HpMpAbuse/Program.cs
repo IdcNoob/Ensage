@@ -79,10 +79,8 @@ namespace HpMpAbuse {
             var forcePick = new Menu("Force item picking", "forcePick");
 
             forcePick.AddItem(new MenuItem("forcePickMoved", "When hero moved").SetValue(true));
-            forcePick.AddItem(new MenuItem("forcePickEnemyNear", "When enemy is near").SetValue(true));
-            forcePick.AddItem(new MenuItem("forcePickEnemyNearDistance", "Enemy distance").SetValue(new Slider(500, 300,
-                1000))
-                .SetTooltip("If enemy closer pick items when enabled"));
+            forcePick.AddItem(new MenuItem("forcePickEnemyNearDistance", "When enemy in range").SetValue(new Slider(500, 0,
+                700)).SetTooltip("If enemy is closer then pick items"));
 
             RecoveryMenu.AddSubMenu(forcePick);
 
@@ -192,6 +190,7 @@ namespace HpMpAbuse {
                     break;
                 case Order.MoveLocation:
                 case Order.MoveTarget:
+                    PickUpItemsOnMove(args);
                     ChangePtOnAction("switchPTonMove");
                     break;
                 default:
@@ -296,13 +295,12 @@ namespace HpMpAbuse {
                 var heroMana = hero.Mana;
 
                 var manaCost = (from ability in AbilitiesMC
-                                where
-                                    ManaCheckMenu.Item("enabledMCAbilities")
-                                        .GetValue<AbilityToggler>()
-                                        .IsEnabled(ability.Key)
+                                where ManaCheckMenu.Item("enabledMCAbilities")
+                                    .GetValue<AbilityToggler>()
+                                    .IsEnabled(ability.Key)
                                 select hero.FindSpell(ability.Key) ?? hero.FindItem(ability.Key))
-                    .Aggregate<Ability, uint>(0,
-                        (current, spell) => current + spell.ManaCost);
+                                    .Aggregate<Ability, uint>(0,
+                                        (current, spell) => current + spell.ManaCost);
 
                 if (powerTreads != null && lastPtAttribute != Attribute.Intelligence &&
                     ManaCheckMenu.Item("mcPTcalculations").GetValue<bool>()) {
@@ -313,16 +311,9 @@ namespace HpMpAbuse {
             }
 
             if (enabledRecovery && (hero.Mana < hero.MaximumMana || hero.Health < hero.MaximumHealth)) {
-                if (hero.NetworkActivity == NetworkActivity.Move && RecoveryMenu.Item("forcePickMoved").GetValue<bool>()) {
-                    PickUpItems(true);
-                    Utils.Sleep(1000, "HpMpAbuseDelay");
-                    return;
-                }
-
                 if (ObjectMgr.GetEntities<Hero>().Any(x =>
-                    x.IsAlive && x.IsVisible && x.Team == hero.GetEnemyTeam() &&
-                    x.Distance2D(hero) <= RecoveryMenu.Item("forcePickEnemyNearDistance").GetValue<Slider>().Value) &&
-                    RecoveryMenu.Item("forcePickEnemyNear").GetValue<bool>()) {
+                        x.IsAlive && x.IsVisible && x.Team == hero.GetEnemyTeam() &&
+                        x.Distance2D(hero) <= RecoveryMenu.Item("forcePickEnemyNearDistance").GetValue<Slider>().Value)) {
                     PickUpItems();
                     Utils.Sleep(1000, "HpMpAbuseDelay");
                     return;
@@ -360,8 +351,10 @@ namespace HpMpAbuse {
                     soulRing.UseAbility(true);
                 }
 
+                var bottleRegen = hero.Modifiers.FirstOrDefault(x => x.Name == "modifier_bottle_regeneration");
+
                 if (bottle != null && bottle.CanBeCasted() && bottle.CurrentCharges != 0 &&
-                    hero.Modifiers.All(x => x.Name != "modifier_bottle_regeneration")) {
+                    (bottleRegen == null || bottleRegen.RemainingTime < 0.2)) {
                     if ((float) hero.Health / hero.MaximumHealth < 0.9)
                         DropItems(BonusHealth);
                     if (hero.Mana / hero.MaximumMana < 0.9)
@@ -391,10 +384,8 @@ namespace HpMpAbuse {
                 if (hero.Modifiers.Any(x => HealModifiers.Any(x.Name.Equals))) {
                     if ((float) hero.Health / hero.MaximumHealth < 0.9)
                         DropItems(BonusHealth);
-                    if (hero.Modifiers.Any(x => x.Name == "modifier_bottle_regeneration")) {
-                        if (hero.Mana / hero.MaximumMana < 0.9)
-                            DropItems(BonusMana);
-                    }
+                    if (hero.Mana / hero.MaximumMana < 0.9 && bottleRegen != null)
+                        DropItems(BonusMana);
                 }
 
                 var allies =
@@ -433,8 +424,7 @@ namespace HpMpAbuse {
             if (hero.Modifiers.Any(x => HealModifiers.Any(x.Name.Equals)) && !disableSwitchBack &&
                 (PTMenu.Item("switchPTHeal").GetValue<bool>() && PTMenu.Item("enabledPT").GetValue<bool>() ||
                  enabledRecovery)) {
-                if (
-                    hero.Modifiers.Any(
+                if (hero.Modifiers.Any(
                         x => (x.Name == "modifier_bottle_regeneration" || x.Name == "modifier_clarity_potion"))) {
                     if (hero.Mana / hero.MaximumMana < 0.9 && (float) hero.Health / hero.MaximumHealth > 0.9) {
                         if (lastPtAttribute == Attribute.Intelligence) {
@@ -646,10 +636,15 @@ namespace HpMpAbuse {
             Utils.Sleep(500, "HpMpAbuseDelay");
         }
 
-        private static void PickUpItems(bool moving = false) {
-            if (moving)
-                hero.Stop();
+        private static void PickUpItemsOnMove(ExecuteOrderEventArgs args) {
+            if(enabledRecovery && RecoveryMenu.Item("forcePickMoved").GetValue<bool>()) {
+                args.Process = false;
+                PickUpItems(true);
+                Utils.Sleep(1000, "HpMpAbuseDelay");
+            }
+        }
 
+        private static void PickUpItems(bool move = false) {
             var droppedItems =
                 ObjectMgr.GetEntities<PhysicalItem>().Where(x => x.Distance2D(hero) < 250).Reverse().ToList();
 
@@ -661,13 +656,13 @@ namespace HpMpAbuse {
 
             ItemSlots.Clear();
 
-            if (moving)
-                hero.Move(Game.MousePosition, true);
+            if (move) hero.Move(Game.MousePosition, true);
 
             if (!ptChanged)
                 return;
 
-            ChangePowerTreads(lastPtAttribute, false);
+            if(hero.Modifiers.All(x => x.Name != "modifier_bottle_regeneration"))
+                ChangePowerTreads(lastPtAttribute, false);
         }
 
         private static void DropItems(IEnumerable<string> bonusStats, Item ignoredItem = null) {

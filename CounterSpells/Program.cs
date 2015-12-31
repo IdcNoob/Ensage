@@ -62,6 +62,7 @@ namespace CounterSpells {
             "windrunner_windrun",
             "winter_wyvern_cold_embrace",
             "lich_frost_armor",
+            "arc_warden_magnetic_field",
             "item_crimson_guard",
             "item_shivas_guard",
             "item_buckler"
@@ -160,10 +161,8 @@ namespace CounterSpells {
             Menu.AddItem(new MenuItem("diffusal", "Use diffusal when silenced").SetValue(false));
             Menu.AddItem(new MenuItem("size", "Size").SetValue(new Slider(6, 1, 10)))
                 .SetTooltip("Reload assembly to apply new size");
-            Menu.AddItem(
-                new MenuItem("x", "Position X").SetValue(new Slider(0, 0, (int) HUDInfo.ScreenSizeX())));
-            Menu.AddItem(
-                new MenuItem("y", "Position Y").SetValue(new Slider(0, 0, (int) HUDInfo.ScreenSizeY())));
+            Menu.AddItem(new MenuItem("x", "Position X").SetValue(new Slider(0, 0, (int) HUDInfo.ScreenSizeX())));
+            Menu.AddItem(new MenuItem("y", "Position Y").SetValue(new Slider(0, 0, (int) HUDInfo.ScreenSizeY())));
             Menu.AddToMainMenu();
 
             text = new Font(
@@ -222,7 +221,7 @@ namespace CounterSpells {
 
             var enemies =
                 ObjectMgr.GetEntities<Hero>()
-                    .Where(x => x.IsVisible && x.IsAlive && !x.IsIllusion && x.Team == hero.GetEnemyTeam());
+                    .Where(x => x.IsVisible && x.IsAlive && !x.IsIllusion && x.Team == hero.GetEnemyTeam()).ToList();
 
             foreach (var enemy in enemies) {
                 distance = hero.Distance2D(enemy);
@@ -800,7 +799,7 @@ namespace CounterSpells {
                             spellCastRange = spell.GetCastRange() + 50;
                             castPoint = spell.FindCastPoint();
 
-                            if (distance > spellCastRange || angle > 0.03)
+                            if (distance > spellCastRange || angle > (enemy.AghanimState() ? 0.8 : 0.03))
                                 continue;
 
                             if (UseOnSelf(
@@ -821,9 +820,10 @@ namespace CounterSpells {
                                 continue;
 
                             var targets = ObjectMgr.GetEntities<Hero>()
-                                .Where(x => x.IsVisibleToEnemies && x.IsAlive && !x.IsMagicImmune() && x.Team == hero.Team)
+                                .Where(x => x.IsVisibleToEnemies && x.IsAlive && !x.IsMagicImmune() && 
+                                    !x.IsInvul() && x.Team == hero.Team)
                                 .OrderBy(x => enemy.Distance2D(x))
-                                .Take(2);
+                                .Take(enemy.AghanimState() ? 4 : 2);
 
                             if (targets.Contains(hero)) {
                                 if (UseOnSelf(
@@ -2727,7 +2727,28 @@ namespace CounterSpells {
 
             foreach (var modifier in hero.Modifiers) {
                 switch (modifier.Name) {
-                    case "modifier_lina_laguna_blade":
+                    case "modifier_lina_laguna_blade": {
+                        var lina = enemies.FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Unit_Hero_Lina);
+
+                        if (lina != null && lina.AghanimState()) {
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DefVsDamage.Concat(
+                                Lotus.Concat(
+                                Invis)))))) return;
+                        } else {
+                            if (UseOnSelf(
+                                Shift.Concat(
+                                Eul.Concat(
+                                DefVsDamage.Concat(
+                                DefVsMagic.Concat(
+                                Lotus.Concat(
+                                Invis))))))) return;
+                        }
+
+                        break;
+                    }
                     case "modifier_lion_finger_of_death": {
                         if (UseOnSelf(
                             Shift.Concat(
@@ -2740,9 +2761,7 @@ namespace CounterSpells {
                         break;
                     }
                     case "modifier_spirit_breaker_charge_of_darkness_vision": {
-                        var bara =
-                            ObjectMgr.GetEntities<Hero>()
-                                .FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Unit_Hero_SpiritBreaker);
+                        var bara = enemies.FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Unit_Hero_SpiritBreaker);
 
                         if (bara == null)
                             continue;
@@ -2863,7 +2882,7 @@ namespace CounterSpells {
                 if (Menu.Item("blinkSilenced").GetValue<bool>())
                     if (Blink()) return;
 
-                if (UseOnSelf(new[] {"item_cyclone", "item_guardian_greaves"}.Concat(Lotus).Concat(DefVsMagic)))
+                if (UseOnSelf(Eul.Concat(Lotus).Concat(new[] { "item_guardian_greaves" }).Concat(DefVsMagic)))
                     return;
 
                 if (!hero.Modifiers.Any(
