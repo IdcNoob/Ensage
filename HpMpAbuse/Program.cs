@@ -611,7 +611,7 @@ namespace HpMpAbuse {
         }
 
         private static void ChangePtOnAction(string action, bool isAttacking = false) {
-            if (!PTMenu.Item("enabledPT").GetValue<bool>() || healActive || enabledRecovery)
+            if (!PTMenu.Item("enabledPT").GetValue<bool>() || healActive || enabledRecovery || !Utils.SleepCheck("HpMpAbuseDelay2"))
                 return;
 
             switch (PTMenu.Item(action).GetValue<StringList>().SelectedIndex) {
@@ -633,7 +633,7 @@ namespace HpMpAbuse {
 
             attacking = isAttacking;
 
-            Utils.Sleep(500, "HpMpAbuseDelay");
+            Utils.Sleep(500, "HpMpAbuseDelay2");
         }
 
         private static void PickUpItemsOnMove(ExecuteOrderEventArgs args) {
