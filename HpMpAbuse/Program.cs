@@ -37,6 +37,7 @@ namespace HpMpAbuse {
         private static readonly Dictionary<string, bool> AbilitiesSR = new Dictionary<string, bool>();
         private static readonly Dictionary<string, bool> AbilitiesMC = new Dictionary<string, bool>();
         private static readonly Dictionary<ItemSlot, Item> ItemSlots = new Dictionary<ItemSlot, Item>();
+        private static readonly Dictionary<string, double> Sleeps = new Dictionary<string, double>();
 
         private static readonly string[] AttackSpells = {
             "windrunner_focusfire",
@@ -73,6 +74,23 @@ namespace HpMpAbuse {
             "modifier_eul_cyclone"
         };
 
+        private static readonly string[] InvisibilityModifiers = {
+            "modifier_invisible",
+            "modifier_bounty_hunter_wind_walk",
+            "modifier_clinkz_wind_walk",
+            "modifier_item_glimmer_cape_fade",
+            "modifier_invoker_ghost_walk_self",
+            "modifier_mirana_moonlight_shadow",
+            "modifier_nyx_assassin_vendetta",
+            "modifier_sandking_sand_storm_invis",
+            "modifier_rune_invis",
+            "modifier_item_shadow_amulet_fade",
+            "modifier_item_silver_edge_windwalk",
+            "modifier_item_invisibility_edge_windwalk",
+            "modifier_templar_assassin_meld",
+            "modifier_weaver_shukuchi"
+        };
+
         private static void Main() {
             RecoveryMenu.AddItem(new MenuItem("hotkey", "Change hotkey").SetValue(new KeyBind('T', KeyBindType.Press)));
 
@@ -106,8 +124,10 @@ namespace HpMpAbuse {
             SoulRingMenu.AddItem(
                 new MenuItem("enabledSRAbilities", "Enabled for").SetValue(new AbilityToggler(AbilitiesSR)))
                 .DontSave();
-            SoulRingMenu.AddItem(new MenuItem("soulringHPThreshold", "HP threshold").SetValue(new Slider(30))
-                .SetTooltip("Don't use soul ring if HP % less than X"));
+            SoulRingMenu.AddItem(new MenuItem("soulringMPThreshold", "MP% threshold").SetValue(new Slider(90))
+                .SetTooltip("Don't use soul ring if you have more MP%"));
+            SoulRingMenu.AddItem(new MenuItem("soulringHPThreshold", "HP% threshold").SetValue(new Slider(30))
+                .SetTooltip("Don't use soul ring if you have less HP%"));
 
             ManaCheckMenu.AddItem(new MenuItem("enabledMC", "Enabled").SetValue(false));
             ManaCheckMenu.AddItem(
@@ -159,11 +179,13 @@ namespace HpMpAbuse {
         }
 
         private static void Game_OnWndProc(WndEventArgs args) {
-            if (args.WParam == RecoveryMenu.Item("hotkey").GetValue<KeyBind>().Key && !Game.IsChatOpen) {
+            if (inGame && args.WParam == RecoveryMenu.Item("hotkey").GetValue<KeyBind>().Key && !Game.IsChatOpen) {
                 enabledRecovery = args.Msg == (uint) Utils.WindowsMessages.WM_KEYDOWN;
 
                 if (stopAttack) {
                     Game.ExecuteCommand("dota_player_units_auto_attack_after_spell 0");
+                    hero.Stop();
+                    RemoveSleep("HpMpAbuseDelay");
                     stopAttack = false;
                 }
 
@@ -200,14 +222,14 @@ namespace HpMpAbuse {
         }
 
         private static void Game_OnUpdate(EventArgs args) {
-            if (!Utils.SleepCheck("HpMpAbuseDelay"))
+            if (!SleepCheck("HpMpAbuseDelay"))
                 return;
 
             if (!inGame) {
                 hero = ObjectMgr.LocalHero;
 
                 if (!Game.IsInGame || hero == null) {
-                    Utils.Sleep(1000, "HpMpAbuseDelay");
+                    Sleep(1000, "HpMpAbuseDelay");
                     return;
                 }
 
@@ -215,6 +237,7 @@ namespace HpMpAbuse {
                 AbilitiesSR.Clear();
                 AbilitiesMC.Clear();
                 ItemSlots.Clear();
+                Sleeps.Clear();
 
                 lastPtAttribute = Attribute.Strength;
                 stopAttack = true;
@@ -234,7 +257,7 @@ namespace HpMpAbuse {
             }
 
             if (!hero.IsAlive || Game.IsPaused) {
-                Utils.Sleep(Menu.Item("checkPTdelay").GetValue<Slider>().Value, "HpMpAbuseDelay");
+                Sleep(Menu.Item("checkPTdelay").GetValue<Slider>().Value, "HpMpAbuseDelay");
                 return;
             }
 
@@ -268,11 +291,10 @@ namespace HpMpAbuse {
                 autoDisablePT = true;
             }
 
-            if (autoDisablePT && PTMenu.Item("enabledPT").GetValue<bool>()) {
+            if (autoDisablePT && PTMenu.Item("enabledPT").GetValue<bool>())
                 autoDisablePT = false;
-            }
 
-            powerTreads = (PowerTreads) hero.FindItem("item_power_treads");
+            powerTreads = hero.FindItem("item_power_treads") as PowerTreads;
 
             if (powerTreads != null && !ptChanged && !attacking) {
                 switch (powerTreads.ActiveAttribute) {
@@ -315,7 +337,7 @@ namespace HpMpAbuse {
                         x.IsAlive && x.IsVisible && x.Team == hero.GetEnemyTeam() &&
                         x.Distance2D(hero) <= RecoveryMenu.Item("forcePickEnemyNearDistance").GetValue<Slider>().Value)) {
                     PickUpItems();
-                    Utils.Sleep(1000, "HpMpAbuseDelay");
+                    Sleep(1000, "HpMpAbuseDelay");
                     return;
                 }
 
@@ -346,9 +368,14 @@ namespace HpMpAbuse {
                 }
 
                 if (soulRing != null && soulRing.CanBeCasted()) {
-                    ChangePowerTreads(Attribute.Strength);
-                    DropItems(BonusMana);
-                    soulRing.UseAbility(true);
+                    if (((float) hero.Health / hero.MaximumHealth) * 100 >=
+                            SoulRingMenu.Item("soulringHPThreshold").GetValue<Slider>().Value &&
+                            hero.Mana / hero.MaximumMana * 100 <=
+                            SoulRingMenu.Item("soulringMPThreshold").GetValue<Slider>().Value) {
+                        ChangePowerTreads(Attribute.Strength);
+                        DropItems(BonusMana);
+                        soulRing.UseAbility(true);
+                    }
                 }
 
                 var bottleRegen = hero.Modifiers.FirstOrDefault(x => x.Name == "modifier_bottle_regeneration");
@@ -415,11 +442,11 @@ namespace HpMpAbuse {
             }
 
             if (powerTreads == null) {
-                Utils.Sleep(Menu.Item("checkPTdelay").GetValue<Slider>().Value, "HpMpAbuseDelay");
+                Sleep(Menu.Item("checkPTdelay").GetValue<Slider>().Value, "HpMpAbuseDelay");
                 return;
             }
 
-            disableSwitchBack = hero.Modifiers.Any(x => DisableSwitchBackModifiers.Any(x.Name.Equals));
+            disableSwitchBack = hero.Modifiers.Any(x => DisableSwitchBackModifiers.Contains(x.Name));
 
             if (hero.Modifiers.Any(x => HealModifiers.Any(x.Name.Equals)) && !disableSwitchBack &&
                 (PTMenu.Item("switchPTHeal").GetValue<bool>() && PTMenu.Item("enabledPT").GetValue<bool>() ||
@@ -466,8 +493,7 @@ namespace HpMpAbuse {
 
             if (ptChanged && !healActive && !disableSwitchBack && !enabledRecovery && !attacking) {
                 foreach (var spell in hero.Spellbook.Spells.Where(spell => spell.IsInAbilityPhase)) {
-                    Utils.Sleep(
-                        spell.FindCastPoint() * 1000 + PTMenu.Item("switchbackPTdelay").GetValue<Slider>().Value,
+                    Sleep(spell.FindCastPoint() * 1000 + PTMenu.Item("switchbackPTdelay").GetValue<Slider>().Value,
                         "HpMpAbuseDelay");
                     return;
                 }
@@ -475,7 +501,7 @@ namespace HpMpAbuse {
                 ChangePowerTreads(lastPtAttribute, false);
             }
 
-            Utils.Sleep(Menu.Item("checkPTdelay").GetValue<Slider>().Value, "HpMpAbuseDelay");
+            Sleep(Menu.Item("checkPTdelay").GetValue<Slider>().Value, "HpMpAbuseDelay");
         }
 
         private static void CastSpell(ExecuteOrderEventArgs args) {
@@ -495,13 +521,13 @@ namespace HpMpAbuse {
 
             args.Process = false;
 
-            if (SoulRingMenu.Item("enabledSR").GetValue<bool>()) {
-                if (soulRing != null && soulRing.CanBeCasted() &&
-                    SoulRingMenu.Item("enabledSRAbilities").GetValue<AbilityToggler>().IsEnabled(spell.Name) &&
-                    ((float) hero.Health / hero.MaximumHealth) * 100 >=
-                    SoulRingMenu.Item("soulringHPThreshold").GetValue<Slider>().Value) {
+            if (soulRing != null && soulRing.CanBeCasted() && SoulRingMenu.Item("enabledSR").GetValue<bool>()) {
+                if (SoulRingMenu.Item("enabledSRAbilities").GetValue<AbilityToggler>().IsEnabled(spell.Name) &&
+                        ((float) hero.Health / hero.MaximumHealth) * 100 >=
+                        SoulRingMenu.Item("soulringHPThreshold").GetValue<Slider>().Value &&
+                        hero.Mana / hero.MaximumMana * 100 <=
+                        SoulRingMenu.Item("soulringMPThreshold").GetValue<Slider>().Value)
                     soulRing.UseAbility();
-                }
             }
 
             var sleep = spell.FindCastPoint() * 1000 + PTMenu.Item("switchbackPTdelay").GetValue<Slider>().Value;
@@ -557,7 +583,7 @@ namespace HpMpAbuse {
                     break;
                 }
             }
-            Utils.Sleep(sleep, "HpMpAbuseDelay");
+            Sleep(sleep, "HpMpAbuseDelay");
         }
 
         private static void ChangePowerTreads(Attribute attribute, bool switchBack = true, bool healing = false) {
@@ -566,7 +592,7 @@ namespace HpMpAbuse {
 
             healActive = healing;
 
-            if (hero.IsChanneling() || hero.IsInvisible() || !hero.CanUseItems())
+            if (hero.IsChanneling() || !hero.CanUseItems() || hero.Modifiers.Any(x => InvisibilityModifiers.Contains(x.Name)))
                 return;
 
             var ptNow = 0;
@@ -611,7 +637,7 @@ namespace HpMpAbuse {
         }
 
         private static void ChangePtOnAction(string action, bool isAttacking = false) {
-            if (!PTMenu.Item("enabledPT").GetValue<bool>() || healActive || enabledRecovery || !Utils.SleepCheck("HpMpAbuseDelay2"))
+            if (!PTMenu.Item("enabledPT").GetValue<bool>() || healActive || enabledRecovery || !SleepCheck("HpMpAbuseDelay2"))
                 return;
 
             switch (PTMenu.Item(action).GetValue<StringList>().SelectedIndex) {
@@ -633,14 +659,14 @@ namespace HpMpAbuse {
 
             attacking = isAttacking;
 
-            Utils.Sleep(500, "HpMpAbuseDelay2");
+            Sleep(500, "HpMpAbuseDelay2");
         }
 
         private static void PickUpItemsOnMove(ExecuteOrderEventArgs args) {
             if(enabledRecovery && RecoveryMenu.Item("forcePickMoved").GetValue<bool>()) {
                 args.Process = false;
                 PickUpItems(true);
-                Utils.Sleep(1000, "HpMpAbuseDelay");
+                Sleep(1000, "HpMpAbuseDelay");
             }
         }
 
@@ -670,22 +696,18 @@ namespace HpMpAbuse {
             foreach (
                 var item in
                     items.Where(
-                        item => !item.Equals(ignoredItem) && item.AbilityData.Any(x => bonusStats.Any(x.Name.Equals)))) {
+                        item => !item.Equals(ignoredItem) && item.AbilityData.Any(x => bonusStats.Contains(x.Name)))) {
                 SaveItemSlot(item);
                 hero.DropItem(item, hero.NetworkPosition, true);
             }
         }
 
         private static void SaveItemSlot(Item item) {
-            if (!hero.Inventory.FreeSlots.Any())
-                return;
-
             for (var i = 0; i < 6; i++) {
-                var currentItem = hero.Inventory.GetItem((ItemSlot) i);
-
-                if (currentItem == null || !currentItem.Equals(item) || ItemSlots.ContainsKey((ItemSlot) i)) continue;
-
-                ItemSlots.Add((ItemSlot) i, item);
+                var currentSlot = (ItemSlot) i;
+                var currentItem = hero.Inventory.GetItem(currentSlot);
+                if (currentItem == null || !currentItem.Equals(item) || ItemSlots.ContainsKey(currentSlot)) continue;
+                ItemSlots.Add(currentSlot, item);
                 break;
             }
         }
@@ -718,6 +740,23 @@ namespace HpMpAbuse {
 
         private static void Drawing_OnPreReset(EventArgs args) {
             manaCheckText.OnLostDevice();
+        }
+
+        private static void Sleep(double duration, string name) {
+            double dur;
+            var tick = Environment.TickCount;
+            if (!Sleeps.TryGetValue(name, out dur) || dur < tick + duration)
+                Sleeps[name] = tick + duration;
+        }
+
+        private static bool SleepCheck(string id) {
+            double dur;
+            return !Sleeps.TryGetValue(id, out dur) || Environment.TickCount > dur;
+        }
+
+        private static void RemoveSleep(string id) {
+            if (Sleeps.ContainsKey(id))
+                Sleeps[id] = 0;
         }
     }
 }
