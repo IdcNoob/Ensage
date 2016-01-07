@@ -21,15 +21,10 @@ namespace CounterSpells {
 
         private static readonly string[] DefVsDisable = {
             "slark_dark_pact",
-            //"alchemist_chemical_rage",
             "juggernaut_blade_fury",
             "life_stealer_rage",
-            //"enchantress_natures_attendants",
             "omniknight_repel",
-            //"huskar_inner_vitality",
-            //"legion_commander_press_the_attack",
             "phantom_lancer_doppelwalk",
-            //"doom_bringer_scorched_earth",
             "item_manta"
         };
 
@@ -79,7 +74,8 @@ namespace CounterSpells {
             "rubick_telekinesis",
             "skywrath_mage_ancient_seal",
             "keeper_of_the_light_mana_leak",
-            "item_abyssal_blade",
+            "crystal_maiden_frostbite",
+            "item_abyssal_blade"
         };
 
         private static readonly string[] Invul = {
@@ -216,7 +212,7 @@ namespace CounterSpells {
                 Game.ExecuteCommand("-dota_camera_center_on_hero");
             }
 
-            if (!hero.CanUseItems() || hero.IsChanneling() || (hero.IsInvisible() && !hero.IsVisibleToEnemies))
+            if (!hero.CanUseItems() || hero.IsChanneling() || hero.IsInvul() || (hero.IsInvisible() && !hero.IsVisibleToEnemies))
                 return;
 
             var enemies =
@@ -226,6 +222,13 @@ namespace CounterSpells {
             foreach (var enemy in enemies) {
                 distance = hero.Distance2D(enemy);
                 angle = Math.Abs(enemy.FindAngleR() - Utils.DegreeToRadian(enemy.FindAngleForTurnTime(hero.NetworkPosition)));
+
+                if (enemy.NetworkActivity == NetworkActivity.Crit && distance <= 200 && angle <= 0.03) {
+                    if (UseOnSelf(
+                        Shift.Concat(
+                        DefVsPhys.Concat(
+                        DefVsDamage)))) return;
+                }
 
                 switch (enemy.ClassID) {
                     case ClassID.CDOTA_Unit_Hero_ArcWarden: {
@@ -2899,7 +2902,7 @@ namespace CounterSpells {
         }
 
         private static bool Blink(double castpoint = 5) {
-            if (!Menu.Item("blink").GetValue<bool>())
+            if (!Menu.Item("blink").GetValue<bool>() || hero.IsMagicImmune())
                 return false;
 
             castpoint -= 0.05;
@@ -3000,6 +3003,9 @@ namespace CounterSpells {
         }
 
         private static bool UseOnSelf(IEnumerable<string> abilitiesNames) {
+            if (hero.IsMagicImmune())
+                return false;
+
             foreach (
                 var ability in
                     abilitiesNames.Select(ability => hero.FindItem(ability) ?? hero.FindSpell(ability))
