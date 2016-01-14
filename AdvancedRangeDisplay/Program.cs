@@ -14,15 +14,28 @@ namespace AdvancedRangeDisplay {
 
         private static readonly Dictionary<string, ParticleEffect> ParticleDictionary =
             new Dictionary<string, ParticleEffect>();
-        private static readonly Dictionary<uint, float> AbilityRangeDictionary =
-            new Dictionary<uint, float>();
-        private static readonly Dictionary<string, bool> HeroesDictionary = new Dictionary<string, bool>();
 
-        private static readonly Menu Menu = new Menu("Advanced Ranges", "advancedRanges", true);
-        private static readonly Menu HeroesMenu = new Menu("Heroes", "rangeHeroes");
-        private static readonly Menu TowersMenu = new Menu("Towers", "rangeTowers");
+        private static readonly Dictionary<string, float> AbilityRangeDictionary =
+            new Dictionary<string, float>();
+
+        private static readonly List<string> ItemsList = new List<string>();
+        private static readonly Dictionary<string, bool> HeroesDictionary = new Dictionary<string, bool>();
+        private static readonly Dictionary<Hero, Menu> RangesMenu = new Dictionary<Hero, Menu>();
+
+        private static Menu Menu;
+        private static Menu HeroesMenu;
+        private static Menu TowersMenu;
 
         private static void Main() {
+            Game.OnUpdate += Game_OnUpdate;
+            Game.OnFireEvent += Game_OnFireEvent;
+        }
+
+        private static void MenuInit() {
+            Menu = new Menu("Advanced Ranges", "advancedRanges", true);
+            HeroesMenu = new Menu("Heroes", "rangeHeroes");
+            TowersMenu = new Menu("Towers", "rangeTowers");
+
             Menu.AddSubMenu(HeroesMenu);
 
             var allyTowers = new Menu("Ally", "ally");
@@ -70,9 +83,6 @@ namespace AdvancedRangeDisplay {
             Menu.AddSubMenu(TowersMenu);
 
             Menu.AddToMainMenu();
-
-            Game.OnUpdate += Game_OnUpdate;
-            Game.OnFireEvent += Game_OnFireEvent;
         }
 
         private static void Game_OnFireEvent(FireEventEventArgs args) {
@@ -92,11 +102,20 @@ namespace AdvancedRangeDisplay {
                     return;
                 }
 
+                if (Menu != null) {
+                    Menu.RemoveFromMainMenu();
+                    RangesMenu.Clear();
+                    Menu = null;
+                }
+
+                MenuInit();
+
                 foreach (var particleEffect in ParticleDictionary)
                     particleEffect.Value.Dispose();
 
                 ParticleDictionary.Clear();
                 HeroesDictionary.Clear();
+                ItemsList.Clear();
 
                 ShowTowerRange(Hero.Team, TowersMenu.Item("allyTowers").GetValue<bool>());
                 ShowTowerRange(Hero.GetEnemyTeam(), TowersMenu.Item("enemyTowers").GetValue<bool>());
@@ -111,54 +130,32 @@ namespace AdvancedRangeDisplay {
 
             var allHeroes = ObjectMgr.GetEntities<Hero>().Where(x => !x.IsIllusion).ToList();
 
-            foreach (var hero in allHeroes) {
-                foreach (
-                    var spell in
-                        hero.Spellbook.Spells.Where(
-                            x =>
-                                x.ClassID != ClassID.CDOTA_Ability_AttributeBonus &&
-                                AbilityRangeDictionary.ContainsKey(x.Handle))) {
-                    var castRange = 0f;
-                    AbilityRangeDictionary.TryGetValue(spell.Handle, out castRange);
-
-                    if (castRange <= 0)
-                        continue;
-
-                    var newCastRange = spell.GetCastRange();
-
-                    if (!newCastRange.Equals(castRange)) {
-                        AbilityRangeDictionary.Remove(spell.Handle);
-                        ChangeRange(hero, spell);
-                    }
-                }
-            }
-
             foreach (var hero in allHeroes.Where(enemy => !HeroesDictionary.ContainsKey(enemy.Name))) {
                 HeroesDictionary.Add(hero.Name, true);
 
                 var add = new Menu("", hero.Name + "range", false, hero.Name);
 
+                RangesMenu.Add(hero, add);
+
                 foreach (
                     var spell in
                         hero.Spellbook.Spells.Where(
                             x =>
-                                !x.IsAbilityBehavior(AbilityBehavior.Passive) ||
+                                (x.GetCastRange() >= 0 && !x.IsAbilityBehavior(AbilityBehavior.Passive)) ||
                                 x.ClassID == ClassID.CDOTA_Ability_AttributeBonus)) {
                     var addSpell = new Menu("", hero.Name + spell.Name, false, spell.Name);
 
                     addSpell.AddItem(new MenuItem(hero.Name + spell.Name + "spell", "Enabled"))
                         .SetValue(false)
-                        .DontSave()
-                        .ValueChanged += (sender, arg) => { ShowRange(hero, spell, arg.GetNewValue<bool>()); };
+                        .ValueChanged += (sender, arg) => { ShowRange(hero, spell.Name, arg.GetNewValue<bool>()); };
 
                     addSpell.AddItem(
                         new MenuItem(hero.Name + spell.Name + "bonus", "Bonus range").SetValue(new Slider(0, -300, 300)))
-                        .DontSave()
-                        .ValueChanged += (sender, arg) => { ChangeRange(hero, spell, arg.GetNewValue<Slider>().Value); };
+                        .ValueChanged +=
+                        (sender, arg) => { ChangeRange(hero, spell.Name, arg.GetNewValue<Slider>().Value); };
 
                     addSpell.AddItem(new MenuItem(hero.Name + spell.Name + "r", "Red").SetValue(new Slider(255, 0, 255)))
                         .SetFontStyle(fontColor: Color.IndianRed)
-                        .DontSave()
                         .ValueChanged +=
                         (sender, arg) => {
                             ChangeColor(hero.Name + spell.Name, arg.GetNewValue<Slider>().Value, Color.Red);
@@ -166,7 +163,6 @@ namespace AdvancedRangeDisplay {
 
                     addSpell.AddItem(new MenuItem(hero.Name + spell.Name + "g", "Green").SetValue(new Slider(0, 0, 255)))
                         .SetFontStyle(fontColor: Color.LightGreen)
-                        .DontSave()
                         .ValueChanged +=
                         (sender, arg) => {
                             ChangeColor(hero.Name + spell.Name, arg.GetNewValue<Slider>().Value, Color.Green);
@@ -174,7 +170,6 @@ namespace AdvancedRangeDisplay {
 
                     addSpell.AddItem(new MenuItem(hero.Name + spell.Name + "b", "Blue").SetValue(new Slider(0, 0, 255)))
                         .SetFontStyle(fontColor: Color.LightBlue)
-                        .DontSave()
                         .ValueChanged +=
                         (sender, arg) => {
                             ChangeColor(hero.Name + spell.Name, arg.GetNewValue<Slider>().Value, Color.Blue);
@@ -184,6 +179,110 @@ namespace AdvancedRangeDisplay {
                 }
 
                 HeroesMenu.AddSubMenu(add);
+            }
+
+            foreach (var hero in allHeroes) {
+                foreach (var spell in
+                    hero.Spellbook.Spells.Where(
+                        x => x.ClassID != ClassID.CDOTA_Ability_AttributeBonus &&
+                             AbilityRangeDictionary.ContainsKey(hero.Name + x.Name))) {
+                    var castRange = 0f;
+                    AbilityRangeDictionary.TryGetValue(hero.Name + spell.Name, out castRange);
+
+                    if (castRange <= 0)
+                        continue;
+
+                    var newCastRange = spell.GetCastRange();
+
+                    if (!newCastRange.Equals(castRange)) {
+                        AbilityRangeDictionary.Remove(hero.Name + spell.Name);
+                        ChangeRange(hero, spell.Name);
+                    }
+                }
+
+                foreach (var item in hero.Inventory.Items
+                        .Where(x => ItemsList.Contains(hero.Name + GetOriginalName(x.Name)))) {
+                    var castRange = 0f;
+
+                    var key = hero.Name + GetOriginalName(item.Name);
+
+                    AbilityRangeDictionary.TryGetValue(key, out castRange);
+
+                    var newCastRange = item.GetCastRange();
+
+                    if (newCastRange <= 0)
+                        continue;
+
+                    if (!newCastRange.Equals(castRange)) {
+                        AbilityRangeDictionary.Remove(key);
+                        ChangeRange(hero, GetOriginalName(item.Name));
+                    }
+                }
+
+                foreach (var data in ItemsList) {
+                    var array = data.Split(new[] {"item_"}, StringSplitOptions.None);
+
+                    if (hero.Name == array[0]) {
+                        array[1] = "item_" + array[1];
+
+                        ParticleEffect particleEffect;
+                        ParticleDictionary.TryGetValue(data, out particleEffect);
+
+                        if (hero.FindItem(array[1]) == null && hero.GetLeveledItem(array[1]) == null) {
+                            if (particleEffect != null) {
+                                particleEffect.Dispose();
+                                ParticleDictionary.Remove(data);
+                            }
+                        } else if (Menu.Item(data + "item").GetValue<bool>() && particleEffect == null) {
+                            ShowRange(hero, array[1], true);
+                        }
+                    }
+                }
+
+                foreach (
+                    var item in
+                        hero.Inventory.Items.Where(
+                            x => x.GetCastRange() > 0 && !ItemsList.Contains(hero.Name + GetOriginalName(x.Name)))) {
+                    Menu heroMenu;
+
+                    RangesMenu.TryGetValue(hero, out heroMenu);
+
+                    if (heroMenu == null)
+                        continue;
+
+                    var itemName = GetOriginalName(item.Name);
+                    var key = hero.Name + itemName;
+
+                    var addItem = new Menu("", key, false, itemName);
+
+                    addItem.AddItem(new MenuItem(key + "item", "Enabled"))
+                        .SetValue(false)
+                        .ValueChanged += (sender, arg) => { ShowRange(hero, itemName, arg.GetNewValue<bool>()); };
+
+                    addItem.AddItem(
+                        new MenuItem(key + "bonus", "Bonus range").SetValue(new Slider(0, -300, 300)))
+                        .ValueChanged +=
+                        (sender, arg) => { ChangeRange(hero, itemName, arg.GetNewValue<Slider>().Value); };
+
+                    addItem.AddItem(new MenuItem(key + "r", "Red").SetValue(new Slider(255, 0, 255)))
+                        .SetFontStyle(fontColor: Color.IndianRed)
+                        .ValueChanged +=
+                        (sender, arg) => { ChangeColor(key, arg.GetNewValue<Slider>().Value, Color.Red); };
+
+                    addItem.AddItem(new MenuItem(key + "g", "Green").SetValue(new Slider(0, 0, 255)))
+                        .SetFontStyle(fontColor: Color.LightGreen)
+                        .ValueChanged +=
+                        (sender, arg) => { ChangeColor(key, arg.GetNewValue<Slider>().Value, Color.Green); };
+
+                    addItem.AddItem(new MenuItem(key + "b", "Blue").SetValue(new Slider(0, 0, 255)))
+                        .SetFontStyle(fontColor: Color.LightBlue)
+                        .ValueChanged +=
+                        (sender, arg) => { ChangeColor(key, arg.GetNewValue<Slider>().Value, Color.Blue); };
+
+                    heroMenu.AddSubMenu(addItem);
+
+                    ItemsList.Add(hero.Name + GetOriginalName(item.Name));
+                }
             }
 
             Utils.Sleep(1000, "advancedRangeDisplay");
@@ -224,17 +323,20 @@ namespace AdvancedRangeDisplay {
             }
         }
 
-        private static void ChangeRange(Hero hero, Ability ability, int value = 0) {
+        private static void ChangeRange(Hero hero, string name, int value = 0) {
             ParticleEffect particleEffect;
-            ParticleDictionary.TryGetValue(hero.Name + ability.Name, out particleEffect);
+
+            var key = hero.Name + name;
+
+            ParticleDictionary.TryGetValue(key, out particleEffect);
 
             if (particleEffect == null)
                 return;
 
             particleEffect.Dispose();
-            ParticleDictionary.Remove(hero.Name + ability.Name);
+            ParticleDictionary.Remove(key);
 
-            ShowRange(hero, ability, true, value);
+            ShowRange(hero, name, true, value);
         }
 
         private static void DisposeDestroeydTowers() {
@@ -280,8 +382,13 @@ namespace AdvancedRangeDisplay {
             }
         }
 
-        private static void ShowRange(Hero hero, Ability ability, bool visible, int bonus = 0) {
-            var key = hero.Name + ability.Name;
+        private static void ShowRange(Hero hero, string name, bool visible, int bonus = 0) {
+            var ability = hero.FindItem(name) ?? hero.FindSpell(name) ?? hero.GetLeveledItem(GetOriginalName(name));
+
+            if (ability == null)
+                return;
+
+            var key = hero.Name + name;
 
             ParticleEffect particleEffect;
             ParticleDictionary.TryGetValue(key, out particleEffect);
@@ -300,22 +407,25 @@ namespace AdvancedRangeDisplay {
                 if (ability.ClassID == ClassID.CDOTA_Ability_AttributeBonus)
                     castRange = 1175;
 
-                if (AbilityRangeDictionary.ContainsKey(ability.Handle))
-                    AbilityRangeDictionary.Remove(ability.Handle);
+                if (AbilityRangeDictionary.ContainsKey(key))
+                    AbilityRangeDictionary.Remove(key);
 
-                AbilityRangeDictionary.Add(ability.Handle, castRange);
+                AbilityRangeDictionary.Add(key, castRange);
 
                 particleEffect.SetControlPoint(2,
                     new Vector3(
                         (float) (castRange * 1.15) +
-                        (bonus != 0 ? bonus : Menu.Item(key + "bonus").GetValue<Slider>().Value),
-                        255, 0));
+                        (bonus != 0 ? bonus : Menu.Item(key + "bonus").GetValue<Slider>().Value), 255, 0));
             } else {
                 if (particleEffect == null)
                     return;
                 particleEffect.Dispose();
                 ParticleDictionary.Remove(key);
             }
+        }
+
+        private static string GetOriginalName(string name) {
+            return char.IsDigit(name[name.Length - 1]) ? name.Remove(name.Length - 2) : name;
         }
     }
 }
