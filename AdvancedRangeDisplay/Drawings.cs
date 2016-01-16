@@ -155,8 +155,10 @@ namespace AdvancedRangeDisplay {
 
                 if (customRange)
                     Main.CustomRangesDictionary.TryGetValue(key, out castRange);
-                else
+                else {
                     castRange = ability.GetCastRange();
+                    if (castRange >= 5000) castRange = ability.GetRadius();
+                }
 
                 if (castRange <= 0)
                     return;

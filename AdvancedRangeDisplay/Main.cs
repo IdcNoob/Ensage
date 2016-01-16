@@ -4,19 +4,22 @@ using System.Linq;
 using Ensage;
 using Ensage.Common;
 using Ensage.Common.Extensions;
+//using Ensage.Common.Menu;
 
 namespace AdvancedRangeDisplay {
     internal static class Main {
+        public static Hero Hero { get; private set; }
+
         public static Dictionary<string, uint> AbilitiesDictionary = new Dictionary<string, uint>();
         public static Dictionary<string, uint> ItemsDictionary = new Dictionary<string, uint>();
         public static Dictionary<string, float> CustomRangesDictionary = new Dictionary<string, float>();
-
         public static HashSet<string> ItemsSet = new HashSet<string>();
+
         private static readonly List<Hero> HeroesLens = new List<Hero>();
+        //private static readonly List<string> RemoveFromMenu = new List<string>();
 
         private static bool inGame;
-        public static Hero Hero { get; private set; }
-
+        
         public static void Init() {
             Game.OnUpdate += Game_OnUpdate;
             Game.OnFireEvent += Game_OnFireEvent;
@@ -70,7 +73,7 @@ namespace AdvancedRangeDisplay {
                 }
 
                 foreach (var spell in
-                        hero.Spellbook.Spells.Where(x => Drawings.ParticleDictionary.ContainsKey(heroName + x.Name))) {
+                    hero.Spellbook.Spells.Where(x => Drawings.ParticleDictionary.ContainsKey(heroName + x.Name))) {
                     var key = heroName + spell.Name;
                     uint savedLevel;
                     AbilitiesDictionary.TryGetValue(key, out savedLevel);
@@ -107,11 +110,13 @@ namespace AdvancedRangeDisplay {
                     }
                 }
 
+
                 foreach (var key in AbilitiesDictionary.Keys.Where(x => x.StartsWith(heroName))
                     .Concat(ItemsDictionary.Keys.Where(x => x.StartsWith(heroName)))) {
                     var ability = hero.FindAbility(key.Substring(heroName.Length));
 
                     if (ability == null) {
+                        //RemoveFromMenu.Add(key);
                         if (Drawings.ParticleDictionary.ContainsKey(key))
                             Drawings.DisposeRange(key);
                     } else {
@@ -122,14 +127,32 @@ namespace AdvancedRangeDisplay {
                     }
                 }
 
-                foreach (var key in CustomRangesDictionary.Keys.Where(x =>
+            //    if (RemoveFromMenu.Any()) {
+            //        foreach (var key in RemoveFromMenu) {
+            //            if (ItemsSet.Contains(key))
+            //                ItemsSet.Remove(key);
+            //            if (ItemsDictionary.ContainsKey(key))
+            //                ItemsDictionary.Remove(key);
+            //            if (AbilitiesDictionary.ContainsKey(key))
+            //                AbilitiesDictionary.Remove(key);
+
+            //            Menu rangeMenu;
+            //            MainMenu.RangesMenu.TryGetValue(hero, out rangeMenu);
+            //            if (rangeMenu == null) continue;
+
+            //            rangeMenu.RemoveSubMenu(key);
+            //        }
+            //        RemoveFromMenu.Clear();
+            //}
+
+            foreach (var key in CustomRangesDictionary.Keys.Where(x =>
                         !Drawings.ParticleDictionary.ContainsKey(x) &&
                         x.StartsWith(heroName) &&
                         MainMenu.Menu.Item(x + "enabled").GetValue<bool>())) {
                     Drawings.DrawRange(hero, key.Substring(hero.Name.Length), true, customRange: true);
                 }
             }
-
+			
             Utils.Sleep(1000, "advancedRangeDisplay");
         }
 

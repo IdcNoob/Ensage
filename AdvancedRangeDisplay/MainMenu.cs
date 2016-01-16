@@ -72,10 +72,12 @@ namespace AdvancedRangeDisplay {
                 return;
 
             var castRange = item.GetCastRange();
+            if (castRange >= 5000) castRange = item.GetRadius();
+
             var itemName = item.Name.GetDefaultName();
             var key = hero.Name + itemName;
 
-            if (castRange > 0 && castRange < 5000) {
+            if (castRange > 0 && castRange <= 5000) {
                 var addItem = new Menu(string.Empty, key, false, itemName);
 
                 addItem.AddItem(new MenuItem(key + "enabled", "Enabled"))
