@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Ensage;
 using Ensage.Common.Extensions;
@@ -7,6 +8,25 @@ using SharpDX;
 
 namespace AdvancedRangeDisplay {
     internal static class Drawings {
+        public static readonly Vector2[][] TowerLocations = {
+            new[] {
+                new Vector2(-6096, 1840), new Vector2(-1504, -1376), new Vector2(4992, -6080),
+                new Vector2(-4672, 6016), new Vector2(1088, 320), new Vector2(6272, -1664)
+            },
+            new[] {
+                new Vector2(-560, -6096), new Vector2(-3512, -2776), new Vector2(-6080, -832),
+                new Vector2(6336, 384), new Vector2(2560, 2112), new Vector2(0, 6016)
+            },
+            new[] {
+                new Vector2(-3873, -6112), new Vector2(-4544, -4096), new Vector2(-6624, -3328),
+                new Vector2(6276, 2984), new Vector2(4288, 3712), new Vector2(3504, 5776)
+            },
+            new[] {
+                new Vector2(-5392, -5168), new Vector2(-5680, -4880),
+                new Vector2(5280, 4432), new Vector2(4960, 4784)
+            }
+        };
+
         private static ParticleEffect particleEffect;
 
         public static readonly Dictionary<string, ParticleEffect> ParticleDictionary =
@@ -14,8 +34,16 @@ namespace AdvancedRangeDisplay {
 
         public static void Init() {
             Clear();
-            DrawTowerRange(Main.Hero.Team, MainMenu.TowersMenu.Item("allyTowers").GetValue<bool>());
-            DrawTowerRange(Main.Hero.GetEnemyTeam(), MainMenu.TowersMenu.Item("enemyTowers").GetValue<bool>());
+
+            var team = Main.Hero.Team;
+            var eteam = Main.Hero.GetEnemyTeam();
+
+            for (var i = 1; i <= 4; i++) {
+                if (MainMenu.TowersMenu.Item("allyTowersT" + i).GetValue<bool>())
+                    DrawTowerRange(team, true, TowerLocations[i - 1], "T" + i);
+                if (MainMenu.TowersMenu.Item("enemyTowersT" + i).GetValue<bool>())
+                    DrawTowerRange(eteam, true, TowerLocations[i - 1], "T" + i);
+            }
         }
 
         public static void Clear() {
@@ -60,13 +88,15 @@ namespace AdvancedRangeDisplay {
             ParticleDictionary.Remove(key);
         }
 
-        public static void ChangeColor(Team team, int value, Color color) {
-            var towers =
-                ObjectMgr.GetEntities<Unit>()
-                    .Where(x => x.ClassID == ClassID.CDOTA_BaseNPC_Tower && x.Team == team && x.IsAlive)
-                    .ToList();
-
-            foreach (var tower in towers) {
+        public static void ChangeColor(Team team, int value, Color color, Vector2[] towerLocations, string towers) {
+            foreach (
+                var tower in
+                    from tower in
+                        ObjectMgr.GetEntities<Unit>()
+                            .Where(x => x.ClassID == ClassID.CDOTA_BaseNPC_Tower && x.Team == team && x.IsAlive)
+                    from towerLocation in towerLocations
+                    where tower.Distance2D(towerLocation.ToVector3()) < 300
+                    select tower) {
                 ParticleDictionary.TryGetValue(tower.Handle.ToString(), out particleEffect);
 
                 if (particleEffect == null)
@@ -75,9 +105,9 @@ namespace AdvancedRangeDisplay {
                 var key = Main.Hero.Team == team ? "allyTowers" : "enemyTowers";
 
                 particleEffect.SetControlPoint(1, new Vector3(
-                    color == Color.Red ? value : MainMenu.Menu.Item(key + "R").GetValue<Slider>().Value,
-                    color == Color.Green ? value : MainMenu.Menu.Item(key + "G").GetValue<Slider>().Value,
-                    color == Color.Blue ? value : MainMenu.Menu.Item(key + "B").GetValue<Slider>().Value));
+                    color == Color.Red ? value : MainMenu.Menu.Item(key + "R" + towers).GetValue<Slider>().Value,
+                    color == Color.Green ? value : MainMenu.Menu.Item(key + "G" + towers).GetValue<Slider>().Value,
+                    color == Color.Blue ? value : MainMenu.Menu.Item(key + "B" + towers).GetValue<Slider>().Value));
             }
         }
 
@@ -87,24 +117,39 @@ namespace AdvancedRangeDisplay {
             if (particleEffect == null)
                 return;
 
-            var castRange = 0f;
+            var ability = hero.FindAbility(key.Substring(hero.Name.Length));
 
-            if (customRange)
-                Main.CustomRangesDictionary.TryGetValue(key, out castRange);
-            else
-                castRange = hero.FindAbility(key.Substring(hero.Name.Length)).GetCastRange();
-
-            particleEffect.SetControlPoint(2, new Vector3((float) (castRange * 1.1 + value) * -1, 255, 0));
+            particleEffect.SetControlPoint(2,
+                new Vector3((ability.GetRealCastRange(key, customRange) + value) * -1, 255, 0));
             particleEffect.Restart();
         }
 
-        public static void DrawTowerRange(Team team, bool enabled) {
-            var towers =
-                ObjectMgr.GetEntities<Unit>()
-                    .Where(x => x.ClassID == ClassID.CDOTA_BaseNPC_Tower && x.Team == team && x.IsAlive)
-                    .ToList();
+        public static void ChangeTowerRanges(int range) {
+            if (!MainMenu.TowersMenu.Item("towersNightRange").GetValue<bool>())
+                return;
+
+            var towers = ObjectMgr.GetEntities<Unit>().Where(x => x.ClassID == ClassID.CDOTA_BaseNPC_Tower && x.IsAlive);
 
             foreach (var tower in towers) {
+                ParticleDictionary.TryGetValue(tower.Handle.ToString(), out particleEffect);
+
+                if (particleEffect == null)
+                    continue;
+
+                particleEffect.SetControlPoint(2, new Vector3(range * -1, 255, 0));
+                particleEffect.Restart();
+            }
+        }
+
+        public static void DrawTowerRange(Team team, bool enabled, Vector2[] towerLocations, string towers) {
+            foreach (
+                var tower in
+                    from tower in
+                        ObjectMgr.GetEntities<Unit>()
+                            .Where(x => x.ClassID == ClassID.CDOTA_BaseNPC_Tower && x.Team == team && x.IsAlive)
+                    from towerLocation in towerLocations
+                    where tower.Distance2D(towerLocation.ToVector3()) < 300
+                    select tower) {
                 if (!enabled) {
                     ParticleDictionary.TryGetValue(tower.Handle.ToString(), out particleEffect);
                     if (particleEffect == null) continue;
@@ -117,11 +162,11 @@ namespace AdvancedRangeDisplay {
                     var key = Main.Hero.Team == team ? "allyTowers" : "enemyTowers";
 
                     particleEffect.SetControlPoint(1, new Vector3(
-                        MainMenu.Menu.Item(key + "R").GetValue<Slider>().Value,
-                        MainMenu.Menu.Item(key + "G").GetValue<Slider>().Value,
-                        MainMenu.Menu.Item(key + "B").GetValue<Slider>().Value));
+                        MainMenu.Menu.Item(key + "R" + towers).GetValue<Slider>().Value,
+                        MainMenu.Menu.Item(key + "G" + towers).GetValue<Slider>().Value,
+                        MainMenu.Menu.Item(key + "B" + towers).GetValue<Slider>().Value));
 
-                    particleEffect.SetControlPoint(2, new Vector3(950, 255, 0));
+                    particleEffect.SetControlPoint(2, new Vector3(950 * -1, 255, 0));
                 }
             }
         }
@@ -151,24 +196,34 @@ namespace AdvancedRangeDisplay {
                     MainMenu.Menu.Item(key + "green").GetValue<Slider>().Value,
                     MainMenu.Menu.Item(key + "blue").GetValue<Slider>().Value));
 
-                var castRange = 0f;
-
-                if (customRange)
-                    Main.CustomRangesDictionary.TryGetValue(key, out castRange);
-                else {
-                    castRange = ability.GetCastRange();
-                    if (castRange >= 5000) castRange = ability.GetRadius();
-                }
-
-                if (castRange <= 0)
-                    return;
-
                 particleEffect.SetControlPoint(2,
-                    new Vector3((float)(castRange * 1.1 +
-                        (bonus != 0 ? bonus : MainMenu.Menu.Item(key + "bonus").GetValue<Slider>().Value)) * -1, 255, 0));
+                    new Vector3(
+                        (ability.GetRealCastRange(key, customRange) +
+                         (bonus != 0 ? bonus : MainMenu.Menu.Item(key + "bonus").GetValue<Slider>().Value)) * -1,
+                        255, 0));
             } else {
                 DisposeRange(key);
             }
+        }
+
+        private static float GetRealCastRange(this Ability ability, string key, bool customRange) {
+            var castRange = 0f;
+
+            if (customRange) {
+                Main.CustomRangesDictionary.TryGetValue(key, out castRange);
+                return castRange;
+            }
+
+            castRange = ability.GetCastRange();
+            if (castRange <= 0 || castRange >= 5000) castRange = ability.GetRadius();
+
+            if (!ability.IsAbilityBehavior(AbilityBehavior.NoTarget)) {
+                castRange += (float) Math.Max(castRange / 4.5, 80);
+            } else {
+                castRange += (float) Math.Max(castRange / 6.7, 40);
+            }
+
+            return castRange;
         }
     }
 }

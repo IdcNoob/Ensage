@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Ensage;
 using Ensage.Common.Extensions;
@@ -7,12 +8,12 @@ using SharpDX;
 
 namespace AdvancedRangeDisplay {
     internal static class MainMenu {
-        public static Menu Menu { get; private set; }
-        public static Menu TowersMenu { get; private set; }
         public static Dictionary<Hero, Menu> RangesMenu = new Dictionary<Hero, Menu>();
 
         private static Menu HeroesMenu;
-        
+        public static Menu Menu { get; private set; }
+        public static Menu TowersMenu { get; private set; }
+
         public static void Init() {
             if (Menu != null) {
                 Menu.RemoveFromMainMenu();
@@ -28,7 +29,7 @@ namespace AdvancedRangeDisplay {
 
             RangesMenu.Add(hero, heroMenu);
 
-            foreach (var spell in hero.Spellbook.Spells.Where(x => !x.IsAbilityBehavior(AbilityBehavior.Passive))) {
+            foreach (var spell in hero.Spellbook.Spells.Where(x => x.ClassID != ClassID.CDOTA_Ability_AttributeBonus)) {
                 var spellName = spell.Name;
                 var key = heroName + spellName;
 
@@ -58,7 +59,7 @@ namespace AdvancedRangeDisplay {
 
                 heroMenu.AddSubMenu(spellMenu);
 
-                Main.AbilitiesDictionary.Add(key, spell.Level);
+                Main.AbilitiesDictionary.Add(key, Math.Max(spell.Level, 1));
             }
 
             HeroesMenu.AddSubMenu(heroMenu);
@@ -126,7 +127,8 @@ namespace AdvancedRangeDisplay {
             addItem.AddItem(new MenuItem(key + "enabled", "Enabled"))
                 .SetValue(false)
                 .SetTooltip(tooltip)
-                .ValueChanged += (sender, arg) => { Drawings.DrawRange(hero, texture, arg.GetNewValue<bool>(), customRange: true); };
+                .ValueChanged +=
+                (sender, arg) => { Drawings.DrawRange(hero, texture, arg.GetNewValue<bool>(), customRange: true); };
 
             addItem.AddItem(
                 new MenuItem(key + "bonus", "Bonus range").SetValue(new Slider(0, -300, 300)))
@@ -158,52 +160,88 @@ namespace AdvancedRangeDisplay {
             HeroesMenu = new Menu("Heroes", "rangeHeroes");
             TowersMenu = new Menu("Towers", "rangeTowers");
 
+            TowersMenu.AddItem(new MenuItem("towersNightRange", "Night change"))
+                .SetValue(true)
+                .SetTooltip("Change vision range at night");
+
             Menu.AddSubMenu(HeroesMenu);
 
             var allyTowers = new Menu("Ally", "ally");
             var enemyTowers = new Menu("Enemy", "enemy");
 
-            allyTowers.AddItem(new MenuItem("allyTowers", "Enabled")).SetValue(true).ValueChanged +=
-                (sender, arg) => { Drawings.DrawTowerRange(Main.Hero.Team, arg.GetNewValue<bool>()); };
+            var team = Main.Hero.Team;
+            var eteam = Main.Hero.GetEnemyTeam();
 
-            allyTowers.AddItem(new MenuItem("allyTowersR", "Red").SetValue(new Slider(0, 0, 255)))
-                .SetFontStyle(fontColor: Color.IndianRed)
-                .ValueChanged +=
-                (sender, arg) => { Drawings.ChangeColor(Main.Hero.Team, arg.GetNewValue<Slider>().Value, Color.Red); };
+            for (var i = 1; i <= 4; i++) {
+                var index = i - 1;
+                var tower = i;
 
-            allyTowers.AddItem(new MenuItem("allyTowersG", "Green").SetValue(new Slider(255, 0, 255)))
-                .SetFontStyle(fontColor: Color.LightGreen)
-                .ValueChanged +=
-                (sender, arg) => { Drawings.ChangeColor(Main.Hero.Team, arg.GetNewValue<Slider>().Value, Color.Green); };
+                var allyT = new Menu("T" + i, "allyT" + i);
+                var enemyT = new Menu("T" + i, "enemyT" + i);
 
-            allyTowers.AddItem(new MenuItem("allyTowersB", "Blue").SetValue(new Slider(0, 0, 255)))
-                .SetFontStyle(fontColor: Color.LightBlue)
-                .ValueChanged +=
-                (sender, arg) => { Drawings.ChangeColor(Main.Hero.Team, arg.GetNewValue<Slider>().Value, Color.Blue); };
+                allyT.AddItem(new MenuItem("allyTowersT" + i, "Enabled")).SetValue(true).ValueChanged +=
+                    (sender, arg) => {
+                        Drawings.DrawTowerRange(team, arg.GetNewValue<bool>(), Drawings.TowerLocations[index],
+                            "T" + tower);
+                    };
 
-            enemyTowers.AddItem(new MenuItem("enemyTowers", "Enabled")).SetValue(true).ValueChanged +=
-                (sender, arg) => { Drawings.DrawTowerRange(Main.Hero.GetEnemyTeam(), arg.GetNewValue<bool>()); };
+                allyT.AddItem(new MenuItem("allyTowersRT" + i, "Red").SetValue(new Slider(0, 0, 255)))
+                    .SetFontStyle(fontColor: Color.IndianRed)
+                    .ValueChanged +=
+                    (sender, arg) => {
+                        Drawings.ChangeColor(team, arg.GetNewValue<Slider>().Value, Color.Red,
+                            Drawings.TowerLocations[index], "T" + tower);
+                    };
 
-            enemyTowers.AddItem(new MenuItem("enemyTowersR", "Red").SetValue(new Slider(255, 0, 255)))
-                .SetFontStyle(fontColor: Color.IndianRed)
-                .ValueChanged +=
-                (sender, arg) => {
-                    Drawings.ChangeColor(Main.Hero.GetEnemyTeam(), arg.GetNewValue<Slider>().Value, Color.Red);
-                };
+                allyT.AddItem(new MenuItem("allyTowersGT" + i, "Green").SetValue(new Slider(255, 0, 255)))
+                    .SetFontStyle(fontColor: Color.LightGreen)
+                    .ValueChanged +=
+                    (sender, arg) => {
+                        Drawings.ChangeColor(team, arg.GetNewValue<Slider>().Value, Color.Green,
+                            Drawings.TowerLocations[index], "T" + tower);
+                    };
 
-            enemyTowers.AddItem(new MenuItem("enemyTowersG", "Green").SetValue(new Slider(0, 0, 255)))
-                .SetFontStyle(fontColor: Color.LightGreen)
-                .ValueChanged +=
-                (sender, arg) => {
-                    Drawings.ChangeColor(Main.Hero.GetEnemyTeam(), arg.GetNewValue<Slider>().Value, Color.Green);
-                };
+                allyT.AddItem(new MenuItem("allyTowersBT" + i, "Blue").SetValue(new Slider(0, 0, 255)))
+                    .SetFontStyle(fontColor: Color.LightBlue)
+                    .ValueChanged +=
+                    (sender, arg) => {
+                        Drawings.ChangeColor(team, arg.GetNewValue<Slider>().Value, Color.Blue,
+                            Drawings.TowerLocations[index], "T" + tower);
+                    };
 
-            enemyTowers.AddItem(new MenuItem("enemyTowersB", "Blue").SetValue(new Slider(0, 0, 255)))
-                .SetFontStyle(fontColor: Color.LightBlue)
-                .ValueChanged +=
-                (sender, arg) => {
-                    Drawings.ChangeColor(Main.Hero.GetEnemyTeam(), arg.GetNewValue<Slider>().Value, Color.Blue);
-                };
+                enemyT.AddItem(new MenuItem("enemyTowersT" + i, "Enabled")).SetValue(true).ValueChanged +=
+                    (sender, arg) => {
+                        Drawings.DrawTowerRange(eteam, arg.GetNewValue<bool>(), Drawings.TowerLocations[index],
+                            "T" + tower);
+                    };
+
+                enemyT.AddItem(new MenuItem("enemyTowersRT" + i, "Red").SetValue(new Slider(255, 0, 255)))
+                    .SetFontStyle(fontColor: Color.IndianRed)
+                    .ValueChanged +=
+                    (sender, arg) => {
+                        Drawings.ChangeColor(eteam, arg.GetNewValue<Slider>().Value, Color.Red,
+                            Drawings.TowerLocations[index], "T" + tower);
+                    };
+
+                enemyT.AddItem(new MenuItem("enemyTowersGT" + i, "Green").SetValue(new Slider(0, 0, 255)))
+                    .SetFontStyle(fontColor: Color.LightGreen)
+                    .ValueChanged +=
+                    (sender, arg) => {
+                        Drawings.ChangeColor(eteam, arg.GetNewValue<Slider>().Value, Color.Green,
+                            Drawings.TowerLocations[index], "T" + tower);
+                    };
+
+                enemyT.AddItem(new MenuItem("enemyTowersBT" + i, "Blue").SetValue(new Slider(0, 0, 255)))
+                    .SetFontStyle(fontColor: Color.LightBlue)
+                    .ValueChanged +=
+                    (sender, arg) => {
+                        Drawings.ChangeColor(eteam, arg.GetNewValue<Slider>().Value, Color.Blue,
+                            Drawings.TowerLocations[index], "T" + tower);
+                    };
+
+                allyTowers.AddSubMenu(allyT);
+                enemyTowers.AddSubMenu(enemyT);
+            }
 
             TowersMenu.AddSubMenu(allyTowers);
             TowersMenu.AddSubMenu(enemyTowers);
