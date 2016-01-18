@@ -2985,7 +2985,11 @@ namespace CounterSpells {
                             ability => ability != null && ability.CanBeCasted() && (ability is Item || hero.CanCast()))) {
 
                 if (ability.IsAbilityBehavior(AbilityBehavior.NoTarget)) {
-                    ability.UseAbility();
+                    if (ability.GetCastDelay(hero, target, true) <= castpoint &&
+                        target.IsValidTarget(ability.GetCastRange(), false, hero.NetworkPosition) &&
+                        (!target.IsMagicImmune() || IgnoresMagicImmunity.Any(ability.Name.Equals))) {
+                            ability.UseAbility();
+                        } else continue;
                 } else if (ability.IsAbilityBehavior(AbilityBehavior.UnitTarget)) {
                     if (ability.GetCastDelay(hero, target, true) <= castpoint &&
                         target.IsValidTarget(ability.GetCastRange(), false, hero.NetworkPosition) &&
@@ -2993,7 +2997,11 @@ namespace CounterSpells {
                             ability.UseAbility(target);
                     } else continue;
                 } else {
-                    ability.UseAbility(hero.Position);
+                    if (ability.GetCastDelay(hero, target, true) <= castpoint &&
+                        target.IsValidTarget(ability.GetCastRange(), false, hero.NetworkPosition) &&
+                        (!target.IsMagicImmune() || IgnoresMagicImmunity.Any(ability.Name.Equals))) {
+                            ability.UseAbility(hero.Position);
+                        } else continue;
                 }
 
                 Utils.Sleep(1000, "CounterDelay");
