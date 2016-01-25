@@ -23,9 +23,9 @@ namespace AnotherSnatcher {
             };
             var itemsHold = itemsToggle.ToDictionary(x => x.Key, x => x.Value);
 
-            Menu.AddItem(new MenuItem("holdSnatchKey", "Hold Key").SetValue(new KeyBind('O', KeyBindType.Press)));
+            Menu.AddItem(new MenuItem("holdSnatchKey", "Hold key").SetValue(new KeyBind('O', KeyBindType.Press)));
             Menu.AddItem(new MenuItem("enabledStealHold", "Hold steal:").SetValue(new AbilityToggler(itemsToggle)));
-            Menu.AddItem(new MenuItem("pressSnatchKey", "Toggle Key").SetValue(new KeyBind('P', KeyBindType.Toggle)));
+            Menu.AddItem(new MenuItem("pressSnatchKey", "Toggle key").SetValue(new KeyBind('P', KeyBindType.Toggle)));
             Menu.AddItem(new MenuItem("enabledStealToggle", "Toggle steal:").SetValue(new AbilityToggler(itemsHold)));
             Menu.AddItem(new MenuItem("sleep", "Check delay").SetValue(new Slider(200, 50, 500)));
 

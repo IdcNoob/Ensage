@@ -123,6 +123,7 @@ namespace CounterSpells {
             "magnataur_skewer",
             "item_force_staff",
             "queenofpain_blink",
+            "morphling_morph_replicate",
             "morphling_waveform",
             "sandking_burrowstrike",
             "faceless_void_time_walk",
