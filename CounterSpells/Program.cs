@@ -2956,7 +2956,8 @@ namespace CounterSpells {
                     blink.UseAbility(hero);
                 }
             } else if (blink.IsAbilityBehavior(AbilityBehavior.NoTarget)) {
-                if (hero.GetTurnTime(home) > 0) {
+                if (hero.GetTurnTime(home) > 0 &&
+                    blink.Name != "morphling_morph_replicate") {
                     hero.Move(position);
                     blink.UseAbility(true);
                 } else {
