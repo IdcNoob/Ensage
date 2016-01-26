@@ -101,8 +101,7 @@ namespace HpMpAbuse {
             RecoveryMenu.AddSubMenu(forcePick);
 
             PTMenu.AddItem(new MenuItem("enabledPT", "Enabled").SetValue(true));
-            PTMenu.AddItem(new MenuItem("enabledPTAbilities", "Enabled for").SetValue(new AbilityToggler(AbilitiesPT)))
-                .DontSave();
+            PTMenu.AddItem(new MenuItem("enabledPTAbilities", "Enabled for").SetValue(new AbilityToggler(AbilitiesPT)));
             PTMenu.AddItem(new MenuItem("switchPTonMove", "Switch when moving").SetValue(
                 new StringList(new[] {"Don't switch", "Main attribute", "Strength", "Intelligence", "Agility"})))
                 .SetTooltip("Switch PT to selected attribute when moving");
@@ -119,18 +118,14 @@ namespace HpMpAbuse {
                 .SetTooltip("Auto disable PT switching after X min (always enabled: 0)"));
 
             SoulRingMenu.AddItem(new MenuItem("enabledSR", "Enabled").SetValue(true));
-            SoulRingMenu.AddItem(
-                new MenuItem("enabledSRAbilities", "Enabled for").SetValue(new AbilityToggler(AbilitiesSR)))
-                .DontSave();
+            SoulRingMenu.AddItem( new MenuItem("enabledSRAbilities", "Enabled for").SetValue(new AbilityToggler(AbilitiesSR)));
             SoulRingMenu.AddItem(new MenuItem("soulringMPThreshold", "MP% threshold").SetValue(new Slider(90))
                 .SetTooltip("Don't use soul ring if you have more MP%"));
             SoulRingMenu.AddItem(new MenuItem("soulringHPThreshold", "HP% threshold").SetValue(new Slider(30))
                 .SetTooltip("Don't use soul ring if you have less HP%"));
 
             ManaCheckMenu.AddItem(new MenuItem("enabledMC", "Enabled").SetValue(false));
-            ManaCheckMenu.AddItem(
-                new MenuItem("enabledMCAbilities", "Enabled for").SetValue(new AbilityToggler(AbilitiesMC)))
-                .DontSave();
+            ManaCheckMenu.AddItem(new MenuItem("enabledMCAbilities", "Enabled for").SetValue(new AbilityToggler(AbilitiesMC)));
             ManaCheckMenu.AddItem(new MenuItem("mcManaInfo", "Show mana info").SetValue(true)
                 .SetTooltip("Will show how much mana left/needed after/before casting combo"));
             ManaCheckMenu.AddItem(new MenuItem("mcPTcalculations", "Include PT switcher calculations").SetValue(true)
@@ -277,9 +272,9 @@ namespace HpMpAbuse {
             }
 
             if (reloadMenu) {
-                PTMenu.Item("enabledPTAbilities").SetValue((new AbilityToggler(AbilitiesPT))).DontSave();
-                SoulRingMenu.Item("enabledSRAbilities").SetValue((new AbilityToggler(AbilitiesSR))).DontSave();
-                ManaCheckMenu.Item("enabledMCAbilities").SetValue((new AbilityToggler(AbilitiesMC))).DontSave();
+                PTMenu.Item("enabledPTAbilities").SetValue((new AbilityToggler(AbilitiesPT)));
+                SoulRingMenu.Item("enabledSRAbilities").SetValue((new AbilityToggler(AbilitiesSR)));
+                ManaCheckMenu.Item("enabledMCAbilities").SetValue((new AbilityToggler(AbilitiesMC)));
             }
 
             if (!autoDisablePT && Game.GameTime / 60 > PTMenu.Item("autoPTdisable").GetValue<Slider>().Value &&
@@ -293,19 +288,8 @@ namespace HpMpAbuse {
 
             powerTreads = hero.FindItem("item_power_treads") as PowerTreads;
 
-            if (powerTreads != null && !ptChanged && !attacking) {
-                switch (powerTreads.ActiveAttribute) {
-                    case Attribute.Intelligence: // agi
-                        lastPtAttribute = Attribute.Agility;
-                        break;
-                    case Attribute.Strength:
-                        lastPtAttribute = Attribute.Strength;
-                        break;
-                    case Attribute.Agility: // int
-                        lastPtAttribute = Attribute.Intelligence;
-                        break;
-                }
-            }
+            if (powerTreads != null && !ptChanged && !attacking)
+                lastPtAttribute = powerTreads.ActiveAttribute;
 
             if (attacking)
                 ChangePtOnAction("switchPTonAttack", true);
@@ -598,26 +582,26 @@ namespace HpMpAbuse {
 
             switch (powerTreads.ActiveAttribute) {
                 case Attribute.Strength:
-                    ptNow = 1;
-                    break;
-                case Attribute.Agility: // int
-                    ptNow = 2;
-                    break;
-                case Attribute.Intelligence: // agi
-                    ptNow = 3;
-                    break;
+                ptNow = 1;
+                break;
+                case Attribute.Agility:
+                ptNow = 3;
+                break;
+                case Attribute.Intelligence:
+                ptNow = 2;
+                break;
             }
 
             switch (attribute) {
                 case Attribute.Strength:
-                    ptTo = 1;
-                    break;
+                ptTo = 1;
+                break;
                 case Attribute.Intelligence:
-                    ptTo = 2;
-                    break;
+                ptTo = 2;
+                break;
                 case Attribute.Agility:
-                    ptTo = 3;
-                    break;
+                ptTo = 3;
+                break;
             }
 
             if (ptNow == ptTo)
