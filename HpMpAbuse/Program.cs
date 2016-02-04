@@ -42,7 +42,8 @@ namespace HpMpAbuse {
             "windrunner_focusfire",
             "clinkz_searing_arrows",
             "silencer_glaives_of_wisdom",
-            "templar_assassin_meld"
+            "templar_assassin_meld",
+            "obsidian_destroyer_arcane_orb"
         };
 
         private static readonly string[] IgnoredSpells = {
@@ -194,7 +195,8 @@ namespace HpMpAbuse {
             switch (args.Order) {
                 case Order.AttackTarget:
                 case Order.AttackLocation:
-                    ChangePtOnAction("switchPTonAttack", true);
+                    ChangePtOnAction("switchPTonAttack");
+                    attacking = true;
                     break;
                 case Order.AbilityTarget:
                 case Order.AbilityLocation:
@@ -202,11 +204,13 @@ namespace HpMpAbuse {
                 case Order.ToggleAbility:
                     if (!Game.IsKeyDown(16))
                         CastSpell(args);
+                    attacking = false;
                     break;
                 case Order.MoveLocation:
                 case Order.MoveTarget:
                     PickUpItemsOnMove(args);
                     ChangePtOnAction("switchPTonMove");
+                    attacking = false;
                     break;
                 default:
                     attacking = false;
@@ -290,9 +294,6 @@ namespace HpMpAbuse {
 
             if (powerTreads != null && !ptChanged && !attacking)
                 lastPtAttribute = powerTreads.ActiveAttribute;
-
-            if (attacking)
-                ChangePtOnAction("switchPTonAttack", true);
 
             if (ManaCheckMenu.Item("enabledMC").GetValue<bool>()) {
                 var heroMana = hero.Mana;
@@ -398,7 +399,7 @@ namespace HpMpAbuse {
 
                 var allies =
                     ObjectMgr.GetEntities<Hero>()
-                        .Where(x => x.Distance2D(hero) <= 900 && x.IsAlive && x.Team == hero.Team);
+                        .Where(x => x.Distance2D(hero) <= 900 && x.IsAlive && x.Team == hero.Team && !x.Equals(hero));
 
                 foreach (var ally in allies) {
                     var allyArcaneBoots = ally.FindItem("item_arcane_boots");
@@ -406,7 +407,7 @@ namespace HpMpAbuse {
                     var allyGreaves = ally.FindItem("item_guardian_greaves");
 
                     if (allyArcaneBoots != null && allyArcaneBoots.AbilityState == AbilityState.Ready) {
-                        ChangePowerTreads(Attribute.Agility);
+                        ChangePowerTreads(Attribute.Strength);
                         DropItems(BonusMana);
                     }
 
@@ -518,7 +519,7 @@ namespace HpMpAbuse {
 
             switch (args.Order) {
                 case Order.AbilityTarget: {
-                    var target = (Unit) args.Target;
+                    var target = args.Target as Unit;
                     if (target != null && target.IsAlive) {
                         var castRange = spell.GetCastRange() + 300;
 
@@ -526,7 +527,8 @@ namespace HpMpAbuse {
                             if (PTMenu.Item("enabledPTAbilities").GetValue<AbilityToggler>().IsEnabled(spell.Name))
                                 ChangePowerTreads(Attribute.Intelligence);
                             else if (AttackSpells.Any(spell.Name.Equals)) {
-                                ChangePtOnAction("switchPTonAttack", true);
+                                ChangePtOnAction("switchPTonAttack");
+                                attacking = true;
                             }
                             sleep += hero.GetTurnTime(target) * 1000;
                         }
@@ -550,7 +552,8 @@ namespace HpMpAbuse {
                         if (PTMenu.Item("enabledPTAbilities").GetValue<AbilityToggler>().IsEnabled(spell.Name))
                             ChangePowerTreads(Attribute.Intelligence);
                         else if (spell.Name == AttackSpells[3]) {
-                            ChangePtOnAction("switchPTonAttack", true);
+                            ChangePtOnAction("switchPTonAttack");
+                            attacking = true;
                         }
                     }
                     spell.UseAbility();
@@ -618,7 +621,7 @@ namespace HpMpAbuse {
                 powerTreads.UseAbility();
         }
 
-        private static void ChangePtOnAction(string action, bool isAttacking = false) {
+        private static void ChangePtOnAction(string action) {
             if (!PTMenu.Item("enabledPT").GetValue<bool>() || healActive || enabledRecovery ||
                 !Utils.SleepCheck("HpMpAbuseDelay2"))
                 return;
@@ -640,9 +643,7 @@ namespace HpMpAbuse {
                     return;
             }
 
-            attacking = isAttacking;
-
-            Utils.Sleep(500, "HpMpAbuseDelay2");
+            Utils.Sleep(350, "HpMpAbuseDelay2");
         }
 
         private static void PickUpItemsOnMove(ExecuteOrderEventArgs args) {
