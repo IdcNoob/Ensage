@@ -23,8 +23,21 @@ namespace HpMpAbuse {
         private static Font manaCheckText;
         private static int manaLeft;
 
-        private static readonly string[] BonusHealth = {"bonus_strength", "bonus_health", "bonus_all_stats", "bonus_stats"};
-        private static readonly string[] BonusMana = {"bonus_intellect", "bonus_mana", "bonus_all_stats", "bonus_stats"};
+        private static readonly string[] BonusHealth = {
+            "bonus_strength",
+            "bonus_str", // Veil of Discord fix
+            "bonus_health",
+            "bonus_all_stats",
+            "bonus_stats" // Drum of Endurance fix
+        };
+
+        private static readonly string[] BonusMana = {
+            "bonus_intellect",
+            "bonus_int", // Veil of Discord fix
+            "bonus_mana",
+            "bonus_all_stats",
+            "bonus_stats" // Drum of Endurance fix
+        };
 
         private static readonly Menu Menu = new Menu("Smart HP/MP Abuse", "smartAbuse", true);
 
@@ -110,7 +123,7 @@ namespace HpMpAbuse {
                 new StringList(new[] {"Don't switch", "Main attribute", "Strength", "Intelligence", "Agility"})))
                 .SetTooltip("Switch PT to selected attribute when attacking");
             PTMenu.AddItem(new MenuItem("switchPTHeal", "Swtich when healing").SetValue(true))
-                .SetTooltip("Bottle, flask, clarity and other hero spells");
+                .SetTooltip("Bottle, flask, clarity and some hero spells");
             PTMenu.AddItem(new MenuItem("manaPTThreshold", "Mana cost threshold").SetValue(new Slider(15, 0, 50))
                 .SetTooltip("Don't switch PT if spell/item costs less mana"));
             PTMenu.AddItem(new MenuItem("switchbackPTdelay", "Switch back delay").SetValue(new Slider(500, 100, 1000))
@@ -119,14 +132,16 @@ namespace HpMpAbuse {
                 .SetTooltip("Auto disable PT switching after X min (always enabled: 0)"));
 
             SoulRingMenu.AddItem(new MenuItem("enabledSR", "Enabled").SetValue(true));
-            SoulRingMenu.AddItem( new MenuItem("enabledSRAbilities", "Enabled for").SetValue(new AbilityToggler(AbilitiesSR)));
+            SoulRingMenu.AddItem(
+                new MenuItem("enabledSRAbilities", "Enabled for").SetValue(new AbilityToggler(AbilitiesSR)));
             SoulRingMenu.AddItem(new MenuItem("soulringMPThreshold", "MP% threshold").SetValue(new Slider(90))
                 .SetTooltip("Don't use soul ring if you have more MP%"));
             SoulRingMenu.AddItem(new MenuItem("soulringHPThreshold", "HP% threshold").SetValue(new Slider(30))
                 .SetTooltip("Don't use soul ring if you have less HP%"));
 
             ManaCheckMenu.AddItem(new MenuItem("enabledMC", "Enabled").SetValue(false));
-            ManaCheckMenu.AddItem(new MenuItem("enabledMCAbilities", "Enabled for").SetValue(new AbilityToggler(AbilitiesMC)));
+            ManaCheckMenu.AddItem(
+                new MenuItem("enabledMCAbilities", "Enabled for").SetValue(new AbilityToggler(AbilitiesMC)));
             ManaCheckMenu.AddItem(new MenuItem("mcManaInfo", "Show mana info").SetValue(true)
                 .SetTooltip("Will show how much mana left/needed after/before casting combo"));
             ManaCheckMenu.AddItem(new MenuItem("mcPTcalculations", "Include PT switcher calculations").SetValue(true)
@@ -223,7 +238,7 @@ namespace HpMpAbuse {
                 return;
 
             if (!inGame) {
-                hero = ObjectMgr.LocalHero;
+                hero = ObjectManager.LocalHero;
 
                 if (!Game.IsInGame || hero == null) {
                     Utils.Sleep(1000, "HpMpAbuseDelay");
@@ -315,7 +330,7 @@ namespace HpMpAbuse {
             }
 
             if (enabledRecovery && (hero.Mana < hero.MaximumMana || hero.Health < hero.MaximumHealth)) {
-                if (ObjectMgr.GetEntities<Hero>().Any(x =>
+                if (ObjectManager.GetEntities<Hero>().Any(x =>
                     x.IsAlive && x.IsVisible && x.Team == hero.GetEnemyTeam() &&
                     x.Distance2D(hero) <= RecoveryMenu.Item("forcePickEnemyNearDistance").GetValue<Slider>().Value)) {
                     PickUpItems();
@@ -398,7 +413,7 @@ namespace HpMpAbuse {
                 }
 
                 var allies =
-                    ObjectMgr.GetEntities<Hero>()
+                    ObjectManager.GetEntities<Hero>()
                         .Where(x => x.Distance2D(hero) <= 900 && x.IsAlive && x.Team == hero.Team && !x.Equals(hero));
 
                 foreach (var ally in allies) {
@@ -437,21 +452,21 @@ namespace HpMpAbuse {
                     x => (x.Name == "modifier_bottle_regeneration" || x.Name == "modifier_clarity_potion"))) {
                     if (hero.Mana / hero.MaximumMana < 0.9 && (float) hero.Health / hero.MaximumHealth > 0.9) {
                         if (lastPtAttribute == Attribute.Intelligence) {
-                            ChangePowerTreads(Attribute.Strength, true, true);
+                            ChangePowerTreads(Attribute.Strength, healing: true);
                         } else {
                             healActive = false;
                         }
                     } else if (hero.Mana / hero.MaximumMana > 0.9 && (float) hero.Health / hero.MaximumHealth < 0.9) {
                         if (lastPtAttribute == Attribute.Strength) {
                             if (hero.PrimaryAttribute == Attribute.Agility)
-                                ChangePowerTreads(Attribute.Agility, true, true);
+                                ChangePowerTreads(Attribute.Agility, healing: true);
                             else if (hero.PrimaryAttribute == Attribute.Intelligence)
-                                ChangePowerTreads(Attribute.Intelligence, true, true);
+                                ChangePowerTreads(Attribute.Intelligence, healing: true);
                         } else {
                             healActive = false;
                         }
                     } else if (hero.Mana / hero.MaximumMana < 0.9 && (float) hero.Health / hero.MaximumHealth < 0.9) {
-                        ChangePowerTreads(Attribute.Agility, true, true);
+                        ChangePowerTreads(Attribute.Agility, healing: true);
                     } else {
                         healActive = false;
                     }
@@ -459,9 +474,9 @@ namespace HpMpAbuse {
                     if ((float) hero.Health / hero.MaximumHealth < 0.9) {
                         if (lastPtAttribute == Attribute.Strength) {
                             if (hero.PrimaryAttribute == Attribute.Agility)
-                                ChangePowerTreads(Attribute.Agility, true, true);
+                                ChangePowerTreads(Attribute.Agility, healing: true);
                             else if (hero.PrimaryAttribute == Attribute.Intelligence)
-                                ChangePowerTreads(Attribute.Intelligence, true, true);
+                                ChangePowerTreads(Attribute.Intelligence, healing: true);
                         } else {
                             healActive = false;
                         }
@@ -473,15 +488,8 @@ namespace HpMpAbuse {
                 healActive = false;
             }
 
-            if (ptChanged && !healActive && !disableSwitchBack && !enabledRecovery && !attacking) {
-                foreach (var spell in hero.Spellbook.Spells.Where(spell => spell.IsInAbilityPhase)) {
-                    Utils.Sleep(spell.FindCastPoint() * 1000 + PTMenu.Item("switchbackPTdelay").GetValue<Slider>().Value,
-                        "HpMpAbuseDelay");
-                    return;
-                }
-
+            if (ptChanged && !healActive && !disableSwitchBack && !enabledRecovery && !attacking)
                 ChangePowerTreads(lastPtAttribute, false);
-            }
 
             Utils.Sleep(Menu.Item("checkPTdelay").GetValue<Slider>().Value, "HpMpAbuseDelay");
         }
@@ -567,6 +575,7 @@ namespace HpMpAbuse {
                     break;
                 }
             }
+
             Utils.Sleep(sleep, "HpMpAbuseDelay");
         }
 
@@ -585,26 +594,26 @@ namespace HpMpAbuse {
 
             switch (powerTreads.ActiveAttribute) {
                 case Attribute.Strength:
-                ptNow = 1;
-                break;
+                    ptNow = 1;
+                    break;
                 case Attribute.Agility:
-                ptNow = 3;
-                break;
+                    ptNow = 3;
+                    break;
                 case Attribute.Intelligence:
-                ptNow = 2;
-                break;
+                    ptNow = 2;
+                    break;
             }
 
             switch (attribute) {
                 case Attribute.Strength:
-                ptTo = 1;
-                break;
+                    ptTo = 1;
+                    break;
                 case Attribute.Intelligence:
-                ptTo = 2;
-                break;
+                    ptTo = 2;
+                    break;
                 case Attribute.Agility:
-                ptTo = 3;
-                break;
+                    ptTo = 3;
+                    break;
             }
 
             if (ptNow == ptTo)
@@ -623,7 +632,7 @@ namespace HpMpAbuse {
 
         private static void ChangePtOnAction(string action) {
             if (!PTMenu.Item("enabledPT").GetValue<bool>() || healActive || enabledRecovery ||
-                !Utils.SleepCheck("HpMpAbuseDelay2"))
+                (!Utils.SleepCheck("HpMpAbuseDelay") && !Utils.SleepCheck("HpMpAbuseDelay2")))
                 return;
 
             switch (PTMenu.Item(action).GetValue<StringList>().SelectedIndex) {
@@ -656,7 +665,7 @@ namespace HpMpAbuse {
 
         private static void PickUpItems(bool move = false) {
             var droppedItems =
-                ObjectMgr.GetEntities<PhysicalItem>().Where(x => x.Distance2D(hero) < 250).Reverse().ToList();
+                ObjectManager.GetEntities<PhysicalItem>().Where(x => x.Distance2D(hero) < 250).Reverse().ToList();
 
             var count = droppedItems.Count;
 
@@ -681,10 +690,12 @@ namespace HpMpAbuse {
 
         private static void DropItems(IEnumerable<string> bonusStats, Item ignoredItem = null) {
             var items = hero.Inventory.Items;
+
             foreach (
                 var item in
                     items.Where(
-                        item => !item.Equals(ignoredItem) && item.AbilityData.Any(x => bonusStats.Contains(x.Name)))) {
+                        item =>
+                            !item.Equals(ignoredItem) && item.AbilitySpecialData.Any(x => bonusStats.Contains(x.Name)))) {
                 SaveItemSlot(item);
                 hero.DropItem(item, hero.NetworkPosition, true);
             }
@@ -693,8 +704,9 @@ namespace HpMpAbuse {
         private static void SaveItemSlot(Item item) {
             for (var i = 0; i < 6; i++) {
                 var currentSlot = (ItemSlot) i;
+                if (ItemSlots.ContainsKey(currentSlot)) continue;
                 var currentItem = hero.Inventory.GetItem(currentSlot);
-                if (currentItem == null || !currentItem.Equals(item) || ItemSlots.ContainsKey(currentSlot)) continue;
+                if (currentItem == null || !currentItem.Equals(item)) continue;
                 ItemSlots.Add(currentSlot, item);
                 break;
             }
