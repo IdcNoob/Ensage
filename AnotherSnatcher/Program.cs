@@ -27,7 +27,7 @@ namespace AnotherSnatcher {
             Menu.AddItem(new MenuItem("enabledStealHold", "Hold steal:").SetValue(new AbilityToggler(itemsToggle)));
             Menu.AddItem(new MenuItem("pressSnatchKey", "Toggle key").SetValue(new KeyBind('P', KeyBindType.Toggle)));
             Menu.AddItem(new MenuItem("enabledStealToggle", "Toggle steal:").SetValue(new AbilityToggler(itemsHold)));
-            Menu.AddItem(new MenuItem("sleep", "Check delay").SetValue(new Slider(200, 50, 500)));
+            Menu.AddItem(new MenuItem("sleep", "Check delay").SetValue(new Slider(200, 0, 500)));
 
             Menu.AddToMainMenu();
 
@@ -39,7 +39,7 @@ namespace AnotherSnatcher {
                 return;
 
             if (!inGame) {
-                hero = ObjectMgr.LocalHero;
+                hero = ObjectManager.LocalHero;
 
                 if (!Game.IsInGame || hero == null) {
                     Utils.Sleep(1000, "anotherSnatcher");
@@ -64,7 +64,7 @@ namespace AnotherSnatcher {
 
             if ((toggleKey && Menu.Item("enabledStealToggle").GetValue<AbilityToggler>().IsEnabled("rune_doubledamage")) || 
                 (holdKey && Menu.Item("enabledStealHold").GetValue<AbilityToggler>().IsEnabled("rune_doubledamage"))) {
-                var rune = ObjectMgr.GetEntities<Rune>().FirstOrDefault(x => x.IsVisible && x.Distance2D(hero) < 400);
+                var rune = ObjectManager.GetEntities<Rune>().FirstOrDefault(x => x.IsVisible && x.Distance2D(hero) < 400);
                 if (rune != null) {
                     hero.PickUpRune(rune);
                     Utils.Sleep(500, "anotherSnatcher");
@@ -86,7 +86,7 @@ namespace AnotherSnatcher {
                           (holdKey && Menu.Item("enabledStealHold").GetValue<AbilityToggler>().IsEnabled("item_gem"));
 
                 var item =
-                    ObjectMgr.GetEntities<PhysicalItem>()
+                    ObjectManager.GetEntities<PhysicalItem>()
                         .FirstOrDefault(
                             x =>
                                 x.IsVisible && x.Distance2D(hero) < 400 &&
