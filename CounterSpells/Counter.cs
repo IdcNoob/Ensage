@@ -5,20 +5,22 @@ using Ensage.Common;
 using Ensage.Common.Extensions;
 using Ensage.Common.Menu;
 using SharpDX;
+using System.Collections.Generic;
 
 namespace CounterSpells {
     internal static class Counter {
+
         public static void MainCounters() {
             var enemies =
                 ObjectManager.GetEntities<Hero>()
                     .Where(x => x.Team == Program.Hero.GetEnemyTeam() && x.IsVisible && x.IsAlive && !x.IsIllusion);
-
+           
             foreach (var enemy in enemies) {
                 Ability spell;
                 float spellCastRange;
                 double castPoint;
                 var distance = Program.Hero.Distance2D(enemy);
-                var angle =
+                var angle = 
                     Math.Abs(enemy.FindAngleR() -
                              Utils.DegreeToRadian(enemy.FindAngleForTurnTime(Program.Hero.NetworkPosition)));
 
@@ -28,10 +30,11 @@ namespace CounterSpells {
 
                         if (spell.IsInAbilityPhase) {
                             spellCastRange = spell.GetCastRange() + 70;
-                            castPoint = spell.FindCastPoint();
 
                             if (distance > spellCastRange || angle > 0.03)
                                 return;
+
+                            castPoint = spell.FindCastPoint();
 
                             UseOnSelf(castPoint,
                                 Spells.Shift,
@@ -253,7 +256,7 @@ namespace CounterSpells {
                             if (UseOnTarget(enemy, castPoint, Spells.InstaDisable)) return;
                         }
 
-                        if (enemy.Modifiers.Any(x => x.Name == "modifier_batrider_flaming_lasso_self")) {
+                        if (enemy.HasModifier("modifier_batrider_flaming_lasso_self")) {
                             UseOnTarget(enemy, 555,
                                 Spells.Eul,
                                 Spells.InstaDisable,
@@ -396,7 +399,7 @@ namespace CounterSpells {
                                 Spells.Lotus)) return;
                         }
 
-                        if (enemy.Modifiers.Any(x => x.Name == "broodmother_insatiable_hunger"))
+                        if (enemy.HasModifier("broodmother_insatiable_hunger"))
                             UseOnTarget(enemy, 555, Spells.Eul);
 
                         break;
@@ -512,7 +515,7 @@ namespace CounterSpells {
                         break;
                     }
                     case ClassID.CDOTA_Unit_Hero_Clinkz: {
-                        if (enemy.Modifiers.Any(x => x.Name == "modifier_clinkz_strafe")) {
+                        if (enemy.HasModifier("modifier_clinkz_strafe")) {
                             UseOnTarget(enemy, 555,
                                 Spells.Eul,
                                 Spells.InstaDisable,
@@ -865,8 +868,47 @@ namespace CounterSpells {
 
                         break;
                     }
+                    case ClassID.CDOTA_Unit_Hero_Puck: {
+                        spell = enemy.Spellbook.SpellQ;
+
+                        if (spell.IsCasted()) {
+                            spellCastRange = spell.GetCastRange() + 70;
+
+                            if (distance > spellCastRange || angle > 0.5)
+                                return;
+
+                            castPoint = distance / spell.GetProjectileSpeed();
+
+                            if (UseOnSelf(castPoint,
+                                Spells.Shift,
+                                Spells.DefVsDamage,
+                                Spells.DefVsMagic)) return;
+                        }
+
+                        spell = enemy.Spellbook.SpellW;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange() + 70;
+
+                            if (distance > spellCastRange)
+                                return;
+
+                            castPoint = spell.FindCastPoint();
+
+                            if (Blink(castPoint)) return;
+
+                            if (UseOnSelf(castPoint,
+                                Spells.Shift,
+                                Spells.Eul,
+                                Spells.DefVsDisable,
+                                Spells.DefVsDamage,
+                                Spells.DefVsMagic)) return;
+                        }
+
+                        break;
+                    }
                     case ClassID.CDOTA_Unit_Hero_Gyrocopter: {
-                        var barage = enemy.Modifiers.FirstOrDefault(x => x.Name == "modifier_gyrocopter_rocket_barrage");
+                        var barage = enemy.FindModifier("modifier_gyrocopter_rocket_barrage");
 
                         if (barage != null) {
                             spellCastRange = enemy.Spellbook.SpellQ.GetCastRange() + 70;
@@ -930,7 +972,7 @@ namespace CounterSpells {
                                 Spells.InstaDisable)) return;
                         }
 
-                        var vitality = enemy.Modifiers.FirstOrDefault(x => x.Name == "modifier_huskar_inner_vitality");
+                        var vitality = enemy.FindModifier("modifier_huskar_inner_vitality");
 
                         if (vitality != null)
                             UseOnTarget(enemy, vitality.RemainingTime, Spells.Eul);
@@ -938,7 +980,7 @@ namespace CounterSpells {
                         break;
                     }
                     case ClassID.CDOTA_Unit_Hero_Juggernaut: {
-                        var fury = enemy.Modifiers.FirstOrDefault(x => x.Name == "modifier_juggernaut_blade_fury");
+                        var fury = enemy.FindModifier("modifier_juggernaut_blade_fury");
 
                         if (fury != null) {
                             spell = enemy.Spellbook.SpellQ;
@@ -978,7 +1020,7 @@ namespace CounterSpells {
                                 Spells.InstaDisable)) return;
                         }
 
-                        if (enemy.Modifiers.Any(x => x.Name == "modifier_juggernaut_omnislash") && distance < 300) {
+                        if (enemy.HasModifier("modifier_juggernaut_omnislash") && distance < 300) {
                             UseOnSelf(555,
                                 Spells.Shift,
                                 Spells.Eul,
@@ -1014,7 +1056,7 @@ namespace CounterSpells {
                         }
 
                         var xMark =
-                            Program.Hero.Modifiers.FirstOrDefault(x => x.Name == "modifier_kunkka_x_marks_the_spot");
+                            Program.Hero.FindModifier("modifier_kunkka_x_marks_the_spot");
 
                         if (xMark == null)
                             return;
@@ -1088,7 +1130,7 @@ namespace CounterSpells {
                                 Spells.SnowBall)) return;
                         }
 
-                        var duel = enemy.Modifiers.FirstOrDefault(x => x.Name == "modifier_legion_commander_duel");
+                        var duel = enemy.FindModifier("modifier_legion_commander_duel");
 
                         if (duel != null) {
                             if (UseOnTarget(enemy, duel.RemainingTime,
@@ -1100,7 +1142,7 @@ namespace CounterSpells {
                                     .FirstOrDefault(
                                         x =>
                                             x.IsAlive && x.Team == Program.Hero.Team && !x.IsIllusion &&
-                                            x.Modifiers.Any(y => y.Name == "modifier_legion_commander_duel"));
+                                            x.HasModifier("modifier_legion_commander_duel"));
 
                             UseOnTarget(dueledAlly, duel.RemainingTime, Spells.Invul);
                         }
@@ -1470,6 +1512,50 @@ namespace CounterSpells {
 
                         break;
                     }
+                    case ClassID.CDOTA_Unit_Hero_Rattletrap: {
+                        if (enemy.HasModifier("modifier_rattletrap_battery_assault")) {
+                            spell = enemy.Spellbook.SpellQ;
+                            spellCastRange = spell.GetCastRange() + 70;
+
+                            if (distance > spellCastRange)
+                                return;
+
+                            if (UseOnSelf(0.7,
+                                Spells.Shift,
+                                Spells.Eul,
+                                Spells.Invul,
+                                Spells.DefVsDamage,
+                                Spells.DefVsMagic,
+                                Spells.Invis)) return;
+                        }
+
+                        spell = enemy.Spellbook.SpellR;
+
+                        if (spell.IsInAbilityPhase) {
+                            spellCastRange = spell.GetCastRange() + 70;
+
+                            if (distance > spellCastRange || angle > 0.17)
+                                return;
+
+                            castPoint = spell.FindCastPoint() + distance / spell.GetProjectileSpeed();
+
+                            if (Blink(castPoint)) return;
+
+                            if (UseOnSelf(castPoint,
+                                Spells.Shift,
+                                Spells.Eul,
+                                Spells.DefVsDamage,
+                                Spells.DefVsMagic,
+                                Spells.Invul,
+                                Spells.Invis)) return;
+
+                            UseOnTarget(enemy, castPoint,
+                                Spells.InstaDisable,
+                                Spells.SnowBall);
+                        }
+
+                        break;
+                    }
                     case ClassID.CDOTA_Unit_Hero_Obsidian_Destroyer: {
                         spell = enemy.Spellbook.SpellW;
 
@@ -1535,7 +1621,7 @@ namespace CounterSpells {
                         break;
                     }
                     case ClassID.CDOTA_Unit_Hero_Phoenix: {
-                        var dive = enemy.Modifiers.FirstOrDefault(x => x.Name == "modifier_phoenix_icarus_dive");
+                        var dive = enemy.FindModifier("modifier_phoenix_icarus_dive");
 
                         if (dive != null)
                             UseOnTarget(enemy, dive.RemainingTime,
@@ -1678,7 +1764,7 @@ namespace CounterSpells {
                         break;
                     }
                     case ClassID.CDOTA_Unit_Hero_Razor: {
-                        if (enemy.Modifiers.Any(x => x.Name == "modifier_razor_static_link_buff")) {
+                        if (enemy.HasModifier("modifier_razor_static_link_buff")) {
                             UseOnTarget(enemy, 555,
                                 Spells.Eul,
                                 Spells.InstaDisable,
@@ -1719,7 +1805,7 @@ namespace CounterSpells {
                                 Spells.SnowBall)) return;
                         }
 
-                        var epicenter = enemy.Modifiers.FirstOrDefault(x => x.Name == "modifier_sand_king_epicenter");
+                        var epicenter = enemy.FindModifier("modifier_sand_king_epicenter");
 
                         if (epicenter != null) {
                             if (distance <= spell.GetCastRange() + 200)
@@ -2007,7 +2093,7 @@ namespace CounterSpells {
                             if (UseOnTarget(enemy, castPoint, Spells.OffVsPhys)) return;
                         }
 
-                        var enrage = enemy.Modifiers.FirstOrDefault(x => x.Name == "modifier_ursa_enrage");
+                        var enrage = enemy.FindModifier("modifier_ursa_enrage");
 
                         if (enrage != null) {
                             if (UseOnTarget(enemy, enrage.RemainingTime,
@@ -2017,7 +2103,7 @@ namespace CounterSpells {
                                 Spells.OffVsPhys)) return;
                         }
 
-                        if (enemy.Modifiers.Any(x => x.Name == "modifier_ursa_overpower") && distance < 300) {
+                        if (enemy.HasModifier("modifier_ursa_overpower") && distance < 300) {
                             if (UseOnSelf(555,
                                 Spells.Shift,
                                 Spells.DefVsPhys,
@@ -2215,7 +2301,7 @@ namespace CounterSpells {
                                 Spells.DefVsMagic)) return;
                         }
 
-                        if (enemy.Modifiers.Any(x => x.Name == "modifier_windrunner_focusfire")) {
+                        if (enemy.HasModifier("modifier_windrunner_focusfire")) {
                             UseOnTarget(enemy, 555,
                                 Spells.InstaDisable,
                                 Spells.Eul,
@@ -2956,26 +3042,28 @@ namespace CounterSpells {
         }
 
         public static void Effect() {
-            if (Program.Hero.IsSilenced()) {
+            if (Program.Hero.IsSilenced() && !Program.Hero.HasModifier("modifier_rattletrap_hookshot")) {
                 if (Program.Menu.Item("blinkSilenced").GetValue<bool>())
                     if (Blink()) return;
 
                 if (UseOnSelf(555,
                     Spells.Eul,
-                    Spells.Lotus,
-                    Spells.Greaves,
-                    Spells.DefVsMagic)) return;
+                    Spells.DefVsMagic,
+                    Spells.DefVsDamage,
+                    Spells.Invis)) return;
 
-                if (!Program.Hero.Modifiers.Any(
-                    x => x.Name == "modifier_riki_smoke_screen" || x.Name == "modifier_disruptor_static_storm")) {
-                    if (UseOnSelf(555, Spells.Manta)) return;
+                if (!Program.Hero.HasModifiers(new []{ "modifier_riki_smoke_screen", "modifier_disruptor_static_storm" })) {
+                    if (UseOnSelf(555, 
+                        Spells.Manta,
+                        Spells.Lotus,
+                        Spells.Greaves)) return;
 
                     if (Program.Menu.Item("diffusal").GetValue<bool>())
                         if (UseOnSelf(555, Spells.Diffusal)) return;
                 }
             }
 
-            if (Program.Hero.IsRooted() && Program.Hero.Modifiers.All(x => x.Name != "modifier_phoenix_sun_ray")) {
+            if (Program.Hero.IsRooted() && !Program.Hero.HasModifier("modifier_phoenix_sun_ray")) {
                 UseOnSelf(555,
                     Spells.Manta,
                     Spells.Greaves,
@@ -3146,12 +3234,24 @@ namespace CounterSpells {
             }
         }
 
-        public static bool IsCasted(this Ability ability) {
+        public static void PanicEscape() {
+            var enemyNear =
+                ObjectManager.GetEntities<Hero>()
+                    .Any(
+                        x =>
+                            x.IsAlive && !x.IsIllusion && x.Team == Program.Hero.GetEnemyTeam() &&
+                            x.Distance2D(Program.Hero) <= Program.Menu.Item("panicDistance").GetValue<Slider>().Value);
+
+            if (enemyNear)
+                Blink();
+        }
+
+        private static bool IsCasted(this Ability ability) {
             return ability.Level > 0 && ability.CooldownLength > 0 &&
                    Math.Ceiling(ability.CooldownLength).Equals(Math.Ceiling(ability.Cooldown));
         }
 
-        public static bool Blink(double castpoint = 5, bool forceBlink = false) {
+        private static bool Blink(double castpoint = 5, bool forceBlink = false) {
             if (!Program.Menu.Item("blink").GetValue<bool>() || Program.Hero.IsMagicImmune())
                 return false;
 
@@ -3189,7 +3289,7 @@ namespace CounterSpells {
                 Program.Hero.Position.Y + castRange * (float) Math.Sin(findangle), Program.Hero.Position.Z);
 
             if (blink.ClassID == ClassID.CDOTA_Ability_EmberSpirit_Activate_FireRemnant) {
-                if (Program.Hero.Modifiers.Any(x => x.Name == "modifier_ember_spirit_fire_remnant_timer"))
+                if (Program.Hero.HasModifier("modifier_ember_spirit_fire_remnant_timer"))
                     castpoint = 0.30;
                 else return false;
             }
@@ -3200,7 +3300,7 @@ namespace CounterSpells {
             if (blink.ClassID == ClassID.CDOTA_Item_ForceStaff)
                 castpoint -= 0.08;
 
-            if (Program.Hero.Modifiers.Any(x => x.Name == "modifier_bloodseeker_rupture") && !isInvul)
+            if (Program.Hero.HasModifier("modifier_bloodseeker_rupture") && !isInvul)
                 return false;
 
             var enoughTime = blink.GetCastDelay(Program.Hero, home, true) < castpoint;
@@ -3243,7 +3343,7 @@ namespace CounterSpells {
             return true;
         }
 
-        public static bool UseOnTarget(Unit target, double castpoint, params string[][] abilitiesNames) {
+        private static bool UseOnTarget(Unit target, double castpoint, params string[][] abilitiesNames) {
             if (!Program.Menu.Item("disable").GetValue<bool>())
                 return false;
 
@@ -3275,7 +3375,7 @@ namespace CounterSpells {
             return true;
         }
 
-        public static bool UseOnSelf(double castpoint, params string[][] abilitiesNames) {
+        private static bool UseOnSelf(double castpoint, params string[][] abilitiesNames) {
             if (Program.Hero.IsMagicImmune())
                 return false;
 
@@ -3301,5 +3401,6 @@ namespace CounterSpells {
             Utils.Sleep(Program.Menu.Item("delay").GetValue<Slider>().Value, "CounterDelay");
             return true;
         }
+
     }
 }

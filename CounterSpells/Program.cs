@@ -16,6 +16,10 @@ namespace CounterSpells {
 
         private static void Main() {
             Menu.AddItem(new MenuItem("key", "Enabled").SetValue(new KeyBind('P', KeyBindType.Toggle, true)));
+            Menu.AddItem(new MenuItem("panicMode", "Panic mode").SetValue(new KeyBind('O', KeyBindType.Toggle))
+                .SetTooltip("Blink abilities will be used when enemy is close"));
+            Menu.AddItem(new MenuItem("panicDistance", "Panic mode enemy distance").SetValue(new Slider(900, 200, 2000)))
+                .SetTooltip("Will blink away when enemy is in this range");
             Menu.AddItem(new MenuItem("blink", "Use blink").SetValue(true)
                 .SetTooltip("Suports Blink Dagger and most of blink type abilities"));
             Menu.AddItem(new MenuItem("forceBlink", "Force blink dagger").SetValue(true)
@@ -90,6 +94,9 @@ namespace CounterSpells {
                 (Hero.IsInvisible() && !Hero.IsVisibleToEnemies))
                 return;
 
+            if (Menu.Item("panicMode").GetValue<KeyBind>().Active)
+                Counter.PanicEscape();
+
             Counter.MainCounters();
             Counter.Projectile();
             Counter.Modifier();
@@ -102,8 +109,16 @@ namespace CounterSpells {
                 !Menu.Item("key").GetValue<KeyBind>().Active)
                 return;
 
-            text.DrawText(null, "Dodge enabled", Menu.Item("x").GetValue<Slider>().Value,
-                Menu.Item("y").GetValue<Slider>().Value, Color.DarkOrange);
+            var showText = "Dodge enabled";
+            var color = Color.DarkOrange;
+
+            if (Menu.Item("panicMode").GetValue<KeyBind>().Active) {
+                showText = "Panic Mode";
+                color = Color.Red;
+            }
+
+            text.DrawText(null, showText, Menu.Item("x").GetValue<Slider>().Value,
+                Menu.Item("y").GetValue<Slider>().Value, color);
         }
 
         private static void Drawing_OnPostReset(EventArgs args) {
