@@ -8,7 +8,7 @@ using SharpDX.Direct3D9;
 
 namespace CounterSpells {
     internal static class Program {
-        private static bool inGame;
+        public static bool inGame;
         public static bool CameraCentered;
         private static Font text;
         public static readonly Menu Menu = new Menu("Counter Spells", "counterSpells", true);
@@ -31,8 +31,10 @@ namespace CounterSpells {
             Menu.AddItem(new MenuItem("disable", "Disable enemy if can't dodge").SetValue(false)
                 .SetTooltip("Use hex, stun, silence when you don't have eul, dagger, dark pact etc. to dodge stun"));
             Menu.AddItem(new MenuItem("diffusal", "Use diffusal blade when silenced").SetValue(false));
-            Menu.AddItem(new MenuItem("delay", "Delay between abilities").SetValue(new Slider(1000, 200, 2000)))
+            Menu.AddItem(new MenuItem("delay", "Delay between abilities").SetValue(new Slider(600, 200, 1000)))
                 .SetTooltip("Time in ms between counter abilities usage");
+            Menu.AddItem(new MenuItem("castpointAdjustment", "Manual cast point adjustment").SetValue(new Slider(800, 500, 1000)))
+                .SetTooltip("Change this if your spells are casted too early/late");
             Menu.AddItem(new MenuItem("size", "Text Size").SetValue(new Slider(6, 1, 10)))
                 .SetTooltip("Reload assembly to apply new size");
             Menu.AddItem(new MenuItem("x", "Text position X").SetValue(new Slider(0, 0, (int) HUDInfo.ScreenSizeX())));
@@ -72,6 +74,8 @@ namespace CounterSpells {
                     return;
                 }
 
+                Counter.SpellTimings.Clear();
+
                 inGame = true;
             }
 
@@ -80,10 +84,8 @@ namespace CounterSpells {
                 return;
             }
 
-            if (!Hero.IsAlive || Game.IsPaused || !Menu.Item("key").GetValue<KeyBind>().Active) {
-                Utils.Sleep(500, "CounterDelay");
+            if (!Hero.IsAlive || Game.IsPaused || !Menu.Item("key").GetValue<KeyBind>().Active)
                 return;
-            }
 
             if (CameraCentered) {
                 CameraCentered = false;

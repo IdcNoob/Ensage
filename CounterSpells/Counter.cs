@@ -1,26 +1,27 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Ensage;
 using Ensage.Common;
 using Ensage.Common.Extensions;
 using Ensage.Common.Menu;
 using SharpDX;
-using System.Collections.Generic;
 
 namespace CounterSpells {
     internal static class Counter {
+        public static Dictionary<Ability, float> SpellTimings = new Dictionary<Ability, float>();
 
         public static void MainCounters() {
             var enemies =
                 ObjectManager.GetEntities<Hero>()
                     .Where(x => x.Team == Program.Hero.GetEnemyTeam() && x.IsVisible && x.IsAlive && !x.IsIllusion);
-           
+
             foreach (var enemy in enemies) {
                 Ability spell;
                 float spellCastRange;
                 double castPoint;
                 var distance = Program.Hero.Distance2D(enemy);
-                var angle = 
+                var angle =
                     Math.Abs(enemy.FindAngleR() -
                              Utils.DegreeToRadian(enemy.FindAngleForTurnTime(Program.Hero.NetworkPosition)));
 
@@ -36,7 +37,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            UseOnSelf(castPoint,
+                            UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.DefVsMagic,
                                 Spells.Lotus);
@@ -53,10 +54,10 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint() + distance / spell.GetProjectileSpeed();
 
-                            if (Blink(castPoint))
+                            if (Blink(castPoint, key: spell))
                                 return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
                                 Spells.DefVsDisable,
@@ -93,7 +94,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Manta,
                                 Spells.DefVsDamage,
@@ -116,16 +117,16 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            // TODO: manta timings
-
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
+                                Spells.Manta,
                                 Spells.DefVsDisable,
                                 Spells.DefVsDamage,
-                                Spells.DefVsPhys)) return;
+                                Spells.DefVsPhys,
+                                Spells.Invul)) return;
 
                             if (UseOnTarget(enemy, castPoint,
                                 Spells.OffVsPhys,
@@ -164,7 +165,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.DefVsDamage,
                                 Spells.Lotus)) return;
@@ -180,9 +181,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
                                 Spells.Manta,
@@ -205,9 +206,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
                                 Spells.Manta,
@@ -241,9 +242,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
                                 Spells.Manta,
@@ -276,7 +277,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.DefVsDamage)) return;
                         }
@@ -291,9 +292,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
                                 Spells.Manta,
@@ -320,9 +321,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint() - 0.18;
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Manta,
                                 Spells.DefVsDamage,
@@ -346,7 +347,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint() + distance / spell.GetProjectileSpeed();
 
-                            UseOnSelf(castPoint,
+                            UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
                                 Spells.Lotus);
@@ -363,13 +364,12 @@ namespace CounterSpells {
                             if (distance > spellCastRange)
                                 return;
 
-                            //todo: manta ?
-
                             castPoint = spell.FindCastPoint();
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
+                                Spells.Manta,
                                 Spells.DefVsDamage,
                                 Spells.DefVsMagic)) return;
                         }
@@ -392,7 +392,7 @@ namespace CounterSpells {
                             if (distance > 300 || angle > 0.03)
                                 return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.DefVsDamage,
                                 Spells.DefVsMagic,
@@ -415,13 +415,12 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            //TODO: add manta timing
-
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
+                                Spells.Manta,
                                 Spells.DefVsDisable,
                                 Spells.DefVsDamage,
                                 Spells.DefVsMagic,
@@ -442,7 +441,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            UseOnSelf(castPoint,
+                            UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Manta,
                                 Spells.DefVsMagic,
@@ -461,9 +460,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint() + distance / spell.GetProjectileSpeed();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Manta,
                                 Spells.DefVsDisable,
@@ -489,9 +488,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
                                 Spells.Manta,
@@ -535,9 +534,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.DefVsDisable,
                                 Spells.DefVsDamage,
@@ -594,9 +593,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
                                 Spells.DefVsDamage,
@@ -621,7 +620,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            UseOnSelf(castPoint,
+                            UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.DefVsDamage,
                                 Spells.Invis);
@@ -653,9 +652,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Manta,
                                 Spells.DefVsDamage,
@@ -684,7 +683,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.DefVsDamage,
                                 Spells.DefVsMagic)) return;
@@ -700,7 +699,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (UseOnSelf(castPoint, Spells.Shift)) return;
+                            if (UseOnSelf(castPoint, spell, Spells.Shift)) return;
                         }
 
                         spell = enemy.Spellbook.SpellE;
@@ -739,11 +738,10 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            //todo manta ?
-
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
+                                Spells.Manta,
                                 Spells.DefVsDisable,
                                 Spells.DefVsMagic,
                                 Spells.DefVsDamage,
@@ -760,7 +758,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (UseOnSelf(castPoint, Spells.Shift))
+                            if (UseOnSelf(castPoint, spell, Spells.Shift))
                                 return;
                         }
 
@@ -797,7 +795,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Manta,
                                 Spells.DefVsDisable,
@@ -815,9 +813,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(555,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.DefVsDamage,
                                 Spells.DefVsMagic,
@@ -849,12 +847,13 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.DefVsDamage,
-                                Spells.DefVsPhys)) return;
+                                Spells.DefVsPhys,
+                                Spells.Manta)) return;
 
                             if (UseOnTarget(enemy, castPoint,
                                 Spells.Eul,
@@ -879,7 +878,7 @@ namespace CounterSpells {
 
                             castPoint = distance / spell.GetProjectileSpeed();
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.DefVsDamage,
                                 Spells.DefVsMagic)) return;
@@ -895,9 +894,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
                                 Spells.DefVsDisable,
@@ -938,7 +937,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.DefVsPhys,
                                 Spells.Invis)) return;
@@ -957,9 +956,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint() + distance / spell.GetProjectileSpeed();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
                                 Spells.DefVsDamage,
@@ -1006,9 +1005,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.DefVsDamage,
                                 Spells.DefVsPhys,
                                 Spells.Lotus,
@@ -1043,9 +1042,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Manta,
                                 Spells.Invis,
                                 Spells.Lotus)) return;
@@ -1066,7 +1065,7 @@ namespace CounterSpells {
                         if (spell.IsInAbilityPhase || xMark.RemainingTime < 0.1) {
                             castPoint = 0.1;
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
                             if (UseOnSelf(castPoint,
                                 Spells.Shift,
@@ -1096,7 +1095,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.DefVsDamage,
                                 Spells.DefVsMagic,
@@ -1113,9 +1112,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
                                 Spells.Manta,
@@ -1160,9 +1159,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.DefVsMagic,
                                 Spells.DefVsDamage,
                                 Spells.Lotus,
@@ -1184,7 +1183,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.DefVsDamage,
                                 Spells.DefVsMagic)) return;
@@ -1200,7 +1199,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint() + 0.25;
 
-                            UseOnSelf(castPoint,
+                            UseOnSelf(castPoint, spell,
                                 Spells.DefVsDamage,
                                 Spells.DefVsMagic,
                                 Spells.Lotus,
@@ -1213,20 +1212,22 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellQ;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange() + 200;
+                            spellCastRange = spell.GetCastRange() + 70;
 
                             if (distance > spellCastRange || angle > 0.3)
                                 return;
 
-                            castPoint = spell.FindCastPoint() + distance / spell.GetProjectileSpeed();
+                            castPoint = spell.FindCastPoint() +
+                                        (distance - (spell.GetRadius() + 25)) / spell.GetProjectileSpeed();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.DefVsDisable,
                                 Spells.DefVsMagic,
                                 Spells.DefVsDamage,
                                 Spells.Lotus,
+                                Spells.Manta,
                                 Spells.Invis)) return;
 
                             if (UseOnTarget(enemy, castPoint,
@@ -1234,13 +1235,13 @@ namespace CounterSpells {
                                 Spells.SnowBall)) return;
                         }
 
-                        if (spell.IsCasted()) {
-                            spellCastRange = spell.GetCastRange() + 200;
+                        if (spell.IsCasted(1)) {
+                            spellCastRange = spell.GetCastRange() + 500;
 
                             if (distance > spellCastRange || angle > 0.3)
                                 return;
 
-                            castPoint = distance / spell.GetProjectileSpeed();
+                            castPoint = (distance - 150) / spell.GetProjectileSpeed();
 
                             if (Blink(castPoint)) return;
 
@@ -1264,7 +1265,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint() + 0.25;
 
-                            UseOnSelf(castPoint,
+                            UseOnSelf(castPoint, spell,
                                 Spells.DefVsDamage,
                                 Spells.DefVsMagic,
                                 Spells.Lotus,
@@ -1284,9 +1285,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
                                 Spells.Manta,
@@ -1310,7 +1311,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            UseOnSelf(castPoint,
+                            UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.DefVsDamage,
                                 Spells.DefVsMagic);
@@ -1329,7 +1330,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.DefVsDamage,
                                 Spells.DefVsMagic)) return;
@@ -1345,11 +1346,12 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
+                                Spells.Manta,
                                 Spells.DefVsDisable,
                                 Spells.DefVsDamage,
                                 Spells.DefVsMagic,
@@ -1371,9 +1373,10 @@ namespace CounterSpells {
                             if (distance > spellCastRange || angle < 0.3)
                                 return;
 
-                            castPoint = spell.FindCastPoint();
+                            castPoint = spell.FindCastPoint() +
+                                        (distance - (spell.GetRadius() + 25)) / spell.GetProjectileSpeed();
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.DefVsDamage,
                                 Spells.DefVsMagic,
@@ -1388,7 +1391,7 @@ namespace CounterSpells {
                             if (distance > 300 || angle < 0.3)
                                 return;
 
-                            UseOnSelf(castPoint,
+                            UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.DefVsDamage,
                                 Spells.DefVsMagic,
@@ -1409,9 +1412,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
                                 Spells.Manta,
@@ -1436,11 +1439,12 @@ namespace CounterSpells {
                             if (distance > spellCastRange || angle > 0.3)
                                 return;
 
-                            castPoint = spell.FindCastPoint() + distance / spell.GetProjectileSpeed();
+                            castPoint = spell.FindCastPoint() +
+                                        (distance - (spell.GetRadius() + 25)) / spell.GetProjectileSpeed();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.DefVsDisable,
                                 Spells.DefVsMagic,
                                 Spells.DefVsDamage,
@@ -1452,13 +1456,13 @@ namespace CounterSpells {
                                 Spells.SnowBall)) return;
                         }
 
-                        if (spell.IsCasted()) {
+                        if (spell.IsCasted(1)) {
                             spellCastRange = spell.GetCastRange() + 70;
 
                             if (distance > spellCastRange || angle > 0.3)
                                 return;
 
-                            castPoint = distance / spell.GetProjectileSpeed();
+                            castPoint = (distance - (spell.GetRadius() + 25)) / spell.GetProjectileSpeed();
 
                             if (Blink(castPoint)) return;
 
@@ -1485,9 +1489,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.DefVsDisable,
                                 Spells.DefVsMagic,
                                 Spells.DefVsDamage,
@@ -1520,7 +1524,7 @@ namespace CounterSpells {
                             if (distance > spellCastRange)
                                 return;
 
-                            if (UseOnSelf(0.7,
+                            if (UseOnSelf(0.5,
                                 Spells.Shift,
                                 Spells.Eul,
                                 Spells.Invul,
@@ -1539,9 +1543,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint() + distance / spell.GetProjectileSpeed();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
                                 Spells.DefVsDamage,
@@ -1567,7 +1571,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Lotus)) return;
                         }
@@ -1582,11 +1586,12 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
+                                Spells.Manta,
                                 Spells.DefVsDamage,
                                 Spells.DefVsMagic)) return;
 
@@ -1640,7 +1645,7 @@ namespace CounterSpells {
                             if (distance > 300 || angle > 0.03)
                                 return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Lotus)) return;
                         }
@@ -1674,9 +1679,9 @@ namespace CounterSpells {
 
                             castPoint = distance / spell.GetProjectileSpeed();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.DefVsDisable,
                                 Spells.DefVsDamage,
@@ -1696,7 +1701,7 @@ namespace CounterSpells {
 
                             if (Blink(castPoint)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
                                 Spells.Manta,
@@ -1723,16 +1728,16 @@ namespace CounterSpells {
                         spell = enemy.Spellbook.SpellR;
 
                         if (spell.IsInAbilityPhase) {
-                            spellCastRange = spell.GetCastRange() + 700;
+                            spellCastRange = spell.GetCastRange() + 70;
 
                             if (distance > spellCastRange || angle > 0.5)
                                 return;
 
                             castPoint = spell.FindCastPoint() + distance / spell.GetProjectileSpeed();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
                                 Spells.DefVsDamage,
@@ -1744,7 +1749,7 @@ namespace CounterSpells {
                                 Spells.SnowBall);
                         }
 
-                        if (spell.IsCasted()) {
+                        if (spell.IsCasted(1)) {
                             spellCastRange = spell.GetCastRange() + 700;
 
                             if (distance > spellCastRange || angle > 0.5)
@@ -1752,7 +1757,7 @@ namespace CounterSpells {
 
                             castPoint = distance / spell.GetProjectileSpeed();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
                             UseOnSelf(castPoint,
                                 Spells.Shift,
@@ -1785,7 +1790,7 @@ namespace CounterSpells {
 
                             castPoint = distance / spell.GetProjectileSpeed();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
                             if (UseOnSelf(castPoint,
                                 Spells.Shift,
@@ -1797,7 +1802,7 @@ namespace CounterSpells {
 
                         spell = enemy.Spellbook.SpellR;
 
-                        if (spell.IsInAbilityPhase || spell.IsChanneling) {
+                        if (spell.IsChanneling) {
                             if (UseOnTarget(enemy, 555,
                                 Spells.Eul,
                                 Spells.InstaDisable,
@@ -1837,7 +1842,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.DefVsDamage,
                                 Spells.DefVsMagic)) return;
@@ -1853,7 +1858,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.DefVsDamage,
                                 Spells.DefVsMagic)) return;
@@ -1869,7 +1874,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.DefVsDamage,
                                 Spells.DefVsMagic)) return;
@@ -1896,13 +1901,12 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            //todo manta
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (Blink(castPoint)) return;
-
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
+                                Spells.Manta,
                                 Spells.DefVsDisable,
                                 Spells.DefVsDamage,
                                 Spells.DefVsPhys,
@@ -1927,9 +1931,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Manta,
                                 Spells.DefVsDisable,
@@ -1955,9 +1959,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint() + distance / spell.GetProjectileSpeed();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Manta,
                                 Spells.DefVsDisable,
@@ -1983,7 +1987,7 @@ namespace CounterSpells {
                             castPoint = spell.FindCastPoint();
 
                             if (distance <= spellCastRange && angle <= 0.03)
-                                if (UseOnSelf(castPoint,
+                                if (UseOnSelf(castPoint, spell,
                                     Spells.Shift,
                                     Spells.Eul,
                                     Spells.Manta,
@@ -2009,7 +2013,7 @@ namespace CounterSpells {
                             castPoint = distance / spell.GetProjectileSpeed();
 
                             if (angle < 0.4 && enemy.AghanimState())
-                                if (UseOnSelf(castPoint,
+                                if (UseOnSelf(castPoint, spell,
                                     Spells.Shift,
                                     Spells.DefVsDamage,
                                     Spells.DefVsMagic)) return;
@@ -2025,9 +2029,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.DefVsDisable,
                                 Spells.DefVsMagic,
@@ -2047,7 +2051,7 @@ namespace CounterSpells {
                     case ClassID.CDOTA_Unit_Hero_Tiny: {
                         spell = enemy.Spellbook.SpellQ;
 
-                        if (spell.IsCasted()) {
+                        if (spell.IsCasted(1)) {
                             spellCastRange = spell.GetCastRange() + 70;
 
                             if (distance > spellCastRange || angle > 0.5)
@@ -2055,7 +2059,7 @@ namespace CounterSpells {
 
                             castPoint = distance / spell.GetProjectileSpeed();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
                             if (UseOnSelf(castPoint,
                                 Spells.Shift,
@@ -2083,10 +2087,11 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
+                                Spells.Manta,
                                 Spells.DefVsMagic,
                                 Spells.DefVsDamage)) return;
 
@@ -2127,7 +2132,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint() + distance / spell.GetProjectileSpeed();
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Manta,
                                 Spells.DefVsDisable,
@@ -2153,9 +2158,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Manta,
                                 Spells.Invis,
@@ -2177,7 +2182,7 @@ namespace CounterSpells {
                             if (distance > spellCastRange || angle > 0.3)
                                 return;
 
-                            castPoint = distance / spell.GetProjectileSpeed();
+                            castPoint = (distance - spell.GetRadius() + 25) / spell.GetProjectileSpeed();
 
                             if (Blink(castPoint)) return;
 
@@ -2189,7 +2194,7 @@ namespace CounterSpells {
 
                         spell = enemy.Spellbook.SpellR;
 
-                        if (spell.IsCasted()) {
+                        if (spell.IsCasted(1)) {
                             spellCastRange = spell.GetCastRange() + 70;
 
                             if (distance > spellCastRange)
@@ -2217,9 +2222,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint() + distance / spell.GetProjectileSpeed();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            UseOnSelf(castPoint,
+                            UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
                                 Spells.Manta,
@@ -2242,9 +2247,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
                                 Spells.DefVsDisable,
@@ -2268,9 +2273,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint() + distance / spell.GetProjectileSpeed();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
                                 Spells.DefVsDisable,
@@ -2322,9 +2327,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
                                 Spells.DefVsDamage,
@@ -2349,9 +2354,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint() + distance / spell.GetProjectileSpeed();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Eul,
                                 Spells.DefVsDamage,
@@ -2375,9 +2380,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(555,
+                            if (UseOnSelf(555, spell,
                                 Spells.Shift,
                                 Spells.DefVsDamage,
                                 Spells.DefVsPhys,
@@ -2408,9 +2413,9 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint() + distance / spell.GetProjectileSpeed();
 
-                            if (Blink(castPoint)) return;
+                            if (Blink(castPoint, key: spell)) return;
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Manta,
                                 Spells.DefVsDisable,
@@ -2439,7 +2444,8 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (UseOnSelf(castPoint, Spells.Shift)) return;
+                            if (UseOnSelf(castPoint, spell,
+                                Spells.Shift)) return;
                         }
 
                         spell = enemy.Spellbook.SpellE;
@@ -2452,7 +2458,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.Lotus)) return;
                         }
@@ -2467,7 +2473,7 @@ namespace CounterSpells {
                                 Spells.InstaDisable)) return;
 
                             if (distance < 1000)
-                                UseOnSelf(castPoint,
+                                UseOnSelf(castPoint, spell,
                                     Spells.Shift,
                                     Spells.DefVsDisable);
                         }
@@ -2485,7 +2491,7 @@ namespace CounterSpells {
 
                             castPoint = spell.FindCastPoint();
 
-                            if (UseOnSelf(castPoint,
+                            if (UseOnSelf(castPoint, spell,
                                 Spells.Shift,
                                 Spells.DefVsDamage,
                                 Spells.DefVsMagic,
@@ -2504,16 +2510,16 @@ namespace CounterSpells {
                                 damage[2] = 640;
                             }
 
-                            //todo manta ?
-
                             if (Program.Hero.Health <=
                                 Program.Hero.DamageTaken(damage[spell.Level - 1], DamageType.Magical, enemy)) {
-                                if (UseOnSelf(castPoint,
+                                if (UseOnSelf(castPoint, spell,
                                     Spells.Shift,
                                     Spells.Eul,
+                                    Spells.Manta,
                                     Spells.DefVsDamage,
                                     Spells.DefVsMagic,
-                                    Spells.Invis)) return;
+                                    Spells.Invis,
+                                    Spells.Invul)) return;
 
                                 UseOnTarget(enemy, castPoint,
                                     Spells.InstaDisable,
@@ -2527,38 +2533,42 @@ namespace CounterSpells {
             }
         }
 
+        #region projectiles
+
         public static void Projectile() {
             var projectiles =
                 ObjectManager.TrackingProjectiles.Where(x => x.Target.Equals(Program.Hero));
 
             foreach (var projectile in projectiles) {
-                double castPoint;
-                Ability spell;
-
                 var enemy = projectile.Source as Hero;
 
                 if (enemy == null)
                     return;
 
-                //if (projectile.Speed == 1200 && enemy.FindItem("item_ethereal_blade").IsCasted()) {
-                //    castPoint = Program.Hero.Distance2D(projectile.Position) / projectile.Speed;
+                double castPoint;
+                Ability spell;
 
-                //    if (UseOnTarget(enemy, castPoint, Spells.Fist)) return;
+                if (projectile.Speed == 1200 && enemy.FindItem("item_ethereal_blade").IsCasted()) {
+                    castPoint = Program.Hero.Distance2D(projectile.Position) / projectile.Speed;
 
-                //    if (UseOnSelf(castPoint,
-                //        Spells.Shift,
-                //        Spells.Eul,
-                //        Spells.DefVsDamage,
-                //        Spells.DefVsMagic,
-                //        Spells.Invis,
-                //        Spells.Lotus)) return;
-                //}
+                    if (UseOnTarget(enemy, castPoint, Spells.Fist)) return;
+
+                    if (UseOnSelf(castPoint,
+                        Spells.Shift,
+                        Spells.Eul,
+                        Spells.Manta,
+                        Spells.DefVsDamage,
+                        Spells.DefVsMagic,
+                        Spells.Invis,
+                        Spells.Lotus,
+                        Spells.Invul)) return;
+                }
 
                 switch (enemy.ClassID) {
                     case ClassID.CDOTA_Unit_Hero_BountyHunter: {
                         spell = enemy.Spellbook.SpellQ;
 
-                        if (spell.IsCasted() && projectile.Speed == (int) spell.GetProjectileSpeed()) {
+                        if (spell.IsCasted(1) && projectile.Speed == (int) spell.GetProjectileSpeed()) {
                             castPoint = Program.Hero.Distance2D(projectile.Position) / projectile.Speed;
 
                             if (UseOnTarget(enemy, castPoint, Spells.Fist)) return;
@@ -2668,7 +2678,7 @@ namespace CounterSpells {
                     case ClassID.CDOTA_Unit_Hero_Sniper: {
                         spell = enemy.Spellbook.SpellR;
 
-                        if (spell.IsCasted() && projectile.Speed == (int) spell.GetProjectileSpeed()) {
+                        if (spell.IsCasted(1) && projectile.Speed == (int) spell.GetProjectileSpeed()) {
                             castPoint = Program.Hero.Distance2D(projectile.Position) / projectile.Speed;
 
                             if (UseOnTarget(enemy, castPoint, Spells.Fist)) return;
@@ -2835,7 +2845,7 @@ namespace CounterSpells {
                     case ClassID.CDOTA_Unit_Hero_Sven: {
                         spell = enemy.Spellbook.SpellQ;
 
-                        if (spell.IsCasted() && projectile.Speed == (int) spell.GetProjectileSpeed()) {
+                        if (spell.IsCasted(1) && projectile.Speed == (int) spell.GetProjectileSpeed()) {
                             castPoint = Program.Hero.Distance2D(projectile.Position) / projectile.Speed;
 
                             if (UseOnTarget(enemy, castPoint, Spells.Fist)) return;
@@ -2923,12 +2933,9 @@ namespace CounterSpells {
 
                         if (projectile.Speed == (int) spell.GetProjectileSpeed()) {
                             // no casted check
-                            castPoint = Program.Hero.Distance2D(projectile.Position) / projectile.Speed;
+                            castPoint = (Program.Hero.Distance2D(projectile.Position) - spell.GetRadius()) / projectile.Speed;
 
                             if (UseOnTarget(enemy, castPoint, Spells.Fist)) return;
-
-                            if (castPoint < 0.25)
-                                if (UseOnSelf(castPoint, Spells.Manta)) return;
 
                             if (Blink(castPoint))
                                 return;
@@ -2936,7 +2943,6 @@ namespace CounterSpells {
                             if (UseOnSelf(castPoint,
                                 Spells.Shift,
                                 Spells.Eul,
-                                Spells.Manta,
                                 Spells.DefVsDisable,
                                 Spells.DefVsDamage,
                                 Spells.DefVsPhys,
@@ -3041,6 +3047,10 @@ namespace CounterSpells {
             }
         }
 
+        #endregion projectiles
+
+        #region effect
+
         public static void Effect() {
             if (Program.Hero.IsSilenced() && !Program.Hero.HasModifier("modifier_rattletrap_hookshot")) {
                 if (Program.Menu.Item("blinkSilenced").GetValue<bool>())
@@ -3052,8 +3062,8 @@ namespace CounterSpells {
                     Spells.DefVsDamage,
                     Spells.Invis)) return;
 
-                if (!Program.Hero.HasModifiers(new []{ "modifier_riki_smoke_screen", "modifier_disruptor_static_storm" })) {
-                    if (UseOnSelf(555, 
+                if (!Program.Hero.HasModifiers(new[] {"modifier_riki_smoke_screen", "modifier_disruptor_static_storm"})) {
+                    if (UseOnSelf(555,
                         Spells.Manta,
                         Spells.Lotus,
                         Spells.Greaves)) return;
@@ -3072,6 +3082,10 @@ namespace CounterSpells {
             }
         }
 
+        #endregion effect
+
+        #region spell modifiers
+
         public static void SpellModifier() {
             var units =
                 ObjectManager.GetEntities<Unit>()
@@ -3085,6 +3099,9 @@ namespace CounterSpells {
                                 var castPoint = 0.5 - modifier.ElapsedTime;
 
                                 if (Blink(castPoint)) return;
+
+                                if (modifier.ElapsedTime > 0.4 + Game.Ping / 1000)
+                                    if (UseOnSelf(0.15, Spells.Manta)) return;
 
                                 if (UseOnSelf(castPoint,
                                     Spells.DefVsDisable,
@@ -3118,6 +3135,9 @@ namespace CounterSpells {
 
                                 if (Blink(castPoint)) return;
 
+                                if (modifier.ElapsedTime > 0.25 + Game.Ping / 1000)
+                                    if (UseOnSelf(0.15, Spells.Manta)) return;
+
                                 if (UseOnSelf(castPoint,
                                     Spells.DefVsDisable,
                                     Spells.DefVsMagic,
@@ -3149,6 +3169,10 @@ namespace CounterSpells {
             }
         }
 
+        #endregion spell modifiers
+
+        #region modifiers
+
         public static void Modifier() {
             foreach (var modifier in Program.Hero.Modifiers) {
                 switch (modifier.Name) {
@@ -3162,6 +3186,9 @@ namespace CounterSpells {
 
                         if (lina != null)
                             if (UseOnTarget(lina, 0.25, Spells.Fist)) return;
+
+                        if (modifier.RemainingTime < 0.1 + Game.Ping / 1000)
+                            if (UseOnSelf(0.15, Spells.Manta)) return;
 
                         if (UseOnSelf(0.25,
                             Spells.Shift,
@@ -3179,6 +3206,9 @@ namespace CounterSpells {
 
                         if (lion != null)
                             if (UseOnTarget(lion, 0.25, Spells.Fist)) return;
+
+                        if (modifier.RemainingTime < 0.1 + Game.Ping / 1000)
+                            if (UseOnSelf(0.15, Spells.Manta)) return;
 
                         if (UseOnSelf(0.25,
                             Spells.Shift,
@@ -3234,6 +3264,8 @@ namespace CounterSpells {
             }
         }
 
+        #endregion modifiers
+
         public static void PanicEscape() {
             var enemyNear =
                 ObjectManager.GetEntities<Hero>()
@@ -3246,16 +3278,21 @@ namespace CounterSpells {
                 Blink();
         }
 
-        private static bool IsCasted(this Ability ability) {
-            return ability.Level > 0 && ability.CooldownLength > 0 &&
-                   Math.Ceiling(ability.CooldownLength).Equals(Math.Ceiling(ability.Cooldown));
+        private static bool IsCasted(this Ability ability, int additionalDelay = 0) {
+            if (ability == null)
+                return false;
+
+            var cooldownLength = ability.CooldownLength;
+
+            return ability.Level > 0 && cooldownLength > 0 &&
+                   Math.Ceiling(ability.Cooldown) + additionalDelay >= Math.Ceiling(cooldownLength);
         }
 
-        private static bool Blink(double castpoint = 5, bool forceBlink = false) {
+        private static bool Blink(double castpoint = 5, bool forceBlink = false, Ability key = null) {
             if (!Program.Menu.Item("blink").GetValue<bool>() || Program.Hero.IsMagicImmune())
                 return false;
 
-            castpoint -= 0.1;
+            castpoint -= 0.05;
 
             var blink = Program.Hero.Inventory.Items.Concat(Program.Hero.Spellbook.Spells)
                 .FirstOrDefault(x => Spells.BlinkAbilities.Any(x.Name.Equals) && x.CanBeCasted());
@@ -3298,12 +3335,18 @@ namespace CounterSpells {
                 castpoint -= Program.Hero.GetTurnTime(home);
 
             if (blink.ClassID == ClassID.CDOTA_Item_ForceStaff)
-                castpoint -= 0.08;
+                castpoint -= 0.13;
 
             if (Program.Hero.HasModifier("modifier_bloodseeker_rupture") && !isInvul)
                 return false;
 
-            var enoughTime = blink.GetCastDelay(Program.Hero, home, true) < castpoint;
+            var castDelay = blink.GetCastDelay(Program.Hero, home, true);
+            var enoughTime = castDelay < castpoint;
+
+            if (key != null && enoughTime) {
+                if (PhaseCanBeCanceled(castDelay, castpoint, blink))
+                    return true;
+            }
 
             if (!enoughTime &&
                 (!forceBlink || blink.ClassID != ClassID.CDOTA_Item_BlinkDagger ||
@@ -3339,7 +3382,7 @@ namespace CounterSpells {
                 Game.ExecuteCommand("+dota_camera_center_on_hero");
             }
 
-            Utils.Sleep(Program.Menu.Item("delay").GetValue<Slider>().Value, "CounterDelay");
+            Utils.Sleep(castDelay * 1000 + Program.Menu.Item("delay").GetValue<Slider>().Value, "CounterDelay");
             return true;
         }
 
@@ -3349,6 +3392,7 @@ namespace CounterSpells {
 
             var canCast = Program.Hero.CanCast();
             var magicImmune = target.IsMagicImmune();
+            var castDelay = 0d;
 
             var ability =
                 abilitiesNames.SelectMany(
@@ -3356,7 +3400,7 @@ namespace CounterSpells {
                         x.Select(y => Program.Hero.FindItem(y) ?? Program.Hero.FindSpell(y))
                             .Where(
                                 y =>
-                                    y.CanBeCasted() && y.GetCastDelay(Program.Hero, target) < castpoint &&
+                                    y.CanBeCasted() && (castDelay = y.GetCastDelay(Program.Hero, target)) < castpoint &&
                                     target.IsValidTarget(y.GetCastRange(), false, Program.Hero.NetworkPosition) &&
                                     (!magicImmune || Spells.IgnoresMagicImmunity.Any(y.Name.Equals)) &&
                                     (y is Item || canCast))).FirstOrDefault();
@@ -3371,25 +3415,38 @@ namespace CounterSpells {
             else
                 ability.UseAbility(target.NetworkPosition);
 
-            Utils.Sleep(Program.Menu.Item("delay").GetValue<Slider>().Value, "CounterDelay");
+            Utils.Sleep(castDelay * 1000 + Program.Menu.Item("delay").GetValue<Slider>().Value, "CounterDelay");
             return true;
         }
 
         private static bool UseOnSelf(double castpoint, params string[][] abilitiesNames) {
+            return UseOnSelf(castpoint, null, abilitiesNames);
+        }
+
+        private static bool UseOnSelf(double castpoint, Ability key, params string[][] abilitiesNames) {
             if (Program.Hero.IsMagicImmune())
                 return false;
 
             var canCast = Program.Hero.CanCast();
+            var castDelay = 0d;
 
             var ability =
                 abilitiesNames.SelectMany(
                     x =>
                         x.Select(y => Program.Hero.FindItem(y) ?? Program.Hero.FindSpell(y))
-                            .Where(y => y.CanBeCasted() && y.FindCastPoint() < castpoint && (y is Item || canCast)))
-                    .FirstOrDefault();
+                            .Where(
+                                y =>
+                                    y.CanBeCasted() &&
+                                    (castDelay = y.GetCastDelay(Program.Hero, Program.Hero, true)) < castpoint &&
+                                    (y is Item || canCast))).FirstOrDefault();
 
             if (ability == null)
                 return false;
+
+            if (key != null) {
+                if (PhaseCanBeCanceled(castDelay, castpoint, ability))
+                    return true;
+            }
 
             if (ability.IsAbilityBehavior(AbilityBehavior.NoTarget))
                 ability.UseAbility();
@@ -3398,9 +3455,29 @@ namespace CounterSpells {
             else
                 ability.UseAbility(Program.Hero.NetworkPosition);
 
-            Utils.Sleep(Program.Menu.Item("delay").GetValue<Slider>().Value, "CounterDelay");
+            Utils.Sleep(castDelay * 1000 + Program.Menu.Item("delay").GetValue<Slider>().Value, "CounterDelay");
             return true;
         }
 
+        private static bool PhaseCanBeCanceled(double myCastPoint, double enemyCastPoint, Ability key) {
+            if (SpellTimings.ContainsKey(key)) {
+                float phaseTime;
+                SpellTimings.TryGetValue(key, out phaseTime);
+
+                if (Game.GameTime > phaseTime + enemyCastPoint)
+                    SpellTimings[key] = phaseTime = Game.GameTime;
+
+                if (phaseTime +
+                    enemyCastPoint * ((float) Program.Menu.Item("castpointAdjustment").GetValue<Slider>().Value / 1000) -
+                    myCastPoint > Game.GameTime)
+                    return true;
+            }
+            else {
+                SpellTimings.Add(key, Game.GameTime);
+                return true;
+            }
+
+            return false;
+        }
     }
 }
