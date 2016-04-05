@@ -56,7 +56,7 @@
   <ItemGroup>
     <Compile Include="Drawings.cs" />
     <Compile Include="Main.cs" />
-    <Compile Include="MainMenu.cs" />
+    <Compile Include="RangesMenu.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>

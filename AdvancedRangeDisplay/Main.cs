@@ -4,8 +4,7 @@ using System.Linq;
 using Ensage;
 using Ensage.Common;
 using Ensage.Common.Extensions;
-
-//using Ensage.Common.Menu;
+using Ensage.Common.Objects;
 
 namespace AdvancedRangeDisplay {
     internal static class Main {
@@ -13,22 +12,13 @@ namespace AdvancedRangeDisplay {
         public static Dictionary<string, uint> ItemsDictionary = new Dictionary<string, uint>();
         public static Dictionary<string, float> CustomRangesDictionary = new Dictionary<string, float>();
         public static HashSet<string> ItemsSet = new HashSet<string>();
-
         private static readonly List<Hero> HeroesLens = new List<Hero>();
-        //private static readonly List<string> RemoveFromMenu = new List<string>();
 
-        private static bool nightChanged;
         private static bool inGame;
         public static Hero Hero { get; private set; }
 
         public static void Init() {
             Game.OnUpdate += Game_OnUpdate;
-            Game.OnFireEvent += Game_OnFireEvent;
-        }
-
-        private static void Game_OnFireEvent(FireEventEventArgs args) {
-            if (args.GameEvent.Name == "dota_tower_kill")
-                Drawings.DisposeDestroeydTowers();
         }
 
         private static void Game_OnUpdate(EventArgs args) {
@@ -36,10 +26,10 @@ namespace AdvancedRangeDisplay {
                 return;
 
             if (!inGame) {
-                Hero = ObjectMgr.LocalHero;
+                Hero = ObjectManager.LocalHero;
 
                 if (!Game.IsInGame || Hero == null) {
-                    Utils.Sleep(1000, "advancedRangeDisplay");
+                    Utils.Sleep(5000, "advancedRangeDisplay");
                     return;
                 }
 
@@ -49,7 +39,7 @@ namespace AdvancedRangeDisplay {
                 HeroesLens.Clear();
                 ItemsSet.Clear();
 
-                MainMenu.Init();
+                RangesMenu.Init();
                 Drawings.Init();
 
                 inGame = true;
@@ -63,19 +53,20 @@ namespace AdvancedRangeDisplay {
             if (Game.IsPaused)
                 return;
 
-            var allHeroes = ObjectMgr.GetEntities<Hero>().Where(x => !x.IsIllusion).ToList();
+            var allHeroes = ObjectManager.GetEntities<Hero>().Where(x => !x.IsIllusion).ToList();
 
             foreach (var hero in allHeroes) {
-                var heroName = hero.Name;
+                var heroName = hero.StoredName();
 
-                if (!MainMenu.RangesMenu.ContainsKey(hero)) {
-                    MainMenu.AddSpells(hero);
-                    MainMenu.AddCustomItem(hero, "attribute_bonus", 1300, "Experience range");
+                if (!RangesMenu.HeroMenu.ContainsKey(hero)) {
+                    RangesMenu.AddSpells(hero);
+                    RangesMenu.AddCustomItem(hero, "attribute_bonus", 1300, "Experience range");
                 }
 
                 foreach (var spell in
-                    hero.Spellbook.Spells.Where(x => Drawings.ParticleDictionary.ContainsKey(heroName + x.Name))) {
-                    var key = heroName + spell.Name;
+                    hero.Spellbook.Spells.Where(x => Drawings.ParticleDictionary.ContainsKey(heroName + x.StoredName()))
+                    ) {
+                    var key = heroName + spell.StoredName();
                     uint savedLevel;
                     AbilitiesDictionary.TryGetValue(key, out savedLevel);
                     var spellLevel = spell.Level;
@@ -89,7 +80,8 @@ namespace AdvancedRangeDisplay {
                         Drawings.UpdateAbilityRanges(hero);
                         HeroesLens.Add(hero);
                     }
-                } else {
+                }
+                else {
                     if (HeroesLens.Contains(hero)) {
                         Drawings.UpdateAbilityRanges(hero);
                         HeroesLens.Remove(hero);
@@ -97,11 +89,12 @@ namespace AdvancedRangeDisplay {
                 }
 
                 foreach (var item in hero.Inventory.Items) {
-                    var key = heroName + item.Name.GetDefaultName();
+                    var key = heroName + item.StoredName().GetDefaultName();
 
                     if (!ItemsSet.Contains(key)) {
-                        MainMenu.AddItem(hero, item);
-                    } else if (Drawings.ParticleDictionary.ContainsKey(key)) {
+                        RangesMenu.AddItem(hero, item);
+                    }
+                    else if (Drawings.ParticleDictionary.ContainsKey(key)) {
                         uint savedLevel;
                         ItemsDictionary.TryGetValue(key, out savedLevel);
                         var spellLevel = item.Level;
@@ -119,54 +112,26 @@ namespace AdvancedRangeDisplay {
                         if (Drawings.ParticleDictionary.ContainsKey(key)) {
                             Drawings.DisposeRange(key);
                         }
-                    } else {
-                        if (MainMenu.Menu.Item(key + "enabled").GetValue<bool>() &&
+                    }
+                    else {
+                        if (RangesMenu.Menu.Item(key + "enabled").GetValue<bool>() &&
                             !Drawings.ParticleDictionary.ContainsKey(key) && ability.Level > 0) {
-                            Drawings.DrawRange(hero, ability is Item ? ability.Name.GetDefaultName() : ability.Name,
+                            Drawings.DrawRange(hero,
+                                ability is Item ? ability.StoredName().GetDefaultName() : ability.StoredName(),
                                 true);
                         }
                     }
                 }
 
-                if (Game.GameTime % 480 > 240) {
-                    if (!nightChanged) {
-                        nightChanged = true;
-                        Drawings.ChangeTowerRanges(865);
-                    }
-                } else {
-                    if (nightChanged) {
-                        nightChanged = false;
-                        Drawings.ChangeTowerRanges(950);
-                    }
-                }
-
-                //    if (RemoveFromMenu.Any()) {
-                //        foreach (var key in RemoveFromMenu) {
-                //            if (ItemsSet.Contains(key))
-                //                ItemsSet.Remove(key);
-                //            if (ItemsDictionary.ContainsKey(key))
-                //                ItemsDictionary.Remove(key);
-                //            if (AbilitiesDictionary.ContainsKey(key))
-                //                AbilitiesDictionary.Remove(key);
-
-                //            Menu rangeMenu;
-                //            MainMenu.RangesMenu.TryGetValue(hero, out rangeMenu);
-                //            if (rangeMenu == null) continue;
-
-                //            rangeMenu.RemoveSubMenu(key);
-                //        }
-                //        RemoveFromMenu.Clear();
-                //}
-
                 foreach (var key in CustomRangesDictionary.Keys.Where(x =>
                     !Drawings.ParticleDictionary.ContainsKey(x) &&
                     x.StartsWith(heroName) &&
-                    MainMenu.Menu.Item(x + "enabled").GetValue<bool>())) {
-                    Drawings.DrawRange(hero, key.Substring(hero.Name.Length), true, customRange: true);
+                    RangesMenu.Menu.Item(x + "enabled").GetValue<bool>())) {
+                    Drawings.DrawRange(hero, key.Substring(hero.StoredName().Length), true, customRange: true);
                 }
             }
 
-            Utils.Sleep(1000, "advancedRangeDisplay");
+            Utils.Sleep(5000, "advancedRangeDisplay");
         }
 
         public static string GetDefaultName(this string name) {
