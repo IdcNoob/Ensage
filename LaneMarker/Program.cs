@@ -35,6 +35,7 @@ namespace LaneMarker {
                 "mid pls",
                 "pro mid here",
                 "mid or feed",
+                "mid or mid",
                 "mid or techies",
                 "mid or double mid",
                 "dont even think to take my mid",

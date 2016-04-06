@@ -5,6 +5,7 @@ using Ensage;
 using Ensage.Common;
 using Ensage.Common.Extensions;
 using Ensage.Common.Menu;
+using Ensage.Common.Objects;
 using Ensage.Items;
 using SharpDX;
 using SharpDX.Direct3D9;
@@ -276,24 +277,24 @@ namespace HpMpAbuse {
 
             foreach (var spell in hero.Spellbook.Spells.Where(CheckAbility)) {
                 if (spell.ClassID != ClassID.CDOTA_Ability_SkeletonKing_Reincarnation) {
-                    AbilitiesPT.Add(spell.Name, true);
-                    AbilitiesSR.Add(spell.Name, true);
+                    AbilitiesPT.Add(spell.StoredName(), true);
+                    AbilitiesSR.Add(spell.StoredName(), true);
                 }
-                AbilitiesMC.Add(spell.Name, false);
+                AbilitiesMC.Add(spell.StoredName(), false);
                 reloadMenu = true;
             }
 
             foreach (var item in hero.Inventory.Items.Where(CheckAbility)) {
-                AbilitiesPT.Add(item.Name, true);
-                AbilitiesSR.Add(item.Name, true);
-                AbilitiesMC.Add(item.Name, false);
+                AbilitiesPT.Add(item.StoredName(), true);
+                AbilitiesSR.Add(item.StoredName(), true);
+                AbilitiesMC.Add(item.StoredName(), false);
                 reloadMenu = true;
             }
 
             if (reloadMenu) {
-                PTMenu.Item("enabledPTAbilities").SetValue((new AbilityToggler(AbilitiesPT)));
-                SoulRingMenu.Item("enabledSRAbilities").SetValue((new AbilityToggler(AbilitiesSR)));
-                ManaCheckMenu.Item("enabledMCAbilities").SetValue((new AbilityToggler(AbilitiesMC)));
+                PTMenu.Item("enabledPTAbilities").SetValue(new AbilityToggler(AbilitiesPT));
+                SoulRingMenu.Item("enabledSRAbilities").SetValue(new AbilityToggler(AbilitiesSR));
+                ManaCheckMenu.Item("enabledMCAbilities").SetValue(new AbilityToggler(AbilitiesMC));
             }
 
             if (!autoDisablePT && Game.GameTime / 60 > PTMenu.Item("autoPTdisable").GetValue<Slider>().Value &&
@@ -314,10 +315,10 @@ namespace HpMpAbuse {
                 var heroMana = hero.Mana;
 
                 var manaCost = (from ability in AbilitiesMC
-                                where ManaCheckMenu.Item("enabledMCAbilities")
-                                    .GetValue<AbilityToggler>()
-                                    .IsEnabled(ability.Key)
-                                select hero.FindSpell(ability.Key) ?? hero.FindItem(ability.Key))
+                    where ManaCheckMenu.Item("enabledMCAbilities")
+                        .GetValue<AbilityToggler>()
+                        .IsEnabled(ability.Key)
+                    select hero.FindSpell(ability.Key) ?? hero.FindItem(ability.Key))
                     .Aggregate<Ability, uint>(0,
                         (current, spell) => current + spell.ManaCost);
 
@@ -365,7 +366,7 @@ namespace HpMpAbuse {
                 }
 
                 if (soulRing != null && soulRing.CanBeCasted()) {
-                    if (((float) hero.Health / hero.MaximumHealth) * 100 >=
+                    if ((float) hero.Health / hero.MaximumHealth * 100 >=
                         SoulRingMenu.Item("soulringHPThreshold").GetValue<Slider>().Value &&
                         hero.Mana / hero.MaximumMana * 100 <=
                         SoulRingMenu.Item("soulringMPThreshold").GetValue<Slider>().Value) {
@@ -375,7 +376,7 @@ namespace HpMpAbuse {
                     }
                 }
 
-                var bottleRegen = hero.Modifiers.FirstOrDefault(x => x.Name == "modifier_bottle_regeneration");
+                var bottleRegen = hero.FindModifier("modifier_bottle_regeneration");
 
                 if (bottle != null && bottle.CanBeCasted() && bottle.CurrentCharges != 0 &&
                     (bottleRegen == null || bottleRegen.RemainingTime < 0.2)) {
@@ -399,13 +400,13 @@ namespace HpMpAbuse {
                 }
 
                 if (urn != null && urn.CanBeCasted() && urn.CurrentCharges != 0 &&
-                    hero.Modifiers.All(x => x.Name != "modifier_item_urn_heal") &&
+                    !hero.HasModifier("modifier_item_urn_heal") &&
                     (float) hero.Health / hero.MaximumHealth < 0.9) {
                     DropItems(BonusHealth, urn);
                     urn.UseAbility(hero, true);
                 }
 
-                if (hero.Modifiers.Any(x => HealModifiers.Any(x.Name.Equals))) {
+                if (hero.HasModifiers(HealModifiers, false)) {
                     if ((float) hero.Health / hero.MaximumHealth < 0.9)
                         DropItems(BonusHealth);
                     if (hero.Mana / hero.MaximumMana < 0.9 && bottleRegen != null)
@@ -443,48 +444,56 @@ namespace HpMpAbuse {
                 return;
             }
 
-            disableSwitchBack = hero.Modifiers.Any(x => DisableSwitchBackModifiers.Contains(x.Name));
+            disableSwitchBack = hero.HasModifiers(DisableSwitchBackModifiers, false);
 
-            if (hero.Modifiers.Any(x => HealModifiers.Any(x.Name.Equals)) && !disableSwitchBack &&
+            if (hero.HasModifiers(HealModifiers, false) && !disableSwitchBack &&
                 (PTMenu.Item("switchPTHeal").GetValue<bool>() && PTMenu.Item("enabledPT").GetValue<bool>() ||
                  enabledRecovery)) {
-                if (hero.Modifiers.Any(
-                    x => (x.Name == "modifier_bottle_regeneration" || x.Name == "modifier_clarity_potion"))) {
+                if (hero.HasModifiers(new[] {"modifier_bottle_regeneration", "modifier_clarity_potion"}, false)) {
                     if (hero.Mana / hero.MaximumMana < 0.9 && (float) hero.Health / hero.MaximumHealth > 0.9) {
                         if (lastPtAttribute == Attribute.Intelligence) {
                             ChangePowerTreads(Attribute.Strength, healing: true);
-                        } else {
+                        }
+                        else {
                             healActive = false;
                         }
-                    } else if (hero.Mana / hero.MaximumMana > 0.9 && (float) hero.Health / hero.MaximumHealth < 0.9) {
+                    }
+                    else if (hero.Mana / hero.MaximumMana > 0.9 && (float) hero.Health / hero.MaximumHealth < 0.9) {
                         if (lastPtAttribute == Attribute.Strength) {
                             if (hero.PrimaryAttribute == Attribute.Agility)
                                 ChangePowerTreads(Attribute.Agility, healing: true);
                             else if (hero.PrimaryAttribute == Attribute.Intelligence)
                                 ChangePowerTreads(Attribute.Intelligence, healing: true);
-                        } else {
+                        }
+                        else {
                             healActive = false;
                         }
-                    } else if (hero.Mana / hero.MaximumMana < 0.9 && (float) hero.Health / hero.MaximumHealth < 0.9) {
+                    }
+                    else if (hero.Mana / hero.MaximumMana < 0.9 && (float) hero.Health / hero.MaximumHealth < 0.9) {
                         ChangePowerTreads(Attribute.Agility, healing: true);
-                    } else {
+                    }
+                    else {
                         healActive = false;
                     }
-                } else {
+                }
+                else {
                     if ((float) hero.Health / hero.MaximumHealth < 0.9) {
                         if (lastPtAttribute == Attribute.Strength) {
                             if (hero.PrimaryAttribute == Attribute.Agility)
                                 ChangePowerTreads(Attribute.Agility, healing: true);
                             else if (hero.PrimaryAttribute == Attribute.Intelligence)
                                 ChangePowerTreads(Attribute.Intelligence, healing: true);
-                        } else {
+                        }
+                        else {
                             healActive = false;
                         }
-                    } else if (hero.Health == hero.MaximumHealth && healActive) {
+                    }
+                    else if (hero.Health == hero.MaximumHealth && healActive) {
                         healActive = false;
                     }
                 }
-            } else {
+            }
+            else {
                 healActive = false;
             }
 
@@ -498,7 +507,7 @@ namespace HpMpAbuse {
             var spell = args.Ability;
 
             if (spell.ManaCost <= PTMenu.Item("manaPTThreshold").GetValue<Slider>().Value ||
-                IgnoredSpells.Any(spell.Name.Equals))
+                IgnoredSpells.Any(spell.StoredName().Equals))
                 return;
 
             var soulRing = hero.FindItem("item_soul_ring");
@@ -512,8 +521,8 @@ namespace HpMpAbuse {
             args.Process = false;
 
             if (soulRing != null && soulRing.CanBeCasted() && SoulRingMenu.Item("enabledSR").GetValue<bool>()) {
-                if (SoulRingMenu.Item("enabledSRAbilities").GetValue<AbilityToggler>().IsEnabled(spell.Name) &&
-                    ((float) hero.Health / hero.MaximumHealth) * 100 >=
+                if (SoulRingMenu.Item("enabledSRAbilities").GetValue<AbilityToggler>().IsEnabled(spell.StoredName()) &&
+                    (float) hero.Health / hero.MaximumHealth * 100 >=
                     SoulRingMenu.Item("soulringHPThreshold").GetValue<Slider>().Value &&
                     hero.Mana / hero.MaximumMana * 100 <=
                     SoulRingMenu.Item("soulringMPThreshold").GetValue<Slider>().Value)
@@ -522,7 +531,7 @@ namespace HpMpAbuse {
 
             var sleep = spell.FindCastPoint() * 1000 + PTMenu.Item("switchbackPTdelay").GetValue<Slider>().Value;
 
-            if (AttackSpells.Any(spell.Name.Equals))
+            if (AttackSpells.Any(spell.StoredName().Equals))
                 sleep += hero.SecondsPerAttack * 1000;
 
             switch (args.Order) {
@@ -532,9 +541,12 @@ namespace HpMpAbuse {
                         var castRange = spell.GetCastRange() + 300;
 
                         if (hero.Distance2D(target) <= castRange && PTMenu.Item("enabledPT").GetValue<bool>()) {
-                            if (PTMenu.Item("enabledPTAbilities").GetValue<AbilityToggler>().IsEnabled(spell.Name))
+                            if (
+                                PTMenu.Item("enabledPTAbilities")
+                                    .GetValue<AbilityToggler>()
+                                    .IsEnabled(spell.StoredName()))
                                 ChangePowerTreads(Attribute.Intelligence);
-                            else if (AttackSpells.Any(spell.Name.Equals)) {
+                            else if (AttackSpells.Any(spell.StoredName().Equals)) {
                                 ChangePtOnAction("switchPTonAttack");
                                 attacking = true;
                             }
@@ -548,7 +560,7 @@ namespace HpMpAbuse {
                     var castRange = spell.GetCastRange() + 300;
 
                     if (hero.Distance2D(Game.MousePosition) <= castRange && PTMenu.Item("enabledPT").GetValue<bool>() &&
-                        PTMenu.Item("enabledPTAbilities").GetValue<AbilityToggler>().IsEnabled(spell.Name)) {
+                        PTMenu.Item("enabledPTAbilities").GetValue<AbilityToggler>().IsEnabled(spell.StoredName())) {
                         ChangePowerTreads(Attribute.Intelligence);
                         sleep += hero.GetTurnTime(Game.MousePosition) * 1000;
                     }
@@ -557,9 +569,9 @@ namespace HpMpAbuse {
                 }
                 case Order.Ability: {
                     if (PTMenu.Item("enabledPT").GetValue<bool>()) {
-                        if (PTMenu.Item("enabledPTAbilities").GetValue<AbilityToggler>().IsEnabled(spell.Name))
+                        if (PTMenu.Item("enabledPTAbilities").GetValue<AbilityToggler>().IsEnabled(spell.StoredName()))
                             ChangePowerTreads(Attribute.Intelligence);
-                        else if (spell.Name == AttackSpells[3]) {
+                        else if (spell.StoredName() == AttackSpells[3]) {
                             ChangePtOnAction("switchPTonAttack");
                             attacking = true;
                         }
@@ -569,7 +581,7 @@ namespace HpMpAbuse {
                 }
                 case Order.ToggleAbility: {
                     if (PTMenu.Item("enabledPT").GetValue<bool>() &&
-                        PTMenu.Item("enabledPTAbilities").GetValue<AbilityToggler>().IsEnabled(spell.Name))
+                        PTMenu.Item("enabledPTAbilities").GetValue<AbilityToggler>().IsEnabled(spell.StoredName()))
                         ChangePowerTreads(Attribute.Intelligence);
                     spell.ToggleAbility();
                     break;
@@ -586,7 +598,7 @@ namespace HpMpAbuse {
             healActive = healing;
 
             if (hero.IsChanneling() || !hero.CanUseItems() ||
-                hero.Modifiers.Any(x => InvisibilityModifiers.Contains(x.Name)))
+                hero.HasModifiers(InvisibilityModifiers, false))
                 return;
 
             var ptNow = 0;
@@ -684,7 +696,7 @@ namespace HpMpAbuse {
             if (!ptChanged)
                 return;
 
-            if (hero.Modifiers.All(x => x.Name != "modifier_bottle_regeneration"))
+            if (hero.HasModifier("modifier_bottle_regeneration"))
                 ChangePowerTreads(lastPtAttribute, false);
         }
 
@@ -713,8 +725,8 @@ namespace HpMpAbuse {
         }
 
         private static bool CheckAbility(Ability ability) {
-            return ability.ManaCost > 0 && !AbilitiesMC.ContainsKey(ability.Name) &&
-                   !IgnoredSpells.Any(ability.Name.Equals);
+            return ability.ManaCost > 0 && !AbilitiesMC.ContainsKey(ability.StoredName()) &&
+                   !IgnoredSpells.Any(ability.StoredName().Equals);
         }
 
         private static void Drawing_OnEndScene(EventArgs args) {

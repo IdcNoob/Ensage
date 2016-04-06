@@ -50,14 +50,14 @@ namespace CourierBottleAbuse {
                 return;
             }
 
-            var hero = ObjectMgr.LocalHero;
+            var hero = ObjectManager.LocalHero;
 
             if (hero == null || !hero.IsAlive) {
                 enabled = false;
                 return;
             }
 
-            var courier = ObjectMgr.GetEntities<Courier>().FirstOrDefault(x => x.IsAlive && x.Team == hero.Team);
+            var courier = ObjectManager.GetEntities<Courier>().FirstOrDefault(x => x.IsAlive && x.Team == hero.Team);
 
             if (courier == null) {
                 enabled = false;
@@ -76,8 +76,7 @@ namespace CourierBottleAbuse {
 
             if (distance > 200 && !following) {
                 if (Menu.Item("stashBefore").GetValue<bool>() && hero.Inventory.StashItems.Any()) {
-                    var limit = Menu.Item("stashLimitBefore").GetValue<bool>();
-                    if ((limit && courier.Modifiers.Any(x => x.Name == "modifier_fountain_aura_buff")) || !limit) {
+                    if (courier.HasModifier("modifier_fountain_aura_buff") || !Menu.Item("stashLimitBefore").GetValue<bool>()) {
                         courier.Spellbook.SpellD.UseAbility();
                         courier.Spellbook.SpellF.UseAbility(true);
                         courier.Follow(hero, true);
