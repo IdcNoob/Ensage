@@ -8,17 +8,15 @@ using SharpDX.Direct3D9;
 
 namespace LaneMarker {
     internal class Program {
-        private const int MOUSEEVENTF_LEFTDOWN = 0x02;
-        private const int MOUSEEVENTF_LEFTUP = 0x04;
-
         private static bool inGame;
         private static Font textFont;
         private static int SelectedLane;
 
-        private static readonly string[] LaneList = {"Disabled", "Safe", "Mid", "Hard"};
+        private static readonly string[] LaneList = {"Disabled", "Safe", "Mid", "Hard", "Jungle"};
 
         private static readonly string[][] SayText = {
             new[] {
+                // safe 
                 "Disabled",
                 "carry",
                 "carry pls",
@@ -31,14 +29,19 @@ namespace LaneMarker {
                 "playing carry since 1972"
             },
             new[] {
+                // mid
                 "Disabled",
                 "mid",
                 "mid pls",
                 "pro mid here",
+                "mid or feed",
+                "mid or techies",
+                "mid or double mid",
                 "dont even think to take my mid",
                 "we lost"
             },
             new[] {
+                // hard
                 "Disabled",
                 "hard",
                 "hard lane",
@@ -47,16 +50,24 @@ namespace LaneMarker {
                 "off lane",
                 "solo off pls",
                 "i got this"
+            },
+            new[] {
+                // jungle
+                "Disabled",
+                "jungle",
+                "woods"
             }
         };
 
         private static readonly float[][] CoordinateMultiplayers = {
-            new[] {0.19f, 0.96f},
-            new[] {0.14f, 0.87f},
-            new[] {0.09f, 0.82f},
-            new[] {0.11f, 0.79f},
-            new[] {0.14f, 0.87f},
-            new[] {0.19f, 0.90f}
+            new[] {0.19f, 0.96f}, // radiant safe
+            new[] {0.14f, 0.87f}, // radiant mid
+            new[] {0.09f, 0.82f}, // radiant hard
+            new[] {0.16f, 0.94f}, // radiant jungle
+            new[] {0.11f, 0.79f}, //dire safe
+            new[] {0.14f, 0.87f}, //dire mid
+            new[] {0.19f, 0.90f}, //dire hard
+            new[] {0.13f, 0.81f}  //dire jungle
         };
 
         private static readonly Menu Menu = new Menu("Lane Marker", "laneMarker", true);
@@ -77,6 +88,8 @@ namespace LaneMarker {
             Menu.AddItem(new MenuItem("MidText", "Mid lane text").SetValue(new StringList(SayText[1])))
                 .SetTooltip("This will be said in team chat");
             Menu.AddItem(new MenuItem("HardText", "Hard lane text").SetValue(new StringList(SayText[2])))
+                .SetTooltip("This will be said in team chat");
+            Menu.AddItem(new MenuItem("JungleText", "Jungle text").SetValue(new StringList(SayText[3])))
                 .SetTooltip("This will be said in team chat");
 
             SelectedLane = Menu.Item("defaultLane").GetValue<StringList>().SelectedIndex;
@@ -111,7 +124,7 @@ namespace LaneMarker {
         private static void Game_OnWndProc(WndEventArgs args) {
             if (inGame || args.WParam != Menu.Item("hotkey").GetValue<KeyBind>().Key) return;
             if (args.Msg == (uint) Utils.WindowsMessages.WM_KEYUP)
-                SelectedLane = SelectedLane < 3 ? SelectedLane + 1 : 0;
+                SelectedLane = SelectedLane < 4 ? SelectedLane + 1 : 0;
         }
 
         private static void Game_OnFireEvent(FireEventEventArgs args) {
@@ -121,10 +134,11 @@ namespace LaneMarker {
                 SetCursorPos((int) (HUDInfo.ScreenSizeX() * CoordinateMultiplayers[SelectedLane - 1][0]),
                     (int) (HUDInfo.ScreenSizeY() * CoordinateMultiplayers[SelectedLane - 1][1]));
             else
-                SetCursorPos((int) (HUDInfo.ScreenSizeX() * CoordinateMultiplayers[SelectedLane - 1 + 3][0]),
-                    (int) (HUDInfo.ScreenSizeY() * CoordinateMultiplayers[SelectedLane - 1 + 3][1]));
+                SetCursorPos((int) (HUDInfo.ScreenSizeX() * CoordinateMultiplayers[SelectedLane - 1 + 4][0]),
+                    (int) (HUDInfo.ScreenSizeY() * CoordinateMultiplayers[SelectedLane - 1 + 4][1]));
 
-            mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+            mouse_event((int) Utils.WindowsMessages.WM_LBUTTONDOWN | (int) Utils.WindowsMessages.WM_LBUTTONUP, 
+                0, 0, 0, 0);
 
             var sayTextIndex = Menu.Item(LaneList[SelectedLane] + "Text").GetValue<StringList>().SelectedIndex;
 
