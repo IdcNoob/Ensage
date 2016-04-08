@@ -3008,7 +3008,8 @@ namespace CounterSpells {
                     case ClassID.CDOTA_Unit_Hero_Necrolyte: {
                         spell = enemy.Spellbook.SpellQ;
 
-                        if (spell.IsCasted() && projectile.Speed == (int) spell.GetProjectileSpeed()) {
+                        if (spell.IsCasted() && projectile.Speed == (int) spell.GetProjectileSpeed() &&
+                            enemy.Team == Program.Hero.GetEnemyTeam()) {
                             castPoint = Program.Hero.Distance2D(projectile.Position) / projectile.Speed;
 
                             if (UseOnTarget(enemy, castPoint, Spells.Fist)) return;
@@ -3402,7 +3403,7 @@ namespace CounterSpells {
                                 y =>
                                     y.CanBeCasted() && (castDelay = y.GetCastDelay(Program.Hero, target)) < castpoint &&
                                     target.IsValidTarget(y.GetCastRange(), false, Program.Hero.NetworkPosition) &&
-                                    (!magicImmune || Spells.IgnoresMagicImmunity.Any(y.Name.Equals)) &&
+                                    (!magicImmune || y.PiercesMagicImmunity()) &&
                                     (y is Item || canCast))).FirstOrDefault();
 
             if (ability == null)
