@@ -8,6 +8,8 @@ using SharpDX.Direct3D9;
 
 namespace LaneMarker {
     internal class Program {
+        private const int MOUSEEVENTF_LEFTDOWN = 0x02;
+        private const int MOUSEEVENTF_LEFTUP = 0x04;
         private static bool inGame;
         private static Font textFont;
         private static int SelectedLane;
@@ -68,13 +70,13 @@ namespace LaneMarker {
             new[] {0.11f, 0.79f}, //dire safe
             new[] {0.14f, 0.87f}, //dire mid
             new[] {0.19f, 0.90f}, //dire hard
-            new[] {0.13f, 0.81f}  //dire jungle
+            new[] {0.13f, 0.81f} //dire jungle
         };
 
         private static readonly Menu Menu = new Menu("Lane Marker", "laneMarker", true);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-        public static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint cButtons, uint dwExtraInfo);
+        private static extern void mouse_event(int dwFlags, int dx, int dy, int dwData, int dwExtraInfo);
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool SetCursorPos(int x, int y);
@@ -123,30 +125,25 @@ namespace LaneMarker {
         }
 
         private static void Game_OnWndProc(WndEventArgs args) {
-            if (inGame || args.WParam != Menu.Item("hotkey").GetValue<KeyBind>().Key) return;
-            if (args.Msg == (uint) Utils.WindowsMessages.WM_KEYUP)
-                SelectedLane = SelectedLane < 4 ? SelectedLane + 1 : 0;
+            if (inGame || args.Msg != (uint) Utils.WindowsMessages.WM_KEYUP ||
+                args.WParam != Menu.Item("hotkey").GetValue<KeyBind>().Key) return;
+            SelectedLane = SelectedLane < LaneList.Length - 1 ? SelectedLane + 1 : 0;
         }
 
         private static void Game_OnFireEvent(FireEventEventArgs args) {
-            if (args.GameEvent.Name != "hero_picker_shown" || SelectedLane == 0) return;
+            if (inGame || SelectedLane == 0 || args.GameEvent.Name != "hero_picker_shown") return;
 
-            if (ObjectManager.LocalPlayer.Team == Team.Radiant)
-                SetCursorPos((int) (HUDInfo.ScreenSizeX() * CoordinateMultiplayers[SelectedLane - 1][0]),
-                    (int) (HUDInfo.ScreenSizeY() * CoordinateMultiplayers[SelectedLane - 1][1]));
-            else
-                SetCursorPos((int) (HUDInfo.ScreenSizeX() * CoordinateMultiplayers[SelectedLane - 1 + 4][0]),
-                    (int) (HUDInfo.ScreenSizeY() * CoordinateMultiplayers[SelectedLane - 1 + 4][1]));
+            var team = ObjectManager.LocalPlayer.Team == Team.Radiant ? 0 : LaneList.Length - 1;
 
-            mouse_event((int) Utils.WindowsMessages.WM_LBUTTONDOWN | (int) Utils.WindowsMessages.WM_LBUTTONUP, 
-                0, 0, 0, 0);
+            SetCursorPos((int) (HUDInfo.ScreenSizeX() * CoordinateMultiplayers[SelectedLane - 1 + team][0]),
+                (int) (HUDInfo.ScreenSizeY() * CoordinateMultiplayers[SelectedLane - 1 + team][1]));
+
+            mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
 
             var sayTextIndex = Menu.Item(LaneList[SelectedLane] + "Text").GetValue<StringList>().SelectedIndex;
 
-            if (sayTextIndex == 0)
-                return;
-
-            Game.ExecuteCommand("say_team " + SayText[SelectedLane - 1][sayTextIndex]);
+            if (sayTextIndex != 0)
+                Game.ExecuteCommand("say_team " + SayText[SelectedLane - 1][sayTextIndex]);
         }
 
         public static void Game_OnUpdate(EventArgs args) {
@@ -172,11 +169,14 @@ namespace LaneMarker {
 
 
         private static void Drawing_OnEndScene(EventArgs args) {
-            if (Drawing.Direct3DDevice9 == null || inGame || SelectedLane == 0)
+            if (inGame || SelectedLane == 0 || Drawing.Direct3DDevice9 == null)
                 return;
 
-            textFont.DrawText(null, LaneList[SelectedLane], (int) (HUDInfo.ScreenSizeX() * 0.01),
-                (int) (HUDInfo.ScreenSizeY() * 0.06), Color.Yellow);
+            textFont.DrawText(null, 
+                LaneList[SelectedLane], 
+                (int) (HUDInfo.ScreenSizeX() * 0.01),
+                (int) (HUDInfo.ScreenSizeY() * 0.06), 
+                Color.Yellow);
         }
 
         private static void Drawing_OnPostReset(EventArgs args) {
