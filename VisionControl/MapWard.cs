@@ -14,7 +14,7 @@ namespace VisionControl {
 
             switch (ward) {
                 case ClassID.CDOTA_NPC_Observer_Ward: {
-                    EndTime = Game.GameTime + 360;
+                    EndTime = Game.GameTime + 420;
                     texture += "ward_observer.vmat";
                     break;
                 }
@@ -31,6 +31,7 @@ namespace VisionControl {
             Position = new Vector3(hero.Position.X + 300 * (float) Math.Cos(hero.RotationRad),
                 hero.Position.Y + 300 * (float) Math.Sin(hero.RotationRad),
                 hero.Position.Z);
+            DrawRange();
         }
 
         public MapWard(Entity ward) {
@@ -55,9 +56,38 @@ namespace VisionControl {
             Show = true;
             Texture = Drawing.GetTexture(texture);
             Position = ward.Position;
+            DrawRange();
+        }
+
+        private void DrawRange(bool update = false) {
+            if (update)
+                ParticleEffect.Dispose();
+
+            ParticleEffect = new ParticleEffect(@"particles\ui_mouseactions\drag_selected_ring.vpcf", Position);
+
+            var range = 1790;
+            var red = "red";
+            var green = "green";
+            var blue = "blue";
+
+            if (WardType == ClassID.CDOTA_NPC_Observer_Ward_TrueSight) {
+                range = 950;
+                red += "S";
+                green += "S";
+                blue += "S";
+            }
+
+            ParticleEffect.SetControlPoint(1, new Vector3(
+                    Program.GetMenuItem(red),
+                    Program.GetMenuItem(green),
+                    Program.GetMenuItem(blue)));
+
+            ParticleEffect.SetControlPoint(2, new Vector3(range * -1, 255, 0));
         }
 
         public DotaTexture Texture { get; private set; }
+
+        public ParticleEffect ParticleEffect { get; private set; }
 
         public bool IsKnown { get; set; }
 
@@ -74,6 +104,8 @@ namespace VisionControl {
         public bool Show { get; set; }
 
         public static void Clear() {
+            foreach (var mapWard in MapWards.Where(x => x.ParticleEffect != null))
+                mapWard.ParticleEffect.Dispose();
             MapWards.Clear();
         }
 
@@ -110,6 +142,7 @@ namespace VisionControl {
                 unknownWard.Position = ward.Position;
                 unknownWard.Ward = ward;
                 unknownWard.IsKnown = true;
+                unknownWard.DrawRange(true);
             }
 
             if (Program.SmartHide)
@@ -120,8 +153,10 @@ namespace VisionControl {
                 MapWards.FirstOrDefault(
                     x => (x.IsKnown && x.Ward != null && !x.Ward.IsAlive) || Game.GameTime > x.EndTime);
 
-            if (removeWard != null)
+            if (removeWard != null) {
+                removeWard.ParticleEffect.Dispose();
                 MapWards.Remove(removeWard);
+            }
         }
     }
 }

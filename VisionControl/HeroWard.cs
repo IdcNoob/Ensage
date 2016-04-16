@@ -28,9 +28,6 @@ namespace VisionControl {
         }
 
         public static void Update() {
-            if (!Program.IsEnabled)
-                return;
-
             var enemies =
                 ObjectManager.GetEntities<Hero>()
                     .Where(x => x.IsVisible && x.Team == Program.Hero.GetEnemyTeam() && x.IsAlive && !x.IsIllusion);
