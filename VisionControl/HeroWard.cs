@@ -8,13 +8,62 @@ namespace VisionControl {
         private static readonly Dictionary<Hero, HeroWard> EnemyWards = new Dictionary<Hero, HeroWard>();
 
         private HeroWard(Unit hero) {
-            Observers = ObserversCount(hero);
-            Sentries = SentriesCount(hero);
+            Hero = hero;
+            Observers = ObserversCount;
+            Sentries = SentriesCount;
         }
 
         private uint Observers { get; set; }
 
         private uint Sentries { get; set; }
+
+        private Unit Hero { get; set; }
+
+        private bool WardGiven {
+            get {
+                return
+                    EnemyWards.Any(
+                        x =>
+                            !x.Key.Equals(Hero) && x.Key.IsAlive && x.Key.Distance2D(Hero) <= 600 &&
+                            x.Value.Observers + x.Value.Sentries < x.Value.ObserversCount + x.Value.SentriesCount);
+            }
+        }
+
+        private bool WardTaken {
+            get {
+                return
+                    EnemyWards.Any(
+                        x =>
+                            !x.Key.Equals(Hero) && x.Key.IsAlive && x.Key.Distance2D(Hero) <= 600 &&
+                            x.Value.Observers + x.Value.Sentries > x.Value.ObserversCount + x.Value.SentriesCount);
+            }
+        }
+
+        private uint ObserversCount {
+            get {
+                var observer = Hero.FindItem("item_ward_observer");
+
+                if (observer != null)
+                    return observer.CurrentCharges;
+
+                var dispenser = Hero.FindItem("item_ward_dispenser");
+
+                return dispenser != null ? dispenser.CurrentCharges : 0;
+            }
+        }
+
+        private uint SentriesCount {
+            get {
+                var sentries = Hero.FindItem("item_ward_sentry");
+
+                if (sentries != null)
+                    return sentries.CurrentCharges;
+
+                var dispenser = Hero.FindItem("item_ward_dispenser");
+
+                return dispenser != null ? dispenser.SecondaryCharges : 0;
+            }
+        }
 
         public static void Clear() {
             EnemyWards.Clear();
@@ -38,72 +87,40 @@ namespace VisionControl {
                 if (!EnemyWards.TryGetValue(enemy, out enemyWards))
                     EnemyWards.Add(enemy, new HeroWard(enemy));
                 else
-                    enemyWards.Update(enemy);
+                    enemyWards.UpdateHero();
             }
 
             foreach (var heroWard in EnemyWards.Where(x => !x.Key.IsVisible).Select(x => x.Value))
                 heroWard.Reset();
         }
 
-        public void Update(Unit hero) {
-            var obsCount = ObserversCount(hero);
-            var sentCount = SentriesCount(hero);
+        private void UpdateHero() {
+            var obsCount = ObserversCount;
+            var sentCount = SentriesCount;
 
             if (Observers > obsCount) {
-                if (!WardGiven(hero))
-                    MapWard.Add(new MapWard(ClassID.CDOTA_NPC_Observer_Ward, hero));
+                if (!WardGiven && !WardDropped(ClassID.CDOTA_Item_ObserverWard))
+                    MapWard.Add(Hero, ClassID.CDOTA_NPC_Observer_Ward);
                 Observers = obsCount;
             }
-            else if (Observers < obsCount && !WardTaken(hero)) {
+            else if (Observers < obsCount && !WardTaken) {
                 Observers = obsCount;
             }
 
             if (Sentries > sentCount) {
-                if (!WardGiven(hero))
-                    MapWard.Add(new MapWard(ClassID.CDOTA_NPC_Observer_Ward_TrueSight, hero));
+                if (!WardGiven && !WardDropped(ClassID.CDOTA_Item_SentryWard))
+                    MapWard.Add(Hero, ClassID.CDOTA_NPC_Observer_Ward_TrueSight);
                 Sentries = sentCount;
             }
-            else if (Sentries < sentCount && !WardTaken(hero)) {
+            else if (Sentries < sentCount && !WardTaken) {
                 Sentries = sentCount;
             }
         }
 
-        private static bool WardTaken(Unit hero) {
+        private bool WardDropped(ClassID wardID) {
             return
-                EnemyWards.Any(
-                    x =>
-                        !x.Key.Equals(hero) && x.Key.IsAlive && x.Key.Distance2D(hero) <= 600 &&
-                        x.Value.Observers + x.Value.Sentries > ObserversCount(x.Key) + SentriesCount(x.Key));
-        }
-
-        private static bool WardGiven(Unit hero) {
-            return
-                EnemyWards.Any(
-                    x =>
-                        !x.Key.Equals(hero) && x.Key.IsAlive && x.Key.Distance2D(hero) <= 600 &&
-                        x.Value.Observers + x.Value.Sentries < ObserversCount(x.Key) + SentriesCount(x.Key));
-        }
-
-        private static uint ObserversCount(Unit hero) {
-            var observer = hero.FindItem("item_ward_observer");
-
-            if (observer != null)
-                return observer.CurrentCharges;
-
-            var dispenser = hero.FindItem("item_ward_dispenser");
-
-            return dispenser != null ? dispenser.CurrentCharges : 0;
-        }
-
-        private static uint SentriesCount(Unit hero) {
-            var sentries = hero.FindItem("item_ward_sentry");
-
-            if (sentries != null)
-                return sentries.CurrentCharges;
-
-            var dispenser = hero.FindItem("item_ward_dispenser");
-
-            return dispenser != null ? dispenser.SecondaryCharges : 0;
+                ObjectManager.GetEntities<PhysicalItem>()
+                    .Any(x => x.IsVisible && x.Distance2D(Hero) <= 100 && x.Item.ClassID == wardID);
         }
     }
 }

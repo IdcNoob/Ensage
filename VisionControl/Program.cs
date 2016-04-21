@@ -1,60 +1,74 @@
 ﻿using System;
-using System.Linq;
 using Ensage;
 using Ensage.Common;
 using Ensage.Common.Menu;
+using Ensage.Common.Objects;
 using SharpDX;
-using SharpDX.Direct3D9;
 
 namespace VisionControl {
     internal static class Program {
         private static bool inGame;
         public static Hero Hero;
 
-        private static readonly Menu Menu = new Menu("Vision Control", "visionControl", true);
+        public static readonly Menu Menu = new Menu("Vision Control", "visionControl", true);
 
-        public static bool IsEnabled {
-            get { return Menu.Item("enabled").GetValue<bool>(); }
-        }
-
-        public static bool SmartHide {
-            get { return Menu.Item("hide").GetValue<bool>(); }
-        }
-
-        public static bool IsRangesEnabled {
-            get { return Menu.Item("enabledRanges").GetValue<bool>(); }
-        }
-
-        public static int GetMenuItem(string item) {
+        public static int GetMenuSliderValue(string item) {
             return Menu.Item(item).GetValue<Slider>().Value;
         }
 
         private static void Main() {
-            Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
+            Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true))
+                .ValueChanged += (sender, arg) => { MapWard.ChangeParticles(arg.GetNewValue<bool>()); };
             Menu.AddItem(new MenuItem("hide", "Smart icon hide").SetValue(true)
-                .SetTooltip("Ward icon will be hidden if enemy ward is visible"));
+                .SetTooltip("Ward icon will be hidden if enemy ward is visible"))
+                .ValueChanged += (sender, arg) => { MapWard.ResetIconHide(arg.GetNewValue<bool>()); };
+            Menu.AddItem(new MenuItem("notification", "Notification").SetValue(true)
+                .SetTooltip("Shows side message when enemy placed ward"));
             Menu.AddItem(new MenuItem("size", "Icon size").SetValue(new Slider(4, 2, 8)));
 
             var rangesMenu = new Menu("Ward ranges", "rangesMenu");
-            rangesMenu.AddItem(new MenuItem("enabledRanges", "Show ranges").SetValue(true));
+            rangesMenu.AddItem(new MenuItem("enabledRanges", "Show ranges").SetValue(true))
+                .ValueChanged += (sender, arg) => { MapWard.ChangeParticles(arg.GetNewValue<bool>(), true); };
 
             rangesMenu.AddItem(new MenuItem("observer", "Observer colors"));
             rangesMenu.AddItem(new MenuItem("red", "Red").SetValue(new Slider(255, 0, 255)))
-                .SetFontStyle(fontColor: Color.IndianRed);
+                .SetFontStyle(fontColor: Color.IndianRed)
+                .ValueChanged +=
+                (sender, arg) => {
+                    MapWard.ChangeColor(ClassID.CDOTA_NPC_Observer_Ward, Color.Red, arg.GetNewValue<Slider>().Value);
+                };
             rangesMenu.AddItem(new MenuItem("green", "Green").SetValue(new Slider(255, 0, 255)))
-                .SetFontStyle(fontColor: Color.LightGreen);
+                .SetFontStyle(fontColor: Color.LightGreen)
+                .ValueChanged +=
+                (sender, arg) => {
+                    MapWard.ChangeColor(ClassID.CDOTA_NPC_Observer_Ward, Color.Green, arg.GetNewValue<Slider>().Value);
+                };
             rangesMenu.AddItem(new MenuItem("blue", "Blue").SetValue(new Slider(0, 0, 255)))
-                .SetFontStyle(fontColor: Color.LightBlue);
-
+                .SetFontStyle(fontColor: Color.LightBlue).ValueChanged +=
+                (sender, arg) => {
+                    MapWard.ChangeColor(ClassID.CDOTA_NPC_Observer_Ward, Color.Blue, arg.GetNewValue<Slider>().Value);
+                };
             rangesMenu.AddItem(new MenuItem("sentry", "Sentry colors"));
             rangesMenu.AddItem(new MenuItem("redS", "Red").SetValue(new Slider(0, 0, 255)))
-                .SetFontStyle(fontColor: Color.IndianRed);
+                .SetFontStyle(fontColor: Color.IndianRed)
+                .ValueChanged +=
+                (sender, arg) => {
+                    MapWard.ChangeColor(ClassID.CDOTA_NPC_Observer_Ward_TrueSight, Color.Red,
+                        arg.GetNewValue<Slider>().Value);
+                };
             rangesMenu.AddItem(new MenuItem("greenS", "Green").SetValue(new Slider(135, 0, 255)))
-                .SetFontStyle(fontColor: Color.LightGreen);
+                .SetFontStyle(fontColor: Color.LightGreen)
+                .ValueChanged +=
+                (sender, arg) => {
+                    MapWard.ChangeColor(ClassID.CDOTA_NPC_Observer_Ward_TrueSight, Color.Green,
+                        arg.GetNewValue<Slider>().Value);
+                };
             rangesMenu.AddItem(new MenuItem("blueS", "Blue").SetValue(new Slider(255, 0, 255)))
-                .SetFontStyle(fontColor: Color.LightBlue);
-            rangesMenu.AddItem(new MenuItem("hint", "Reload assembly after changes"))
-                .SetFontStyle(fontColor: Color.Yellow);
+                .SetFontStyle(fontColor: Color.LightBlue).ValueChanged +=
+                (sender, arg) => {
+                    MapWard.ChangeColor(ClassID.CDOTA_NPC_Observer_Ward_TrueSight, Color.Blue,
+                        arg.GetNewValue<Slider>().Value);
+                };
 
             var timerMenu = new Menu("Ward timers", "timerMenu");
             timerMenu.AddItem(new MenuItem("enabledTimer", "Show timers").SetValue(true));
@@ -88,6 +102,8 @@ namespace VisionControl {
                     return;
                 }
 
+                Heroes.GetByTeam(Team.Radiant);
+
                 MapWard.Clear();
                 HeroWard.Clear();
 
@@ -99,7 +115,7 @@ namespace VisionControl {
                 return;
             }
 
-            if (IsEnabled) {
+            if (Menu.Item("enabled").GetValue<bool>()) {
                 HeroWard.Update();
                 MapWard.Update();
             }
@@ -108,43 +124,42 @@ namespace VisionControl {
         }
 
         private static void Drawing_OnDraw(EventArgs args) {
-            if (!inGame || !IsEnabled) return;
+            if (!inGame || !Menu.Item("enabled").GetValue<bool>()) return;
 
-            foreach (var ward in MapWard.MapWards.Where(x => x.Show)) {
-                Vector2 screenPos;
-                Drawing.WorldToScreen(ward.Position, out screenPos);
+            var iconSizeMultiplier = Menu.Item("size").GetValue<Slider>().Value;
 
-                var sizeMultiplier = Menu.Item("size").GetValue<Slider>().Value;
-
-                Drawing.DrawRect(
-                    new Vector2(screenPos.X - (float) 15 * sizeMultiplier / 3, screenPos.Y - 10 * sizeMultiplier),
-                    new Vector2(15 * sizeMultiplier, 10 * sizeMultiplier),
-                    ward.Texture);
-            }
-
-            if (!Menu.Item("enabledTimer").GetValue<bool>())
-                return;
-
-            var color = new Color(GetMenuItem("redT"), GetMenuItem("greenT"), GetMenuItem("blueT"));
-            var size = Menu.Item("sizeTimer").GetValue<Slider>().Value * 7;
+            var timeColor = new Color(GetMenuSliderValue("redT"), GetMenuSliderValue("greenT"),
+                GetMenuSliderValue("blueT"));
+            var timerSize = Menu.Item("sizeTimer").GetValue<Slider>().Value * 7;
 
             foreach (var ward in MapWard.MapWards) {
-                var time = TimeSpan.FromSeconds(ward.EndTime - Game.GameTime);
-
                 Vector2 screenPos;
                 Drawing.WorldToScreen(ward.Position, out screenPos);
+
+                if (screenPos.IsZero)
+                    continue;
+
+                if (ward.Show) {
+                    Drawing.DrawRect(
+                        new Vector2(screenPos.X - (float) 15 * iconSizeMultiplier / 3,
+                            screenPos.Y - 10 * iconSizeMultiplier),
+                        new Vector2(15 * iconSizeMultiplier, 10 * iconSizeMultiplier),
+                        ward.Texture);
+                }
+
+                if (!Menu.Item("enabledTimer").GetValue<bool>())
+                    continue;
+
+                var time = TimeSpan.FromSeconds(ward.EndTime - Game.GameTime);
 
                 Drawing.DrawText(
                     time.ToString(@"m\:ss"),
                     "Arial",
                     new Vector2(screenPos.X - 20, screenPos.Y),
-                    new Vector2(size, size),
-                    color,
+                    new Vector2(timerSize, timerSize),
+                    timeColor,
                     FontFlags.None);
-
             }
-
         }
-        
     }
 }
