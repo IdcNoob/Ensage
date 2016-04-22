@@ -19,6 +19,11 @@ namespace VisionControl {
         private static void Main() {
             Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true))
                 .ValueChanged += (sender, arg) => { MapWard.ChangeParticles(arg.GetNewValue<bool>()); };
+            Menu.AddItem(new MenuItem("minimap", "Show on minimap").SetValue(true));
+            Menu.AddItem(new MenuItem("size", "Map icon size").SetValue(new Slider(4, 2, 8)));
+            Menu.AddItem(new MenuItem("minimapSize", "Minimap icon size").SetValue(new Slider(5, 2, 10)))
+                .ValueChanged +=
+                (sender, arg) => { MapWard.ChangeMinimapWardPosition(arg.GetNewValue<Slider>().Value); };
             Menu.AddItem(new MenuItem("hide", "Smart icon hide").SetValue(true)
                 .SetTooltip("Ward icon will be hidden if enemy ward is visible"))
                 .ValueChanged += (sender, arg) => { MapWard.ResetIconHide(arg.GetNewValue<bool>()); };
@@ -29,7 +34,6 @@ namespace VisionControl {
             var rangesMenu = new Menu("Ward ranges", "rangesMenu");
             rangesMenu.AddItem(new MenuItem("enabledRanges", "Show ranges").SetValue(true))
                 .ValueChanged += (sender, arg) => { MapWard.ChangeParticles(arg.GetNewValue<bool>(), true); };
-
             rangesMenu.AddItem(new MenuItem("observer", "Observer colors"));
             rangesMenu.AddItem(new MenuItem("red", "Red").SetValue(new Slider(255, 0, 255)))
                 .SetFontStyle(fontColor: Color.IndianRed)
@@ -91,14 +95,14 @@ namespace VisionControl {
         }
 
         private static void Game_OnUpdate(EventArgs args) {
-            if (!Utils.SleepCheck("VisionControlDelay"))
+            if (!Utils.SleepCheck("VisionControl.Delay"))
                 return;
 
             if (!inGame) {
                 Hero = ObjectManager.LocalHero;
 
                 if (!Game.IsInGame || Hero == null) {
-                    Utils.Sleep(1000, "VisionControlDelay");
+                    Utils.Sleep(1000, "VisionControl.Delay");
                     return;
                 }
 
@@ -120,7 +124,7 @@ namespace VisionControl {
                 MapWard.Update();
             }
 
-            Utils.Sleep(333, "VisionControlDelay");
+            Utils.Sleep(333, "VisionControl.Delay");
         }
 
         private static void Drawing_OnDraw(EventArgs args) {
@@ -132,6 +136,8 @@ namespace VisionControl {
                 GetMenuSliderValue("blueT"));
             var timerSize = Menu.Item("sizeTimer").GetValue<Slider>().Value * 7;
 
+            var minimapSize = Menu.Item("minimapSize").GetValue<Slider>().Value;
+
             foreach (var ward in MapWard.MapWards) {
                 Vector2 screenPos;
                 Drawing.WorldToScreen(ward.Position, out screenPos);
@@ -140,20 +146,28 @@ namespace VisionControl {
                     continue;
 
                 if (ward.Show) {
-                    Drawing.DrawRect(
+                    Drawing.DrawRect( // map icon
                         new Vector2(screenPos.X - (float) 15 * iconSizeMultiplier / 3,
                             screenPos.Y - 10 * iconSizeMultiplier),
                         new Vector2(15 * iconSizeMultiplier, 10 * iconSizeMultiplier),
                         ward.Texture);
+
+                    if (Menu.Item("minimap").GetValue<bool>()) {
+                        Drawing.DrawText( // minimap icon
+                            "*",
+                            "Arial",
+                            ward.MinimapPosition,
+                            new Vector2(minimapSize * 10, minimapSize * 10),
+                            ward.WardType == ClassID.CDOTA_NPC_Observer_Ward ? Color.Yellow : Color.Blue,
+                            FontFlags.None);
+                    }
                 }
 
                 if (!Menu.Item("enabledTimer").GetValue<bool>())
                     continue;
 
-                var time = TimeSpan.FromSeconds(ward.EndTime - Game.GameTime);
-
-                Drawing.DrawText(
-                    time.ToString(@"m\:ss"),
+                Drawing.DrawText( // map timer
+                    ward.TimeLeftString,
                     "Arial",
                     new Vector2(screenPos.X - 20, screenPos.Y),
                     new Vector2(timerSize, timerSize),

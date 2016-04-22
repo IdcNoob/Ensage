@@ -12,28 +12,33 @@ namespace VisionControl {
     internal class MapWard {
         public static readonly List<MapWard> MapWards = new List<MapWard>();
 
-        private MapWard(ClassID ward, Entity hero) {
+        private MapWard(Entity hero, ClassID wardID) {
             var texture = "materials/ensage_ui/items/";
 
-            switch (ward) {
+            switch (wardID) {
                 case ClassID.CDOTA_NPC_Observer_Ward: {
                     EndTime = Game.GameTime + 420;
+                    var time = TimeSpan.FromSeconds(EndTime - Game.GameTime);
+                    TimeLeftString = time.ToString(@"m\:ss");
                     texture += "ward_observer.vmat";
                     break;
                 }
                 case ClassID.CDOTA_NPC_Observer_Ward_TrueSight: {
                     EndTime = Game.GameTime + 240;
+                    var time = TimeSpan.FromSeconds(EndTime - Game.GameTime);
+                    TimeLeftString = time.ToString(@"m\:ss");
                     texture += "ward_sentry.vmat";
                     break;
                 }
             }
 
-            WardType = ward;
+            WardType = wardID;
             Show = true;
             Texture = Drawing.GetTexture(texture);
             Position = new Vector3(hero.Position.X + 300 * (float) Math.Cos(hero.RotationRad),
                 hero.Position.Y + 300 * (float) Math.Sin(hero.RotationRad),
                 hero.Position.Z);
+            MinimapPosition = WorldToMiniMap(Position, Program.Menu.Item("minimapSize").GetValue<Slider>().Value);
             DrawRange();
 
             if (!Program.Menu.Item("notification").GetValue<bool>())
@@ -51,21 +56,25 @@ namespace VisionControl {
             notification.CreateMessage();
         }
 
-        private MapWard(Entity ward) {
+        private MapWard(Unit ward) {
             var texture = "materials/ensage_ui/items/";
 
-            switch (ward.ClassID) {
-                case ClassID.CDOTA_NPC_Observer_Ward: {
-                    EndTime = Game.GameTime + 360;
-                    texture += "ward_observer.vmat";
-                    break;
-                }
-                case ClassID.CDOTA_NPC_Observer_Ward_TrueSight: {
-                    EndTime = Game.GameTime + 240;
-                    texture += "ward_sentry.vmat";
-                    break;
-                }
+            if (ward.ClassID == ClassID.CDOTA_NPC_Observer_Ward)
+                texture += "ward_observer.vmat";
+            else
+                texture += "ward_sentry.vmat";
+
+            var wardModifier = ward.FindModifier("modifier_item_buff_ward");
+
+            if (wardModifier != null) {
+                EndTime = Game.GameTime + wardModifier.RemainingTime;
+                var time = TimeSpan.FromSeconds(EndTime - Game.GameTime);
+                TimeLeftString = time.ToString(@"m\:ss");
             }
+            else {
+                TimeLeftString = "unkown";
+            }
+
 
             WardType = ward.ClassID;
             IsKnown = true;
@@ -73,6 +82,7 @@ namespace VisionControl {
             Show = true;
             Texture = Drawing.GetTexture(texture);
             Position = ward.Position;
+            MinimapPosition = WorldToMiniMap(Position, Program.Menu.Item("minimapSize").GetValue<Slider>().Value);
             DrawRange();
         }
 
@@ -84,11 +94,15 @@ namespace VisionControl {
 
         public Vector3 Position { get; private set; }
 
+        public Vector2 MinimapPosition { get; private set; }
+
         private Entity Ward { get; set; }
 
-        private ClassID WardType { get; set; }
+        public ClassID WardType { get; set; }
 
         public float EndTime { get; private set; }
+
+        public string TimeLeftString { get; private set; }
 
         public bool Show { get; private set; }
 
@@ -113,7 +127,7 @@ namespace VisionControl {
             if (update)
                 ParticleEffect.Dispose();
 
-            ParticleEffect = new ParticleEffect(@"particles\ui_mouseactions\drag_selected_ring.vpcf", Position);
+            ParticleEffect = new ParticleEffect("particles/ui_mouseactions/drag_selected_ring.vpcf", Position);
 
             var range = 1790;
             var red = "red";
@@ -157,7 +171,7 @@ namespace VisionControl {
         }
 
         public static void Add(Unit hero, ClassID wardID) {
-            MapWards.Add(new MapWard(wardID, hero));
+            MapWards.Add(new MapWard(hero, wardID));
         }
 
         public static void ResetIconHide(bool enabled) {
@@ -175,9 +189,15 @@ namespace VisionControl {
                 ward.Show = true;
         }
 
+        public static void ChangeMinimapWardPosition(int value) {
+            foreach (var ward in MapWards) {
+                ward.MinimapPosition = WorldToMiniMap(ward.Position, value);
+            }
+        }
+
         public static void Update() {
             var enemyWards =
-                ObjectManager.GetEntities<Entity>()
+                ObjectManager.GetEntities<Unit>()
                     .Where(
                         x =>
                             x.IsAlive && x.IsVisible && x.Team == Program.Hero.GetEnemyTeam() &&
@@ -199,6 +219,8 @@ namespace VisionControl {
                 }
 
                 unknownWard.Position = ward.Position;
+                unknownWard.MinimapPosition = WorldToMiniMap(unknownWard.Position,
+                    Program.Menu.Item("minimapSize").GetValue<Slider>().Value);
                 unknownWard.Ward = ward;
                 unknownWard.IsKnown = true;
                 unknownWard.DrawRange(true);
@@ -216,6 +238,58 @@ namespace VisionControl {
                 removeWard.ParticleEffect.Dispose();
                 MapWards.Remove(removeWard);
             }
+
+            if (!Utils.SleepCheck("VisionControl.UpdateTime"))
+                return;
+
+            foreach (var ward in MapWards) {
+                var time = TimeSpan.FromSeconds(ward.EndTime - Game.GameTime);
+                ward.TimeLeftString = time.ToString(@"m\:ss");
+            }
+
+            Utils.Sleep(1000, "VisionControl.UpdateTime");
+        }
+
+        private static Vector2 WorldToMiniMap(Vector3 Pos, int size) {
+            const float MapLeft = -8000;
+            const float MapTop = 7350;
+            const float MapRight = 7500;
+            const float MapBottom = -7200;
+            var MapWidth = Math.Abs(MapLeft - MapRight);
+            var MapHeight = Math.Abs(MapBottom - MapTop);
+
+            var _x = Pos.X - MapLeft;
+            var _y = Pos.Y - MapBottom;
+
+            float dx, dy, px, py;
+            if (Math.Round((float) Drawing.Width / Drawing.Height, 1) >= 1.7) {
+                dx = 272f / 1920f * Drawing.Width;
+                dy = 261f / 1080f * Drawing.Height;
+                px = 11f / 1920f * Drawing.Width;
+                py = 11f / 1080f * Drawing.Height;
+            }
+            else if (Math.Round((float) Drawing.Width / Drawing.Height, 1) >= 1.5) {
+                dx = 267f / 1680f * Drawing.Width;
+                dy = 252f / 1050f * Drawing.Height;
+                px = 10f / 1680f * Drawing.Width;
+                py = 11f / 1050f * Drawing.Height;
+            }
+            else {
+                dx = 255f / 1280f * Drawing.Width;
+                dy = 229f / 1024f * Drawing.Height;
+                px = 6f / 1280f * Drawing.Width;
+                py = 9f / 1024f * Drawing.Height;
+            }
+            var MinimapMapScaleX = dx / MapWidth;
+            var MinimapMapScaleY = dy / MapHeight;
+
+            var scaledX = Math.Min(Math.Max(_x * MinimapMapScaleX, 0), dx);
+            var scaledY = Math.Min(Math.Max(_y * MinimapMapScaleY, 0), dy);
+
+            var screenX = px + scaledX;
+            var screenY = Drawing.Height - scaledY - py;
+
+            return new Vector2((float) Math.Floor(screenX - size * 1.8), (float) Math.Floor(screenY - size * 2.7));
         }
     }
 }
