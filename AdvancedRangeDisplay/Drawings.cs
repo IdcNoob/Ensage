@@ -108,9 +108,9 @@ namespace AdvancedRangeDisplay {
             if (castRange <= 0 || castRange >= 5000) castRange = ability.GetRadius();
 
             if (!ability.IsAbilityBehavior(AbilityBehavior.NoTarget))
-                castRange += (float) Math.Max(castRange / 4.5, 80);
+                castRange += Math.Max(castRange / 9, 80);
             else
-                castRange += (float) Math.Max(castRange / 6.7, 40);
+                castRange += Math.Max(castRange / 7, 40);
 
             return castRange;
         }
