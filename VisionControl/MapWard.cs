@@ -17,7 +17,7 @@ namespace VisionControl {
 
             switch (wardID) {
                 case ClassID.CDOTA_NPC_Observer_Ward: {
-                    EndTime = Game.GameTime + 420;
+                    EndTime = Game.GameTime + 360;
                     var time = TimeSpan.FromSeconds(EndTime - Game.GameTime);
                     TimeLeftString = time.ToString(@"m\:ss");
                     texture += "ward_observer.vmat";
