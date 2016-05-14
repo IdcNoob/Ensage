@@ -15,13 +15,13 @@ namespace AnotherSpawnBoxes {
 
         private static readonly Vector3[][] SpawnBoxLocations = {
             new[] {new Vector3(2690, -4409, 384), new Vector3(3529, -5248, 384)},
-            new[] {new Vector3(3936, -3277, 384), new Vector3(5007, -4431, 384)},
+            new[] {new Vector3(3873, -3396, 384), new Vector3(4895, -4431, 384)},
             new[] {new Vector3(1088, -3200, 384), new Vector3(2303, -4543, 327)},
             new[] {new Vector3(-3307, 383, 384), new Vector3(-2564, -413, 384)},
             new[] {new Vector3(-1023, -2728, 256), new Vector3(63, -3455, 256)},
-            new[] {new Vector3(-2227, -3968, 256), new Vector3(-1463, -4648, 256)},
+            new[] {new Vector3(-2227, -3968, 256), new Vector3(-1463, -4670, 256)},
             new[] {new Vector3(-4383, 1295, 384), new Vector3(-3136, 400, 384)},
-            new[] {new Vector3(3344, 942, 384), new Vector3(4719, 7, 384)},
+            new[] {new Vector3(3434, 942, 384), new Vector3(4719, 7, 384)},
             new[] {new Vector3(-3455, 4927, 384), new Vector3(-2688, 3968, 384)},
             new[] {new Vector3(-4955, 4071, 384), new Vector3(-3712, 3264, 384)},
             new[] {new Vector3(3456, -384, 320), new Vector3(4543, -1151, 256)},
@@ -29,7 +29,7 @@ namespace AnotherSpawnBoxes {
             new[] {new Vector3(-831, 4095, 384), new Vector3(0, 3200, 384)},
             new[] {new Vector3(448, 3775, 384), new Vector3(1663, 2816, 384)}
         };
-
+        
         public static void Clear() {
             foreach (var effect in ParticleEffects.SelectMany(particleEffect => particleEffect.Value))
                 effect.Dispose();
