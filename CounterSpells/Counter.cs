@@ -2537,13 +2537,13 @@ namespace CounterSpells {
 
         public static void Projectile() {
             var projectiles =
-                ObjectManager.TrackingProjectiles.Where(x => x.Target.Equals(Program.Hero));
+                ObjectManager.TrackingProjectiles.Where(x => x != null && x.Target != null && x.Target.Equals(Program.Hero));
 
             foreach (var projectile in projectiles) {
                 var enemy = projectile.Source as Hero;
 
                 if (enemy == null)
-                    return;
+                    continue;
 
                 double castPoint;
                 Ability spell;
