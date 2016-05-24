@@ -18,6 +18,8 @@
 
         private readonly List<Controllable> controllableUnits = new List<Controllable>();
 
+        private readonly List<ClassID> ignoredUnits = new List<ClassID>();
+
         private readonly MenuManager menu = new MenuManager();
 
         private CampsInfo campsInfo;
@@ -30,13 +32,11 @@
         {
             // okay, this one was made only for testing purposes...
             this.menu.MenuChanged += this.OnMenuChange;
+
+            this.ignoredUnits.Add(ClassID.CDOTA_Unit_Brewmaster_PrimalEarth);
+            this.ignoredUnits.Add(ClassID.CDOTA_Unit_Brewmaster_PrimalFire);
+            this.ignoredUnits.Add(ClassID.CDOTA_Unit_Brewmaster_PrimalStorm);
         }
-
-        #endregion
-
-        #region Public Properties
-
-        public bool IsEnabled { get; set; }
 
         #endregion
 
@@ -45,6 +45,8 @@
         private Hero Hero { get; set; }
 
         private Team HeroTeam { get; set; }
+
+        private bool IsEnabled { get; set; }
 
         #endregion
 
@@ -59,7 +61,8 @@
                         var unit = args.Entity as Unit;
 
                         if (unit == null || !unit.IsControllable || unit.Team != this.HeroTeam
-                            || unit.AttackCapability == AttackCapability.None)
+                            || unit.AttackCapability == AttackCapability.None
+                            || this.ignoredUnits.Contains(unit.ClassID))
                         {
                             return;
                         }

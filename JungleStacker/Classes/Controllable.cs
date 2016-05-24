@@ -172,7 +172,7 @@
                         {
                             this.attackTime = Game.GameTime;
                         }
-                        else if (this.attackTime >= 0 && Game.GameTime >= this.Unit.AttacksPerSecond + this.attackTime)
+                        else if (this.attackTime > 0 && Game.GameTime >= this.Unit.AttacksPerSecond + this.attackTime)
                         {
                             this.attackTime = 0;
                             this.Unit.Move(this.CurrentCamp.StackPosition);
