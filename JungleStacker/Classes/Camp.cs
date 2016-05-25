@@ -30,9 +30,9 @@
 
         private Vector2 position;
 
-        private int stacksRequiredCount;
+        private int requiredStacksCount;
 
-        private Vector2 stacksRequiredTextSize;
+        private Vector2 requiredStacksTextSize;
 
         private Vector2 stacksTextSize;
 
@@ -45,9 +45,10 @@
             DisplayOverlay = true;
 
             this.RequiredStacksCount = 1;
-            this.CurrentStacksCount = 1;
+            this.CurrentStacksCount = 0;
+            this.Cleared = true;
 
-            this.stacksRequiredTextSize = Drawing.MeasureText(
+            this.requiredStacksTextSize = Drawing.MeasureText(
                 "Stacks required:",
                 "Arial",
                 new Vector2(15),
@@ -78,12 +79,12 @@
         {
             get
             {
-                return this.stacksRequiredCount;
+                return this.requiredStacksCount;
             }
 
             set
             {
-                this.stacksRequiredCount = value > 9 ? 1 : value < 1 ? 9 : value;
+                this.requiredStacksCount = value > 9 ? 1 : value < 1 ? 9 : value;
             }
         }
 
@@ -97,7 +98,7 @@
             {
                 return Utils.IsUnderRectangle(
                     Game.MouseScreenPosition,
-                    this.position.X + this.stacksRequiredTextSize.X + 5,
+                    this.position.X + this.requiredStacksTextSize.X + 5,
                     this.position.Y - 2,
                     this.arrowRectangleSize.X,
                     this.arrowRectangleSize.Y);
@@ -110,7 +111,7 @@
             {
                 return Utils.IsUnderRectangle(
                     Game.MouseScreenPosition,
-                    this.position.X + this.stacksRequiredTextSize.X + this.countTextSize.X + this.arrowRectangleSize.X
+                    this.position.X + this.requiredStacksTextSize.X + this.countTextSize.X + this.arrowRectangleSize.X
                     + 19,
                     this.position.Y - 2,
                     this.arrowRectangleSize.X,
@@ -198,6 +199,7 @@
 
             Drawing.DrawText(
                 //"Stacks required:",
+                //this.Id.ToString(),
                 this.Name,
                 new Vector2(this.position.X - 20, this.position.Y),
                 new Vector2(15),
@@ -207,7 +209,7 @@
             var alphaDecArrow = this.IsUnderDecreaseArrow ? 25 : -25;
 
             DrawingUtils.RoundedRectangle(
-                this.position.X + this.stacksRequiredTextSize.X + 5,
+                this.position.X + this.requiredStacksTextSize.X + 5,
                 this.position.Y - 2,
                 this.arrowRectangleSize.X,
                 this.arrowRectangleSize.Y,
@@ -215,13 +217,13 @@
                 new Color(100 + alphaDecArrow, 100 + alphaDecArrow, 100 + alphaDecArrow, 200 + (alphaDecArrow / 2)));
 
             Drawing.DrawRect(
-                this.position + new Vector2(this.stacksRequiredTextSize.X + 7, 1),
+                this.position + new Vector2(this.requiredStacksTextSize.X + 7, 1),
                 new Vector2(16, 16),
                 DecreaseArrow);
 
             Drawing.DrawText(
                 this.RequiredStacksCount.ToString(),
-                this.position + new Vector2(this.stacksRequiredTextSize.X + this.arrowRectangleSize.X + 12, 0),
+                this.position + new Vector2(this.requiredStacksTextSize.X + this.arrowRectangleSize.X + 12, 0),
                 new Vector2(16),
                 Color.White,
                 FontFlags.None);
@@ -229,7 +231,7 @@
             var alphaIncArrow = this.IsUnderIncreaseArrow ? 25 : -25;
 
             DrawingUtils.RoundedRectangle(
-                this.position.X + this.stacksRequiredTextSize.X + this.countTextSize.X + this.arrowRectangleSize.X + 19,
+                this.position.X + this.requiredStacksTextSize.X + this.countTextSize.X + this.arrowRectangleSize.X + 19,
                 this.position.Y - 2,
                 this.arrowRectangleSize.X,
                 this.arrowRectangleSize.Y,
@@ -238,7 +240,7 @@
 
             Drawing.DrawRect(
                 this.position
-                + new Vector2(this.stacksRequiredTextSize.X + this.countTextSize.X + this.arrowRectangleSize.X + 22, -1),
+                + new Vector2(this.requiredStacksTextSize.X + this.countTextSize.X + this.arrowRectangleSize.X + 22, -1),
                 new Vector2(16, 16),
                 IncreaseArrow);
 
@@ -251,7 +253,7 @@
 
             Drawing.DrawText(
                 this.CurrentStacksCount.ToString(),
-                this.position + new Vector2(this.stacksRequiredTextSize.X + this.arrowRectangleSize.X + 12, 20),
+                this.position + new Vector2(this.requiredStacksTextSize.X + this.arrowRectangleSize.X + 12, 20),
                 new Vector2(16),
                 Color.White,
                 FontFlags.None);

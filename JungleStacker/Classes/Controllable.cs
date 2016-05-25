@@ -91,6 +91,7 @@
             this.IsStacking = true;
             this.CurrentStatus = Status.Idle;
             this.isRanged = this.Unit.AttackCapability == AttackCapability.Ranged;
+            this.campAvailable = false;
 
             if (!this.registered)
             {
@@ -140,13 +141,15 @@
                 return;
             }
 
-            if (!this.IsValid)
+            if (!this.IsValid || this.CurrentCamp.CurrentStacksCount >= this.CurrentCamp.RequiredStacksCount)
             {
                 if (this.campAvailable)
                 {
                     return;
                 }
+                this.CurrentStatus = Status.Done;
                 this.CurrentCamp.IsStacking = false;
+                this.IsStacking = false;
                 this.campAvailable = true;
                 return;
             }
@@ -165,12 +168,18 @@
                     this.CurrentStatus = Status.WaitingStackTime;
                     return;
                 case Status.WaitingStackTime:
+                    var seconds = Game.GameTime % 60;
+                    if (seconds >= 57)
+                    {
+                        return;
+                    }
+
                     var target =
                         Creeps.All.OrderBy(x => x.Distance2D(this.Unit))
                             .FirstOrDefault(
                                 x => x.Distance2D(this.Unit) <= 600 && x.IsSpawned && x.IsAlive && x.IsNeutral);
 
-                    if (Game.GameTime % 60
+                    if (seconds + (this.CurrentCamp.CurrentStacksCount >= 3 ? 1 : 0)
                         + (this.isRanged && target != null
                                ? this.Unit.AttacksPerSecond
                                : this.CurrentCamp.CampPosition.Distance2D(this.Unit) / this.Unit.MovementSpeed)
