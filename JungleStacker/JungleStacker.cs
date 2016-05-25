@@ -99,7 +99,9 @@
                 || ability.ClassID == ClassID.CDOTA_Ability_Chen_HolyPersuasion
                 || ability.ClassID == ClassID.CDOTA_Ability_Enchantress_Enchant)
             {
-                this.controllableUnits.Add(new Controllable(target));
+                DelayAction.Add(
+                    (float)ability.FindCastPoint() * 1000 + Game.Ping,
+                    () => { this.controllableUnits.Add(new Controllable(target)); });
             }
         }
 

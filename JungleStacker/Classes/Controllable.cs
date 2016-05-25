@@ -7,6 +7,9 @@
     using Ensage.Common;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects;
+    using Ensage.Common.Objects.DrawObjects;
+
+    using SharpDX;
 
     internal class Controllable
     {
@@ -78,6 +81,7 @@
         {
             this.registered = false;
             Game.OnUpdate -= this.Game_OnUpdate;
+            Drawing.OnDraw -= this.Drawing_OnDraw;
         }
 
         public void Stack(Camp camp)
@@ -91,6 +95,7 @@
             if (!this.registered)
             {
                 Game.OnUpdate += this.Game_OnUpdate;
+                Drawing.OnDraw += this.Drawing_OnDraw;
                 this.registered = true;
             }
         }
@@ -98,6 +103,28 @@
         #endregion
 
         #region Methods
+
+        private void Drawing_OnDraw(EventArgs args)
+        {
+            if (!this.IsStacking || !this.IsValid)
+            {
+                return;
+            }
+
+            var hpBar = HUDInfo.GetHPbarPosition(this.Unit) + new Vector2(10, 0);
+
+            if (hpBar.IsZero)
+            {
+                return;
+            }
+
+            var text = new DrawText
+                           {
+                               Position = hpBar, Text = this.CurrentCamp.Name, Color = Color.White,
+                               TextSize = new Vector2(15)
+                           };
+            text.Draw();
+        }
 
         private void Game_OnUpdate(EventArgs args)
         {
@@ -140,7 +167,8 @@
                 case Status.WaitingStackTime:
                     var target =
                         Creeps.All.OrderBy(x => x.Distance2D(this.Unit))
-                            .FirstOrDefault(x => x.Distance2D(this.Unit) <= 600 && x.IsAlive && x.IsNeutral);
+                            .FirstOrDefault(
+                                x => x.Distance2D(this.Unit) <= 600 && x.IsSpawned && x.IsAlive && x.IsNeutral);
 
                     if (Game.GameTime % 60
                         + (this.isRanged && target != null
@@ -172,7 +200,7 @@
                         {
                             this.attackTime = Game.GameTime;
                         }
-                        else if (this.attackTime > 0 && Game.GameTime >= this.Unit.AttacksPerSecond + this.attackTime)
+                        else if (this.attackTime > 0 && Game.GameTime >= this.Unit.AttacksPerSecond / 2 + this.attackTime)
                         {
                             this.attackTime = 0;
                             this.Unit.Move(this.CurrentCamp.StackPosition);
