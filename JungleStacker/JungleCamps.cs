@@ -8,7 +8,7 @@
 
     using SharpDX;
 
-    internal class CampsInfo
+    internal class JungleCamps
     {
         #region Fields
 
@@ -18,7 +18,7 @@
 
         #region Constructors and Destructors
 
-        public CampsInfo(Team heroTeam)
+        public JungleCamps(Team heroTeam)
         {
             if (heroTeam == Team.Radiant)
             {
@@ -26,7 +26,7 @@
                     new Camp
                         {
                             OverlayPosition = new Vector3(-1500, -4100, 256),
-                            CampPosition = new Vector3(-1773, -4217, 256), StackPosition = new Vector3(-1833, -3062, 256),
+                            CampPosition = new Vector3(-1704, -4205, 256), StackPosition = new Vector3(-1833, -3062, 256),
                             WaitPosition = new Vector3(-1925, -4062, 256), Id = 1, StackTime = 55.5, Team = Team.Radiant,
                             Ancients = false, Name = "Hard Camp"
                         });
@@ -147,10 +147,7 @@
 
         public void OnClose()
         {
-            foreach (var camp in this.camps)
-            {
-                camp.OnClose();
-            }
+            this.camps.ForEach(x => x.OnClose());
             this.camps.Clear();
         }
 

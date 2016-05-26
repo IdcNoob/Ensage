@@ -9,7 +9,7 @@
     {
         #region Fields
 
-        private readonly JungleStacker jungleStacking;
+        private readonly JungleStacker jungleStacker;
 
         #endregion
 
@@ -17,7 +17,7 @@
 
         public Bootstrap()
         {
-            this.jungleStacking = new JungleStacker();
+            this.jungleStacker = new JungleStacker();
             Events.OnLoad += this.Events_OnLoad;
         }
 
@@ -31,12 +31,12 @@
             Game.OnIngameUpdate -= this.Game_OnUpdate;
             ObjectManager.OnAddEntity -= this.ObjectManager_OnAddEntity;
             Player.OnExecuteOrder -= this.Player_OnExecuteAction;
-            this.jungleStacking.OnClose();
+            this.jungleStacker.OnClose();
         }
 
         private void Events_OnLoad(object sender, EventArgs e)
         {
-            this.jungleStacking.OnLoad();
+            this.jungleStacker.OnLoad();
             Events.OnClose += this.Events_OnClose;
             Game.OnIngameUpdate += this.Game_OnUpdate;
             ObjectManager.OnAddEntity += this.ObjectManager_OnAddEntity;
@@ -46,22 +46,22 @@
 
         private void Game_OnUpdate(EventArgs args)
         {
-            this.jungleStacking.OnUpdate();
+            this.jungleStacker.OnUpdate();
         }
 
         private void ObjectManager_OnAddEntity(EntityEventArgs args)
         {
-            this.jungleStacking.OnAddEntity(args);
+            this.jungleStacker.OnAddEntity(args);
         }
 
         private void ObjectManager_OnRemoveEntity(EntityEventArgs args)
         {
-            this.jungleStacking.OnRemoveEntity(args);
+            this.jungleStacker.OnRemoveEntity(args);
         }
 
         private void Player_OnExecuteAction(Player sender, ExecuteOrderEventArgs args)
         {
-            this.jungleStacking.OnExecuteAction(args.Ability, args.Target);
+            this.jungleStacker.OnExecuteAction(args.Ability, args.Target);
         }
 
         #endregion

@@ -26,7 +26,12 @@
         public MenuManager()
         {
             this.menu = new Menu("Jungle Stacker", "jungleStacker", true);
-            this.menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true)).ValueChanged += this.OnValueChanged;
+            this.menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true)).ValueChanged += this.OnStateChange;
+            this.menu.AddItem(
+                new MenuItem("heroStack", "Stack with hero").SetValue(new KeyBind('K', KeyBindType.Press)))
+                .SetTooltip("Will stack closest camp with your hero")
+                .ValueChanged += this.OnHeroStackEabled;
+
             this.menu.AddToMainMenu();
         }
 
@@ -34,7 +39,9 @@
 
         #region Public Events
 
-        public event EventHandler<MenuArgs> MenuChanged;
+        public event EventHandler OnHeroStack;
+
+        public event EventHandler<MenuArgs> OnProgramStateChange;
 
         #endregion
 
@@ -52,18 +59,25 @@
 
         #region Methods
 
-        protected virtual void OnMenuChanged(bool newValue)
+        private void OnHeroStackEabled(object sender, OnValueChangeEventArgs arg)
         {
-            var onMenuChanged = this.MenuChanged;
-            if (onMenuChanged != null)
+            if (arg.GetNewValue<KeyBind>().Active)
             {
-                onMenuChanged.Invoke(this, new MenuArgs { Enabled = newValue });
+                var onOnHeroStack = this.OnHeroStack;
+                if (onOnHeroStack != null)
+                {
+                    onOnHeroStack.Invoke(this, EventArgs.Empty);
+                }
             }
         }
 
-        private void OnValueChanged(object sender, OnValueChangeEventArgs arg)
+        private void OnStateChange(object sender, OnValueChangeEventArgs arg)
         {
-            this.OnMenuChanged(arg.GetNewValue<bool>());
+            var onMenuChanged = this.OnProgramStateChange;
+            if (onMenuChanged != null)
+            {
+                onMenuChanged.Invoke(this, new MenuArgs { Enabled = arg.GetNewValue<bool>() });
+            }
         }
 
         #endregion

@@ -14,8 +14,7 @@
     {
         #region Static Fields
 
-        private static readonly DotaTexture DecreaseArrow =
-            Textures.GetTexture("materials/ensage_ui/other/arrow_usual");
+        private static readonly DotaTexture DecreaseArrow = Textures.GetTexture("materials/ensage_ui/other/arrow_usual");
 
         private static readonly DotaTexture IncreaseArrow =
             Textures.GetTexture("materials/ensage_ui/other/arrow_usual_left");
@@ -46,7 +45,7 @@
 
             this.RequiredStacksCount = 1;
             this.CurrentStacksCount = 0;
-            this.Cleared = true;
+            this.IsCleared = true;
 
             this.requiredStacksTextSize = Drawing.MeasureText(
                 "Stacks required:",
@@ -67,9 +66,9 @@
 
         public static bool DisplayOverlay { get; set; }
 
-        public bool Cleared { get; set; }
-
         public int CurrentStacksCount { get; set; }
+
+        public bool IsCleared { get; set; }
 
         public bool IsStacking { get; set; }
 
@@ -142,7 +141,7 @@
 
             Drawing.WorldToScreen(this.OverlayPosition, out this.position);
 
-            if (this.position == Vector2.Zero)
+            if (this.position.IsZero)
             {
                 return;
             }

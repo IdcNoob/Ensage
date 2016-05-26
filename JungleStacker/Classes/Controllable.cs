@@ -1,6 +1,7 @@
 ﻿namespace JungleStacker.Classes
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
 
     using Ensage;
@@ -11,17 +12,38 @@
 
     using SharpDX;
 
+    internal class CampArgs : EventArgs
+    {
+        #region Fields
+
+        public List<Camp> BlockedCamps = new List<Camp>();
+
+        #endregion
+
+        #region Public Properties
+
+        public Controllable Controllable { get; set; }
+
+        #endregion
+    }
+
     internal class Controllable
     {
         #region Fields
+
+        public readonly List<Camp> BlockedCamps = new List<Camp>();
 
         private float attackTime;
 
         private bool campAvailable;
 
+        private Vector2 campNameTextPosition;
+
         private uint health;
 
         private bool isRanged;
+
+        private float pause;
 
         private bool registered;
 
@@ -29,11 +51,18 @@
 
         #region Constructors and Destructors
 
-        public Controllable(Unit unit)
+        public Controllable(Unit unit, bool isHero = false)
         {
             this.Handle = unit.Handle;
             this.Unit = unit;
+            this.IsHero = isHero;
         }
+
+        #endregion
+
+        #region Public Events
+
+        public event EventHandler<CampArgs> OnCampChange;
 
         #endregion
 
@@ -59,7 +88,11 @@
 
         public Status CurrentStatus { get; private set; }
 
+        public bool EnableHeroStacking { get; set; }
+
         public uint Handle { get; private set; }
+
+        public bool IsHero { get; private set; }
 
         public bool IsStacking { get; set; }
 
@@ -75,16 +108,43 @@
 
         #endregion
 
+        #region Properties
+
+        private bool IsUnderCampNameText
+        {
+            get
+            {
+                return Utils.IsUnderRectangle(
+                    Game.MouseScreenPosition,
+                    this.campNameTextPosition.X,
+                    this.campNameTextPosition.Y,
+                    this.MeasureTextSize.X,
+                    this.MeasureTextSize.Y);
+            }
+        }
+
+        private Vector2 MeasureTextSize
+        {
+            get
+            {
+                return Drawing.MeasureText(this.CurrentCamp.Name, "Arial", new Vector2(15), FontFlags.None);
+            }
+        }
+
+        #endregion
+
         #region Public Methods and Operators
 
         public void OnClose()
         {
             this.registered = false;
+            this.IsStacking = false;
             Game.OnUpdate -= this.Game_OnUpdate;
             Drawing.OnDraw -= this.Drawing_OnDraw;
+            Game.OnWndProc -= this.Game_OnWndProc;
         }
 
-        public void Stack(Camp camp)
+        public void Stack(Camp camp, int delay = 0)
         {
             this.CurrentCamp = camp;
             this.CurrentCamp.IsStacking = true;
@@ -92,11 +152,13 @@
             this.CurrentStatus = Status.Idle;
             this.isRanged = this.Unit.AttackCapability == AttackCapability.Ranged;
             this.campAvailable = false;
+            this.pause = Game.GameTime + delay;
 
             if (!this.registered)
             {
                 Game.OnUpdate += this.Game_OnUpdate;
                 Drawing.OnDraw += this.Drawing_OnDraw;
+                Game.OnWndProc += this.Game_OnWndProc;
                 this.registered = true;
             }
         }
@@ -105,6 +167,15 @@
 
         #region Methods
 
+        protected virtual void OnMenuChanged(List<Camp> camps, Controllable cntrollable)
+        {
+            var onCampChange = this.OnCampChange;
+            if (onCampChange != null)
+            {
+                onCampChange.Invoke(this, new CampArgs { BlockedCamps = camps, Controllable = cntrollable });
+            }
+        }
+
         private void Drawing_OnDraw(EventArgs args)
         {
             if (!this.IsStacking || !this.IsValid)
@@ -112,19 +183,25 @@
                 return;
             }
 
-            var hpBar = HUDInfo.GetHPbarPosition(this.Unit) + new Vector2(10, 0);
+            this.campNameTextPosition = HUDInfo.GetHPbarPosition(this.Unit) + new Vector2(10, this.IsHero ? 25 : 0);
 
-            if (hpBar.IsZero)
+            if (this.campNameTextPosition.IsZero)
             {
                 return;
             }
 
-            var text = new DrawText
-                           {
-                               Position = hpBar, Text = this.CurrentCamp.Name, Color = Color.White,
-                               TextSize = new Vector2(15)
-                           };
-            text.Draw();
+            var campName = new DrawText
+                               {
+                                   Position = this.campNameTextPosition, Text = this.CurrentCamp.Name, Color = Color.White,
+                                   TextSize = new Vector2(15)
+                               };
+
+            if (this.IsUnderCampNameText && !this.IsHero)
+            {
+                campName.Color = Color.Orange;
+            }
+
+            campName.Draw();
         }
 
         private void Game_OnUpdate(EventArgs args)
@@ -136,12 +213,15 @@
 
             Utils.Sleep(200, "JungleStacking.Stack." + this.Handle);
 
-            if (Game.IsPaused)
+            var gameTime = Game.GameTime;
+
+            if (Game.IsPaused || this.pause > gameTime || (!this.EnableHeroStacking && this.IsHero))
             {
                 return;
             }
 
-            if (!this.IsValid || this.CurrentCamp.CurrentStacksCount >= this.CurrentCamp.RequiredStacksCount)
+            if (!this.IsValid
+                || (this.CurrentCamp.CurrentStacksCount >= this.CurrentCamp.RequiredStacksCount && !this.IsHero))
             {
                 if (this.campAvailable)
                 {
@@ -168,7 +248,7 @@
                     this.CurrentStatus = Status.WaitingStackTime;
                     return;
                 case Status.WaitingStackTime:
-                    var seconds = Game.GameTime % 60;
+                    var seconds = gameTime % 60;
                     if (seconds >= 57)
                     {
                         return;
@@ -207,9 +287,9 @@
                     {
                         if (this.attackTime <= 0 && this.Unit.IsAttacking())
                         {
-                            this.attackTime = Game.GameTime;
+                            this.attackTime = gameTime;
                         }
-                        else if (this.attackTime > 0 && Game.GameTime >= this.Unit.AttacksPerSecond / 2 + this.attackTime)
+                        else if (this.attackTime > 0 && gameTime >= this.Unit.AttacksPerSecond / 2 + this.attackTime)
                         {
                             this.attackTime = 0;
                             this.Unit.Move(this.CurrentCamp.StackPosition);
@@ -220,6 +300,14 @@
                     {
                         this.Unit.Move(this.CurrentCamp.StackPosition);
                         this.CurrentStatus = Status.MovingToStackPosition;
+
+                        if (this.IsHero)
+                        {
+                            this.EnableHeroStacking = false;
+                            this.CurrentCamp.IsStacking = false;
+                            this.IsStacking = false;
+                            this.CurrentStatus = Status.Done;
+                        }
                     }
                     return;
                 case Status.MovingToStackPosition:
@@ -229,7 +317,7 @@
                     }
                     return;
                 case Status.WaitingOnStackPosition:
-                    var time = Game.GameTime % 60;
+                    var time = gameTime % 60;
                     if (time > 5 && time < 10)
                     {
                         this.Unit.Move(this.CurrentCamp.WaitPosition);
@@ -245,6 +333,28 @@
                         this.CurrentStatus = Status.Done;
                     }
                     return;
+            }
+        }
+
+        private void Game_OnWndProc(WndEventArgs args)
+        {
+            if (!this.IsValid || !this.IsStacking)
+            {
+                return;
+            }
+            if (this.IsHero && args.Msg == (ulong)Utils.WindowsMessages.WM_RBUTTONDOWN)
+            {
+                this.IsStacking = false;
+                this.EnableHeroStacking = false;
+                this.CurrentCamp.IsStacking = false;
+            }
+
+            if (!this.IsHero && args.Msg == (ulong)Utils.WindowsMessages.WM_LBUTTONDOWN && this.IsUnderCampNameText)
+            {
+                this.BlockedCamps.Add(this.CurrentCamp);
+                this.IsStacking = false;
+                this.CurrentCamp.IsStacking = false;
+                this.OnMenuChanged(this.BlockedCamps, this);
             }
         }
 

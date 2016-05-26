@@ -54,7 +54,7 @@
   <ItemGroup>
     <Compile Include="Bootstrap.cs" />
     <Compile Include="Classes\Camp.cs" />
-    <Compile Include="CampsInfo.cs" />
+    <Compile Include="JungleCamps.cs" />
     <Compile Include="Classes\Controllable.cs" />
     <Compile Include="JungleStacker.cs" />
     <Compile Include="Utils\DrawingUtils.cs" />
