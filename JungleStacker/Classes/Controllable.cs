@@ -10,6 +10,8 @@
     using Ensage.Common.Objects;
     using Ensage.Common.Objects.DrawObjects;
 
+    using global::JungleStacker.Utils;
+
     using SharpDX;
 
     internal class CampArgs : EventArgs
@@ -73,8 +75,8 @@
             Idle,
             MovingToWaitPosition,
             WaitingStackTime,
-            MovingToStackPosition,
             MovingToCampPosition,
+            MovingToStackPosition,
             WaitingOnStackPosition,
             TryingToCheckStacks,
             Done
@@ -257,7 +259,9 @@
                     var target =
                         Creeps.All.OrderBy(x => x.Distance2D(this.Unit))
                             .FirstOrDefault(
-                                x => x.Distance2D(this.Unit) <= 600 && x.IsSpawned && x.IsAlive && x.IsNeutral);
+                                x =>
+                                x.Distance2D(this.Unit) <= 600 && x.IsSpawned && x.IsAlive && x.IsNeutral
+                                && !x.Equals(this.Unit));
 
                     if (seconds + (this.CurrentCamp.CurrentStacksCount >= 3 ? 1 : 0)
                         + (this.isRanged && target != null
@@ -300,14 +304,6 @@
                     {
                         this.Unit.Move(this.CurrentCamp.StackPosition);
                         this.CurrentStatus = Status.MovingToStackPosition;
-
-                        if (this.IsHero)
-                        {
-                            this.EnableHeroStacking = false;
-                            this.CurrentCamp.IsStacking = false;
-                            this.IsStacking = false;
-                            this.CurrentStatus = Status.Done;
-                        }
                     }
                     return;
                 case Status.MovingToStackPosition:
@@ -328,8 +324,17 @@
                 case Status.TryingToCheckStacks:
                     if (this.Unit.Distance2D(this.CurrentCamp.WaitPosition) < 50)
                     {
-                        this.CurrentCamp.IsStacking = false;
-                        this.IsStacking = false;
+                        this.CurrentCamp.CurrentStacksCount =
+                            Creeps.All.Where(
+                                x =>
+                                x.Distance2D(this.CurrentCamp.CampPosition) < 1000 && x.IsSpawned && x.IsNeutral
+                                && !x.Equals(this.Unit)).ToList().CountStacks();
+
+                        if (this.CurrentCamp.CurrentStacksCount >= this.CurrentCamp.RequiredStacksCount)
+                        {
+                            this.CurrentCamp.IsStacking = false;
+                            this.IsStacking = false;
+                        }
                         this.CurrentStatus = Status.Done;
                     }
                     return;

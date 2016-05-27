@@ -191,7 +191,7 @@
                             || z.CurrentStatus == Controllable.Status.TryingToCheckStacks))))
             {
                 var creeps =
-                    Creeps.All.Where(x => x.Distance2D(camp.CampPosition) < 1000 && x.IsSpawned && x.IsNeutral).ToList();
+                    Creeps.All.Where(x => x.Distance2D(camp.CampPosition) < 1000 && x.IsSpawned && x.IsNeutral && x.Team != this.heroTeam).ToList();
 
                 if (creeps.Any(x => x.IsAlive))
                 {
