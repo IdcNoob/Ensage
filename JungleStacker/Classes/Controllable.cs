@@ -334,8 +334,12 @@
                         {
                             this.CurrentCamp.IsStacking = false;
                             this.IsStacking = false;
+                            this.CurrentStatus = Status.Done;
                         }
-                        this.CurrentStatus = Status.Done;
+                        else
+                        {
+                            this.CurrentStatus = Status.Idle;
+                        }
                     }
                     return;
             }
