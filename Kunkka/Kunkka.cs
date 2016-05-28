@@ -200,7 +200,6 @@
 
                 if (xMark.CanBeCasted)
                 {
-                    Console.WriteLine("xmark");
                     xMark.UseAbility(hero);
                     Utils.Sleep(xMark.CastPoint * 1000, "Kunkka.Sleep");
                     return;
