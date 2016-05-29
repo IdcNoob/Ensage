@@ -27,11 +27,12 @@
         {
             this.menu = new Menu("Jungle Stacker", "jungleStacker", true);
             this.menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true)).ValueChanged += this.OnStateChange;
-            this.menu.AddItem(
-                new MenuItem("heroStack", "Stack with hero").SetValue(new KeyBind('K', KeyBindType.Press)))
+            this.menu.AddItem(new MenuItem("heroStack", "Stack with hero").SetValue(new KeyBind('K', KeyBindType.Press)))
                 .SetTooltip("Will stack closest camp with your hero")
                 .ValueChanged += this.OnHeroStackEabled;
-
+            this.menu.AddItem(new MenuItem("forceAdd", "Force add unit").SetValue(new KeyBind('L', KeyBindType.Press)))
+                .SetTooltip("Will add selected unit to controllables, useful for ally dominated creep with shared control")
+                .ValueChanged += this.OnMenuForceAdd;
             this.menu.AddToMainMenu();
         }
 
@@ -40,6 +41,7 @@
         #region Public Events
 
         public event EventHandler OnHeroStack;
+        public event EventHandler OnForceAdd;
 
         public event EventHandler<MenuArgs> OnProgramStateChange;
 
@@ -63,10 +65,21 @@
         {
             if (arg.GetNewValue<KeyBind>().Active)
             {
-                var onOnHeroStack = this.OnHeroStack;
-                if (onOnHeroStack != null)
+                var onHeroStack = this.OnHeroStack;
+                if (onHeroStack != null)
                 {
-                    onOnHeroStack.Invoke(this, EventArgs.Empty);
+                    onHeroStack.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+        private void OnMenuForceAdd(object sender, OnValueChangeEventArgs arg)
+        {
+            if (arg.GetNewValue<KeyBind>().Active)
+            {
+                var onForceAdd = this.OnForceAdd;
+                if (onForceAdd != null)
+                {
+                    onForceAdd.Invoke(this, EventArgs.Empty);
                 }
             }
         }

@@ -39,10 +39,28 @@
             // okay, events was made only for testing purposes...
             this.menu.OnProgramStateChange += this.OnProgramStateChange;
             this.menu.OnHeroStack += this.OnHeroStack;
+            this.menu.OnForceAdd += this.OnForceAdd;
 
             this.ignoredUnits.Add(ClassID.CDOTA_Unit_Brewmaster_PrimalEarth);
             this.ignoredUnits.Add(ClassID.CDOTA_Unit_Brewmaster_PrimalFire);
             this.ignoredUnits.Add(ClassID.CDOTA_Unit_Brewmaster_PrimalStorm);
+        }
+
+        private void OnForceAdd(object sender, EventArgs e)
+        {
+            var selected = hero.Player.Selection.FirstOrDefault() as Unit;
+
+            if (selected == null || !selected.IsControllable || selected is Hero)
+            {
+                return;
+            }
+
+            if (!controllableUnits.Exists(x => x.Handle == selected.Handle))
+            {
+                var ctrl = new Controllable(selected);
+                ctrl.OnCampChange += OnCampChange;
+                controllableUnits.Add(ctrl);
+            }
         }
 
         #endregion

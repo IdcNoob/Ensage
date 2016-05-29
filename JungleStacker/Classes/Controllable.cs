@@ -294,6 +294,9 @@
                             this.attackTime = gameTime;
                         }
                         else if (this.attackTime > 0 && gameTime >= this.Unit.AttacksPerSecond / 2 + this.attackTime)
+                        //else if (this.attackTime > 0
+                        //         && gameTime
+                        //         >= this.Unit.SecondsPerAttack - this.Unit.BaseAttackTime / 3 + this.attackTime)
                         {
                             this.attackTime = 0;
                             this.Unit.Move(this.CurrentCamp.StackPosition);
