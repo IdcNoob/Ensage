@@ -24,6 +24,11 @@
 
         #region Methods
 
+        private void Drawing_OnDraw(EventArgs args)
+        {
+            kunkka.OnDraw();
+        }
+
         private void Game_OnUpdate(EventArgs args)
         {
             kunkka.OnUpdate();
@@ -50,11 +55,6 @@
             Game.OnIngameUpdate += Game_OnUpdate;
             Player.OnExecuteOrder += Player_OnExecuteAction;
             Drawing.OnDraw += Drawing_OnDraw;
-        }
-
-        private void Drawing_OnDraw(EventArgs args)
-        {
-            kunkka.OnDraw();
         }
 
         private void Player_OnExecuteAction(Player sender, ExecuteOrderEventArgs args)

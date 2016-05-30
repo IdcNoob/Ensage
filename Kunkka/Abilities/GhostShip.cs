@@ -16,6 +16,7 @@
         {
             Ability = ability;
             CastPoint = ability.FindCastPoint();
+            Radius = ability.GetRadius();
             // additionalDelay = 2.7; //AbilityDatabase.Find(ability.Name).AdditionalDelay;
         }
 
@@ -31,7 +32,13 @@
 
         public double CastPoint { get; }
 
+        public float CastRange => Ability.GetCastRange() + 150;
+
+        public double GetSleepTime => CastPoint * 1000 + Game.Ping;
+
         public uint ManaCost => Ability.ManaCost;
+
+        public float Radius { get; }
 
         #endregion
 
@@ -40,7 +47,7 @@
         public void UseAbility(Vector3 targetPosition)
         {
             Ability.UseAbility(targetPosition);
-            Utils.Sleep(CastPoint * 1000 + 200, "Kunkka.GhostShip");
+            Utils.Sleep(GetSleepTime + 200, "Kunkka.GhostShip");
         }
 
         #endregion

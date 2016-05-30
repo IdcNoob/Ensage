@@ -8,10 +8,6 @@
 
     internal class Torrent : IAbility
     {
-        #region Fields
-
-        #endregion
-
         #region Constructors and Destructors
 
         public Torrent(Ability ability)
@@ -28,37 +24,43 @@
 
         public Ability Ability { get; }
 
+        public double AdditionalDelay { get; }
+
         public bool CanBeCasted => Utils.SleepCheck("Kunkka.Torrent") && Ability.CanBeCasted();
 
         public bool Casted => Ability.AbilityState == AbilityState.OnCooldown;
 
         public double CastPoint { get; }
 
+        public float CastRange => Ability.GetCastRange() + 150;
+
+        public double GetSleepTime => CastPoint * 1000 + Game.Ping;
+
         public double HitTime { get; private set; }
 
         public uint ManaCost => Ability.ManaCost;
 
-        public Vector3 Position { get; set; }
-
         public float Radius { get; }
 
-        public double AdditionalDelay { get; }
-
-        public float CastRange => Ability.GetCastRange() + 150;
         #endregion
 
         #region Public Methods and Operators
 
         public void CalculateHitTime()
         {
-            HitTime = Game.GameTime + AdditionalDelay + CastPoint * 0.75;
+            var gameTime = Game.GameTime;
+
+            if (HitTime <= gameTime)
+            {
+                HitTime = gameTime + AdditionalDelay + CastPoint + Game.Ping / 1000 - 0.15;
+            }
         }
 
         public void UseAbility(Vector3 targetPosition)
         {
             Ability.UseAbility(targetPosition);
             CalculateHitTime();
-            Utils.Sleep(CastPoint * 1000 + 200, "Kunkka.Torrent");
+            Utils.Sleep(GetSleepTime + 200, "Kunkka.Torrent");
         }
 
         #endregion

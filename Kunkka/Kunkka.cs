@@ -71,7 +71,7 @@
                 target = TargetSelector.ClosestToMouse(hero, 600);
             }
 
-            if (target == null || xMark.CastRange < hero.Distance2D(target))
+            if (target == null || xMark.CastRange < hero.Distance2D(target) || !hero.IsAlive)
             {
                 if (particleEffect != null)
                 {
@@ -107,20 +107,15 @@
                 return;
             }
 
-            if (ability == xMark.Ability)
+            if (ability.Equals(xMark.Ability))
             {
                 var heroTarget = args.Target as Hero;
-                if (heroTarget != null && heroTarget != hero)
+                if (heroTarget != null && heroTarget.Team != hero.Team)
                 {
                     targetLocked = true;
                     target = heroTarget;
-                    xMark.Position = Game.MousePosition;
+                    xMark.Position = target.Position;
                 }
-            }
-            else if (ability == torrent.Ability)
-            {
-                torrent.Position = Game.MousePosition;
-                torrent.CalculateHitTime();
             }
         }
 
@@ -212,7 +207,7 @@
                 if (xMark.CanBeCasted)
                 {
                     xMark.UseAbility(hero);
-                    Utils.Sleep(xMark.CastPoint * 1000, "Kunkka.Sleep");
+                    Utils.Sleep(xMark.GetSleepTime, "Kunkka.Sleep");
                     return;
                 }
 
@@ -263,28 +258,28 @@
                 if (xMark.CanBeCasted)
                 {
                     xMark.UseAbility(target);
-                    Utils.Sleep(xMark.CastPoint * 1000 + Game.Ping, "Kunkka.Sleep");
+                    Utils.Sleep(xMark.GetSleepTime, "Kunkka.Sleep");
                     return;
                 }
 
                 if (ghostShip.CanBeCasted && fullCombo)
                 {
                     ghostShip.UseAbility(targetPosition);
-                    Utils.Sleep(ghostShip.CastPoint * 1000 + Game.Ping, "Kunkka.Sleep");
+                    Utils.Sleep(ghostShip.GetSleepTime, "Kunkka.Sleep");
                     return;
                 }
 
                 if (torrent.CanBeCasted)
                 {
                     torrent.UseAbility(targetPosition);
-                    Utils.Sleep(torrent.CastPoint * 1000 + Game.Ping, "Kunkka.Sleep");
+                    Utils.Sleep(torrent.GetSleepTime, "Kunkka.Sleep");
                     return;
                 }
 
                 if (xReturn.CanBeCasted && Game.GameTime >= torrent.HitTime - xReturn.CastPoint - Game.Ping / 1000)
                 {
                     xReturn.UseAbility();
-                    Utils.Sleep(xReturn.CastPoint * 1000 + Game.Ping, "Kunkka.Sleep");
+                    Utils.Sleep(xReturn.GetSleepTime, "Kunkka.Sleep");
                     return;
                 }
             }
@@ -294,12 +289,11 @@
                 targetLocked = false;
             }
 
-            if (xMark.Casted && xReturn.CanBeCasted && menuManager.AutoReturnEnabled)
+            if (xMark.Casted && xReturn.CanBeCasted && menuManager.AutoReturnEnabled && !menuManager.ComboEnabled)
             {
                 var mirana =
                     Heroes.GetByTeam(hero.Team)
-                        .FirstOrDefault(
-                            x => x.ClassID == ClassID.CDOTA_Unit_Hero_Mirana && x.IsAlive);
+                        .FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Unit_Hero_Mirana && x.IsAlive && !x.IsIllusion);
 
                 if (mirana != null)
                 {
@@ -312,7 +306,7 @@
                             return;
                         }
 
-                        var arrowEndPosition = mirana.InFront(arrow.CastRange);
+                        var arrowEndPosition = mirana.InFront(arrow.GetCastRange() + 150);
 
                         var miranaArrowEnd = mirana.Distance2D(arrowEndPosition);
                         var miranaTarget = mirana.Distance2D(xMark.Position);
@@ -320,30 +314,45 @@
 
                         if (Math.Abs(miranaTarget + targetArrowEnd - miranaArrowEnd) < 10)
                         {
-                            arrowHitTime = Game.GameTime + arrow.FindCastPoint() * 0.7
+                            arrowHitTime = Game.GameTime + arrow.FindCastPoint() //* 0.7
                                            + (miranaTarget - arrow.GetRadius()) / arrow.GetProjectileSpeed();
 
                             arrowCasted = true;
                         }
                     }
-                    else if (arrowCasted && arrow.CanBeCasted())
+                    else if (arrowCasted && arrow.AbilityState != AbilityState.OnCooldown)
                     {
                         arrowCasted = false;
                     }
                 }
 
-                var delay = xReturn.CastPoint - Game.Ping / 1000;
+                var delay = xReturn.CastPoint + Game.Ping / 1000;
 
-                if (torrent.Casted && Game.GameTime >= torrent.HitTime - delay)
+                if (torrent.Casted)
                 {
-                    if (xMark.Position.Distance2D(torrent.Position) > torrent.Radius)
+                    var torrentThinker =
+                        ObjectManager.GetEntities<Unit>()
+                            .FirstOrDefault(
+                                x =>
+                                x.ClassID == ClassID.CDOTA_BaseNPC && x.HasModifier("modifier_kunkka_torrent_thinker")
+                                && x.Team == hero.Team);
+
+                    if (torrentThinker != null)
                     {
-                        targetLocked = false;
-                        Utils.Sleep(300, "Kunkka.Sleep");
-                        return;
+                        if (xMark.Position.Distance2D(torrentThinker) > torrent.Radius)
+                        {
+                            return;
+                        }
+
+                        var modifier = torrentThinker.FindModifier("modifier_kunkka_torrent_thinker");
+                        var hitTime = torrent.AdditionalDelay - modifier.ElapsedTime - 0.1;
+
+                        if (hitTime <= delay)
+                        {
+                            xReturn.UseAbility();
+                            targetLocked = false;
+                        }
                     }
-                    xReturn.UseAbility();
-                    targetLocked = false;
                 }
 
                 if (arrowCasted && Game.GameTime >= arrowHitTime - delay)
@@ -359,7 +368,7 @@
                 targetLocked = false;
             }
 
-            Utils.Sleep(100, "Kunkka.Sleep");
+            Utils.Sleep(50, "Kunkka.Sleep");
         }
 
         #endregion

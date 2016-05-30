@@ -18,7 +18,7 @@
 
             menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
             menu.AddItem(new MenuItem("autoReturn", "Auto return").SetValue(true))
-                .SetTooltip("Will auto return enemy when you casted X Mark and Torrent");
+                .SetTooltip("Will auto return enemy on Torrent or Mirana's arrow");
             menu.AddItem(new MenuItem("combo", "Combo").SetValue(new KeyBind('D', KeyBindType.Press)))
                 .SetTooltip("X Mark => Torrent => Return");
             menu.AddItem(new MenuItem("fullCombo", "Full combo").SetValue(new KeyBind('F', KeyBindType.Press)))

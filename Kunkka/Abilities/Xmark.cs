@@ -30,6 +30,8 @@
 
         public float CastRange => Ability.GetCastRange() + 150;
 
+        public double GetSleepTime => CastPoint * 1000 + Game.Ping;
+
         public uint ManaCost => Ability.ManaCost;
 
         public Vector3 Position { get; set; }
@@ -41,7 +43,7 @@
         public void UseAbility(Hero target)
         {
             Ability.UseAbility(target);
-            Utils.Sleep(CastPoint * 1000 + 200, "Kunkka.Xmark");
+            Utils.Sleep(GetSleepTime + 200, "Kunkka.Xmark");
         }
 
         #endregion

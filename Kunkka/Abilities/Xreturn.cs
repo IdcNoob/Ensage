@@ -26,6 +26,8 @@
 
         public double CastPoint { get; }
 
+        public double GetSleepTime => CastPoint * 1000 + Game.Ping;
+
         public uint ManaCost { get; } = 0;
 
         #endregion
@@ -35,7 +37,7 @@
         public void UseAbility()
         {
             Ability.UseAbility();
-            Utils.Sleep(CastPoint * 1000 + 200, "Kunkka.Xreturn");
+            Utils.Sleep(GetSleepTime + 200, "Kunkka.Xreturn");
         }
 
         #endregion
