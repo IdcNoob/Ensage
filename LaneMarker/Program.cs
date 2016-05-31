@@ -130,6 +130,7 @@ namespace LaneMarker {
             SelectedLane = SelectedLane < LaneList.Length - 1 ? SelectedLane + 1 : 0;
         }
 
+        [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
         private static void Game_OnFireEvent(FireEventEventArgs args) {
             if (inGame || SelectedLane == 0 || args.GameEvent.Name != "hero_picker_shown") return;
 
