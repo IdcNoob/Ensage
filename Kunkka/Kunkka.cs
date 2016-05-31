@@ -32,11 +32,11 @@
 
         private MenuManager menuManager;
 
-        private ParticleEffect particleEffect;
-
         private Hero target;
 
         private bool targetLocked;
+
+        private ParticleEffect targetParticle;
 
         private Vector3 targetPosition;
 
@@ -56,7 +56,7 @@
         {
             menuManager.OnClose();
             allSpells.Clear();
-            particleEffect?.Dispose();
+            targetParticle?.Dispose();
         }
 
         public void OnDraw()
@@ -71,26 +71,28 @@
                 target = TargetSelector.ClosestToMouse(hero, 600);
             }
 
-            if (target == null || xMark.CastRange < hero.Distance2D(target) || !hero.IsAlive)
+            if (target == null || xMark.CastRange < hero.Distance2D(target) || !hero.IsAlive
+                || target.IsLinkensProtected() || target.IsMagicImmune())
             {
-                if (particleEffect != null)
+                if (targetParticle != null)
                 {
-                    particleEffect.Dispose();
-                    particleEffect = null;
+                    targetParticle.Dispose();
+                    targetParticle = null;
                 }
+                target = null;
                 return;
             }
 
             targetPosition = target.Position;
 
-            if (particleEffect == null)
+            if (targetParticle == null)
             {
-                particleEffect = new ParticleEffect(@"particles\ui_mouseactions\range_finder_tower_aoe.vpcf", target);
+                targetParticle = new ParticleEffect(@"particles\ui_mouseactions\range_finder_tower_aoe.vpcf", target);
             }
 
-            particleEffect.SetControlPoint(2, hero.Position);
-            particleEffect.SetControlPoint(6, new Vector3(1, 0, 0));
-            particleEffect.SetControlPoint(7, targetPosition);
+            targetParticle.SetControlPoint(2, hero.Position);
+            targetParticle.SetControlPoint(6, new Vector3(1, 0, 0));
+            targetParticle.SetControlPoint(7, targetPosition);
         }
 
         public void OnExecuteAbilitiy(Player sender, ExecuteOrderEventArgs args)

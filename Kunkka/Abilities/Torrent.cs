@@ -32,7 +32,7 @@
 
         public double CastPoint { get; }
 
-        public float CastRange => Ability.GetCastRange() + 150;
+        public float CastRange => Ability.GetCastRange() + 100;
 
         public double GetSleepTime => CastPoint * 1000 + Game.Ping;
 
