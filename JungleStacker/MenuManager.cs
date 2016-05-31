@@ -25,23 +25,25 @@
 
         public MenuManager()
         {
-            this.menu = new Menu("Jungle Stacker", "jungleStacker", true);
-            this.menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true)).ValueChanged += this.OnStateChange;
-            this.menu.AddItem(new MenuItem("heroStack", "Stack with hero").SetValue(new KeyBind('K', KeyBindType.Press)))
+            menu = new Menu("Jungle Stacker", "jungleStacker", true);
+            menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true)).ValueChanged += OnStateChange;
+            menu.AddItem(new MenuItem("heroStack", "Stack with hero").SetValue(new KeyBind('K', KeyBindType.Press)))
                 .SetTooltip("Will stack closest camp with your hero")
-                .ValueChanged += this.OnHeroStackEabled;
-            this.menu.AddItem(new MenuItem("forceAdd", "Force add unit").SetValue(new KeyBind('L', KeyBindType.Press)))
-                .SetTooltip("Will add selected unit to controllables, useful for ally dominated creep with shared control")
-                .ValueChanged += this.OnMenuForceAdd;
-            this.menu.AddToMainMenu();
+                .ValueChanged += OnHeroStackEabled;
+            menu.AddItem(new MenuItem("forceAdd", "Force add unit").SetValue(new KeyBind('L', KeyBindType.Press)))
+                .SetTooltip(
+                    "Will add selected unit to controllables, useful for ally dominated creep with shared control")
+                .ValueChanged += OnMenuForceAdd;
+            menu.AddToMainMenu();
         }
 
         #endregion
 
         #region Public Events
 
-        public event EventHandler OnHeroStack;
         public event EventHandler OnForceAdd;
+
+        public event EventHandler OnHeroStack;
 
         public event EventHandler<MenuArgs> OnProgramStateChange;
 
@@ -49,13 +51,7 @@
 
         #region Public Properties
 
-        public bool IsEnabled
-        {
-            get
-            {
-                return this.menu.Item("enabled").GetValue<bool>();
-            }
-        }
+        public bool IsEnabled => menu.Item("enabled").GetValue<bool>();
 
         #endregion
 
@@ -65,32 +61,24 @@
         {
             if (arg.GetNewValue<KeyBind>().Active)
             {
-                var onHeroStack = this.OnHeroStack;
-                if (onHeroStack != null)
-                {
-                    onHeroStack.Invoke(this, EventArgs.Empty);
-                }
+                var onHeroStack = OnHeroStack;
+                onHeroStack?.Invoke(this, EventArgs.Empty);
             }
         }
+
         private void OnMenuForceAdd(object sender, OnValueChangeEventArgs arg)
         {
             if (arg.GetNewValue<KeyBind>().Active)
             {
-                var onForceAdd = this.OnForceAdd;
-                if (onForceAdd != null)
-                {
-                    onForceAdd.Invoke(this, EventArgs.Empty);
-                }
+                var onForceAdd = OnForceAdd;
+                onForceAdd?.Invoke(this, EventArgs.Empty);
             }
         }
 
         private void OnStateChange(object sender, OnValueChangeEventArgs arg)
         {
-            var onMenuChanged = this.OnProgramStateChange;
-            if (onMenuChanged != null)
-            {
-                onMenuChanged.Invoke(this, new MenuArgs { Enabled = arg.GetNewValue<bool>() });
-            }
+            var onMenuChanged = OnProgramStateChange;
+            onMenuChanged?.Invoke(this, new MenuArgs { Enabled = arg.GetNewValue<bool>() });
         }
 
         #endregion

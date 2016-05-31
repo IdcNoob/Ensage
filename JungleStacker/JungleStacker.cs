@@ -37,30 +37,13 @@
         public JungleStacker()
         {
             // okay, events was made only for testing purposes...
-            this.menu.OnProgramStateChange += this.OnProgramStateChange;
-            this.menu.OnHeroStack += this.OnHeroStack;
-            this.menu.OnForceAdd += this.OnForceAdd;
+            menu.OnProgramStateChange += OnProgramStateChange;
+            menu.OnHeroStack += OnHeroStack;
+            menu.OnForceAdd += OnForceAdd;
 
-            this.ignoredUnits.Add(ClassID.CDOTA_Unit_Brewmaster_PrimalEarth);
-            this.ignoredUnits.Add(ClassID.CDOTA_Unit_Brewmaster_PrimalFire);
-            this.ignoredUnits.Add(ClassID.CDOTA_Unit_Brewmaster_PrimalStorm);
-        }
-
-        private void OnForceAdd(object sender, EventArgs e)
-        {
-            var selected = hero.Player.Selection.FirstOrDefault() as Unit;
-
-            if (selected == null || !selected.IsControllable || selected is Hero)
-            {
-                return;
-            }
-
-            if (!controllableUnits.Exists(x => x.Handle == selected.Handle))
-            {
-                var ctrl = new Controllable(selected);
-                ctrl.OnCampChange += OnCampChange;
-                controllableUnits.Add(ctrl);
-            }
+            ignoredUnits.Add(ClassID.CDOTA_Unit_Brewmaster_PrimalEarth);
+            ignoredUnits.Add(ClassID.CDOTA_Unit_Brewmaster_PrimalFire);
+            ignoredUnits.Add(ClassID.CDOTA_Unit_Brewmaster_PrimalStorm);
         }
 
         #endregion
@@ -75,23 +58,22 @@
                     {
                         var unit = args.Entity as Unit;
 
-                        if (unit == null || !unit.IsControllable || unit.Team != this.heroTeam
-                            || unit.AttackCapability == AttackCapability.None
-                            || this.ignoredUnits.Contains(unit.ClassID))
+                        if (unit == null || !unit.IsControllable || unit.Team != heroTeam
+                            || unit.AttackCapability == AttackCapability.None || ignoredUnits.Contains(unit.ClassID))
                         {
                             return;
                         }
 
                         var contrallable = new Controllable(unit);
-                        contrallable.OnCampChange += this.OnCampChange;
-                        this.controllableUnits.Add(contrallable);
+                        contrallable.OnCampChange += OnCampChange;
+                        controllableUnits.Add(contrallable);
                     });
         }
 
         public void OnClose()
         {
-            this.jungleCamps.OnClose();
-            this.controllableUnits.ForEach(x => x.OnClose());
+            jungleCamps.OnClose();
+            controllableUnits.ForEach(x => x.OnClose());
         }
 
         public void OnExecuteAction(Ability ability, Entity entity)
@@ -119,8 +101,8 @@
                             if (target.IsControllable)
                             {
                                 var unit = new Controllable(target);
-                                unit.OnCampChange += this.OnCampChange;
-                                this.controllableUnits.Add(unit);
+                                unit.OnCampChange += OnCampChange;
+                                controllableUnits.Add(unit);
                             }
                         });
             }
@@ -128,33 +110,33 @@
 
         public void OnLoad()
         {
-            this.hero = ObjectManager.LocalHero;
-            this.heroTeam = this.hero.Team;
-            this.jungleCamps = new JungleCamps(this.heroTeam);
-            Camp.DisplayOverlay = this.menu.IsEnabled;
-            this.isEnabled = this.menu.IsEnabled;
-            this.controllableUnits.Add(new Controllable(this.hero, true));
+            hero = ObjectManager.LocalHero;
+            heroTeam = hero.Team;
+            jungleCamps = new JungleCamps(heroTeam);
+            Camp.DisplayOverlay = menu.IsEnabled;
+            isEnabled = menu.IsEnabled;
+            controllableUnits.Add(new Controllable(hero, true));
         }
 
         public void OnRemoveEntity(EntityEventArgs args)
         {
             var unit = args.Entity as Unit;
 
-            if (unit == null || unit.Team != this.heroTeam)
+            if (unit == null || unit.Team != heroTeam)
             {
                 return;
             }
 
-            var removeUnit = this.controllableUnits.FirstOrDefault(x => x.Handle == unit.Handle);
+            var removeUnit = controllableUnits.FirstOrDefault(x => x.Handle == unit.Handle);
 
             if (removeUnit == null)
             {
                 return;
             }
 
-            removeUnit.OnCampChange -= this.OnCampChange;
+            removeUnit.OnCampChange -= OnCampChange;
             removeUnit.OnClose();
-            this.controllableUnits.Remove(removeUnit);
+            controllableUnits.Remove(removeUnit);
         }
 
         public void OnUpdate()
@@ -164,19 +146,17 @@
                 return;
             }
 
-            if (Game.IsPaused || !this.isEnabled)
+            if (Game.IsPaused || !isEnabled)
             {
                 Ensage.Common.Utils.Sleep(1000, "JungleStacking.Sleep");
                 return;
             }
 
-            var heroControl =
-                this.controllableUnits.FirstOrDefault(x => x.IsHero && !x.IsStacking && x.EnableHeroStacking);
+            var heroControl = controllableUnits.FirstOrDefault(x => x.IsHero && !x.IsStacking && x.EnableHeroStacking);
 
             if (heroControl != null)
             {
-                var closestCamp =
-                    this.jungleCamps.GetCamps.OrderBy(x => x.CampPosition.Distance2D(this.hero)).FirstOrDefault();
+                var closestCamp = jungleCamps.GetCamps.OrderBy(x => x.CampPosition.Distance2D(hero)).FirstOrDefault();
                 if (closestCamp != null)
                 {
                     heroControl.Stack(closestCamp);
@@ -184,11 +164,11 @@
             }
 
             foreach (var camp in
-                this.jungleCamps.GetCamps.Where(
+                jungleCamps.GetCamps.Where(
                     x => !x.IsCleared && x.CurrentStacksCount < x.RequiredStacksCount && !x.IsStacking)
                     .OrderByDescending(x => x.Ancients))
             {
-                var unit = this.controllableUnits.FirstOrDefault(x => x.IsValid && !x.IsStacking && !x.IsHero);
+                var unit = controllableUnits.FirstOrDefault(x => x.IsValid && !x.IsStacking && !x.IsHero);
 
                 if (unit == null)
                 {
@@ -199,9 +179,9 @@
             }
 
             foreach (var camp in
-                this.jungleCamps.GetCamps.Where(
+                jungleCamps.GetCamps.Where(
                     x =>
-                    !this.controllableUnits.Any(
+                    !controllableUnits.Any(
                         z =>
                         z.CurrentCamp == x
                         && (z.CurrentStatus == Controllable.Status.MovingToStackPosition
@@ -209,7 +189,9 @@
                             || z.CurrentStatus == Controllable.Status.TryingToCheckStacks))))
             {
                 var creeps =
-                    Creeps.All.Where(x => x.Distance2D(camp.CampPosition) < 1000 && x.IsSpawned && x.IsNeutral && x.Team != this.heroTeam).ToList();
+                    Creeps.All.Where(
+                        x => x.Distance2D(camp.CampPosition) < 1000 && x.IsSpawned && x.IsNeutral && x.Team != heroTeam)
+                        .ToList();
 
                 if (creeps.Any(x => x.IsAlive))
                 {
@@ -241,7 +223,7 @@
             var contrallable = args.Controllable;
 
             var allCamps =
-                this.jungleCamps.GetCamps.Where(x => !x.IsCleared && x.CurrentStacksCount < x.RequiredStacksCount)
+                jungleCamps.GetCamps.Where(x => !x.IsCleared && x.CurrentStacksCount < x.RequiredStacksCount)
                     .OrderByDescending(x => x.Ancients);
 
             var nextCamp = allCamps.FirstOrDefault(x => !blockedCamps.Contains(x));
@@ -250,11 +232,8 @@
             {
                 if (nextCamp.IsStacking)
                 {
-                    var change = this.controllableUnits.FirstOrDefault(x => x.CurrentCamp == nextCamp);
-                    if (change != null)
-                    {
-                        change.Stack(blockedCamps.Last(), 2);
-                    }
+                    var change = controllableUnits.FirstOrDefault(x => x.CurrentCamp == nextCamp);
+                    change?.Stack(blockedCamps.Last(), 2);
                 }
 
                 contrallable.Stack(nextCamp, 2);
@@ -270,9 +249,26 @@
             }
         }
 
+        private void OnForceAdd(object sender, EventArgs e)
+        {
+            var selected = hero.Player.Selection.FirstOrDefault() as Unit;
+
+            if (selected == null || !selected.IsControllable || selected is Hero)
+            {
+                return;
+            }
+
+            if (!controllableUnits.Exists(x => x.Handle == selected.Handle))
+            {
+                var ctrl = new Controllable(selected);
+                ctrl.OnCampChange += OnCampChange;
+                controllableUnits.Add(ctrl);
+            }
+        }
+
         private void OnHeroStack(object sender, EventArgs e)
         {
-            var heroCtrl = this.controllableUnits.FirstOrDefault(x => x.Handle == this.hero.Handle);
+            var heroCtrl = controllableUnits.FirstOrDefault(x => x.Handle == hero.Handle);
 
             if (heroCtrl != null)
             {
@@ -285,15 +281,15 @@
             var enabled = args.Enabled;
 
             Camp.DisplayOverlay = enabled;
-            this.isEnabled = enabled;
+            isEnabled = enabled;
 
             if (enabled)
             {
                 return;
             }
 
-            this.controllableUnits.ForEach(x => x.OnClose());
-            this.jungleCamps.GetCamps.ForEach(x => x.IsStacking = false);
+            controllableUnits.ForEach(x => x.OnClose());
+            jungleCamps.GetCamps.ForEach(x => x.IsStacking = false);
         }
 
         #endregion

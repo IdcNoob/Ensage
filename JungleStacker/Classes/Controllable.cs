@@ -55,9 +55,9 @@
 
         public Controllable(Unit unit, bool isHero = false)
         {
-            this.Handle = unit.Handle;
-            this.Unit = unit;
-            this.IsHero = isHero;
+            Handle = unit.Handle;
+            Unit = unit;
+            IsHero = isHero;
         }
 
         #endregion
@@ -72,13 +72,15 @@
 
         public enum Status
         {
-            Idle,
+            Idle,       
             MovingToWaitPosition,
             WaitingStackTime,
             MovingToCampPosition,
             MovingToStackPosition,
             WaitingOnStackPosition,
+            WaitingOnStackPositionToPreventBlock,
             TryingToCheckStacks,
+            PreventCampBlock,
             Done
         }
 
@@ -98,13 +100,7 @@
 
         public bool IsStacking { get; set; }
 
-        public bool IsValid
-        {
-            get
-            {
-                return this.Unit != null && this.Unit.IsValid && this.Unit.IsAlive;
-            }
-        }
+        public bool IsValid => Unit != null && Unit.IsValid && Unit.IsAlive;
 
         public Unit Unit { get; private set; }
 
@@ -113,25 +109,16 @@
         #region Properties
 
         private bool IsUnderCampNameText
-        {
-            get
-            {
-                return Utils.IsUnderRectangle(
+            =>
+                Utils.IsUnderRectangle(
                     Game.MouseScreenPosition,
-                    this.campNameTextPosition.X,
-                    this.campNameTextPosition.Y,
-                    this.MeasureTextSize.X,
-                    this.MeasureTextSize.Y);
-            }
-        }
+                    campNameTextPosition.X,
+                    campNameTextPosition.Y,
+                    MeasureTextSize.X,
+                    MeasureTextSize.Y);
 
         private Vector2 MeasureTextSize
-        {
-            get
-            {
-                return Drawing.MeasureText(this.CurrentCamp.Name, "Arial", new Vector2(15), FontFlags.None);
-            }
-        }
+            => Drawing.MeasureText(CurrentCamp.Name, "Arial", new Vector2(15), FontFlags.None);
 
         #endregion
 
@@ -139,29 +126,29 @@
 
         public void OnClose()
         {
-            this.registered = false;
-            this.IsStacking = false;
-            Game.OnUpdate -= this.Game_OnUpdate;
-            Drawing.OnDraw -= this.Drawing_OnDraw;
-            Game.OnWndProc -= this.Game_OnWndProc;
+            registered = false;
+            IsStacking = false;
+            Game.OnUpdate -= Game_OnUpdate;
+            Drawing.OnDraw -= Drawing_OnDraw;
+            Game.OnWndProc -= Game_OnWndProc;
         }
 
         public void Stack(Camp camp, int delay = 0)
         {
-            this.CurrentCamp = camp;
-            this.CurrentCamp.IsStacking = true;
-            this.IsStacking = true;
-            this.CurrentStatus = Status.Idle;
-            this.isRanged = this.Unit.AttackCapability == AttackCapability.Ranged;
-            this.campAvailable = false;
-            this.pause = Game.GameTime + delay;
+            CurrentCamp = camp;
+            CurrentCamp.IsStacking = true;
+            IsStacking = true;
+            CurrentStatus = Status.Idle;
+            isRanged = Unit.AttackCapability == AttackCapability.Ranged;
+            campAvailable = false;
+            pause = Game.GameTime + delay;
 
-            if (!this.registered)
+            if (!registered)
             {
-                Game.OnUpdate += this.Game_OnUpdate;
-                Drawing.OnDraw += this.Drawing_OnDraw;
-                Game.OnWndProc += this.Game_OnWndProc;
-                this.registered = true;
+                Game.OnUpdate += Game_OnUpdate;
+                Drawing.OnDraw += Drawing_OnDraw;
+                Game.OnWndProc += Game_OnWndProc;
+                registered = true;
             }
         }
 
@@ -171,34 +158,31 @@
 
         protected virtual void OnMenuChanged(List<Camp> camps, Controllable cntrollable)
         {
-            var onCampChange = this.OnCampChange;
-            if (onCampChange != null)
-            {
-                onCampChange.Invoke(this, new CampArgs { BlockedCamps = camps, Controllable = cntrollable });
-            }
+            var onCampChange = OnCampChange;
+            onCampChange?.Invoke(this, new CampArgs { BlockedCamps = camps, Controllable = cntrollable });
         }
 
         private void Drawing_OnDraw(EventArgs args)
         {
-            if (!this.IsStacking || !this.IsValid)
+            if (!IsStacking || !IsValid)
             {
                 return;
             }
 
-            this.campNameTextPosition = HUDInfo.GetHPbarPosition(this.Unit) + new Vector2(10, this.IsHero ? 25 : 0);
+            campNameTextPosition = HUDInfo.GetHPbarPosition(Unit) + new Vector2(10, IsHero ? 25 : 0);
 
-            if (this.campNameTextPosition.IsZero)
+            if (campNameTextPosition.IsZero)
             {
                 return;
             }
 
             var campName = new DrawText
                                {
-                                   Position = this.campNameTextPosition, Text = this.CurrentCamp.Name, Color = Color.White,
+                                   Position = campNameTextPosition, Text = CurrentCamp.Name, Color = Color.White,
                                    TextSize = new Vector2(15)
                                };
 
-            if (this.IsUnderCampNameText && !this.IsHero)
+            if (IsUnderCampNameText && !IsHero)
             {
                 campName.Color = Color.Orange;
             }
@@ -208,48 +192,53 @@
 
         private void Game_OnUpdate(EventArgs args)
         {
-            if (!Utils.SleepCheck("JungleStacking.Stack." + this.Handle))
+            if (!Utils.SleepCheck("JungleStacking.Stack." + Handle))
             {
                 return;
             }
 
-            Utils.Sleep(200, "JungleStacking.Stack." + this.Handle);
+            Utils.Sleep(200, "JungleStacking.Stack." + Handle);
 
             var gameTime = Game.GameTime;
 
-            if (Game.IsPaused || this.pause > gameTime || (!this.EnableHeroStacking && this.IsHero))
+            if (Game.IsPaused || pause > gameTime || (!EnableHeroStacking && IsHero))
             {
                 return;
             }
 
-            if (!this.IsValid
-                || (this.CurrentCamp.CurrentStacksCount >= this.CurrentCamp.RequiredStacksCount && !this.IsHero))
+            if (!IsValid || (CurrentCamp.CurrentStacksCount >= CurrentCamp.RequiredStacksCount && !IsHero))
             {
-                if (this.campAvailable)
+                if (campAvailable)
                 {
                     return;
                 }
-                this.CurrentStatus = Status.Done;
-                this.CurrentCamp.IsStacking = false;
-                this.IsStacking = false;
-                this.campAvailable = true;
+                CurrentStatus = Status.Done;
+                CurrentCamp.IsStacking = false;
+                IsStacking = false;
+                campAvailable = true;
                 return;
             }
 
-            switch (this.CurrentStatus)
+            switch (CurrentStatus)
             {
                 case Status.Idle:
-                    this.Unit.Move(this.CurrentCamp.WaitPosition);
-                    this.CurrentStatus = Status.MovingToWaitPosition;
+                    Unit.Move(CurrentCamp.WaitPosition);
+                    CurrentStatus = Status.MovingToWaitPosition;
                     return;
                 case Status.MovingToWaitPosition:
-                    if (this.Unit.Distance2D(this.CurrentCamp.WaitPosition) > 50)
+                    if (Unit.Distance2D(CurrentCamp.WaitPosition) > 50)
                     {
                         return;
                     }
-                    this.CurrentStatus = Status.WaitingStackTime;
+                    CurrentStatus = Status.WaitingStackTime;
                     return;
                 case Status.WaitingStackTime:
+                    if (CurrentCamp.CurrentStacksCount <= 0)
+                    {
+                        CurrentStatus = Status.PreventCampBlock;
+                        return;
+                    }
+
                     var seconds = gameTime % 60;
                     if (seconds >= 57)
                     {
@@ -257,91 +246,100 @@
                     }
 
                     var target =
-                        Creeps.All.OrderBy(x => x.Distance2D(this.Unit))
+                        Creeps.All.OrderBy(x => x.Distance2D(Unit))
                             .FirstOrDefault(
                                 x =>
-                                x.Distance2D(this.Unit) <= 600 && x.IsSpawned && x.IsAlive && x.IsNeutral
-                                && !x.Equals(this.Unit));
+                                x.Distance2D(Unit) <= 600 && x.IsSpawned && x.IsAlive && x.IsNeutral && !x.Equals(Unit));
 
-                    if (seconds + (this.CurrentCamp.CurrentStacksCount >= 3 ? 1 : 0)
-                        + (this.isRanged && target != null
-                               ? this.Unit.AttacksPerSecond
-                               : this.CurrentCamp.CampPosition.Distance2D(this.Unit) / this.Unit.MovementSpeed)
-                        >= this.CurrentCamp.StackTime)
+                    if (seconds + (CurrentCamp.CurrentStacksCount >= 3 ? 1 : 0)
+                        + (isRanged && target != null
+                               ? Unit.AttacksPerSecond
+                               : CurrentCamp.CampPosition.Distance2D(Unit) / Unit.MovementSpeed)
+                        >= CurrentCamp.StackTime)
                     {
-                        if (target != null && this.isRanged)
+                        if (target != null && isRanged)
                         {
-                            this.Unit.Attack(target);
+                            Unit.Attack(target);
                         }
                         else
                         {
-                            this.Unit.Move(this.CurrentCamp.CampPosition);
+                            Unit.Move(CurrentCamp.CampPosition);
                         }
-                        this.health = this.Unit.Health;
-                        this.CurrentStatus = Status.MovingToCampPosition;
+                        health = Unit.Health;
+                        CurrentStatus = Status.MovingToCampPosition;
                     }
                     return;
+                case Status.PreventCampBlock:
+                    Unit.Move(CurrentCamp.StackPosition);
+                    CurrentStatus = Status.WaitingOnStackPositionToPreventBlock;
+                    return;
                 case Status.MovingToCampPosition:
-                    if (this.Unit.Health < this.health)
+                    if (Unit.Health < health)
                     {
-                        this.Unit.Move(this.CurrentCamp.StackPosition);
-                        this.CurrentStatus = Status.MovingToStackPosition;
+                        Unit.Move(CurrentCamp.StackPosition);
+                        CurrentStatus = Status.MovingToStackPosition;
                     }
-                    else if (this.isRanged)
+                    else if (isRanged)
                     {
-                        if (this.attackTime <= 0 && this.Unit.IsAttacking())
+                        if (attackTime <= 0 && Unit.IsAttacking())
                         {
-                            this.attackTime = gameTime;
+                            attackTime = gameTime;
                         }
-                        else if (this.attackTime > 0 && gameTime >= this.Unit.AttacksPerSecond / 2 + this.attackTime)
-                        //else if (this.attackTime > 0
-                        //         && gameTime
-                        //         >= this.Unit.SecondsPerAttack - this.Unit.BaseAttackTime / 3 + this.attackTime)
+                        else if (attackTime > 0 && gameTime >= Unit.AttacksPerSecond / 2 + attackTime)
+                            //else if (this.attackTime > 0
+                            //         && gameTime
+                            //         >= this.Unit.SecondsPerAttack - this.Unit.BaseAttackTime / 3 + this.attackTime)
                         {
-                            this.attackTime = 0;
-                            this.Unit.Move(this.CurrentCamp.StackPosition);
-                            this.CurrentStatus = Status.MovingToStackPosition;
+                            attackTime = 0;
+                            Unit.Move(CurrentCamp.StackPosition);
+                            CurrentStatus = Status.MovingToStackPosition;
                         }
                     }
-                    else if (this.Unit.Distance2D(this.CurrentCamp.CampPosition) < 50)
+                    else if (Unit.Distance2D(CurrentCamp.CampPosition) < 50)
                     {
-                        this.Unit.Move(this.CurrentCamp.StackPosition);
-                        this.CurrentStatus = Status.MovingToStackPosition;
+                        Unit.Move(CurrentCamp.StackPosition);
+                        CurrentStatus = Status.MovingToStackPosition;
                     }
                     return;
                 case Status.MovingToStackPosition:
-                    if (this.CurrentCamp.StackPosition.Distance2D(this.Unit) < 50)
+                    if (CurrentCamp.StackPosition.Distance2D(Unit) < 50)
                     {
-                        this.CurrentStatus = Status.WaitingOnStackPosition;
+                        CurrentStatus = Status.WaitingOnStackPosition;
+                    }
+                    return;
+                case Status.WaitingOnStackPositionToPreventBlock:
+                    if (CurrentCamp.CurrentStacksCount >= 1)
+                    {
+                        CurrentStatus = Status.Idle;
                     }
                     return;
                 case Status.WaitingOnStackPosition:
                     var time = gameTime % 60;
                     if (time > 5 && time < 10)
                     {
-                        this.Unit.Move(this.CurrentCamp.WaitPosition);
-                        this.CurrentCamp.CurrentStacksCount++;
-                        this.CurrentStatus = Status.TryingToCheckStacks;
+                        Unit.Move(CurrentCamp.WaitPosition);
+                        CurrentCamp.CurrentStacksCount++;
+                        CurrentStatus = Status.TryingToCheckStacks;
                     }
                     return;
                 case Status.TryingToCheckStacks:
-                    if (this.Unit.Distance2D(this.CurrentCamp.WaitPosition) < 50)
+                    if (Unit.Distance2D(CurrentCamp.WaitPosition) < 50)
                     {
-                        this.CurrentCamp.CurrentStacksCount =
+                        CurrentCamp.CurrentStacksCount =
                             Creeps.All.Where(
                                 x =>
-                                x.Distance2D(this.CurrentCamp.CampPosition) < 1000 && x.IsSpawned && x.IsNeutral
-                                && !x.Equals(this.Unit)).ToList().CountStacks();
+                                x.Distance2D(CurrentCamp.CampPosition) < 1000 && x.IsSpawned && x.IsNeutral
+                                && !x.Equals(Unit)).ToList().CountStacks();
 
-                        if (this.CurrentCamp.CurrentStacksCount >= this.CurrentCamp.RequiredStacksCount)
+                        if (CurrentCamp.CurrentStacksCount >= CurrentCamp.RequiredStacksCount)
                         {
-                            this.CurrentCamp.IsStacking = false;
-                            this.IsStacking = false;
-                            this.CurrentStatus = Status.Done;
+                            CurrentCamp.IsStacking = false;
+                            IsStacking = false;
+                            CurrentStatus = Status.Done;
                         }
                         else
                         {
-                            this.CurrentStatus = Status.Idle;
+                            CurrentStatus = Status.Idle;
                         }
                     }
                     return;
@@ -350,23 +348,23 @@
 
         private void Game_OnWndProc(WndEventArgs args)
         {
-            if (!this.IsValid || !this.IsStacking)
+            if (!IsValid || !IsStacking)
             {
                 return;
             }
-            if (this.IsHero && args.Msg == (ulong)Utils.WindowsMessages.WM_RBUTTONDOWN)
+            if (IsHero && args.Msg == (ulong)Utils.WindowsMessages.WM_RBUTTONDOWN)
             {
-                this.IsStacking = false;
-                this.EnableHeroStacking = false;
-                this.CurrentCamp.IsStacking = false;
+                IsStacking = false;
+                EnableHeroStacking = false;
+                CurrentCamp.IsStacking = false;
             }
 
-            if (!this.IsHero && args.Msg == (ulong)Utils.WindowsMessages.WM_LBUTTONDOWN && this.IsUnderCampNameText)
+            if (!IsHero && args.Msg == (ulong)Utils.WindowsMessages.WM_LBUTTONDOWN && IsUnderCampNameText)
             {
-                this.BlockedCamps.Add(this.CurrentCamp);
-                this.IsStacking = false;
-                this.CurrentCamp.IsStacking = false;
-                this.OnMenuChanged(this.BlockedCamps, this);
+                BlockedCamps.Add(CurrentCamp);
+                IsStacking = false;
+                CurrentCamp.IsStacking = false;
+                OnMenuChanged(BlockedCamps, this);
             }
         }
 
