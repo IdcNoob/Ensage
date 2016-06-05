@@ -51,7 +51,7 @@
                         {
                             OverlayPosition = new Vector3(4150, -3400, 384), CampPosition = new Vector3(4404, -3672, 384),
                             StackPosition = new Vector3(3002, -3936, 384), WaitPosition = new Vector3(4347, -3852, 384),
-                            Id = 4, StackTime = 53, Team = Team.Radiant, Ancients = false, Name = "Hard Camp"
+                            Id = 4, StackTime = 53, Team = Team.Radiant, Ancients = false, Name = "Bot Hard Camp"
                         });
                 camps.Add(
                     new Camp
@@ -72,7 +72,7 @@
                         {
                             OverlayPosition = new Vector3(-3300, 825, 384), CampPosition = new Vector3(-3829, 650, 384),
                             StackPosition = new Vector3(-3893, -737, 384), WaitPosition = new Vector3(-4016, 589, 384),
-                            Id = 7, StackTime = 53, Team = Team.Radiant, Ancients = true, Name = "Secret Camp"
+                            Id = 7, StackTime = 53, Team = Team.Radiant, Ancients = true, Name = "Secret Hard Camp"
                         });
             }
             else if (heroTeam == Team.Dire)
@@ -110,7 +110,7 @@
                         {
                             OverlayPosition = new Vector3(-4200, 3300, 384), CampPosition = new Vector3(-4403, 3607, 384),
                             StackPosition = new Vector3(-2801, 3684, 245), WaitPosition = new Vector3(-4185, 3739, 256),
-                            Id = 12, StackTime = 54, Team = Team.Dire, Ancients = false, Name = "Hard Camp"
+                            Id = 12, StackTime = 54, Team = Team.Dire, Ancients = false, Name = "Top Hard Camp"
                         });
                 camps.Add(
                     new Camp
@@ -124,7 +124,7 @@
                         {
                             OverlayPosition = new Vector3(4200, 850, 384), CampPosition = new Vector3(4085, 542, 384),
                             StackPosition = new Vector3(3537, 1713, 256), WaitPosition = new Vector3(3822, 531, 384),
-                            Id = 14, StackTime = 55, Team = Team.Dire, Ancients = false, Name = "Secret Camp"
+                            Id = 14, StackTime = 55, Team = Team.Dire, Ancients = false, Name = "Secret Hard Camp"
                         });
             }
         }

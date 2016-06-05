@@ -43,6 +43,8 @@
 
         private uint health;
 
+        private float hPBarSizeX;
+
         private bool isRanged;
 
         private float pause;
@@ -72,15 +74,24 @@
 
         public enum Status
         {
-            Idle,       
+            Idle,
+
             MovingToWaitPosition,
+
             WaitingStackTime,
+
             MovingToCampPosition,
+
             MovingToStackPosition,
+
             WaitingOnStackPosition,
+
             WaitingOnStackPositionToPreventBlock,
+
             TryingToCheckStacks,
+
             PreventCampBlock,
+
             Done
         }
 
@@ -108,16 +119,28 @@
 
         #region Properties
 
+        private float GetHpBarSizeX
+        {
+            get
+            {
+                if (hPBarSizeX <= 0)
+                {
+                    hPBarSizeX = HUDInfo.GetHPBarSizeX();
+                }
+                return hPBarSizeX;
+            }
+        }
+
         private bool IsUnderCampNameText
             =>
                 Utils.IsUnderRectangle(
                     Game.MouseScreenPosition,
                     campNameTextPosition.X,
                     campNameTextPosition.Y,
-                    MeasureTextSize.X,
-                    MeasureTextSize.Y);
+                    MeasureCampNameTextSize.X,
+                    MeasureCampNameTextSize.Y);
 
-        private Vector2 MeasureTextSize
+        private Vector2 MeasureCampNameTextSize
             => Drawing.MeasureText(CurrentCamp.Name, "Arial", new Vector2(15), FontFlags.None);
 
         #endregion
@@ -169,7 +192,8 @@
                 return;
             }
 
-            campNameTextPosition = HUDInfo.GetHPbarPosition(Unit) + new Vector2(10, IsHero ? 25 : 0);
+            campNameTextPosition = HUDInfo.GetHPbarPosition(Unit)
+                                   + new Vector2((GetHpBarSizeX - MeasureCampNameTextSize.X) / 2, IsHero ? 25 : 0);
 
             if (campNameTextPosition.IsZero)
             {

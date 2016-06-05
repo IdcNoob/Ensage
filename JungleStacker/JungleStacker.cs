@@ -26,6 +26,8 @@
 
         private Team heroTeam;
 
+        private bool inGame;
+
         private bool isEnabled;
 
         private JungleCamps jungleCamps;
@@ -53,9 +55,14 @@
         public void OnAddEntity(EntityEventArgs args)
         {
             DelayAction.Add(
-                300f,
+                300f + Game.Ping,
                 () =>
                     {
+                        if (!inGame)
+                        {
+                            return;
+                        }
+
                         var unit = args.Entity as Unit;
 
                         if (unit == null || !unit.IsControllable || unit.Team != heroTeam
@@ -72,6 +79,7 @@
 
         public void OnClose()
         {
+            inGame = false;
             jungleCamps.OnClose();
             controllableUnits.ForEach(x => x.OnClose());
         }
@@ -95,10 +103,10 @@
                 || ability.ClassID == ClassID.CDOTA_Ability_Enchantress_Enchant)
             {
                 DelayAction.Add(
-                    (float)ability.FindCastPoint() * 1000 + 500,
+                    (float)ability.FindCastPoint() * 1000 + 300 + Game.Ping,
                     () =>
                         {
-                            if (target.IsControllable)
+                            if (inGame && target.IsControllable)
                             {
                                 var unit = new Controllable(target);
                                 unit.OnCampChange += OnCampChange;
@@ -110,6 +118,7 @@
 
         public void OnLoad()
         {
+            inGame = true;
             hero = ObjectManager.LocalHero;
             heroTeam = hero.Team;
             jungleCamps = new JungleCamps(heroTeam);
@@ -188,17 +197,18 @@
                             || z.CurrentStatus == Controllable.Status.WaitingOnStackPosition
                             || z.CurrentStatus == Controllable.Status.TryingToCheckStacks))))
             {
-                var creeps =
-                    Creeps.All.Where(
-                        x => x.Distance2D(camp.CampPosition) < 1000 && x.IsSpawned && x.IsNeutral && x.Team != heroTeam)
+                var campCreeps =
+                    Creeps.All.Where(x => x.Distance2D(camp.CampPosition) < 600 && x.IsNeutral && x.Team != heroTeam)
                         .ToList();
 
-                if (creeps.Any(x => x.IsAlive))
+                var aliveCampCreeps = campCreeps.Where(x => x.IsSpawned && x.IsAlive).ToList();
+
+                if (aliveCampCreeps.Any())
                 {
-                    camp.CurrentStacksCount = Math.Max(creeps.CountStacks(), 1);
+                    camp.CurrentStacksCount = Math.Max(aliveCampCreeps.CountStacks(), 1);
                     camp.IsCleared = false;
                 }
-                else if (!camp.IsCleared && creeps.All(x => !x.IsAlive) && creeps.Any())
+                else if (!camp.IsCleared && campCreeps.Any() && campCreeps.All(x => !x.IsSpawned || !x.IsAlive))
                 {
                     camp.IsCleared = true;
                     camp.CurrentStacksCount = 0;
