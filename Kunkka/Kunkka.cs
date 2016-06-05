@@ -30,6 +30,10 @@
 
         private Hero hero;
 
+        private bool hookCasted;
+
+        private double hookHitTime;
+
         private MenuManager menuManager;
 
         private Hero target;
@@ -291,8 +295,36 @@
                 targetLocked = false;
             }
 
-            if (xMark.Casted && xReturn.CanBeCasted && menuManager.AutoReturnEnabled && !menuManager.ComboEnabled)
+            if (xMark.Casted && xReturn.CanBeCasted && menuManager.AutoReturnEnabled && !comboStarted)
             {
+                var pudge =
+                    Heroes.GetByTeam(hero.Team)
+                        .FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Unit_Hero_Pudge && x.IsAlive && !x.IsIllusion);
+
+                if (pudge != null)
+                {
+                    var hook = pudge.Spellbook.SpellQ;
+
+                    if (hook.IsInAbilityPhase)
+                    {
+                        if (hookCasted)
+                        {
+                            return;
+                        }
+
+                        hookHitTime = CalculateHitTime(pudge, hook, 0);
+
+                        if (hookHitTime > 0)
+                        {
+                            hookCasted = true;
+                        }
+                    }
+                    else if (hookCasted && hook.AbilityState != AbilityState.OnCooldown)
+                    {
+                        hookCasted = false;
+                    }
+                }
+
                 var mirana =
                     Heroes.GetByTeam(hero.Team)
                         .FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Unit_Hero_Mirana && x.IsAlive && !x.IsIllusion);
@@ -308,17 +340,10 @@
                             return;
                         }
 
-                        var arrowEndPosition = mirana.InFront(arrow.GetCastRange() + 150);
+                        arrowHitTime = CalculateHitTime(mirana, arrow);
 
-                        var miranaArrowEnd = mirana.Distance2D(arrowEndPosition);
-                        var miranaTarget = mirana.Distance2D(xMark.Position);
-                        var targetArrowEnd = xMark.Position.Distance2D(arrowEndPosition);
-
-                        if (Math.Abs(miranaTarget + targetArrowEnd - miranaArrowEnd) < 10)
+                        if (arrowHitTime > 0)
                         {
-                            arrowHitTime = Game.GameTime + arrow.FindCastPoint() //* 0.7
-                                           + (miranaTarget - arrow.GetRadius()) / arrow.GetProjectileSpeed();
-
                             arrowCasted = true;
                         }
                     }
@@ -363,6 +388,13 @@
                     targetLocked = false;
                     arrowCasted = false;
                 }
+
+                if (hookCasted && Game.GameTime >= hookHitTime - delay)
+                {
+                    xReturn.UseAbility();
+                    targetLocked = false;
+                    hookCasted = false;
+                }
             }
 
             if (targetLocked && xMark.Casted && xReturn.Casted)
@@ -371,6 +403,27 @@
             }
 
             Utils.Sleep(50, "Kunkka.Sleep");
+        }
+
+        #endregion
+
+        #region Methods
+
+        private double CalculateHitTime(Unit unit, Ability ability, float adjustCastPoint = 1)
+        {
+            var abilityEndPosition = unit.InFront(ability.GetCastRange() + 150);
+
+            var unitAbilityEnd = unit.Distance2D(abilityEndPosition);
+            var unitTarget = unit.Distance2D(xMark.Position);
+            var targetAbilityEnd = xMark.Position.Distance2D(abilityEndPosition);
+
+            if (Math.Abs(unitTarget + targetAbilityEnd - unitAbilityEnd) < 10)
+            {
+                return Game.GameTime + ability.FindCastPoint() * adjustCastPoint
+                       + (unitTarget - ability.GetRadius()) / ability.GetProjectileSpeed();
+            }
+
+            return 0;
         }
 
         #endregion
