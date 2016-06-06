@@ -30,6 +30,8 @@
 
         private Hero hero;
 
+        private Team heroTeam;
+
         private bool hookCasted;
 
         private double hookHitTime;
@@ -108,26 +110,28 @@
 
             var ability = args.Ability;
 
-            if (ability == null)
+            if (ability == null || !ability.Equals(xMark.Ability))
             {
                 return;
             }
 
-            if (ability.Equals(xMark.Ability))
+            var newTarget = args.Target as Hero;
+
+            if (newTarget == null || newTarget.Team == heroTeam)
             {
-                var heroTarget = args.Target as Hero;
-                if (heroTarget != null && heroTarget.Team != hero.Team)
-                {
-                    targetLocked = true;
-                    target = heroTarget;
-                    xMark.Position = target.Position;
-                }
+                return;
             }
+
+            targetLocked = true;
+            target = newTarget;
+            xMark.Position = target.Position;
         }
 
         public void OnLoad()
         {
             hero = ObjectManager.LocalHero;
+            heroTeam = hero.Team;
+
             menuManager = new MenuManager(hero.Name);
 
             allSpells.Add(torrent = new Torrent(hero.Spellbook.SpellQ));
@@ -161,7 +165,7 @@
                         ObjectManager.GetEntities<Unit>()
                             .FirstOrDefault(
                                 x =>
-                                x.Team == hero.Team && x.ClassID == ClassID.CDOTA_Unit_Fountain
+                                x.Team == heroTeam && x.ClassID == ClassID.CDOTA_Unit_Fountain
                                 && x.Distance2D(hero) > 2000);
 
                     if (fountain == null)
@@ -188,7 +192,7 @@
                 var creep =
                     Creeps.All.OrderBy(x => x.Distance2D(Game.MousePosition))
                         .FirstOrDefault(
-                            x => x.Team != hero.Team && x.IsSpawned && x.IsVisible && x.Distance2D(hero) < 2000);
+                            x => x.Team != heroTeam && x.IsSpawned && x.IsVisible && x.Distance2D(hero) < 2000);
 
                 if (xReturn.CanBeCasted && !blink.CanBeCasted()
                     && (creep == null || !creep.IsAlive || tideBringer.Casted))
@@ -247,7 +251,7 @@
 
                     if (
                         allSpells.Any(
-                            x => !x.CanBeCasted && x != xReturn && x != tideBringer && x != ghostShip && !fullCombo))
+                            x => !x.CanBeCasted && x != xReturn && x != tideBringer && (x != ghostShip || fullCombo)))
                     {
                         return;
                     }
@@ -270,9 +274,18 @@
 
                 if (ghostShip.CanBeCasted && fullCombo)
                 {
-                    ghostShip.UseAbility(targetPosition);
-                    Utils.Sleep(ghostShip.GetSleepTime, "Kunkka.Sleep");
-                    return;
+                    if (!hero.AghanimState())
+                    {
+                        ghostShip.UseAbility(targetPosition);
+                        Utils.Sleep(ghostShip.GetSleepTime, "Kunkka.Sleep");
+                        return;
+                    }
+
+                    if (torrent.Casted
+                        && Game.GameTime >= torrent.HitTime - ghostShip.CastPoint - xReturn.CastPoint - Game.Ping / 1000)
+                    {
+                        ghostShip.UseAbility(GetTorrentThinker()?.Position ?? targetPosition);
+                    }
                 }
 
                 if (torrent.CanBeCasted)
@@ -298,7 +311,7 @@
             if (xMark.Casted && xReturn.CanBeCasted && menuManager.AutoReturnEnabled && !comboStarted)
             {
                 var pudge =
-                    Heroes.GetByTeam(hero.Team)
+                    Heroes.GetByTeam(heroTeam)
                         .FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Unit_Hero_Pudge && x.IsAlive && !x.IsIllusion);
 
                 if (pudge != null)
@@ -326,7 +339,7 @@
                 }
 
                 var mirana =
-                    Heroes.GetByTeam(hero.Team)
+                    Heroes.GetByTeam(heroTeam)
                         .FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Unit_Hero_Mirana && x.IsAlive && !x.IsIllusion);
 
                 if (mirana != null)
@@ -357,12 +370,7 @@
 
                 if (torrent.Casted)
                 {
-                    var torrentThinker =
-                        ObjectManager.GetEntities<Unit>()
-                            .FirstOrDefault(
-                                x =>
-                                x.ClassID == ClassID.CDOTA_BaseNPC && x.HasModifier("modifier_kunkka_torrent_thinker")
-                                && x.Team == hero.Team);
+                    var torrentThinker = GetTorrentThinker();
 
                     if (torrentThinker != null)
                     {
@@ -372,7 +380,7 @@
                         }
 
                         var modifier = torrentThinker.FindModifier("modifier_kunkka_torrent_thinker");
-                        var hitTime = torrent.AdditionalDelay - modifier.ElapsedTime - 0.1;
+                        var hitTime = torrent.AdditionalDelay - modifier.ElapsedTime - 0.15;
 
                         if (hitTime <= delay)
                         {
@@ -424,6 +432,16 @@
             }
 
             return 0;
+        }
+
+        private Unit GetTorrentThinker()
+        {
+            return
+                ObjectManager.GetEntities<Unit>()
+                    .FirstOrDefault(
+                        x =>
+                        x.ClassID == ClassID.CDOTA_BaseNPC && x.HasModifier("modifier_kunkka_torrent_thinker")
+                        && x.Team == heroTeam);
         }
 
         #endregion
