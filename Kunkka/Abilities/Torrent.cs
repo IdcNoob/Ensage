@@ -48,7 +48,7 @@
 
         public void CalculateHitTime()
         {
-            var gameTime = Game.GameTime;
+            var gameTime = Game.RawGameTime;
 
             if (HitTime <= gameTime)
             {

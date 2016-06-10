@@ -282,7 +282,8 @@
                     }
 
                     if (torrent.Casted
-                        && Game.GameTime >= torrent.HitTime - ghostShip.CastPoint - xReturn.CastPoint - Game.Ping / 1000)
+                        && Game.RawGameTime
+                        >= torrent.HitTime - ghostShip.CastPoint - xReturn.CastPoint - Game.Ping / 1000)
                     {
                         ghostShip.UseAbility(GetTorrentThinker()?.Position ?? targetPosition);
                     }
@@ -295,7 +296,7 @@
                     return;
                 }
 
-                if (xReturn.CanBeCasted && Game.GameTime >= torrent.HitTime - xReturn.CastPoint - Game.Ping / 1000)
+                if (xReturn.CanBeCasted && Game.RawGameTime >= torrent.HitTime - xReturn.CastPoint - Game.Ping / 1000)
                 {
                     xReturn.UseAbility();
                     Utils.Sleep(xReturn.GetSleepTime, "Kunkka.Sleep");
@@ -310,6 +311,8 @@
 
             if (xMark.Casted && xReturn.CanBeCasted && menuManager.AutoReturnEnabled && !comboStarted)
             {
+                var gameTime = Game.RawGameTime;
+
                 var pudge =
                     Heroes.GetByTeam(heroTeam)
                         .FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Unit_Hero_Pudge && x.IsAlive && !x.IsIllusion);
@@ -325,7 +328,7 @@
                             return;
                         }
 
-                        hookHitTime = CalculateHitTime(pudge, hook, 0);
+                        hookHitTime = CalculateHitTime(pudge, hook, gameTime, 0);
 
                         if (hookHitTime > 0)
                         {
@@ -353,7 +356,7 @@
                             return;
                         }
 
-                        arrowHitTime = CalculateHitTime(mirana, arrow);
+                        arrowHitTime = CalculateHitTime(mirana, arrow, gameTime);
 
                         if (arrowHitTime > 0)
                         {
@@ -390,14 +393,14 @@
                     }
                 }
 
-                if (arrowCasted && Game.GameTime >= arrowHitTime - delay)
+                if (arrowCasted && gameTime >= arrowHitTime - delay)
                 {
                     xReturn.UseAbility();
                     targetLocked = false;
                     arrowCasted = false;
                 }
 
-                if (hookCasted && Game.GameTime >= hookHitTime - delay)
+                if (hookCasted && gameTime >= hookHitTime - delay)
                 {
                     xReturn.UseAbility();
                     targetLocked = false;
@@ -417,7 +420,7 @@
 
         #region Methods
 
-        private double CalculateHitTime(Unit unit, Ability ability, float adjustCastPoint = 1)
+        private double CalculateHitTime(Unit unit, Ability ability, float gameTime, float adjustCastPoint = 1)
         {
             var abilityEndPosition = unit.InFront(ability.GetCastRange() + 150);
 
@@ -427,7 +430,7 @@
 
             if (Math.Abs(unitTarget + targetAbilityEnd - unitAbilityEnd) < 10)
             {
-                return Game.GameTime + ability.FindCastPoint() * adjustCastPoint
+                return gameTime + ability.FindCastPoint() * adjustCastPoint
                        + (unitTarget - ability.GetRadius()) / ability.GetProjectileSpeed();
             }
 
