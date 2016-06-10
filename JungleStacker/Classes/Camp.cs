@@ -141,6 +141,13 @@
         {
             Drawing.OnDraw -= Drawing_OnDraw;
             Game.OnWndProc -= Game_OnWndProc;
+            OnDisable();
+        }
+
+        public void OnDisable()
+        {
+            IsStacking = false;
+            requiredStacksCount = 1;
         }
 
         #endregion

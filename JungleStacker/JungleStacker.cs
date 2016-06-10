@@ -63,17 +63,24 @@
                             return;
                         }
 
-                        var unit = args.Entity as Unit;
-
-                        if (unit == null || !unit.IsControllable || unit.Team != heroTeam
-                            || unit.AttackCapability == AttackCapability.None || ignoredUnits.Contains(unit.ClassID))
+                        try
                         {
-                            return;
-                        }
+                            var unit = args.Entity as Unit;
 
-                        var contrallable = new Controllable(unit);
-                        contrallable.OnCampChange += OnCampChange;
-                        controllableUnits.Add(contrallable);
+                            if (unit == null || !unit.IsControllable || unit.Team != heroTeam
+                                || unit.AttackCapability == AttackCapability.None || ignoredUnits.Contains(unit.ClassID))
+                            {
+                                return;
+                            }
+
+                            var contrallable = new Controllable(unit);
+                            contrallable.OnCampChange += OnCampChange;
+                            controllableUnits.Add(contrallable);
+                        }
+                        catch (EntityNotFoundException e)
+                        {
+                            // Console.WriteLine(e);
+                        }
                     });
         }
 
@@ -299,7 +306,7 @@
             }
 
             controllableUnits.ForEach(x => x.OnClose());
-            jungleCamps.GetCamps.ForEach(x => x.IsStacking = false);
+            jungleCamps.GetCamps.ForEach(x => x.OnDisable());
         }
 
         #endregion
