@@ -26,7 +26,7 @@
             {
                 var abilityMenu = new Menu(string.Empty, spell, textureName: spell);
                 abilityMenu.AddItem(
-                    new MenuItem(spell + "levelLock", "Lock at ability level").SetValue(
+                    new MenuItem(spell + "levelLock", "Lock ability at level").SetValue(
                         new StringList(new[] { "0", "1", "2", "3", "4", "5", "6" })));
                 abilityMenu.AddItem(new MenuItem(spell + "fullLock", "Full lock").SetValue(false))
                     .SetTooltip(

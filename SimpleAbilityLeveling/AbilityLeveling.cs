@@ -6,6 +6,7 @@
 
     using Ensage;
     using Ensage.Common;
+    using Ensage.Common.Objects;
 
     internal class AbilityLeveling
     {
@@ -30,8 +31,8 @@
         {
             hero = ObjectManager.LocalHero;
             abilities =
-                hero.Spellbook.Spells.Where(x => !x.IsHidden && !IgnoredAbilities.List.Contains(x.Name));
-            menuManager = new MenuManager(abilities.Select(x => x.Name).ToList(), hero.Name);
+                hero.Spellbook.Spells.Where(x => !x.IsHidden && !IgnoredAbilities.List.Contains(x.StoredName()));
+            menuManager = new MenuManager(abilities.Select(x => x.StoredName()).ToList(), hero.Name);
 
             Utils.Sleep(10000, "AbilityLeveling.Sleep");
         }
@@ -51,9 +52,9 @@
             }
 
             var learnableAbilities =
-                abilities.OrderByDescending(x => menuManager.GetAbilityPriority(x.Name))
+                abilities.OrderByDescending(x => menuManager.GetAbilityPriority(x.StoredName()))
                     .Where(
-                        x => menuManager.AbilityActive(x.Name) && IsLearnable(x)
+                        x => menuManager.AbilityActive(x.StoredName()) && IsLearnable(x)
                     // x.IsLearnable
                     ).ToList();
 
@@ -68,7 +69,7 @@
 
         private bool ForceLearn(Ability ability)
         {
-            var forceAbilityLearnLevel = menuManager.ForceAbilityLearn(ability.Name);
+            var forceAbilityLearnLevel = menuManager.ForceAbilityLearn(ability.StoredName());
 
             if (forceAbilityLearnLevel <= 0)
             {
@@ -308,7 +309,7 @@
 
         private bool IsLocked(Ability ability)
         {
-            var lockLevel = menuManager.AbilityLockLevel(ability.Name);
+            var lockLevel = menuManager.AbilityLockLevel(ability.StoredName());
 
             if (lockLevel <= 0)
             {
@@ -320,12 +321,10 @@
             var spells =
                 abilities.Where(
                     x =>
-                    !x.Equals(ability) && x.AbilityType != AbilityType.Attribute && menuManager.AbilityActive(x.Name)
-                    && IsLearnable(x) && menuManager.AbilityLockLevel(ability.Name) >= 1);
+                    !x.Equals(ability) && x.AbilityType != AbilityType.Attribute && menuManager.AbilityActive(x.StoredName())
+                    && IsLearnable(x) && menuManager.AbilityLockLevel(ability.StoredName()) >= 1);
 
-            Console.WriteLine(menuManager.AbilityFullLocked(ability.Name));
-
-            return abilityLevel >= lockLevel && (spells.Any() || menuManager.AbilityFullLocked(ability.Name));
+            return abilityLevel >= lockLevel && (spells.Any() || menuManager.AbilityFullLocked(ability.StoredName()));
         }
 
         #endregion
