@@ -64,12 +64,12 @@
 
         #region Public Methods and Operators
 
-        public bool AbilityActive(string name)
+        public bool AbilityActive(string abilityName)
         {
-            return menu.Item(heroName + "priority").GetValue<PriorityChanger>().AbilityToggler.IsEnabled(name);
+            return menu.Item(heroName + "priority").GetValue<PriorityChanger>().AbilityToggler.IsEnabled(abilityName);
         }
 
-        public bool AbilityFullLocked(string abilityName)
+        public bool AbilityFullyLocked(string abilityName)
         {
             return menu.Item(abilityName + "fullLock").IsActive();
         }
@@ -79,14 +79,14 @@
             return menu.Item(abilityName + "levelLock").GetValue<StringList>().SelectedIndex;
         }
 
-        public int ForceAbilityLearn(string abilityName)
+        public int ForceAbilityLearnHeroLevel(string abilityName)
         {
             return menu.Item(abilityName + "forceLearn").GetValue<StringList>().SelectedIndex;
         }
 
-        public uint GetAbilityPriority(string name)
+        public uint GetAbilityPriority(string abilityName)
         {
-            return menu.Item(heroName + "priority").GetValue<PriorityChanger>().GetPriority(name);
+            return menu.Item(heroName + "priority").GetValue<PriorityChanger>().GetPriority(abilityName);
         }
 
         public void OnClose()
