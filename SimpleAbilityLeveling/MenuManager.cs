@@ -47,8 +47,8 @@
             menu = new Menu("Ability Leveling", "simpleAbilityLeveling", true);
             menu.AddItem(new MenuItem("enabled", "Enabled for current hero", true).SetValue(false));
             menu.AddItem(
-                new MenuItem("priority", "Priority", true).SetValue(
-                    new PriorityChanger(abilties, heroName + "priorityChanger", true)));
+                new MenuItem("prioritySimpleAbilityLeveling", "Priority", true).SetValue(
+                    new PriorityChanger(abilties, heroName + "priorityChangerSimpleAbilityLeveling", true)));
 
             menu.AddSubMenu(advancedMenu);
             menu.AddToMainMenu();
@@ -66,7 +66,10 @@
 
         public bool AbilityActive(string abilityName)
         {
-            return menu.Item(heroName + "priority").GetValue<PriorityChanger>().AbilityToggler.IsEnabled(abilityName);
+            return
+                menu.Item(heroName + "prioritySimpleAbilityLeveling")
+                    .GetValue<PriorityChanger>()
+                    .AbilityToggler.IsEnabled(abilityName);
         }
 
         public bool AbilityFullyLocked(string abilityName)
@@ -86,7 +89,7 @@
 
         public uint GetAbilityPriority(string abilityName)
         {
-            return menu.Item(heroName + "priority").GetValue<PriorityChanger>().GetPriority(abilityName);
+            return menu.Item(heroName + "prioritySimpleAbilityLeveling").GetValue<PriorityChanger>().GetPriority(abilityName);
         }
 
         public void OnClose()

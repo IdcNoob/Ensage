@@ -44,7 +44,7 @@
 
             Utils.Sleep(1000, "AbilityLeveling.Sleep");
 
-            if (Game.IsPaused || !hero.IsAlive || hero.AbilityPoints <= 0 || !menuManager.IsEnabled)
+            if (hero.AbilityPoints <= 0 || !menuManager.IsEnabled || Game.IsPaused)
             {
                 return;
             }
@@ -56,7 +56,7 @@
                     ).ToList();
 
             var upgrade = learnableAbilities.FirstOrDefault(ForceLearn)
-                        ?? learnableAbilities.FirstOrDefault(x => !IsLocked(x, learnableAbilities));
+                          ?? learnableAbilities.FirstOrDefault(x => !IsLocked(x, learnableAbilities));
 
             Player.UpgradeAbility(hero, upgrade ?? learnableAbilities.FirstOrDefault());
         }
