@@ -26,6 +26,10 @@
 
         float Distance(Hero hero);
 
+        float HeroDamage { get; set; }
+
+        bool DamageCalculated { get; set; }
+
         #endregion
     }
 }

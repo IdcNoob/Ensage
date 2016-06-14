@@ -13,7 +13,10 @@
                                                                    };
 
         public static readonly List<string> IncludedAbilities = new List<string>
-                                                                    { "techies_land_mines", "techies_remote_mines" };
+                                                                    {
+                                                                        "techies_land_mines", "techies_remote_mines",
+                                                                        "meepo_poof", "clinkz_searing_arrows"
+                                                                    };
 
         public static readonly Dictionary<string, int> TowerDamageAbilities = new Dictionary<string, int>
                                                                                   {

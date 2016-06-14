@@ -21,11 +21,17 @@
 
         #region Public Properties
 
+        public bool DamageCalculated { get; set; }
+
         public Dictionary<uint, float> GetSavedDamage { get; } = new Dictionary<uint, float>();
 
         public uint Handle { get; }
 
         public uint Health => Unit.Health;
+
+        public float HeroDamage { get; set; }
+
+        public float HpBarSize { get; }
 
         public bool IsValid => Unit != null && Unit.IsValid && Unit.IsSpawned && Unit.IsAlive;
 
@@ -34,8 +40,6 @@
         #endregion
 
         #region Public Methods and Operators
-
-        public float HpBarSize { get; }
 
         public float Distance(Hero hero)
         {

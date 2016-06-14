@@ -29,17 +29,21 @@
             menu.AddItem(
                 new MenuItem("enabledAbilitiesAbilityLastHit", "Enabled abilities", true).SetValue(
                     new AbilityToggler(abilties.ToDictionary(x => x, x => true))));
-            var configMenu = new Menu("Config", "abilityLastHitConfig");
-            configMenu.AddItem(new MenuItem("iconSize", "Icon size").SetValue(new Slider(30, 10, 50)));
-            configMenu.AddItem(new MenuItem("yPosition", "Y position").SetValue(new Slider(0, -100)));
+            var settingsMenu = new Menu("Settings", "abilityLastHitSettings");
+            settingsMenu.AddItem(new MenuItem("iconSize", "Icon size").SetValue(new Slider(30, 10, 50)));
+            settingsMenu.AddItem(new MenuItem("yPosition", "Y position").SetValue(new Slider(0, -100)));
+            settingsMenu.AddItem(
+                new MenuItem("autoDisable", "Auto disable after mins").SetValue(new Slider(maxValue: 60)));
 
-            menu.AddSubMenu(configMenu);
+            menu.AddSubMenu(settingsMenu);
             menu.AddToMainMenu();
         }
 
         #endregion
 
         #region Public Properties
+
+        public float AutoDisableTime => menu.Item("autoDisable").GetValue<Slider>().Value;
 
         public bool IsEnabled => menu.Item("enabled").IsActive();
 
@@ -57,6 +61,11 @@
         {
             return
                 menu.Item(heroName + "enabledAbilitiesAbilityLastHit").GetValue<AbilityToggler>().IsEnabled(abilityName);
+        }
+
+        public void Disable()
+        {
+            menu.Item("enabled").SetValue(false).DontSave();
         }
 
         public void OnClose()

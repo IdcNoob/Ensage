@@ -28,6 +28,8 @@
 
         private Hero hero;
 
+        private bool heroMeepo;
+
         private Team heroTeam;
 
         private MenuManager menuManager;
@@ -79,7 +81,7 @@
             var iconSize = menuManager.Size;
             var yPos = menuManager.Yposition;
 
-            foreach (var killable in killableList.Where(x => x.IsValid && x.Distance(hero) < 1000))
+            foreach (var killable in killableList.Where(x => x.IsValid && x.DamageCalculated))
             {
                 var screenPos = HUDInfo.GetHPbarPosition(killable.Unit);
 
@@ -95,12 +97,40 @@
                         .Where(x => availableAbilities.Select(z => z.Handle).Contains(x.Key))
                         .ToDictionary(x => x.Key, x => x.Value);
 
-                if (menuManager.SumEnabled)
+                if (menuManager.SumEnabled && !savedDamages.Any(x => x.Value >= killable.Health))
                 {
                     var abilitiesRequired = 0;
                     var damage = 0f;
 
-                    if (!savedDamages.Any(x => x.Value >= killable.Health))
+                    if (heroMeepo)
+                    {
+                        var poof = availableAbilities.FirstOrDefault();
+
+                        if (poof == null)
+                        {
+                            continue;
+                        }
+
+                        savedDamages.TryGetValue(poof.Handle, out damage);
+                        var availableMeepos =
+                            Heroes.GetByTeam(heroTeam)
+                                .Count(
+                                    x =>
+                                    x.IsValid && !x.IsIllusion && x.ClassID == ClassID.CDOTA_Unit_Hero_Meepo
+                                    && x.IsAlive && x.CanCast() && x.FindSpell("meepo_poof").CanBeCasted());
+
+                        for (var i = 1; i <= availableMeepos; i++)
+                        {
+                            damage *= i;
+                            abilitiesRequired++;
+
+                            if (damage >= killable.Health)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    else
                     {
                         foreach (var availableAbility in availableAbilities)
                         {
@@ -115,23 +145,23 @@
                                 break;
                             }
                         }
+                    }
 
-                        if (damage < killable.Health)
-                        {
-                            continue;
-                        }
-
-                        screenPos += new Vector2((killable.HpBarSize - iconSize * abilitiesRequired) / 2, 0);
-
-                        for (var i = 0; i < abilitiesRequired; i++)
-                        {
-                            Drawing.DrawRect(
-                                screenPos + new Vector2(iconSize * i, 0),
-                                new Vector2(iconSize),
-                                availableAbilities[i].Textre);
-                        }
+                    if (damage < killable.Health)
+                    {
                         continue;
                     }
+
+                    screenPos += new Vector2((killable.HpBarSize - iconSize * abilitiesRequired) / 2, 0);
+
+                    for (var i = 0; i < abilitiesRequired; i++)
+                    {
+                        Drawing.DrawRect(
+                            screenPos + new Vector2(iconSize * i, 0),
+                            new Vector2(iconSize),
+                            availableAbilities[heroMeepo ? 0 : i].Texture);
+                    }
+                    continue;
                 }
 
                 var ability =
@@ -140,21 +170,77 @@
                         x.Handle
                         == savedDamages.OrderBy(z => z.Value).FirstOrDefault(z => z.Value >= killable.Health).Key);
 
+                var drawBorder = false;
+
                 if (ability == null)
+                {
+                    ability =
+                        availableAbilities.FirstOrDefault(
+                            x =>
+                            x.Handle
+                            == savedDamages.OrderBy(z => z.Value)
+                                   .FirstOrDefault(z => z.Value + killable.HeroDamage >= killable.Health)
+                                   .Key);
+
+                    if (ability == null)
+                    {
+                        continue;
+                    }
+
+                    drawBorder = true;
+                }
+
+                var startPosition = screenPos + new Vector2((killable.HpBarSize - iconSize) / 2, 0);
+                Drawing.DrawRect(startPosition, new Vector2(iconSize), ability.Texture);
+
+                //debug
+                //Drawing.DrawText(
+                //    (int)savedDamages.FirstOrDefault(x => ability.Handle == x.Key).Value + " // "
+                //    + (int)killable.HeroDamage,
+                //    "Arial",
+                //    startPosition + new Vector2(0, -30),
+                //    new Vector2(17),
+                //    Color.Yellow,
+                //    FontFlags.None);
+
+                if (!drawBorder)
                 {
                     continue;
                 }
 
+                var color = Color.DarkOrange;
+                var borderSizeReduction = 14;
+
+                // left
                 Drawing.DrawRect(
-                    screenPos + new Vector2((killable.HpBarSize - iconSize) / 2, 0),
-                    new Vector2(iconSize),
-                    ability.Textre);
+                    new Vector2(startPosition.X, startPosition.Y),
+                    new Vector2(iconSize / borderSizeReduction, iconSize),
+                    color);
+
+                // bottom
+                Drawing.DrawRect(
+                    new Vector2(startPosition.X, startPosition.Y + iconSize),
+                    new Vector2(iconSize + iconSize / borderSizeReduction, iconSize / borderSizeReduction),
+                    color);
+
+                // right
+                Drawing.DrawRect(
+                    new Vector2(startPosition.X + iconSize, startPosition.Y),
+                    new Vector2(iconSize / borderSizeReduction, iconSize),
+                    color);
+
+                // top
+                Drawing.DrawRect(
+                    new Vector2(startPosition.X, startPosition.Y),
+                    new Vector2(iconSize, iconSize / borderSizeReduction),
+                    color);
             }
         }
 
         public void OnLoad()
         {
             hero = ObjectManager.LocalHero;
+            heroMeepo = hero.ClassID == ClassID.CDOTA_Unit_Hero_Meepo;
             heroTeam = hero.Team;
 
             foreach (var ability in
@@ -200,10 +286,17 @@
 
             Utils.Sleep(500, "AbilityLastHit.Sleep");
 
-            if (!menuManager.IsEnabled || !hero.IsAlive)
+            if (!menuManager.IsEnabled || !hero.IsAlive || !hero.CanCast() && !heroMeepo)
             {
                 pause = true;
                 return;
+            }
+
+            var autoDisable = menuManager.AutoDisableTime;
+
+            if (autoDisable > 0 && Game.GameTime / 60 >= autoDisable)
+            {
+                menuManager.Disable();
             }
 
             if (pause)
@@ -211,14 +304,88 @@
                 pause = false;
             }
 
-            availableAbilities = abilities.Where(x => menuManager.AbilityActive(x.Name) && x.CanBeCasted).ToList();
+            availableAbilities =
+                abilities.Where(x => menuManager.AbilityActive(x.Name) && (x.CanBeCasted || heroMeepo)).ToList();
 
-            foreach (var killable in killableList.Where(x => x.IsValid && x.Distance(hero) < 2000))
+            //debug
+            //foreach (var creep in
+            //    from source in Creeps.All.Where(x => x.Team != heroTeam && x.IsValid && x.IsAlive && x.IsSpawned)
+            //    let creep = new Classes.Creep(source)
+            //    where !killableList.Select(x => x.Handle).Contains(source.Handle)
+            //    select creep)
+            //{
+            //    killableList.Add(creep);
+            //}
+
+            var myAutoAttackDamage = hero.MinimumDamage + hero.BonusDamage;
+
+            foreach (var killable in killableList.Where(x => x.IsValid && x.Distance(hero) < 1500))
             {
+                var autoAttackDamageDone = killable.Unit.DamageTaken(myAutoAttackDamage, DamageType.Physical, hero);
+
+                var siege = killable.Unit.ClassID == ClassID.CDOTA_BaseNPC_Tower
+                            || killable.Unit.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege;
+
+                if (siege)
+                {
+                    autoAttackDamageDone /= 2;
+                }
+
+                killable.HeroDamage = autoAttackDamageDone;
+
                 foreach (var ability in abilities.Where(x => x.Level > 0))
                 {
                     var creep = killable as Classes.Creep;
-                    creep?.SaveDamage(ability.Handle, AbilityDamage.CalculateDamage(ability.Source, hero, creep.Unit));
+
+                    if (creep != null)
+                    {
+                        var damage = AbilityDamage.CalculateDamage(ability.Source, hero, creep.Unit);
+
+                        switch (ability.Name)
+                        {
+                            case "meepo_poof":
+                                damage *= 2;
+                                break;
+                            case "ember_spirit_sleight_of_fist":
+                                damage = autoAttackDamageDone / 2;
+                                break;
+                            case "templar_assassin_meld":
+                                if (siege)
+                                {
+                                    var armor = new[] { 2, 4, 6, 8 };
+                                    var bonusTemplar = new[] { 50, 100, 150, 200 };
+
+                                    damage =
+                                        killable.Unit.SpellDamageTaken(
+                                            myAutoAttackDamage + bonusTemplar[ability.Level - 1],
+                                            DamageType.Physical,
+                                            hero,
+                                            ability.Name,
+                                            true,
+                                            armor[ability.Level - 1]);
+                                }
+                                break;
+                            case "clinkz_searing_arrows":
+                                var bonusClinkz = new[] { 30, 40, 50, 60 };
+
+                                var tempDamage =
+                                    killable.Unit.SpellDamageTaken(
+                                        myAutoAttackDamage + bonusClinkz[ability.Level - 1],
+                                        DamageType.Physical,
+                                        hero,
+                                        ability.Name,
+                                        true);
+                                if (siege)
+                                {
+                                    tempDamage /= 2;
+                                }
+                                damage = tempDamage;
+
+                                break;
+                        }
+
+                        creep.SaveDamage(ability.Handle, damage);
+                    }
 
                     if (ability.DoesTowerDamage)
                     {
@@ -229,6 +396,8 @@
                             / ability.TowerDamageReduction);
                     }
                 }
+
+                killable.DamageCalculated = true;
             }
         }
 

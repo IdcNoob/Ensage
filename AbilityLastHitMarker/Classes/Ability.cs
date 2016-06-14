@@ -11,7 +11,7 @@
         {
             Source = ability;
             Name = ability.Name;
-            Textre = Drawing.GetTexture("materials/ensage_ui/spellicons/" + Name);
+            Texture = Drawing.GetTexture("materials/ensage_ui/spellicons/" + Name);
             Handle = ability.Handle;
 
             var towerDamageReduction = 0;
@@ -26,8 +26,6 @@
 
         #region Public Properties
 
-        public Ensage.Ability Source { get; }
-
         public bool CanBeCasted => Level > 0 && Source.CanBeCasted();
 
         public bool DoesTowerDamage { get; }
@@ -38,7 +36,9 @@
 
         public string Name { get; }
 
-        public DotaTexture Textre { get; }
+        public Ensage.Ability Source { get; }
+
+        public DotaTexture Texture { get; }
 
         public int TowerDamageReduction { get; }
 
