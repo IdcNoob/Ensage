@@ -42,6 +42,7 @@
             menu.OnProgramStateChange += OnProgramStateChange;
             menu.OnHeroStack += OnHeroStack;
             menu.OnForceAdd += OnForceAdd;
+            menu.OnStacksReset += OnStacksReset;
 
             ignoredUnits.Add(ClassID.CDOTA_Unit_Brewmaster_PrimalEarth);
             ignoredUnits.Add(ClassID.CDOTA_Unit_Brewmaster_PrimalFire);
@@ -68,6 +69,7 @@
                             var unit = args.Entity as Unit;
 
                             if (unit == null || !unit.IsControllable || unit.Team != heroTeam
+                                || (unit.IsIllusion && unit.ClassID != hero.ClassID)
                                 || unit.AttackCapability == AttackCapability.None || ignoredUnits.Contains(unit.ClassID))
                             {
                                 return;
@@ -77,9 +79,9 @@
                             contrallable.OnCampChange += OnCampChange;
                             controllableUnits.Add(contrallable);
                         }
-                        catch (EntityNotFoundException e)
+                        catch (EntityNotFoundException)
                         {
-                            // Console.WriteLine(e);
+                            // ignored
                         }
                     });
         }
@@ -181,7 +183,7 @@
 
             foreach (var camp in
                 jungleCamps.GetCamps.Where(
-                    x => !x.IsCleared && x.CurrentStacksCount < x.RequiredStacksCount && !x.IsStacking)
+                    x => x.RequiredStacksCount > 1 && x.CurrentStacksCount < x.RequiredStacksCount && !x.IsStacking)
                     .OrderByDescending(x => x.Ancients))
             {
                 var unit = controllableUnits.FirstOrDefault(x => x.IsValid && !x.IsStacking && !x.IsHero);
@@ -307,6 +309,11 @@
 
             controllableUnits.ForEach(x => x.OnClose());
             jungleCamps.GetCamps.ForEach(x => x.OnDisable());
+        }
+
+        private void OnStacksReset(object sender, EventArgs e)
+        {
+            jungleCamps.GetCamps.ForEach(x => x.ResetStacks());
         }
 
         #endregion

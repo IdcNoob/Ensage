@@ -105,15 +105,15 @@
 
         public bool EnableHeroStacking { get; set; }
 
-        public uint Handle { get; private set; }
+        public uint Handle { get; }
 
-        public bool IsHero { get; private set; }
+        public bool IsHero { get; }
 
         public bool IsStacking { get; set; }
 
         public bool IsValid => Unit != null && Unit.IsValid && Unit.IsAlive;
 
-        public Unit Unit { get; private set; }
+        public Unit Unit { get; }
 
         #endregion
 
@@ -141,7 +141,7 @@
                     MeasureCampNameTextSize.Y);
 
         private Vector2 MeasureCampNameTextSize
-            => Drawing.MeasureText(CurrentCamp.Name, "Arial", new Vector2(15), FontFlags.None);
+            => Drawing.MeasureText(CurrentCamp.Name, "Arial", new Vector2(16), FontFlags.None);
 
         #endregion
 
@@ -199,11 +199,17 @@
             {
                 return;
             }
+            var text = CurrentCamp.Name;
+
+            if (Debug)
+            {
+                text += " (" + CurrentStatus + ")";
+            }
 
             var campName = new DrawText
                                {
-                                   Position = campNameTextPosition, Text = CurrentCamp.Name, Color = Color.White,
-                                   TextSize = new Vector2(15)
+                                   Position = campNameTextPosition, Text = text, Color = Color.White,
+                                   TextSize = new Vector2(16)
                                };
 
             if (IsUnderCampNameText && !IsHero)
@@ -213,6 +219,8 @@
 
             campName.Draw();
         }
+
+        public static bool Debug { set; get; }
 
         private void Game_OnUpdate(EventArgs args)
         {
@@ -252,6 +260,10 @@
                 case Status.MovingToWaitPosition:
                     if (Unit.Distance2D(CurrentCamp.WaitPosition) > 50)
                     {
+                        if (Unit.NetworkActivity == NetworkActivity.Idle)
+                        {
+                            Unit.Move(CurrentCamp.WaitPosition);
+                        }
                         return;
                     }
                     CurrentStatus = Status.WaitingStackTime;

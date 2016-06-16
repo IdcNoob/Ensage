@@ -147,6 +147,9 @@
         public void OnDisable()
         {
             IsStacking = false;
+        }
+        public void ResetStacks()
+        {
             requiredStacksCount = 1;
         }
 
