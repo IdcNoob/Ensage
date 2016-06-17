@@ -41,7 +41,7 @@
                     "Will add selected unit to controllables. Useful for ally dominated creep with shared control")
                 .ValueChanged += OnMenuForceAdd;
             menu.AddItem(new MenuItem("debug", "Debug").SetValue(false))
-                .SetTooltip("Will show illusion status")
+                .SetTooltip("Will show unit status")
                 .ValueChanged += OnDebugChange;
 
             menu.AddToMainMenu();

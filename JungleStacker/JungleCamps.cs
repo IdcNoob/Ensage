@@ -117,7 +117,7 @@
                         {
                             OverlayPosition = new Vector3(4200, -400, 256), CampPosition = new Vector3(3968, -703, 256),
                             StackPosition = new Vector3(2493, -1059, 256), WaitPosition = new Vector3(3694, -852, 127),
-                            Id = 13, StackTime = 53, Team = Team.Dire, Ancients = true, Name = "Ancients Camp"
+                            Id = 13, StackTime = 55, Team = Team.Dire, Ancients = true, Name = "Ancients Camp"
                         });
                 camps.Add(
                     new Camp

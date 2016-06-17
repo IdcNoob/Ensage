@@ -149,7 +149,7 @@
                                        ? 10
                                        : hero.ClassID == ClassID.CDOTA_Unit_Hero_Invoker ? 7 : 4;
 
-                    if (abilityLevel >= maxLevel || heroLevel < abilityLevel * 2 + 1)
+                    if (abilityLevel >= maxLevel || heroLevel <= abilityLevel * 2)
                     {
                         return false;
                     }
@@ -170,7 +170,7 @@
 
             var abilityLevel = ability.Level;
 
-            var otherNotLockedAbilities =
+            var otherNotLockedAbility =
                 learnableAbilities.Any(
                     x =>
                     !x.Equals(ability) && x.AbilityType != AbilityType.Attribute
@@ -179,7 +179,7 @@
                     && !menuManager.AbilityFullyLocked(x.StoredName()));
 
             return abilityLevel >= lockLevel
-                   && (otherNotLockedAbilities || menuManager.AbilityFullyLocked(ability.StoredName()));
+                   && (otherNotLockedAbility || menuManager.AbilityFullyLocked(ability.StoredName()));
         }
 
         #endregion

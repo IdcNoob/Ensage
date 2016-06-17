@@ -56,7 +56,7 @@
         public void OnAddEntity(EntityEventArgs args)
         {
             DelayAction.Add(
-                300f + Game.Ping,
+                1000f + Game.Ping,
                 () =>
                     {
                         if (!inGame)
