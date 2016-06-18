@@ -189,27 +189,35 @@
                     return;
                 }
 
-                var creep =
+                var hitTarget =
+                    (Unit)
                     Creeps.All.OrderBy(x => x.Distance2D(Game.MousePosition))
                         .FirstOrDefault(
-                            x => x.Team != heroTeam && x.IsSpawned && x.IsVisible && x.Distance2D(hero) < 2000);
+                            x =>
+                            x.Team != heroTeam && x.IsSpawned && x.IsVisible && x.Distance2D(hero) < 2000
+                            && x.Distance2D(Game.MousePosition) < 250)
+                    ?? Heroes.All.OrderBy(x => x.Distance2D(Game.MousePosition))
+                           .FirstOrDefault(
+                               x =>
+                               x.Team != heroTeam && x.IsVisible && x.Distance2D(hero) < 2000
+                               && x.Distance2D(Game.MousePosition) < 250);
 
                 if (xReturn.CanBeCasted && !blink.CanBeCasted()
-                    && (creep == null || !creep.IsAlive || tideBringer.Casted))
+                    && (hitTarget == null || !hitTarget.IsAlive || tideBringer.Casted))
                 {
                     xReturn.UseAbility();
                     Utils.Sleep(500, "Kunkka.Sleep");
                     return;
                 }
 
-                if (creep == null || !creep.IsAlive)
+                if (hitTarget == null || !hitTarget.IsAlive)
                 {
                     return;
                 }
 
-                if (creep.Distance2D(hero) > 1200)
+                if (hitTarget.Distance2D(hero) > 1200)
                 {
-                    hero.Move(creep.Position);
+                    hero.Move(hitTarget.Position);
                     Utils.Sleep(500, "Kunkka.Sleep");
                     return;
                 }
@@ -223,8 +231,8 @@
 
                 if (blink.CanBeCasted() && hero.HasModifier("modifier_kunkka_x_marks_the_spot"))
                 {
-                    blink.UseAbility(creep.Position.Extend(hero.Position, hero.AttackRange));
-                    hero.Attack(creep, true);
+                    blink.UseAbility(hitTarget.Position.Extend(hero.Position, hero.AttackRange));
+                    hero.Attack(hitTarget, true);
                     Utils.Sleep(400, "Kunkka.Sleep");
                     return;
                 }
