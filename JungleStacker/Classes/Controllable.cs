@@ -156,6 +156,12 @@
             Game.OnWndProc -= Game_OnWndProc;
         }
 
+        public void OnDisable()
+        {
+            IsStacking = false;
+            CurrentStatus = Status.Idle;
+        }
+
         public void Stack(Camp camp, int delay = 0)
         {
             CurrentCamp = camp;
@@ -233,7 +239,7 @@
 
             var gameTime = Game.GameTime;
 
-            if (Game.IsPaused || pause > gameTime || (!EnableHeroStacking && IsHero))
+            if (Game.IsPaused || pause > gameTime || (!EnableHeroStacking && IsHero) || !IsStacking)
             {
                 return;
             }

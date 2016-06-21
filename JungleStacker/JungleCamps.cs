@@ -70,7 +70,7 @@
                 camps.Add(
                     new Camp
                         {
-                            OverlayPosition = new Vector3(-3300, 825, 384), CampPosition = new Vector3(-3829, 650, 384),
+                            OverlayPosition = new Vector3(-3300, 825, 384), CampPosition = new Vector3(-3701, 705, 384),
                             StackPosition = new Vector3(-3893, -737, 384), WaitPosition = new Vector3(-4016, 589, 384),
                             Id = 7, StackTime = 53, Team = Team.Radiant, Ancients = true, Name = "Secret Hard Camp"
                         });

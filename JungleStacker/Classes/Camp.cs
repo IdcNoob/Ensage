@@ -65,6 +65,8 @@
 
         #region Public Properties
 
+        public static bool Debug { set; get; }
+
         public static bool DisplayOverlay { get; set; } = true;
 
         public int CurrentStacksCount { get; set; } = 0;
@@ -148,6 +150,7 @@
         {
             IsStacking = false;
         }
+
         public void ResetStacks()
         {
             requiredStacksCount = 1;
@@ -220,9 +223,16 @@
                 new Color(0, 0, 0, 175),
                 true);
 
+            var campName = Name;
+
+            if (Debug)
+            {
+                campName += " ID: " + Id;
+            }
+
             // 1st line
             Drawing.DrawText(
-                Name,
+                campName,
                 new Vector2(position.X - 30 + GetCampNamePosition, position.Y - 3),
                 new Vector2(15),
                 nameColor,

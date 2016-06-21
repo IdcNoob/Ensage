@@ -28,8 +28,6 @@
 
         private bool inGame;
 
-        private bool isEnabled;
-
         private JungleCamps jungleCamps;
 
         #endregion
@@ -56,7 +54,7 @@
         public void OnAddEntity(EntityEventArgs args)
         {
             DelayAction.Add(
-                1000f + Game.Ping,
+                1000f,
                 () =>
                     {
                         if (!inGame)
@@ -90,7 +88,14 @@
         {
             inGame = false;
             jungleCamps.OnClose();
-            controllableUnits.ForEach(x => x.OnClose());
+
+            foreach (var unit in controllableUnits)
+            {
+                unit.OnCampChange -= OnCampChange;
+                unit.OnClose();
+            }
+
+            controllableUnits.Clear();
         }
 
         public void OnExecuteAction(Ability ability, Entity entity)
@@ -112,7 +117,7 @@
                 || ability.ClassID == ClassID.CDOTA_Ability_Enchantress_Enchant)
             {
                 DelayAction.Add(
-                    (float)ability.FindCastPoint() * 1000 + 300 + Game.Ping,
+                    1000f,
                     () =>
                         {
                             if (inGame && target.IsControllable)
@@ -132,7 +137,7 @@
             heroTeam = hero.Team;
             jungleCamps = new JungleCamps(heroTeam);
             Camp.DisplayOverlay = menu.IsEnabled;
-            isEnabled = menu.IsEnabled;
+            Camp.Debug = Controllable.Debug = menu.IsDebugEnabled;
             controllableUnits.Add(new Controllable(hero, true));
         }
 
@@ -164,7 +169,7 @@
                 return;
             }
 
-            if (Game.IsPaused || !isEnabled)
+            if (Game.IsPaused || !menu.IsEnabled)
             {
                 Ensage.Common.Utils.Sleep(1000, "JungleStacking.Sleep");
                 return;
@@ -298,16 +303,14 @@
         private void OnProgramStateChange(object sender, MenuArgs args)
         {
             var enabled = args.Enabled;
-
             Camp.DisplayOverlay = enabled;
-            isEnabled = enabled;
 
             if (enabled)
             {
                 return;
             }
 
-            controllableUnits.ForEach(x => x.OnClose());
+            controllableUnits.ForEach(x => x.OnDisable());
             jungleCamps.GetCamps.ForEach(x => x.OnDisable());
         }
 

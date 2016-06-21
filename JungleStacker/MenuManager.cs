@@ -17,9 +17,17 @@
 
     internal class MenuManager
     {
+        #region Static Fields
+
+        private static MenuItem debug;
+
+        private static MenuItem enabled;
+
+        #endregion
+
         #region Fields
 
-        private readonly Menu menu;
+        private readonly Menu menu = new Menu("Jungle Stacker", "jungleStacker", true);
 
         #endregion
 
@@ -27,8 +35,8 @@
 
         public MenuManager()
         {
-            menu = new Menu("Jungle Stacker", "jungleStacker", true);
-            menu.AddItem(new MenuItem("enableKey", "Enabled").SetValue(new KeyBind('P', KeyBindType.Toggle, true)))
+            menu.AddItem(
+                enabled = new MenuItem("enableKey", "Enabled").SetValue(new KeyBind('P', KeyBindType.Toggle, true)))
                 .ValueChanged += OnStateChange;
             menu.AddItem(new MenuItem("resetKey", "Reset stacks").SetValue(new KeyBind('0', KeyBindType.Press)))
                 .SetTooltip("Set required stacks count to 1")
@@ -40,8 +48,8 @@
                 .SetTooltip(
                     "Will add selected unit to controllables. Useful for ally dominated creep with shared control")
                 .ValueChanged += OnMenuForceAdd;
-            menu.AddItem(new MenuItem("debug", "Debug").SetValue(false))
-                .SetTooltip("Will show unit status")
+            menu.AddItem(debug = new MenuItem("debug", "Debug").SetValue(false))
+                .SetTooltip("Shows more information for debugging")
                 .ValueChanged += OnDebugChange;
 
             menu.AddToMainMenu();
@@ -63,7 +71,9 @@
 
         #region Public Properties
 
-        public bool IsEnabled => menu.Item("enableKey").IsActive();
+        public bool IsDebugEnabled => debug.IsActive();
+
+        public bool IsEnabled => enabled.IsActive();
 
         #endregion
 
@@ -71,7 +81,7 @@
 
         private static void OnDebugChange(object sender, OnValueChangeEventArgs arg)
         {
-            Controllable.Debug = arg.GetNewValue<bool>();
+            Camp.Debug = Controllable.Debug = arg.GetNewValue<bool>();
         }
 
         private void OnHeroStackEabled(object sender, OnValueChangeEventArgs arg)
