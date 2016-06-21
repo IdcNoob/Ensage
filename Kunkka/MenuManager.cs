@@ -6,6 +6,10 @@
     {
         #region Fields
 
+        private readonly MenuItem autoReturn;
+
+        private readonly MenuItem enabled;
+
         private readonly Menu menu;
 
         #endregion
@@ -16,17 +20,22 @@
         {
             menu = new Menu("Kunkka", "kunkka", true, heroName, true);
 
-            menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
-            menu.AddItem(new MenuItem("autoReturn", "Auto return").SetValue(true))
+            menu.AddItem(enabled = new MenuItem("enabled", "Enabled").SetValue(true));
+            menu.AddItem(autoReturn = new MenuItem("autoReturn", "Auto return").SetValue(true))
                 .SetTooltip("Will auto return enemy on Torrent, Arrow or Hook");
             menu.AddItem(new MenuItem("combo", "Combo").SetValue(new KeyBind('D', KeyBindType.Press)))
-                .SetTooltip("X Mark => Torrent => Return");
+                .SetTooltip("X Mark => Torrent => Return")
+                .ValueChanged += (sender, arg) => { ComboEnabled = arg.GetNewValue<KeyBind>().Active; };
             menu.AddItem(new MenuItem("fullCombo", "Full combo").SetValue(new KeyBind('F', KeyBindType.Press)))
-                .SetTooltip("X Mark => Ghost Ship => Torrent => Return");
+                .SetTooltip("X Mark => Ghost Ship => Torrent => Return")
+                .ValueChanged +=
+                (sender, arg) => { ComboEnabled = FullComboEnabled = arg.GetNewValue<KeyBind>().Active; };
             menu.AddItem(new MenuItem("tpHome", "X home").SetValue(new KeyBind('G', KeyBindType.Press)))
-                .SetTooltip("X Mark on self => Teleport to base");
+                .SetTooltip("X Mark on self => Teleport to base")
+                .ValueChanged += (sender, arg) => { TpHomeEanbled = arg.GetNewValue<KeyBind>().Active; };
             menu.AddItem(new MenuItem("hitRun", "Hit & run").SetValue(new KeyBind('H', KeyBindType.Press)))
-                .SetTooltip("X Mark on self => Dagger => Hit Creep => Return");
+                .SetTooltip("X Mark on self => Dagger => Hit Creep => Return")
+                .ValueChanged += (sender, arg) => { HitAndRunEnabled = arg.GetNewValue<KeyBind>().Active; };
 
             menu.AddToMainMenu();
         }
@@ -35,18 +44,17 @@
 
         #region Public Properties
 
-        public bool AutoReturnEnabled => menu.Item("autoReturn").GetValue<bool>();
+        public bool AutoReturnEnabled => autoReturn.GetValue<bool>();
 
-        public bool ComboEnabled
-            => menu.Item("combo").GetValue<KeyBind>().Active || menu.Item("fullCombo").GetValue<KeyBind>().Active;
+        public bool ComboEnabled { get; private set; }
 
-        public bool FullComboEnabled => menu.Item("fullCombo").GetValue<KeyBind>().Active;
+        public bool FullComboEnabled { get; private set; }
 
-        public bool HitAndRunEnabled => menu.Item("hitRun").GetValue<KeyBind>().Active;
+        public bool HitAndRunEnabled { get; private set; }
 
-        public bool IsEnabled => menu.Item("enabled").GetValue<bool>();
+        public bool IsEnabled => enabled.GetValue<bool>();
 
-        public bool TpHomeEanbled => menu.Item("tpHome").GetValue<KeyBind>().Active;
+        public bool TpHomeEanbled { get; private set; }
 
         #endregion
 
