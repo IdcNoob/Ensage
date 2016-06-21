@@ -348,15 +348,6 @@
                                : Unit.Distance2D(targetPosition) / Unit.MovementSpeed)
                         + Unit.GetTurnTime(targetPosition) >= CurrentCamp.StackTime)
                     {
-                        Console.WriteLine(
-                            CurrentCamp.Name + " => "
-                            + (CurrentCamp.CurrentStacksCount >= CurrentCamp.StackCountTimeAdjustment
-                                   ? Math.Min(
-                                       CurrentCamp.MaxTimeAdjustment,
-                                       CurrentCamp.CurrentStacksCount - CurrentCamp.StackCountTimeAdjustment
-                                       + CurrentCamp.TimeAdjustment)
-                                   : 0));
-
                         if (attackTarget)
                         {
                             Unit.Attack(target);
