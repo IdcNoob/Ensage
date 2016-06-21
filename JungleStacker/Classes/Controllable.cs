@@ -7,6 +7,7 @@
     using Ensage;
     using Ensage.Common;
     using Ensage.Common.Extensions;
+    using Ensage.Common.Extensions.SharpDX;
     using Ensage.Common.Objects;
     using Ensage.Common.Objects.DrawObjects;
 
@@ -14,26 +15,21 @@
 
     using SharpDX;
 
-    internal class CampArgs : EventArgs
-    {
-        #region Fields
-
-        public List<Camp> BlockedCamps = new List<Camp>();
-
-        #endregion
-
-        #region Public Properties
-
-        public Controllable Controllable { get; set; }
-
-        #endregion
-    }
-
     internal class Controllable
     {
         #region Fields
 
         public readonly List<Camp> BlockedCamps = new List<Camp>();
+
+        private readonly float attackAnimationPoint;
+
+        private readonly uint attackRange;
+
+        private readonly float attackRate;
+
+        private readonly bool isRanged;
+
+        private readonly double projectileSpeed;
 
         private float attackTime;
 
@@ -41,15 +37,15 @@
 
         private Vector2 campNameTextPosition;
 
-        private uint health;
-
         private float hPBarSizeX;
 
-        private bool isRanged;
+        private uint lastHealth;
 
         private float pause;
 
         private bool registered;
+
+        private Vector3 targetPosition;
 
         #endregion
 
@@ -60,13 +56,37 @@
             Handle = unit.Handle;
             Unit = unit;
             IsHero = isHero;
+            if (Unit.AttackCapability == AttackCapability.Ranged)
+            {
+                isRanged = true;
+                projectileSpeed =
+                    Game.FindKeyValues(
+                        unit.Name + "/ProjectileSpeed",
+                        unit is Hero ? KeyValueSource.Hero : KeyValueSource.Unit).IntValue;
+                attackAnimationPoint =
+                    Game.FindKeyValues(
+                        unit.Name + "/AttackAnimationPoint",
+                        unit is Hero ? KeyValueSource.Hero : KeyValueSource.Unit).FloatValue;
+                attackRate =
+                    Game.FindKeyValues(
+                        unit.Name + "/AttackRate",
+                        unit is Hero ? KeyValueSource.Hero : KeyValueSource.Unit).FloatValue;
+                if (attackRate <= 0)
+                {
+                    attackRate =
+                        Game.FindKeyValues(
+                            unit.Name + "/AttackRate",
+                            unit is Hero ? KeyValueSource.Hero : KeyValueSource.Unit).IntValue;
+                }
+                attackRange = unit.AttackRange;
+            }
         }
 
         #endregion
 
         #region Public Events
 
-        public event EventHandler<CampArgs> OnCampChange;
+        public event EventHandler OnCampChange;
 
         #endregion
 
@@ -88,9 +108,13 @@
 
             WaitingOnStackPositionToPreventBlock,
 
+            WaitingOnStackPositionToDropAggro,
+
             TryingToCheckStacks,
 
             PreventCampBlock,
+
+            DropAggro,
 
             Done
         }
@@ -98,6 +122,8 @@
         #endregion
 
         #region Public Properties
+
+        public static bool Debug { set; get; }
 
         public Camp CurrentCamp { get; private set; }
 
@@ -112,6 +138,18 @@
         public bool IsStacking { get; set; }
 
         public bool IsValid => Unit != null && Unit.IsValid && Unit.IsAlive;
+
+        public float Pause
+        {
+            get
+            {
+                return pause;
+            }
+            set
+            {
+                pause = Game.GameTime + value;
+            }
+        }
 
         public Unit Unit { get; }
 
@@ -168,9 +206,9 @@
             CurrentCamp.IsStacking = true;
             IsStacking = true;
             CurrentStatus = Status.Idle;
-            isRanged = Unit.AttackCapability == AttackCapability.Ranged;
             campAvailable = false;
-            pause = Game.GameTime + delay;
+            Pause = delay;
+            lastHealth = Unit.Health;
 
             if (!registered)
             {
@@ -184,12 +222,6 @@
         #endregion
 
         #region Methods
-
-        protected virtual void OnMenuChanged(List<Camp> camps, Controllable cntrollable)
-        {
-            var onCampChange = OnCampChange;
-            onCampChange?.Invoke(this, new CampArgs { BlockedCamps = camps, Controllable = cntrollable });
-        }
 
         private void Drawing_OnDraw(EventArgs args)
         {
@@ -226,8 +258,6 @@
             campName.Draw();
         }
 
-        public static bool Debug { set; get; }
-
         private void Game_OnUpdate(EventArgs args)
         {
             if (!Utils.SleepCheck("JungleStacking.Stack." + Handle))
@@ -239,7 +269,7 @@
 
             var gameTime = Game.GameTime;
 
-            if (Game.IsPaused || pause > gameTime || (!EnableHeroStacking && IsHero) || !IsStacking)
+            if (Game.IsPaused || Pause > gameTime || (!EnableHeroStacking && IsHero) || !IsStacking)
             {
                 return;
             }
@@ -250,6 +280,7 @@
                 {
                     return;
                 }
+
                 CurrentStatus = Status.Done;
                 CurrentCamp.IsStacking = false;
                 IsStacking = false;
@@ -281,6 +312,14 @@
                         return;
                     }
 
+                    if (Unit.Health < lastHealth && Unit.NetworkActivity == NetworkActivity.Idle)
+                    {
+                        CurrentStatus = Status.DropAggro;
+                        return;
+                    }
+
+                    lastHealth = Unit.Health;
+
                     var seconds = gameTime % 60;
                     if (seconds >= 57)
                     {
@@ -293,21 +332,40 @@
                                 x =>
                                 x.Distance2D(Unit) <= 600 && x.IsSpawned && x.IsAlive && x.IsNeutral && !x.Equals(Unit));
 
-                    if (seconds + (CurrentCamp.CurrentStacksCount >= 3 ? 1 : 0)
-                        + (isRanged && target != null
-                               ? Unit.AttacksPerSecond
-                               : CurrentCamp.CampPosition.Distance2D(Unit) / Unit.MovementSpeed)
-                        >= CurrentCamp.StackTime)
+                    var attackTarget = isRanged && target != null;
+                    targetPosition = target?.Position.Extend(Unit.Position, 50) ?? CurrentCamp.CampPosition;
+
+                    if (seconds
+                        + (CurrentCamp.CurrentStacksCount >= CurrentCamp.StackCountTimeAdjustment
+                               ? Math.Min(
+                                   CurrentCamp.MaxTimeAdjustment,
+                                   CurrentCamp.CurrentStacksCount - CurrentCamp.StackCountTimeAdjustment
+                                   + CurrentCamp.TimeAdjustment)
+                               : 0)
+                        + (attackTarget
+                               ? GetAttackPoint() + Unit.Distance2D(target) / projectileSpeed + Unit.GetTurnTime(target)
+                                 + Math.Max(0, Unit.Distance2D(target) - attackRange) / Unit.MovementSpeed
+                               : Unit.Distance2D(targetPosition) / Unit.MovementSpeed)
+                        + Unit.GetTurnTime(targetPosition) >= CurrentCamp.StackTime)
                     {
-                        if (target != null && isRanged)
+                        Console.WriteLine(
+                            CurrentCamp.Name + " => "
+                            + (CurrentCamp.CurrentStacksCount >= CurrentCamp.StackCountTimeAdjustment
+                                   ? Math.Min(
+                                       CurrentCamp.MaxTimeAdjustment,
+                                       CurrentCamp.CurrentStacksCount - CurrentCamp.StackCountTimeAdjustment
+                                       + CurrentCamp.TimeAdjustment)
+                                   : 0));
+
+                        if (attackTarget)
                         {
                             Unit.Attack(target);
                         }
                         else
                         {
-                            Unit.Move(CurrentCamp.CampPosition);
+                            Unit.Move(targetPosition);
                         }
-                        health = Unit.Health;
+
                         CurrentStatus = Status.MovingToCampPosition;
                     }
                     return;
@@ -315,8 +373,21 @@
                     Unit.Move(CurrentCamp.StackPosition);
                     CurrentStatus = Status.WaitingOnStackPositionToPreventBlock;
                     return;
+                case Status.DropAggro:
+                    Unit.Move(CurrentCamp.StackPosition);
+                    CurrentStatus = Status.WaitingOnStackPositionToDropAggro;
+                    Pause = CurrentCamp.StackPosition.Distance2D(Unit) / Unit.MovementSpeed
+                            + Math.Min(6, CurrentCamp.CurrentStacksCount + 2);
+                    return;
+                case Status.WaitingOnStackPositionToDropAggro:
+                    if (CurrentCamp.StackPosition.Distance2D(Unit) < 50)
+                    {
+                        lastHealth = Unit.Health;
+                        CurrentStatus = Status.Idle;
+                    }
+                    return;
                 case Status.MovingToCampPosition:
-                    if (Unit.Health < health)
+                    if (Unit.Health < lastHealth)
                     {
                         Unit.Move(CurrentCamp.StackPosition);
                         CurrentStatus = Status.MovingToStackPosition;
@@ -327,17 +398,14 @@
                         {
                             attackTime = gameTime;
                         }
-                        else if (attackTime > 0 && gameTime >= Unit.AttacksPerSecond / 2 + attackTime)
-                            //else if (this.attackTime > 0
-                            //         && gameTime
-                            //         >= this.Unit.SecondsPerAttack - this.Unit.BaseAttackTime / 3 + this.attackTime)
+                        else if (attackTime > 0 && gameTime >= attackTime + GetAttackPoint())
                         {
                             attackTime = 0;
                             Unit.Move(CurrentCamp.StackPosition);
                             CurrentStatus = Status.MovingToStackPosition;
                         }
                     }
-                    else if (Unit.Distance2D(CurrentCamp.CampPosition) < 50)
+                    else if (Unit.Distance2D(targetPosition) < 50)
                     {
                         Unit.Move(CurrentCamp.StackPosition);
                         CurrentStatus = Status.MovingToStackPosition;
@@ -347,6 +415,8 @@
                     if (CurrentCamp.StackPosition.Distance2D(Unit) < 50)
                     {
                         CurrentStatus = Status.WaitingOnStackPosition;
+                        Pause = CurrentCamp.StackPosition.Distance2D(Unit) / Unit.MovementSpeed
+                                + Math.Min(6, CurrentCamp.CurrentStacksCount + 2);
                     }
                     return;
                 case Status.WaitingOnStackPositionToPreventBlock:
@@ -356,13 +426,10 @@
                     }
                     return;
                 case Status.WaitingOnStackPosition:
-                    var time = gameTime % 60;
-                    if (time > 5 && time < 10)
-                    {
-                        Unit.Move(CurrentCamp.WaitPosition);
-                        CurrentCamp.CurrentStacksCount++;
-                        CurrentStatus = Status.TryingToCheckStacks;
-                    }
+                    Unit.Move(CurrentCamp.WaitPosition);
+                    CurrentCamp.CurrentStacksCount++;
+                    CurrentStatus = Status.TryingToCheckStacks;
+                    lastHealth = Unit.Health;
                     return;
                 case Status.TryingToCheckStacks:
                     if (Unit.Distance2D(CurrentCamp.WaitPosition) < 50)
@@ -370,7 +437,7 @@
                         CurrentCamp.CurrentStacksCount =
                             Creeps.All.Where(
                                 x =>
-                                x.Distance2D(CurrentCamp.CampPosition) < 1000 && x.IsSpawned && x.IsNeutral
+                                x.Distance2D(CurrentCamp.CampPosition) < 800 && x.IsSpawned && x.IsNeutral
                                 && !x.Equals(Unit)).ToList().CountStacks();
 
                         if (CurrentCamp.CurrentStacksCount >= CurrentCamp.RequiredStacksCount)
@@ -394,6 +461,7 @@
             {
                 return;
             }
+
             if (IsHero && args.Msg == (ulong)Utils.WindowsMessages.WM_RBUTTONDOWN)
             {
                 IsStacking = false;
@@ -403,11 +471,23 @@
 
             if (!IsHero && args.Msg == (ulong)Utils.WindowsMessages.WM_LBUTTONDOWN && IsUnderCampNameText)
             {
-                BlockedCamps.Add(CurrentCamp);
-                IsStacking = false;
-                CurrentCamp.IsStacking = false;
-                OnMenuChanged(BlockedCamps, this);
+                OnCampBlock();
             }
+        }
+
+        private double GetAttackPoint()
+        {
+            return attackAnimationPoint / (1 + (Unit.AttacksPerSecond * attackRate / 0.01 - 100) / 100);
+        }
+
+        private void OnCampBlock()
+        {
+            BlockedCamps.Add(CurrentCamp);
+            IsStacking = false;
+            CurrentCamp.IsStacking = false;
+
+            var onCampChange = OnCampChange;
+            onCampChange?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

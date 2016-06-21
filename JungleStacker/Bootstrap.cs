@@ -61,7 +61,7 @@
 
         private void Player_OnExecuteAction(Player sender, ExecuteOrderEventArgs args)
         {
-            jungleStacker.OnExecuteAction(args.Ability, args.Target);
+            jungleStacker.OnExecuteAction(args);
         }
 
         #endregion

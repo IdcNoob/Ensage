@@ -22,6 +22,8 @@
 
         private readonly MenuManager menu = new MenuManager();
 
+        private Unit delayedUnit;
+
         private Hero hero;
 
         private Team heroTeam;
@@ -98,14 +100,33 @@
             controllableUnits.Clear();
         }
 
-        public void OnExecuteAction(Ability ability, Entity entity)
+        public void OnExecuteAction(ExecuteOrderEventArgs args)
         {
+            var order = args.Order;
+
+            if (order == Order.Hold)
+            {
+                var selected = hero.Player.Selection.FirstOrDefault() as Unit;
+                if (selected == null || selected.Equals(hero))
+                {
+                    return;
+                }
+
+                var controlable = controllableUnits.FirstOrDefault(x => x.Handle == selected.Handle);
+                if (controlable != null)
+                {
+                    controlable.Pause = 3;
+                }
+            }
+
+            var ability = args.Ability;
+
             if (ability == null)
             {
                 return;
             }
 
-            var target = entity as Unit;
+            var target = args.Target as Unit;
 
             if (target == null)
             {
@@ -116,17 +137,7 @@
                 || ability.ClassID == ClassID.CDOTA_Ability_Chen_HolyPersuasion
                 || ability.ClassID == ClassID.CDOTA_Ability_Enchantress_Enchant)
             {
-                DelayAction.Add(
-                    1000f,
-                    () =>
-                        {
-                            if (inGame && target.IsControllable)
-                            {
-                                var unit = new Controllable(target);
-                                unit.OnCampChange += OnCampChange;
-                                controllableUnits.Add(unit);
-                            }
-                        });
+                delayedUnit = target;
             }
         }
 
@@ -186,6 +197,14 @@
                 }
             }
 
+            if (delayedUnit != null && delayedUnit.IsControllable)
+            {
+                var unit = new Controllable(delayedUnit);
+                unit.OnCampChange += OnCampChange;
+                controllableUnits.Add(unit);
+                delayedUnit = null;
+            }
+
             foreach (var camp in
                 jungleCamps.GetCamps.Where(
                     x => x.RequiredStacksCount > 1 && x.CurrentStacksCount < x.RequiredStacksCount && !x.IsStacking)
@@ -241,35 +260,41 @@
 
         #region Methods
 
-        private void OnCampChange(object sender, CampArgs args)
+        private void ChangeCamp(Controllable controllable, Camp camp)
         {
-            var blockedCamps = args.BlockedCamps;
-            var contrallable = args.Controllable;
-
-            var allCamps =
-                jungleCamps.GetCamps.Where(x => !x.IsCleared && x.CurrentStacksCount < x.RequiredStacksCount)
-                    .OrderByDescending(x => x.Ancients);
-
-            var nextCamp = allCamps.FirstOrDefault(x => !blockedCamps.Contains(x));
-
-            if (nextCamp != null)
+            if (camp.IsStacking)
             {
-                if (nextCamp.IsStacking)
-                {
-                    var change = controllableUnits.FirstOrDefault(x => x.CurrentCamp == nextCamp);
-                    change?.Stack(blockedCamps.Last(), 2);
-                }
+                var usedControllable = controllableUnits.FirstOrDefault(x => x.CurrentCamp == camp);
+                usedControllable?.Stack(controllable.BlockedCamps.Last(), 2);
+            }
 
-                contrallable.Stack(nextCamp, 2);
+            controllable.Stack(camp, 2);
+        }
+
+        private void OnCampChange(object sender, EventArgs e)
+        {
+            var contrallable = sender as Controllable;
+
+            if (contrallable == null)
+            {
                 return;
             }
 
-            var available = allCamps.FirstOrDefault(x => !x.IsStacking);
+            var allCamps =
+                jungleCamps.GetCamps.Where(
+                    x => x.RequiredStacksCount > 1 && x.CurrentStacksCount < x.RequiredStacksCount)
+                    .OrderByDescending(x => x.Ancients);
 
-            if (available != null)
+            var nextCamp = allCamps.FirstOrDefault(x => !contrallable.BlockedCamps.Contains(x));
+
+            if (nextCamp != null)
             {
+                ChangeCamp(contrallable, nextCamp);
+            }
+            else
+            {
+                ChangeCamp(contrallable, contrallable.BlockedCamps.First());
                 contrallable.BlockedCamps.Clear();
-                contrallable.Stack(available, 2);
             }
         }
 

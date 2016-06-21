@@ -75,6 +75,8 @@
 
         public bool IsStacking { get; set; }
 
+        public double MaxTimeAdjustment { get; set; }
+
         public Vector3 OverlayPosition { get; set; }
 
         public int RequiredStacksCount
@@ -89,6 +91,10 @@
                 requiredStacksCount = value > 9 ? 1 : value < 1 ? 9 : value;
             }
         }
+
+        public int StackCountTimeAdjustment { get; internal set; }
+
+        public double TimeAdjustment { get; set; }
 
         #endregion
 
