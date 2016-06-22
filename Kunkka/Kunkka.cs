@@ -20,6 +20,12 @@
 
         private readonly List<IAbility> allSpells = new List<IAbility>();
 
+        private readonly List<Vector3> runePositions = new List<Vector3>
+                                                           {
+                                                               new Vector3(-2257, 1661, 128),
+                                                               new Vector3(2798, -2232, 128),
+                                                           };
+
         private bool arrowCasted;
 
         private double arrowHitTime;
@@ -236,6 +242,25 @@
                     Utils.Sleep(400, "Kunkka.Sleep");
                     return;
                 }
+            }
+
+            if (menuManager.TorrentOnRuneEnabled)
+            {
+                if (Game.GameTime % 120 < 119.5 - torrent.AdditionalDelay - Game.Ping / 1000 || !torrent.CanBeCasted)
+                {
+                    return;
+                }
+
+                var rune = runePositions.OrderBy(x => x.Distance2D(hero)).First();
+
+                if (rune.Distance2D(hero) > torrent.CastRange)
+                {
+                    return;
+                }
+
+                torrent.UseAbility(rune);
+                Utils.Sleep(torrent.GetSleepTime, "Kunkka.Sleep");
+                return;
             }
 
             if (menuManager.ComboEnabled)

@@ -34,8 +34,11 @@
                 .SetTooltip("X Mark on self => Teleport to base")
                 .ValueChanged += (sender, arg) => { TpHomeEanbled = arg.GetNewValue<KeyBind>().Active; };
             menu.AddItem(new MenuItem("hitRun", "Hit & run").SetValue(new KeyBind('H', KeyBindType.Press)))
-                .SetTooltip("X Mark on self => Dagger => Hit Creep => Return")
+                .SetTooltip("X Mark on self => Dagger => Hit => Return")
                 .ValueChanged += (sender, arg) => { HitAndRunEnabled = arg.GetNewValue<KeyBind>().Active; };
+            menu.AddItem(new MenuItem("torrentRune", "Torrent on rune").SetValue(new KeyBind('J', KeyBindType.Press)))
+                .SetTooltip("Will cast torrent at rune's position, right before spawn")
+                .ValueChanged += (sender, arg) => { TorrentOnRuneEnabled = arg.GetNewValue<KeyBind>().Active; };
 
             menu.AddToMainMenu();
         }
@@ -53,6 +56,8 @@
         public bool HitAndRunEnabled { get; private set; }
 
         public bool IsEnabled => enabled.GetValue<bool>();
+
+        public bool TorrentOnRuneEnabled { get; private set; }
 
         public bool TpHomeEanbled { get; private set; }
 
