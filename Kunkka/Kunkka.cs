@@ -246,7 +246,10 @@
 
             if (menuManager.TorrentOnRuneEnabled)
             {
-                if (Game.GameTime % 120 < 119.5 - torrent.AdditionalDelay - Game.Ping / 1000 || !torrent.CanBeCasted)
+                var gameTime = Game.GameTime;
+
+                if (gameTime % 120 < (gameTime > 0 ? 119.5 : -0.5) - torrent.AdditionalDelay - Game.Ping / 1000
+                    || !torrent.CanBeCasted)
                 {
                     return;
                 }
