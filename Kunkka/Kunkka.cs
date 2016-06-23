@@ -32,6 +32,8 @@
 
         private bool comboStarted;
 
+        private Hero delayedTarget;
+
         private GhostShip ghostShip;
 
         private Hero hero;
@@ -83,7 +85,7 @@
                 target = TargetSelector.ClosestToMouse(hero, 600);
             }
 
-            if (target == null || xMark.CastRange < hero.Distance2D(target) || !hero.IsAlive
+            if (target == null || xMark.CastRange < hero.Distance2D(target) && !targetLocked || !hero.IsAlive
                 || target.IsLinkensProtected() || target.IsMagicImmune())
             {
                 if (targetParticle != null)
@@ -114,6 +116,8 @@
                 return;
             }
 
+            delayedTarget = null;
+
             var ability = args.Ability;
 
             if (ability == null || !ability.Equals(xMark.Ability))
@@ -128,9 +132,16 @@
                 return;
             }
 
-            targetLocked = true;
-            target = newTarget;
-            xMark.Position = target.Position;
+            if (newTarget.Distance2D(hero) > xMark.CastRange)
+            {
+                delayedTarget = newTarget;
+            }
+            else
+            {
+                targetLocked = true;
+                target = newTarget;
+                xMark.Position = target.Position;
+            }
         }
 
         public void OnLoad()
@@ -158,6 +169,17 @@
             {
                 Utils.Sleep(333, "Kunkka.Sleep");
                 return;
+            }
+
+            if (delayedTarget != null)
+            {
+                if (xMark.Ability.IsInAbilityPhase)
+                {
+                    target = delayedTarget;
+                    targetLocked = true;
+                    xMark.Position = target.Position;
+                    delayedTarget = null;
+                }
             }
 
             if (menuManager.TpHomeEanbled)
