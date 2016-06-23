@@ -15,6 +15,7 @@
 
     using Ability = AbilityLastHitMarker.Classes.Ability;
     using Creep = Ensage.Creep;
+    using Tower = AbilityLastHitMarker.Classes.Tower;
 
     internal class LastHitMarker
     {
