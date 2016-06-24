@@ -171,15 +171,12 @@
                 return;
             }
 
-            if (delayedTarget != null)
+            if (delayedTarget != null && xMark.IsInPhase)
             {
-                if (xMark.Ability.IsInAbilityPhase)
-                {
-                    target = delayedTarget;
-                    targetLocked = true;
-                    xMark.Position = target.Position;
-                    delayedTarget = null;
-                }
+                target = delayedTarget;
+                targetLocked = true;
+                xMark.Position = target.Position;
+                delayedTarget = null;
             }
 
             if (menuManager.TpHomeEanbled)

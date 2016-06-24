@@ -98,6 +98,7 @@
             }
 
             controllableUnits.Clear();
+            delayedUnit = null;
         }
 
         public void OnExecuteAction(ExecuteOrderEventArgs args)

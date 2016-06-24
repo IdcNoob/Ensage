@@ -32,6 +32,8 @@
 
         public double GetSleepTime => CastPoint * 1000 + Game.Ping;
 
+        public bool IsInPhase => Ability.IsInAbilityPhase;
+
         public uint ManaCost => Ability.ManaCost;
 
         public Vector3 Position { get; set; }

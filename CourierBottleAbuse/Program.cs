@@ -20,7 +20,6 @@ namespace CourierBottleAbuse {
             Menu.AddItem(new MenuItem("hotkey", "Change hotkey").SetValue(new KeyBind('Z', KeyBindType.Press)));
 
             var stashItems = new Menu("Take items from stash", "stash");
-
             stashItems.AddItem(new MenuItem("stashBefore", "Before").SetValue(true)
                 .SetTooltip("Will bring items from stash before abusing bottle"));
             stashItems.AddItem(new MenuItem("stashLimitBefore", "Limit before").SetValue(true)

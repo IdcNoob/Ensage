@@ -12,20 +12,14 @@
 
     internal class Camp : JungleCamp
     {
-        #region Constants
-
-        private const int BoxSizeX = 174;
-
-        private const int BoxSizeY = 80;
-
-        #endregion
-
         #region Static Fields
 
         private static readonly DotaTexture DecreaseArrow = Textures.GetTexture("materials/ensage_ui/other/arrow_usual");
 
         private static readonly DotaTexture IncreaseArrow =
             Textures.GetTexture("materials/ensage_ui/other/arrow_usual_left");
+
+        private static readonly Vector2 OverlaySize = new Vector2(174, 80);
 
         #endregion
 
@@ -106,7 +100,7 @@
             {
                 if (campNameTextPosition <= 0)
                 {
-                    campNameTextPosition = (BoxSizeX
+                    campNameTextPosition = (OverlaySize.X
                                             - Drawing.MeasureText(Name, "Arial", new Vector2(15), FontFlags.None).X) / 2;
                 }
 
@@ -120,8 +114,8 @@
                     Game.MouseScreenPosition,
                     position.X - 32,
                     position.Y - 12,
-                    BoxSizeX + 1,
-                    BoxSizeY + 1);
+                    OverlaySize.X + 1,
+                    OverlaySize.Y + 1);
 
         private bool IsUnderDecreaseArrow
             =>
@@ -218,14 +212,12 @@
             }
 
             // box
-            Drawing.DrawRect(
-                new Vector2(position.X - 30, position.Y - 11),
-                new Vector2(BoxSizeX, BoxSizeY),
-                new Color(30, 30, 30, 175));
+            Drawing.DrawRect(new Vector2(position.X - 30, position.Y - 11), OverlaySize, new Color(30, 30, 30, 175));
 
+            //border
             Drawing.DrawRect(
                 new Vector2(position.X - 31, position.Y - 12),
-                new Vector2(BoxSizeX + 1, BoxSizeY + 1),
+                OverlaySize + new Vector2(1),
                 new Color(0, 0, 0, 175),
                 true);
 

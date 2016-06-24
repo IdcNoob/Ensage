@@ -462,7 +462,7 @@
 
             if (!IsHero && args.Msg == (ulong)Utils.WindowsMessages.WM_LBUTTONDOWN && IsUnderCampNameText)
             {
-                OnCampBlock();
+                ChangeCamp();
             }
         }
 
@@ -471,7 +471,7 @@
             return attackAnimationPoint / (1 + (Unit.AttacksPerSecond * attackRate / 0.01 - 100) / 100);
         }
 
-        private void OnCampBlock()
+        private void ChangeCamp()
         {
             BlockedCamps.Add(CurrentCamp);
             IsStacking = false;

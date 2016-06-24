@@ -4,12 +4,13 @@
     using System.Linq;
 
     using Ensage;
+    using Ensage.Common.Objects;
 
     internal static class JungleUtils
     {
         #region Static Fields
 
-        private static readonly List<string> MultipleCreeps = new List<string>
+        private static readonly List<string> DuplicateCreeps = new List<string>
                                                                   {
                                                                       "npc_dota_neutral_satyr_soulstealer",
                                                                       "npc_dota_neutral_mud_golem",
@@ -40,9 +41,9 @@
 
         public static int CountStacks(this List<Creep> creeps)
         {
-            return creeps.Count(x => UniqueCreeps.Contains(x.Name))
-                   + (creeps.Count(x => MultipleCreeps.Contains(x.Name))
-                      - creeps.Count(x => x.Name == "npc_dota_neutral_satyr_hellcaller")) / 2;
+            return creeps.Count(x => UniqueCreeps.Contains(x.StoredName()))
+                   + (creeps.Count(x => DuplicateCreeps.Contains(x.StoredName()))
+                      - creeps.Count(x => x.StoredName() == "npc_dota_neutral_satyr_hellcaller")) / 2;
         }
 
         #endregion

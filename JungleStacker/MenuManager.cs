@@ -88,8 +88,7 @@
         {
             if (arg.GetNewValue<KeyBind>().Active)
             {
-                var onHeroStack = OnHeroStack;
-                onHeroStack?.Invoke(this, EventArgs.Empty);
+                OnHeroStack?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -97,23 +96,20 @@
         {
             if (arg.GetNewValue<KeyBind>().Active)
             {
-                var onForceAdd = OnForceAdd;
-                onForceAdd?.Invoke(this, EventArgs.Empty);
+                OnForceAdd?.Invoke(this, EventArgs.Empty);
             }
         }
 
         private void OnStateChange(object sender, OnValueChangeEventArgs arg)
         {
-            var onMenuChanged = OnProgramStateChange;
-            onMenuChanged?.Invoke(this, new MenuArgs { Enabled = arg.GetNewValue<KeyBind>().Active });
+            OnProgramStateChange?.Invoke(this, new MenuArgs { Enabled = arg.GetNewValue<KeyBind>().Active });
         }
 
         private void StacksReset(object sender, OnValueChangeEventArgs arg)
         {
             if (arg.GetNewValue<KeyBind>().Active)
             {
-                var onStacksReset = OnStacksReset;
-                onStacksReset?.Invoke(this, EventArgs.Empty);
+                OnStacksReset?.Invoke(this, EventArgs.Empty);
             }
         }
 
