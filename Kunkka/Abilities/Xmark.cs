@@ -8,6 +8,12 @@
 
     internal class Xmark : IAbility
     {
+        #region Fields
+
+        private Vector3 position;
+
+        #endregion
+
         #region Constructors and Destructors
 
         public Xmark(Ability ability)
@@ -36,7 +42,24 @@
 
         public uint ManaCost => Ability.ManaCost;
 
-        public Vector3 Position { get; set; }
+        public bool PhaseStarted { get; set; }
+
+        public Vector3 Position
+        {
+            get
+            {
+                return position;
+            }
+            set
+            {
+                position = value;
+                PositionUpdated = false;
+            }
+        }
+
+        public bool PositionUpdated { get; set; }
+
+        public float TimeCasted { get; set; }
 
         #endregion
 
@@ -44,8 +67,9 @@
 
         public void UseAbility(Hero target)
         {
+            TimeCasted = Game.RawGameTime + Game.Ping / 1000;
             Ability.UseAbility(target);
-            Utils.Sleep(GetSleepTime + 200, "Kunkka.Xmark");
+            Utils.Sleep(GetSleepTime + 300, "Kunkka.Xmark");
         }
 
         #endregion

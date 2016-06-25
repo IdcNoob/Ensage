@@ -27,5 +27,14 @@
         public uint ManaCost { get; } = 0;
 
         #endregion
+
+        #region Public Methods and Operators
+
+        public void UseAbility(Unit target, bool queue)
+        {
+            Ability.UseAbility(target, queue);
+        }
+
+        #endregion
     }
 }

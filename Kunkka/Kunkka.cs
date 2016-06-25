@@ -32,8 +32,6 @@
 
         private bool comboStarted;
 
-        private Hero delayedTarget;
-
         private GhostShip ghostShip;
 
         private Hero hero;
@@ -44,6 +42,8 @@
 
         private double hookHitTime;
 
+        private Hero manualTarget;
+
         private MenuManager menuManager;
 
         private Hero target;
@@ -51,8 +51,6 @@
         private bool targetLocked;
 
         private ParticleEffect targetParticle;
-
-        private Vector3 targetPosition;
 
         private TideBringer tideBringer;
 
@@ -97,8 +95,6 @@
                 return;
             }
 
-            targetPosition = target.Position;
-
             if (targetParticle == null)
             {
                 targetParticle = new ParticleEffect(@"particles\ui_mouseactions\range_finder_tower_aoe.vpcf", target);
@@ -106,7 +102,7 @@
 
             targetParticle.SetControlPoint(2, hero.Position);
             targetParticle.SetControlPoint(6, new Vector3(1, 0, 0));
-            targetParticle.SetControlPoint(7, targetPosition);
+            targetParticle.SetControlPoint(7, target.Position);
         }
 
         public void OnExecuteAbilitiy(Player sender, ExecuteOrderEventArgs args)
@@ -116,7 +112,16 @@
                 return;
             }
 
-            delayedTarget = null;
+            manualTarget = null;
+
+            var order = args.Order;
+
+            if (xMark.PhaseStarted && (order == Order.Hold || order == Order.Stop))
+            {
+                xMark.PhaseStarted = false;
+                targetLocked = false;
+                return;
+            }
 
             var ability = args.Ability;
 
@@ -132,16 +137,7 @@
                 return;
             }
 
-            if (newTarget.Distance2D(hero) > xMark.CastRange)
-            {
-                delayedTarget = newTarget;
-            }
-            else
-            {
-                targetLocked = true;
-                target = newTarget;
-                xMark.Position = target.Position;
-            }
+            manualTarget = newTarget;
         }
 
         public void OnLoad()
@@ -171,12 +167,26 @@
                 return;
             }
 
-            if (delayedTarget != null && xMark.IsInPhase)
+            if (!xMark.PositionUpdated && targetLocked)
             {
-                target = delayedTarget;
+                if (xMark.TimeCasted + xMark.CastPoint >= Game.RawGameTime && target != null && target.IsVisible)
+                {
+                    xMark.Position = target.NetworkPosition;
+                    return;
+                }
+                xMark.PhaseStarted = false;
+                xMark.PositionUpdated = true;
+            }
+
+            if (manualTarget != null && xMark.IsInPhase && !xMark.PhaseStarted)
+            {
+                xMark.PhaseStarted = true;
+                target = manualTarget;
                 targetLocked = true;
-                xMark.Position = target.Position;
-                delayedTarget = null;
+                xMark.Position = target.NetworkPosition;
+                xMark.TimeCasted = Game.RawGameTime + Game.Ping / 1000;
+                manualTarget = null;
+                return;
             }
 
             if (menuManager.TpHomeEanbled)
@@ -257,8 +267,8 @@
                 if (blink.CanBeCasted() && hero.HasModifier("modifier_kunkka_x_marks_the_spot"))
                 {
                     blink.UseAbility(hitTarget.Position.Extend(hero.Position, hero.AttackRange));
-                    hero.Attack(hitTarget, true);
-                    Utils.Sleep(400, "Kunkka.Sleep");
+                    tideBringer.UseAbility(hitTarget, true);
+                    Utils.Sleep(300, "Kunkka.Sleep");
                     return;
                 }
             }
@@ -291,12 +301,17 @@
 
                 if (!comboStarted)
                 {
-                    if (target == null || xMark.CastRange < hero.Distance2D(target))
+                    if (target == null)
                     {
                         return;
                     }
 
-                    var manaRequired = allSpells.Where(x => x != ghostShip || fullCombo)
+                    if (!CheckCombo(fullCombo, targetLocked))
+                    {
+                        return;
+                    }
+
+                    var manaRequired = allSpells.Where(x => (x != ghostShip || fullCombo) && x.CanBeCasted)
                         .Aggregate(0u, (current, spell) => current + spell.ManaCost);
 
                     if (manaRequired > hero.Mana)
@@ -304,11 +319,9 @@
                         return;
                     }
 
-                    if (
-                        allSpells.Any(
-                            x => !x.CanBeCasted && x != xReturn && x != tideBringer && (x != ghostShip || fullCombo)))
+                    if (!targetLocked)
                     {
-                        return;
+                        xMark.Position = target.NetworkPosition;
                     }
 
                     targetLocked = true;
@@ -323,15 +336,14 @@
                 if (xMark.CanBeCasted)
                 {
                     xMark.UseAbility(target);
-                    Utils.Sleep(xMark.GetSleepTime, "Kunkka.Sleep");
                     return;
                 }
 
                 if (ghostShip.CanBeCasted && fullCombo)
                 {
-                    if (!hero.AghanimState())
+                    if (!hero.AghanimState() && torrent.CanBeCasted)
                     {
-                        ghostShip.UseAbility(targetPosition);
+                        ghostShip.UseAbility(xMark.Position);
                         Utils.Sleep(ghostShip.GetSleepTime, "Kunkka.Sleep");
                         return;
                     }
@@ -340,25 +352,27 @@
                         && Game.RawGameTime
                         >= torrent.HitTime - ghostShip.CastPoint - xReturn.CastPoint - Game.Ping / 1000)
                     {
-                        ghostShip.UseAbility(GetTorrentThinker()?.Position ?? targetPosition);
+                        ghostShip.UseAbility(GetTorrentThinker()?.Position ?? xMark.Position);
                     }
                 }
 
-                if (torrent.CanBeCasted)
+                if (torrent.CanBeCasted
+                    && (!fullCombo || (ghostShip.CanBeCasted || !hero.AghanimState() && ghostShip.Cooldown > 2)))
                 {
-                    torrent.UseAbility(targetPosition);
+                    torrent.UseAbility(xMark.Position);
                     Utils.Sleep(torrent.GetSleepTime, "Kunkka.Sleep");
                     return;
                 }
 
-                if (xReturn.CanBeCasted && Game.RawGameTime >= torrent.HitTime - xReturn.CastPoint - Game.Ping / 1000)
+                if (xReturn.CanBeCasted && torrent.Casted
+                    && Game.RawGameTime >= torrent.HitTime - xReturn.CastPoint - Game.Ping / 1000)
                 {
                     xReturn.UseAbility();
                     Utils.Sleep(xReturn.GetSleepTime, "Kunkka.Sleep");
                     return;
                 }
             }
-            else if (comboStarted)
+            else if (comboStarted && !xMark.IsInPhase && xReturn.Casted)
             {
                 comboStarted = false;
                 targetLocked = false;
@@ -490,6 +504,26 @@
             }
 
             return 0;
+        }
+
+        private bool CheckCombo(bool fullCombo, bool comboContinue)
+        {
+            if (torrent.Cooldown > 2)
+            {
+                return false;
+            }
+
+            if (ghostShip.Cooldown > 2 && fullCombo)
+            {
+                return false;
+            }
+
+            if (!xMark.CanBeCasted && !comboContinue)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private Unit GetTorrentThinker()

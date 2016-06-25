@@ -37,7 +37,7 @@
         public void UseAbility()
         {
             Ability.UseAbility();
-            Utils.Sleep(GetSleepTime + 200, "Kunkka.Xreturn");
+            Utils.Sleep(GetSleepTime + 300, "Kunkka.Xreturn");
         }
 
         #endregion

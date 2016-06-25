@@ -2,6 +2,7 @@
 {
     using Ensage;
     using Ensage.Common;
+    using Ensage.Common.AbilityInfo;
     using Ensage.Common.Extensions;
 
     using SharpDX;
@@ -14,7 +15,7 @@
         {
             Ability = ability;
             CastPoint = ability.FindCastPoint();
-            AdditionalDelay = 1.6; //AbilityDatabase.Find(Abiltity.Name).AdditionalDelay;
+            AdditionalDelay = AbilityDatabase.Find(ability.Name).AdditionalDelay;
             Radius = ability.GetRadius();
         }
 
@@ -28,11 +29,13 @@
 
         public bool CanBeCasted => Utils.SleepCheck("Kunkka.Torrent") && Ability.CanBeCasted();
 
-        public bool Casted => Ability.AbilityState == AbilityState.OnCooldown;
+        public bool Casted => Ability.Cooldown > 5;
 
         public double CastPoint { get; }
 
         public float CastRange => Ability.GetCastRange() + 100;
+
+        public float Cooldown => Ability.Cooldown;
 
         public double GetSleepTime => CastPoint * 1000 + Game.Ping;
 
@@ -52,15 +55,15 @@
 
             if (HitTime <= gameTime)
             {
-                HitTime = gameTime + AdditionalDelay + CastPoint + Game.Ping / 1000 - 0.15;
+                HitTime = gameTime + AdditionalDelay + CastPoint + Game.Ping / 1000 - 0.085;
             }
         }
 
         public void UseAbility(Vector3 targetPosition)
         {
-            Ability.UseAbility(targetPosition);
             CalculateHitTime();
-            Utils.Sleep(GetSleepTime + 200, "Kunkka.Torrent");
+            Ability.UseAbility(targetPosition);
+            Utils.Sleep(GetSleepTime + 300, "Kunkka.Torrent");
         }
 
         #endregion

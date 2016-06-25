@@ -34,6 +34,8 @@
 
         public float CastRange => Ability.GetCastRange() + 150;
 
+        public float Cooldown => Ability.Cooldown;
+
         public double GetSleepTime => CastPoint * 1000 + Game.Ping;
 
         public uint ManaCost => Ability.ManaCost;
@@ -47,7 +49,7 @@
         public void UseAbility(Vector3 targetPosition)
         {
             Ability.UseAbility(targetPosition);
-            Utils.Sleep(GetSleepTime + 200, "Kunkka.GhostShip");
+            Utils.Sleep(GetSleepTime + 300, "Kunkka.GhostShip");
         }
 
         #endregion
