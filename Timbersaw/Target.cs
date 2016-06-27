@@ -26,7 +26,7 @@
 
         public bool Locked { get; set; }
 
-        public float MovementSpeed => Hero.MovementSpeed;
+        public float MovementSpeed { get; private set; }
 
         public Vector3 Position => Hero.NetworkPosition;
 
@@ -60,13 +60,12 @@
 
             if (IsVsisible)
             {
+                MovementSpeed = Hero.MovementSpeed;
                 lastVisible = Game.RawGameTime;
                 return forDrawing ? Hero.Position : Hero.NetworkPosition;
             }
 
-            return TimberPrediction.IsIdle(Hero)
-                       ? Position
-                       : Prediction.InFront(Hero, Hero.MovementSpeed * (Game.RawGameTime - lastVisible));
+            return TimberPrediction.IsIdle(Hero) ? Position : Prediction.InFront(Hero, MovementSpeed * GetInvisTime());
         }
 
         public double GetTurnTime(Vector3 position)

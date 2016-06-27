@@ -142,7 +142,7 @@
                 var distanceToEnemy = target.GetDistance(hero.NetworkPosition);
                 var targetPosition = target.GetPosition();
 
-                var phaseChakram = chakram.IsInPhase ? chakram : chakram2.IsInPhase ? chakram2 : null;
+                var phaseChakram = chakrams.FirstOrDefault(x => x.IsInPhase);
 
                 if (phaseChakram != null)
                 {
@@ -239,7 +239,7 @@
 
                     if (target.IsVsisible && possibleDamageTree != null)
                     {
-                        var pos = TimberPrediction.PredictedXYZ(
+                        var predictedPosition = TimberPrediction.PredictedXYZ(
                             target,
                             timberChain.CastPoint * 1000
                             + (distanceToEnemy + hero.Distance2D(possibleDamageTree.Position)) / timberChain.Speed
@@ -247,14 +247,14 @@
 
                         var damageTreeWithPrediction = treeFactory.GetDamageTree(
                             hero.Position,
-                            pos,
+                            predictedPosition,
                             timberChain.GetCastRange(),
                             timberChain.Radius);
 
                         if (damageTreeWithPrediction != null)
                         {
                             timberChain.UseAbility(damageTreeWithPrediction.Position, true);
-                            timberChain.Position = pos;
+                            timberChain.Position = predictedPosition;
                             Utils.Sleep(timberChain.GetSleepTime, "Timbersaw.Sleep");
                             return;
                         }
@@ -281,13 +281,13 @@
 
                 if (usableChakram != null && (distanceToEnemy < 500 || timberChain.CanBeCasted()))
                 {
-                    var pos = TimberPrediction.PredictedXYZ(
+                    var predictedPosition = TimberPrediction.PredictedXYZ(
                         target,
                         usableChakram.GetSleepTime + Game.Ping
                         + target.GetDistance(hero.Position) / usableChakram.Speed * 1000
                         + usableChakram.Radius / 2 / target.Hero.MovementSpeed * 1000);
 
-                    usableChakram.UseAbility(pos, target.Hero);
+                    usableChakram.UseAbility(predictedPosition, target.Hero);
                     Utils.Sleep(usableChakram.GetSleepTime, "Timbersaw.Sleep");
                     return;
                 }
