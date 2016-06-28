@@ -181,9 +181,11 @@
                             timberChain.GetSleepTime + chaseTree.Distance2D(hero) / timberChain.Speed * 1000 * 2
                             + Game.Ping,
                             "Timbersaw.Sleep");
+                        return;
                     }
                 }
-                else if (Utils.SleepCheck("Timbersaw.Move"))
+
+                if (Utils.SleepCheck("Timbersaw.Move"))
                 {
                     hero.Move(Game.MousePosition);
                     Utils.Sleep(100, "Timbersaw.Move");
@@ -193,8 +195,6 @@
             {
                 if (!target.IsValid())
                 {
-                    chakrams.Where(x => x.CanReturn).ForEach(x => x.Return());
-                    target.Locked = false;
                     return;
                 }
 
@@ -400,16 +400,16 @@
                     cameraCentered = false;
                 }
 
-                var phaseChakram = chakrams.Where(x => x.IsInPhase).ToList();
-                var castedChakram = chakrams.Where(x => x.Casted).ToList();
+                var phaseChakrams = chakrams.Where(x => x.IsInPhase).ToList();
+                var castedChakrams = chakrams.Where(x => x.Casted).ToList();
 
-                if (phaseChakram.Any())
+                if (phaseChakrams.Any())
                 {
-                    phaseChakram.ForEach(x => x.Stop(hero));
+                    phaseChakrams.ForEach(x => x.Stop(hero));
                 }
-                else if (castedChakram.Any())
+                else if (castedChakrams.Any())
                 {
-                    castedChakram.ForEach(x => x.Return());
+                    castedChakrams.ForEach(x => x.Return());
                 }
                 else
                 {

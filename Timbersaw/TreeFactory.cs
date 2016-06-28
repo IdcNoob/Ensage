@@ -84,7 +84,9 @@
                          < 0.3 && x.Distance2D(targetPosition) < targetDistance))
                     && x.Distance2D(hero) >= minDistanceToHero)
                     .FirstOrDefault(
-                        z => trees.Where(x => !x.Equals(z)).All(x => !IsPointOnLine(x.Position, hero, z.Position, 25)));
+                        z =>
+                        trees.Where(x => !x.Equals(z))
+                            .All(x => !IsPointOnLine(x.Position, hero, z.Position, forceRadius: 25)));
         }
 
         public Tree GetDamageTree(Vector3 hero, Vector3 target, float range, float radius)
@@ -104,7 +106,7 @@
                     Math.Abs(hero.FindAngleR() - Utils.DegreeToRadian(hero.FindAngleForTurnTime(z.Position))) < 0.3
                     && z.Distance2D(hero) > minRange
                     && trees.Where(x => !x.Equals(z))
-                           .All(x => !IsPointOnLine(z.Position, hero.Position, x.Position, 25)));
+                           .All(x => !IsPointOnLine(z.Position, hero.Position, x.Position, forceRadius: 25)));
         }
 
         #endregion
