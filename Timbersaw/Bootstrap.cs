@@ -39,6 +39,7 @@
             Events.OnClose -= OnClose;
             Game.OnIngameUpdate -= Game_OnUpdate;
             Drawing.OnDraw -= Drawing_OnDraw;
+            Player.OnExecuteOrder -= Player_OnExecuteAction;
             timbersaw.OnClose();
         }
 
@@ -52,7 +53,13 @@
             timbersaw.OnLoad();
             Events.OnClose += OnClose;
             Game.OnIngameUpdate += Game_OnUpdate;
+            Player.OnExecuteOrder += Player_OnExecuteAction;
             Drawing.OnDraw += Drawing_OnDraw;
+        }
+
+        private void Player_OnExecuteAction(Player sender, ExecuteOrderEventArgs args)
+        {
+            timbersaw.OnExecuteAbilitiy(sender, args);
         }
 
         #endregion

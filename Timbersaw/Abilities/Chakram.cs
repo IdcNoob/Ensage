@@ -2,6 +2,7 @@
 {
     using Ensage;
     using Ensage.Common;
+    using Ensage.Common.AbilityInfo;
     using Ensage.Common.Extensions;
 
     using SharpDX;
@@ -11,8 +12,6 @@
         #region Fields
 
         private readonly Ability returnAbility;
-
-        private Hero target;
 
         #endregion
 
@@ -30,6 +29,8 @@
         #endregion
 
         #region Public Properties
+
+        public bool CanReturn => Utils.SleepCheck("Timber." + ReturnName) && Casted;
 
         public bool Casted => Ability.IsHidden;
 
@@ -62,15 +63,11 @@
             Utils.Sleep(500, "Timber." + ReturnName);
         }
 
-        public bool ShouldReturn(Vector3 targetPosition)
+        public bool ShouldReturn(Hero hero, Target enemy)
         {
-            if (target == null)
-            {
-                return true;
-            }
-
-            return Utils.SleepCheck("Timber." + Name) && Utils.SleepCheck("Timber." + ReturnName) && Casted
-                   && targetPosition.Distance2D(Position) > Radius - 50 && target.GetTurnTime(Position) > 0;
+            return Utils.SleepCheck("Timber." + Name) && CanReturn && enemy.IsValid()
+                   && (enemy.GetDistance(Position) > Radius - 50 && enemy.GetTurnTime(Position) > 0
+                       || AbilityDamage.CalculateDamage(Ability, hero, enemy.Hero) / 2 >= enemy.Health);
         }
 
         public void Stop(Hero hero)
@@ -79,11 +76,10 @@
             Utils.Sleep(0, "Timber." + Name);
         }
 
-        public void UseAbility(Vector3 position, Hero enemy)
+        public void UseAbility(Vector3 position, Hero enemy, bool queue = false)
         {
             Position = position;
-            target = enemy;
-            Ability.UseAbility(position);
+            Ability.UseAbility(position, queue);
             Utils.Sleep(GetSleepTime + 500, "Timber." + Name);
         }
 

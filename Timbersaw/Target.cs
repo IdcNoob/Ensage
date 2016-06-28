@@ -20,6 +20,8 @@
 
         public uint Handle { get; private set; }
 
+        public uint Health => Hero.Health;
+
         public Hero Hero { get; private set; }
 
         public bool IsVsisible => Hero.IsVisible;
@@ -80,7 +82,14 @@
 
         public bool IsValid()
         {
-            return Hero != null && Hero.IsValid && Hero.IsAlive && !Hero.IsMagicImmune();
+            var valid = Hero != null && Hero.IsValid && Hero.IsAlive && !Hero.IsMagicImmune();
+
+            if (!valid)
+            {
+                Locked = false;
+            }
+
+            return valid;
         }
 
         public void NewTarget(Hero target)

@@ -7,6 +7,9 @@
     using Ensage;
     using Ensage.Common;
     using Ensage.Common.Extensions;
+    using Ensage.Common.Extensions.SharpDX;
+
+    using global::Timbersaw.Abilities;
 
     using SharpDX;
 
@@ -20,52 +23,107 @@
 
         #region Public Methods and Operators
 
-        public Vector3 GetBlinkPosition(Vector3 enemy, Vector3 hero, float distance, float radius)
+        public bool CheckTree(Vector3 hero, Vector3 position, float range)
         {
-            var tree =
-                allTrees.OrderBy(x => x.Distance2D(enemy))
-                    .FirstOrDefault(
-                        x =>
-                        x.Distance2D(enemy) <= radius * 1.5 && x.Distance2D(hero) <= distance
-                        && NavMesh.GetCellFlags(x.Position).HasFlag(NavMeshCellFlags.Tree));
+            var distance = Math.Max(range, hero.Distance2D(position));
+            var endPoint = hero.Extend(position, distance);
 
-            return tree != null
-                       ? new Vector3((enemy.X + tree.Position.X) / 2, (enemy.Y + tree.Position.Y) / 2, enemy.Z)
-                       : enemy;
+            return
+                GetAvailableTrees(hero, endPoint, distance)
+                    .Any(x => IsPointOnLine(x.Position, hero, endPoint, forceRadius: 25));
         }
 
-        public Tree GetChaseTree(Vector3 hero, Target target, float range, float maxDistanceToEnemy)
+        public Vector3 GetBlinkPosition(
+            Target target,
+            Vector3 hero,
+            float distance,
+            float radius,
+            bool whirlingDeathCanBeCasted)
         {
+            var tree =
+                allTrees.OrderBy(x => x.Distance2D(target.Position))
+                    .FirstOrDefault(
+                        x =>
+                        x.Distance2D(target.Position) <= radius * 1.9 && x.Distance2D(hero) <= distance
+                        && NavMesh.GetCellFlags(x.Position).HasFlag(NavMeshCellFlags.Tree));
+
+            return tree != null && whirlingDeathCanBeCasted
+                       ? new Vector3(
+                             (target.Position.X + tree.Position.X) / 2,
+                             (target.Position.Y + tree.Position.Y) / 2,
+                             target.Position.Z)
+                       : target.GetPosition();
+        }
+
+        public Tree GetChaseTree(
+            Vector3 hero,
+            Target target,
+            TimberChain timberChain,
+            float maxDistanceToEnemy,
+            float minDistanceToHero)
+        {
+            var castRange = timberChain.GetCastRange();
             var targetPosition = target.GetPosition();
-            var trees = GetAvailableTrees(hero, targetPosition, range).ToList();
+
+            var targetDistance = target.GetDistance(hero);
+            var ignoreMaxDistance = targetDistance > castRange + 200;
+
+            var trees = GetAvailableTrees(hero, targetPosition, castRange).ToList();
+
             return
                 trees.Where(
                     x =>
-                    x.Distance2D(targetPosition) <= maxDistanceToEnemy
-                    || Math.Abs(
-                        target.Hero.FindAngleR() - Utils.DegreeToRadian(target.Hero.FindAngleForTurnTime(x.Position)))
-                    < 1.5)
+                    (ignoreMaxDistance
+                     || x.Distance2D(
+                         TimberPrediction.PredictedXYZ(
+                             target,
+                             timberChain.CastPoint + x.Distance2D(targetPosition) / timberChain.Speed))
+                     <= maxDistanceToEnemy
+                     || (Math.Abs(
+                         target.Hero.FindAngleR() - Utils.DegreeToRadian(target.Hero.FindAngleForTurnTime(x.Position)))
+                         < 0.3 && x.Distance2D(targetPosition) < targetDistance))
+                    && x.Distance2D(hero) >= minDistanceToHero)
                     .FirstOrDefault(
-                        z => trees.Where(x => !x.Equals(z)).All(x => !IsPointOnLine(z.Position, hero, x.Position, 25)));
+                        z => trees.Where(x => !x.Equals(z)).All(x => !IsPointOnLine(x.Position, hero, z.Position, 25)));
         }
 
         public Tree GetDamageTree(Vector3 hero, Vector3 target, float range, float radius)
         {
             var trees = GetAvailableTrees(hero, target, range);
-            return trees.FirstOrDefault(x => IsPointOnLine(x.Position, hero, target, radius));
+            return trees.FirstOrDefault(x => IsPointOnLine(target, hero, x.Position, radius));
+        }
+
+        public Tree GetEscapeTree(Hero hero, Vector3 mouse, float range, float minRange)
+        {
+            var distance = Math.Min(range, hero.Distance2D(mouse));
+            var trees = GetAvailableTrees(hero.Position, mouse, distance).ToList();
+
+            return
+                trees.FirstOrDefault(
+                    z =>
+                    Math.Abs(hero.FindAngleR() - Utils.DegreeToRadian(hero.FindAngleForTurnTime(z.Position))) < 0.3
+                    && z.Distance2D(hero) > minRange
+                    && trees.Where(x => !x.Equals(z))
+                           .All(x => !IsPointOnLine(z.Position, hero.Position, x.Position, 25)));
         }
 
         #endregion
 
         #region Methods
 
-        private static bool IsPointOnLine(Vector3 point, Vector3 start, Vector3 end, float radius)
+        private static bool IsPointOnLine(
+            Vector3 point,
+            Vector3 start,
+            Vector3 end,
+            float dynamicRadius = 0,
+            float forceRadius = 0)
         {
             var endDistance = end.Distance2D(point);
             var startDistance = start.Distance2D(point);
             var distance = start.Distance2D(end);
 
-            return Math.Abs(distance + endDistance - startDistance) < (end.Distance2D(start) < radius ? radius : 50);
+            return Math.Abs(endDistance + startDistance - distance)
+                   < (forceRadius > 0 ? forceRadius : (end.Distance2D(start) < dynamicRadius ? dynamicRadius : 50));
         }
 
         private IEnumerable<Tree> GetAvailableTrees(Vector3 hero, Vector3 target, float range)

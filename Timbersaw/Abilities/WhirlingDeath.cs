@@ -11,12 +11,16 @@
         public WhirlingDeath(Ability ability)
             : base(ability)
         {
-            Radius = ability.GetCastRange() + 30;
+            Radius = ability.GetRadius();
         }
 
         #endregion
 
         #region Public Properties
+
+        public bool Combo { get; set; }
+
+        public bool ComboDelayPassed => Utils.SleepCheck("Timber.Combo." + Name);
 
         public float Radius { get; }
 
@@ -24,10 +28,15 @@
 
         #region Public Methods and Operators
 
+        public void SetComboDelay(double delay)
+        {
+            Utils.Sleep(delay, "Timber.Combo." + Name);
+        }
+
         public void UseAbility(bool queue = false)
         {
             Ability.UseAbility(queue);
-            Utils.Sleep(GetSleepTime + 500, "Timber." + Name);
+            Utils.Sleep(600, "Timber." + Name);
         }
 
         #endregion

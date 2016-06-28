@@ -25,8 +25,6 @@
 
         public float GetSleepTime => CastPoint * 1000;
 
-        public uint ManaCost => Ability.ManaCost;
-
         #endregion
 
         #region Properties

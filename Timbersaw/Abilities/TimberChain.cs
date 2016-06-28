@@ -26,9 +26,9 @@
 
         #region Public Properties
 
-        public bool Casted => Ability.AbilityState == AbilityState.OnCooldown;
-
         public bool CastedOnEnemy { get; set; }
+
+        public bool ChakramCombo { get; set; }
 
         public float Cooldown => Ability.Cooldown;
 
