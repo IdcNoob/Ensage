@@ -21,6 +21,8 @@
 
         private static readonly Vector2 OverlaySize = new Vector2(174, 80);
 
+        private static readonly uint WM_MOUSEWHEEL = 0x020A;
+
         #endregion
 
         #region Fields
@@ -299,7 +301,26 @@
 
         private void Game_OnWndProc(WndEventArgs args)
         {
-            if (args.Msg != (ulong)Utils.WindowsMessages.WM_LBUTTONDOWN || !DisplayOverlay)
+            if (!DisplayOverlay)
+            {
+                return;
+            }
+
+            if (args.Msg == WM_MOUSEWHEEL && IsUnderBox)
+            {
+                var delta = (short)((args.WParam >> 16) & 0xFFFF);
+                if (delta > 0)
+                {
+                    RequiredStacksCount++;
+                }
+                else
+                {
+                    RequiredStacksCount--;
+                }
+                args.Process = false;
+            }
+
+            if (args.Msg != (ulong)Utils.WindowsMessages.WM_LBUTTONDOWN)
             {
                 return;
             }

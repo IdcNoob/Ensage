@@ -223,6 +223,16 @@
 
         #region Methods
 
+        private void ChangeCamp()
+        {
+            BlockedCamps.Add(CurrentCamp);
+            IsStacking = false;
+            CurrentCamp.IsStacking = false;
+
+            var onCampChange = OnCampChange;
+            onCampChange?.Invoke(this, EventArgs.Empty);
+        }
+
         private void Drawing_OnDraw(EventArgs args)
         {
             if (!IsStacking || !IsValid)
@@ -469,16 +479,6 @@
         private double GetAttackPoint()
         {
             return attackAnimationPoint / (1 + (Unit.AttacksPerSecond * attackRate / 0.01 - 100) / 100);
-        }
-
-        private void ChangeCamp()
-        {
-            BlockedCamps.Add(CurrentCamp);
-            IsStacking = false;
-            CurrentCamp.IsStacking = false;
-
-            var onCampChange = OnCampChange;
-            onCampChange?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

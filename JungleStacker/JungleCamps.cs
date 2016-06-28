@@ -1,6 +1,5 @@
 ﻿namespace JungleStacker
 {
-    using System;
     using System.Collections.Generic;
 
     using Ensage;
