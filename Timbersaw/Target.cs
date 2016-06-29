@@ -40,7 +40,7 @@
 
         public Ability FindSpell(string name, bool cache)
         {
-            return Hero.FindSpell("storm_spirit_ball_lightning", cache);
+            return Hero.FindSpell(name, cache);
         }
 
         public float GetDistance(Vector3 position)
