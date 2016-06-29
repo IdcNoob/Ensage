@@ -36,6 +36,8 @@
 
         public bool IsSleeping => !Utils.SleepCheck("Timber." + Name);
 
+        public uint Level => Ability.Level;
+
         public string ModifierName { get; }
 
         public Vector3 Position { get; set; }

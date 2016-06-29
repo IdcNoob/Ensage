@@ -74,7 +74,6 @@
                     targetParticle.Dispose();
                     targetParticle = null;
                 }
-                target.RemoveTarget();
                 return;
             }
 
@@ -238,10 +237,14 @@
                     if (timberChain.Position.Distance2D(predictedPosition) > timberChain.Radius)
                     {
                         timberChain.Stop(hero);
+                        timberChain.ChakramCombo = false;
+                        whirlingDeath.Combo = false;
                         Utils.Sleep(ping + 100, "Timbersaw.Sleep");
                         return;
                     }
                 }
+
+                chakrams.FirstOrDefault(x => x.ShouldReturn(hero, target))?.Return();
 
                 var blink = hero.FindItem("item_blink", true);
                 var shiva = hero.FindItem("item_shivas_guard", true);
@@ -351,7 +354,7 @@
                             return;
                         }
                     }
-                    else
+                    else if (timberChain.Level >= 4)
                     {
                         if (target.IsVsisible || distanceToEnemy > 300)
                         {
@@ -371,7 +374,8 @@
 
                 if (usableChakram != null
                     && (distanceToEnemy < 600 || target.GetTurnTime(heroPosition) <= 0 || timberChain.ChakramCombo)
-                    && (!whirlingDeath.Combo || !whirlingDeath.ComboDelayPassed))
+                    && (!whirlingDeath.Combo || !whirlingDeath.ComboDelayPassed)
+                    && TimberPrediction.StraightTime(target.Hero) > 500)
                 {
                     var predictedPosition = TimberPrediction.PredictedXYZ(
                         target,
@@ -389,7 +393,6 @@
                     return;
                 }
 
-                chakrams.FirstOrDefault(x => x.ShouldReturn(hero, target))?.Return();
                 orbwalker.OrbwalkOn(target.Hero, target.GetPosition());
             }
             else if (target.Locked)

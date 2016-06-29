@@ -105,12 +105,6 @@
             ClassID = target.ClassID;
         }
 
-        public void RemoveTarget()
-        {
-            Hero = null;
-            Locked = false;
-        }
-
         public Vector3 Vector3FromPolarAngle()
         {
             return Hero.Vector3FromPolarAngle();

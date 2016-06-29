@@ -54,7 +54,7 @@
 
         public override bool CanBeCasted()
         {
-            return base.CanBeCasted() && !Ability.IsHidden;
+            return base.CanBeCasted() && !Casted;
         }
 
         public void Return()
