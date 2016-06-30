@@ -25,6 +25,8 @@
 
         public float GetSleepTime => CastPoint * 1000;
 
+        public bool IsSleeping => !Utils.SleepCheck("Timber." + Name);
+
         #endregion
 
         #region Properties

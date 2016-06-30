@@ -82,14 +82,7 @@
 
         public bool IsValid()
         {
-            var valid = Hero != null && Hero.IsValid && Hero.IsAlive && !Hero.IsMagicImmune();
-
-            if (!valid)
-            {
-                Locked = false;
-            }
-
-            return valid;
+            return Hero != null && Hero.IsValid && Hero.IsAlive && !Hero.IsMagicImmune() && !Hero.IsInvul();
         }
 
         public void NewTarget(Hero target)

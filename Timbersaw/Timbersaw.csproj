@@ -63,6 +63,7 @@
     <Compile Include="Target.cs" />
     <Compile Include="TimberPrediction.cs" />
     <Compile Include="Timbersaw.cs" />
+    <Compile Include="TreeDestroyer.cs" />
     <Compile Include="TreeFactory.cs" />
   </ItemGroup>
   <ItemGroup>

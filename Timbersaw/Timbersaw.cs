@@ -30,8 +30,6 @@
 
         private Hero hero;
 
-        private Vector3 heroPosition;
-
         private MenuManager menuManager;
 
         private Orbwalker orbwalker;
@@ -84,7 +82,7 @@
                     target.GetPosition(true));
             }
 
-            targetParticle.SetControlPoint(2, heroPosition = hero.Position);
+            targetParticle.SetControlPoint(2, hero.Position);
             targetParticle.SetControlPoint(6, new Vector3(1, 0, 0));
             targetParticle.SetControlPoint(7, target.GetPosition(true));
         }
@@ -103,7 +101,7 @@
                 return;
             }
 
-            if (!treeFactory.CheckTree(hero.Position, args.TargetPosition, timberChain.GetCastRange()))
+            if (!treeFactory.CheckTree(hero, args.TargetPosition, timberChain))
             {
                 args.Process = false;
             }
@@ -138,10 +136,12 @@
                 return;
             }
 
-            if (Game.IsPaused || !hero.IsAlive || !hero.CanCast() || hero.IsChanneling() || !menuManager.IsEnabled)
+            if (Game.IsPaused || !hero.IsAlive || hero.IsChanneling() || !menuManager.IsEnabled)
             {
                 return;
             }
+
+            var heroPosition = hero.Position;
 
             if (!aghsAdded && Utils.SleepCheck("Timbersaw.Aghanim"))
             {
@@ -153,31 +153,33 @@
                 Utils.Sleep(5000, "Timbersaw.Aghanim");
             }
 
-            if (menuManager.EscapeEnabled)
+            if (menuManager.MoveEnabled)
             {
                 var blink = hero.FindItem("item_blink", true);
+                var mousePosition = Game.MousePosition;
 
-                if (Utils.SleepCheck("Timbersaw.Blink") && blink != null && blink.CanBeCasted())
+                if (Utils.SleepCheck("Timbersaw.Blink") && blink != null && blink.CanBeCasted()
+                    && mousePosition.Distance2D(hero) > 500)
                 {
-                    var mouse = Game.MousePosition;
                     var castRange = blink.GetCastRange();
 
-                    var blinkPosition = hero.Distance2D(Game.MousePosition) > castRange
-                                            ? (mouse - heroPosition) * castRange / mouse.Distance2D(hero) + heroPosition
-                                            : Game.MousePosition;
+                    var blinkPosition = hero.Distance2D(mousePosition) > castRange
+                                            ? (mousePosition - heroPosition) * castRange
+                                              / mousePosition.Distance2D(hero) + heroPosition
+                                            : mousePosition;
 
                     blink.UseAbility(blinkPosition);
                     Utils.Sleep(1000, "Timbersaw.Blink");
                 }
                 else if (timberChain.CanBeCasted())
                 {
-                    var chaseTree = treeFactory.GetEscapeTree(hero, Game.MousePosition, timberChain.GetCastRange(), 800);
+                    var moveTree = treeFactory.GetMoveTree(hero, mousePosition, timberChain.GetCastRange(), 800);
 
-                    if (chaseTree != null)
+                    if (moveTree != null)
                     {
-                        timberChain.UseAbility(chaseTree.Position);
+                        timberChain.UseAbility(moveTree.Position);
                         Utils.Sleep(
-                            timberChain.GetSleepTime + chaseTree.Distance2D(hero) / timberChain.Speed * 1000 * 2
+                            timberChain.GetSleepTime + moveTree.Distance2D(hero) / timberChain.Speed * 1000 * 2
                             + Game.Ping,
                             "Timbersaw.Sleep");
                         return;
@@ -186,7 +188,7 @@
 
                 if (Utils.SleepCheck("Timbersaw.Move"))
                 {
-                    hero.Move(Game.MousePosition);
+                    hero.Move(mousePosition);
                     Utils.Sleep(100, "Timbersaw.Move");
                 }
             }
@@ -223,6 +225,7 @@
                     if (phaseChakram.Position.Distance2D(predictedPosition) > phaseChakram.Radius)
                     {
                         chakram.Stop(hero);
+                        treeFactory.ClearUnavailableTrees(true);
                         Utils.Sleep(ping + 100, "Timbersaw.Sleep");
                         return;
                     }
@@ -244,7 +247,13 @@
                     }
                 }
 
-                chakrams.FirstOrDefault(x => x.ShouldReturn(hero, target))?.Return();
+                var returnChakram = chakrams.FirstOrDefault(x => x.ShouldReturn(hero, target));
+
+                if (returnChakram != null)
+                {
+                    returnChakram.Return();
+                    treeFactory.ClearUnavailableTrees(true);
+                }
 
                 var blink = hero.FindItem("item_blink", true);
                 var shiva = hero.FindItem("item_shivas_guard", true);
@@ -252,8 +261,8 @@
 
                 var usableChakram = chakrams.FirstOrDefault(x => x.CanBeCasted());
 
-                if (Utils.SleepCheck("Timbersaw.Blink") && blink != null && blink.CanBeCasted() && distanceToEnemy > 400
-                    && (target.GetTurnTime(heroPosition) > 0 || distanceToEnemy > 600)
+                if (Utils.SleepCheck("Timbersaw.Blink") && blink != null && blink.CanBeCasted() && distanceToEnemy > 500
+                    && (target.GetTurnTime(heroPosition) > 0 || distanceToEnemy > 700)
                     && (timberChain.Cooldown > 2 || distanceToEnemy > 800)
                     && (whirlingDeath.CanBeCasted() || usableChakram != null)
                     && hero.Modifiers.All(x => x.Name != timberChain.ModifierName) && !timberChain.IsSleeping)
@@ -311,11 +320,24 @@
 
                 if (timberChain.CanBeCasted() && (usableChakram == null || distanceToEnemy > 300))
                 {
-                    var possibleDamageTree = treeFactory.GetDamageTree(
-                        heroPosition,
-                        targetPosition,
-                        timberChain.GetCastRange(),
-                        timberChain.Radius);
+                    if ((blink == null || !blink.CanBeCasted()) && usableChakram != null
+                        && !chakrams.Any(x => x.IsSleeping || x.Casted) && distanceToEnemy < chakram.GetCastRange()
+                        && treeFactory.TreesInPath(hero, targetPosition, 100) > 4)
+                    {
+                        var predictedPosition = TimberPrediction.PredictedXYZ(
+                            target,
+                            usableChakram.GetSleepTime + ping
+                            + target.GetDistance(heroPosition) / usableChakram.Speed * 1000
+                            + usableChakram.Radius / 2 / target.Hero.MovementSpeed * 1000);
+
+                        usableChakram.UseAbility(predictedPosition, target.Hero);
+                        treeFactory.SetUnavailableTrees(hero.Position, predictedPosition, usableChakram);
+
+                        Utils.Sleep(usableChakram.GetSleepTime + ping, "Timbersaw.Sleep");
+                        return;
+                    }
+
+                    var possibleDamageTree = treeFactory.GetDamageTree(hero, targetPosition, timberChain);
 
                     if (target.IsVsisible && possibleDamageTree != null)
                     {
@@ -325,11 +347,7 @@
                             + (distanceToEnemy + hero.Distance2D(possibleDamageTree.Position)) / timberChain.Speed
                             * 1000 + ping);
 
-                        var damageTreeWithPrediction = treeFactory.GetDamageTree(
-                            heroPosition,
-                            predictedPosition,
-                            timberChain.GetCastRange(),
-                            timberChain.Radius);
+                        var damageTreeWithPrediction = treeFactory.GetDamageTree(hero, predictedPosition, timberChain);
 
                         if (damageTreeWithPrediction != null)
                         {
@@ -354,11 +372,11 @@
                             return;
                         }
                     }
-                    else if (timberChain.Level >= 4)
+                    else if (timberChain.Level >= 4 && hero.Mana > 500)
                     {
-                        if (target.IsVsisible || distanceToEnemy > 300)
+                        if (target.IsVsisible || distanceToEnemy > 400)
                         {
-                            var chaseTree = treeFactory.GetChaseTree(heroPosition, target, timberChain, 300, 500);
+                            var chaseTree = treeFactory.GetChaseTree(hero, target, timberChain, 400, 500);
 
                             if (chaseTree != null)
                             {
@@ -384,8 +402,9 @@
                         + usableChakram.Radius / 2 / target.Hero.MovementSpeed * 1000);
 
                     usableChakram.UseAbility(predictedPosition, target.Hero);
-
                     timberChain.ChakramCombo = false;
+
+                    treeFactory.SetUnavailableTrees(hero.Position, predictedPosition, usableChakram);
 
                     Utils.Sleep(
                         usableChakram.GetSleepTime + hero.GetTurnTime(predictedPosition) * 1000 + ping,
@@ -402,6 +421,15 @@
                     Game.ExecuteCommand("-dota_camera_center_on_hero");
                     cameraCentered = false;
                 }
+
+                if (timberChain.IsInPhase)
+                {
+                    timberChain.Stop(hero);
+                }
+
+                treeFactory.ClearUnavailableTrees(true);
+                timberChain.ChakramCombo = false;
+                whirlingDeath.Combo = false;
 
                 var phaseChakrams = chakrams.Where(x => x.IsInPhase).ToList();
                 var castedChakrams = chakrams.Where(x => x.Casted).ToList();
@@ -421,6 +449,8 @@
 
                 Utils.Sleep(500, "Timbersaw.Sleep");
             }
+
+            treeFactory.ClearUnavailableTrees();
         }
 
         #endregion

@@ -34,8 +34,6 @@
 
         public bool IsInPhase => Ability.IsInAbilityPhase;
 
-        public bool IsSleeping => !Utils.SleepCheck("Timber." + Name);
-
         public uint Level => Ability.Level;
 
         public string ModifierName { get; }

@@ -27,10 +27,12 @@
                 .SetTooltip("Will prevent chain cast if it wont hit tree when used manually");
             menu.AddItem(centerHero = new MenuItem("centerHero", "Center camera").SetValue(false))
                 .SetTooltip("Center camera on timbersaw when chase enabled");
-            menu.AddItem(new MenuItem("comboKey", "Chase").SetValue(new KeyBind('F', KeyBindType.Press))).ValueChanged
-                += (sender, arg) => { ChaseEnabled = arg.GetNewValue<KeyBind>().Active; };
-            menu.AddItem(new MenuItem("escapeKey", "Escape").SetValue(new KeyBind('G', KeyBindType.Press))).ValueChanged
-                += (sender, arg) => { EscapeEnabled = arg.GetNewValue<KeyBind>().Active; };
+            menu.AddItem(new MenuItem("comboKey", "Chase").SetValue(new KeyBind('F', KeyBindType.Press)))
+                .SetTooltip("Chase/Kill enemy using abilities and items")
+                .ValueChanged += (sender, arg) => { ChaseEnabled = arg.GetNewValue<KeyBind>().Active; };
+            menu.AddItem(new MenuItem("moveKey", "Move").SetValue(new KeyBind('G', KeyBindType.Press)))
+                .SetTooltip("Move to mouse position using Chain and Blink")
+                .ValueChanged += (sender, arg) => { MoveEnabled = arg.GetNewValue<KeyBind>().Active; };
 
             menu.AddToMainMenu();
         }
@@ -41,13 +43,13 @@
 
         public bool ChaseEnabled { get; private set; }
 
-        public bool EscapeEnabled { get; private set; }
-
         public bool IsCenterCameraEnabled => centerHero.GetValue<bool>();
 
         public bool IsEnabled => enabled.GetValue<bool>();
 
         public bool IsSafeChainEnabled => safeChain.GetValue<bool>();
+
+        public bool MoveEnabled { get; private set; }
 
         #endregion
 
