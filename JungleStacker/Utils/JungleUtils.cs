@@ -11,11 +11,11 @@
         #region Static Fields
 
         private static readonly List<string> DuplicateCreeps = new List<string>
-                                                                  {
-                                                                      "npc_dota_neutral_satyr_soulstealer",
-                                                                      "npc_dota_neutral_mud_golem",
-                                                                      "npc_dota_neutral_gnoll_assassin",
-                                                                  };
+                                                                   {
+                                                                       "npc_dota_neutral_satyr_soulstealer",
+                                                                       "npc_dota_neutral_mud_golem",
+                                                                       "npc_dota_neutral_gnoll_assassin",
+                                                                   };
 
         private static readonly List<string> UniqueCreeps = new List<string>
                                                                 {

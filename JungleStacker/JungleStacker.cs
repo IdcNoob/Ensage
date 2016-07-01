@@ -308,11 +308,23 @@
                 return;
             }
 
-            if (!controllableUnits.Exists(x => x.Handle == selected.Handle))
+            var controllable = controllableUnits.FirstOrDefault(x => x.Handle == selected.Handle);
+
+            if (controllable == null)
             {
                 var ctrl = new Controllable(selected);
                 ctrl.OnCampChange += OnCampChange;
                 controllableUnits.Add(ctrl);
+            }
+            else
+            {
+                if (controllable.CurrentCamp != null)
+                {
+                    controllable.CurrentCamp.IsStacking = false;
+                }
+                controllable.OnCampChange -= OnCampChange;
+                controllable.OnClose();
+                controllableUnits.Remove(controllable);
             }
         }
 

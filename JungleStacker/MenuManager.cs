@@ -44,9 +44,9 @@
             menu.AddItem(new MenuItem("heroStack", "Stack with hero").SetValue(new KeyBind('K', KeyBindType.Press)))
                 .SetTooltip("Will stack closest camp with your hero")
                 .ValueChanged += OnHeroStackEabled;
-            menu.AddItem(new MenuItem("forceAdd", "Force add unit").SetValue(new KeyBind('L', KeyBindType.Press)))
+            menu.AddItem(new MenuItem("forceAdd", "Force add/remove unit").SetValue(new KeyBind('L', KeyBindType.Press)))
                 .SetTooltip(
-                    "Will add selected unit to controllables. Useful for ally dominated creep with shared control")
+                    "Will add/remove selected unit to/from controllables. Useful for ally dominated creep with shared control")
                 .ValueChanged += OnMenuForceAdd;
             menu.AddItem(debug = new MenuItem("debug", "Debug").SetValue(false))
                 .SetTooltip("Shows more information for debugging")
