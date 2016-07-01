@@ -1,8 +1,11 @@
 ﻿namespace LaneMarker
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Runtime.InteropServices;
     using System.Security.Permissions;
+    using System.Text.RegularExpressions;
 
     using Ensage;
     using Ensage.Common;
@@ -35,7 +38,7 @@
                 new[] { 0.13f, 0.81f } //dire jungle
             };
 
-        private static readonly string[] LaneList = { "Disabled", "Safe", "Mid", "Hard", "Jungle" };
+        private static readonly string[] LaneList = { "None", "Safe", "Mid", "Hard", "Jungle" };
 
         private static readonly Menu Menu = new Menu("Lane Marker", "laneMarker", true);
 
@@ -44,68 +47,44 @@
                 new[]
                     {
                         // safe 
-                        "Disabled", "carry", "carry pls", "farm", "farm pls",
+                        "None", "carry", "carry pls", "farm", "farm pls",
                         "safe lane", "safe lane farm pls", "pick support boys",
                         "afk farm", "playing carry since 1972"
                     },
                 new[]
                     {
                         // mid
-                        "Disabled", "mid", "mid pls", "pro mid here",
-                        "mid or feed", "mid or mid", "mid or techies",
-                        "mid or double mid", "dont even think to take my mid",
-                        "we lost"
+                        "None", "mid", "mid pls", "pro mid here", "mid or feed",
+                        "mid or mid", "mid or techies", "mid or double mid",
+                        "dont even think to take my mid", "we lost"
                     },
                 new[]
                     {
                         // hard
-                        "Disabled", "hard", "hard lane", "solo hard",
+                        "None", "hard", "hard lane", "solo hard",
                         "solo hard pls", "off lane", "solo off pls",
                         "i got this"
                     },
                 new[]
                     {
                         // jungle
-                        "Disabled", "jungle", "woods"
+                        "None", "jungle", "woods"
                     }
             };
 
+        private static KeyValuePair<string, string> currentPair = new KeyValuePair<string, string>("None", "none");
+
+        private static bool displayTempName;
+
         private static bool inGame;
+
+        private static bool locked;
 
         private static int selectedLane;
 
+        private static string tempName;
+
         private static Font textFont;
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        public static void Game_OnUpdate(EventArgs args)
-        {
-            if (!Utils.SleepCheck("laneMarkerDelay"))
-            {
-                return;
-            }
-
-            if (!inGame)
-            {
-                if (!Game.IsInGame || ObjectManager.LocalHero == null)
-                {
-                    Utils.Sleep(3000, "laneMarkerDelay");
-                    return;
-                }
-
-                inGame = true;
-            }
-
-            if (!Game.IsInGame)
-            {
-                inGame = false;
-                return;
-            }
-
-            Utils.Sleep(5000, "laneMarkerDelay");
-        }
 
         #endregion
 
@@ -113,17 +92,46 @@
 
         private static void Drawing_OnEndScene(EventArgs args)
         {
-            if (inGame || selectedLane == 0 || Drawing.Direct3DDevice9 == null)
+            if (inGame || Drawing.Direct3DDevice9 == null)
             {
                 return;
             }
 
             textFont.DrawText(
                 null,
-                LaneList[selectedLane],
+                "Lane: " + LaneList[selectedLane],
                 (int)(HUDInfo.ScreenSizeX() * 0.01),
                 (int)(HUDInfo.ScreenSizeY() * 0.06),
                 Color.Yellow);
+
+            var heroText = currentPair.Key;
+
+            if (heroText.Contains(","))
+            {
+                heroText = currentPair.Key.Substring(0, currentPair.Key.IndexOf(",", StringComparison.Ordinal));
+            }
+
+            if (locked)
+            {
+                heroText += " (locked)";
+            }
+
+            textFont.DrawText(
+                null,
+                "Hero: " + heroText,
+                (int)(HUDInfo.ScreenSizeX() * 0.01),
+                (int)(HUDInfo.ScreenSizeY() * 0.09),
+                Color.Yellow);
+
+            if (displayTempName)
+            {
+                textFont.DrawText(
+                    null,
+                    tempName,
+                    (int)(HUDInfo.ScreenSizeX() * 0.01),
+                    (int)(HUDInfo.ScreenSizeY() * 0.12),
+                    Color.Orange);
+            }
         }
 
         private static void Drawing_OnPostReset(EventArgs args)
@@ -136,19 +144,36 @@
             textFont.OnLostDevice();
         }
 
+        private static void FindHero()
+        {
+        }
+
         [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
         private static void Game_OnFireEvent(FireEventEventArgs args)
         {
-            if (inGame || selectedLane == 0 || args.GameEvent.Name != "hero_picker_shown")
+            if (inGame || args.GameEvent.Name != "hero_picker_shown")
             {
                 return;
             }
 
-            var team = ObjectManager.LocalPlayer.Team == Team.Radiant ? 0 : LaneList.Length - 1;
-            var xy = CoordinateMultiplayers[selectedLane - 1 + team];
+            if (args.GameEvent.Name != "hero_picker_shown")
+            {
+                return;
+            }
 
-            SetCursorPos((int)(HUDInfo.ScreenSizeX() * xy[0]), (int)(HUDInfo.ScreenSizeY() * xy[1]));
-            mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+            if (selectedLane != 0)
+            {
+                var team = ObjectManager.LocalPlayer.Team == Team.Radiant ? 0 : LaneList.Length - 1;
+                var xy = CoordinateMultiplayers[selectedLane - 1 + team];
+
+                SetCursorPos((int)(HUDInfo.ScreenSizeX() * xy[0]), (int)(HUDInfo.ScreenSizeY() * xy[1]));
+                mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+            }
+
+            if (currentPair.Value != "None" && locked)
+            {
+                Game.ExecuteCommand("dota_select_hero " + currentPair.Value);
+            }
 
             var sayTextIndex = Menu.Item(LaneList[selectedLane] + "Text").GetValue<StringList>().SelectedIndex;
 
@@ -156,21 +181,81 @@
             {
                 Game.ExecuteCommand("say_team " + SayText[selectedLane - 1][sayTextIndex]);
             }
+
+            inGame = true;
+        }
+
+        private static void Game_OnUpdate(EventArgs args)
+        {
+            if (inGame || !Utils.SleepCheck("laneMarker.Name"))
+            {
+                return;
+            }
+
+            displayTempName = false;
+            tempName = string.Empty;
         }
 
         private static void Game_OnWndProc(WndEventArgs args)
         {
-            if (inGame || args.Msg != (uint)Utils.WindowsMessages.WM_KEYUP
-                || args.WParam != Menu.Item("hotkey").GetValue<KeyBind>().Key)
+            if (inGame || args.Msg != (uint)Utils.WindowsMessages.WM_KEYUP)
             {
                 return;
             }
-            selectedLane = selectedLane < LaneList.Length - 1 ? selectedLane + 1 : 0;
+
+            if (args.WParam == Menu.Item("laneKey").GetValue<KeyBind>().Key)
+            {
+                selectedLane = selectedLane < LaneList.Length - 1 ? selectedLane + 1 : 0;
+            }
+
+            if (args.WParam == Menu.Item("lockKey").GetValue<KeyBind>().Key)
+            {
+                if (locked)
+                {
+                    locked = false;
+                    displayTempName = false;
+                    tempName = string.Empty;
+                    currentPair = new KeyValuePair<string, string>("None", "none");
+                }
+                else
+                {
+                    locked = true;
+                }
+            }
+
+            if (locked)
+            {
+                return;
+            }
+
+            var keyChar = Convert.ToChar(args.WParam);
+
+            if (!char.IsLetter(keyChar) || char.IsLower(keyChar))
+            {
+                return;
+            }
+
+            tempName = !Utils.SleepCheck("laneMarker.Name") ? tempName + keyChar : keyChar.ToString();
+            Utils.Sleep(2000, "laneMarker.Name");
+            displayTempName = true;
+
+            var namePair =
+                Names.Heroes.FirstOrDefault(
+                    x => Regex.IsMatch(Regex.Replace(x.Key, @"\s+", ""), tempName, RegexOptions.IgnoreCase));
+
+            if (string.IsNullOrEmpty(namePair.Key))
+            {
+                return;
+            }
+
+            currentPair = namePair;
         }
 
         private static void Main()
         {
-            Menu.AddItem(new MenuItem("hotkey", "Change lane key").SetValue(new KeyBind('Q', KeyBindType.Press)))
+            Menu.AddItem(new MenuItem("laneKey", "Change lane key").SetValue(new KeyBind(9, KeyBindType.Press)))
+                .SetTooltip("Only works when not in game");
+            Menu.AddItem(new MenuItem("lockKey", "Lock/Clear").SetValue(new KeyBind(17, KeyBindType.Press)))
                 .SetTooltip("Only works when not in game");
             Menu.AddItem(new MenuItem("defaultLane", "Default lane").SetValue(new StringList(LaneList)))
                 .SetTooltip("This lane wil be marked by default when you restart dota");
@@ -191,14 +276,16 @@
                 Drawing.Direct3DDevice9,
                 new FontDescription
                     {
-                        FaceName = "Tahoma", Height = 39, OutputPrecision = FontPrecision.Raster,
+                        FaceName = "Tahoma", Height = 30, OutputPrecision = FontPrecision.Raster,
                         Quality = FontQuality.ClearTypeNatural, CharacterSet = FontCharacterSet.Hangul, MipLevels = 3,
-                        PitchAndFamily = FontPitchAndFamily.Modern, Weight = FontWeight.Heavy, Width = 15
+                        PitchAndFamily = FontPitchAndFamily.Modern, Weight = FontWeight.Heavy, Width = 12
                     });
 
-            Game.OnUpdate += Game_OnUpdate;
             Game.OnWndProc += Game_OnWndProc;
             Game.OnFireEvent += Game_OnFireEvent;
+            Game.OnUpdate += Game_OnUpdate;
+
+            Events.OnClose += (sender, args) => { inGame = false; };
 
             Drawing.OnPreReset += Drawing_OnPreReset;
             Drawing.OnPostReset += Drawing_OnPostReset;
