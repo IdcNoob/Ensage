@@ -156,11 +156,6 @@
                 return;
             }
 
-            if (args.GameEvent.Name != "hero_picker_shown")
-            {
-                return;
-            }
-
             if (selectedLane != 0)
             {
                 var team = ObjectManager.LocalPlayer.Team == Team.Radiant ? 0 : LaneList.Length - 1;
@@ -168,18 +163,18 @@
 
                 SetCursorPos((int)(HUDInfo.ScreenSizeX() * xy[0]), (int)(HUDInfo.ScreenSizeY() * xy[1]));
                 mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+
+                var sayTextIndex = Menu.Item(LaneList[selectedLane] + "Text").GetValue<StringList>().SelectedIndex;
+
+                if (sayTextIndex != 0)
+                {
+                    Game.ExecuteCommand("say_team " + SayText[selectedLane - 1][sayTextIndex]);
+                }
             }
 
             if (currentPair.Value != "None" && locked)
             {
                 Game.ExecuteCommand("dota_select_hero " + currentPair.Value);
-            }
-
-            var sayTextIndex = Menu.Item(LaneList[selectedLane] + "Text").GetValue<StringList>().SelectedIndex;
-
-            if (sayTextIndex != 0)
-            {
-                Game.ExecuteCommand("say_team " + SayText[selectedLane - 1][sayTextIndex]);
             }
 
             inGame = true;
@@ -281,11 +276,12 @@
                         PitchAndFamily = FontPitchAndFamily.Modern, Weight = FontWeight.Heavy, Width = 12
                     });
 
+            Events.OnClose += (sender, args) => { inGame = false; };
+            Events.OnLoad += (sender, args) => { inGame = true; };
+
             Game.OnWndProc += Game_OnWndProc;
             Game.OnFireEvent += Game_OnFireEvent;
             Game.OnUpdate += Game_OnUpdate;
-
-            Events.OnClose += (sender, args) => { inGame = false; };
 
             Drawing.OnPreReset += Drawing_OnPreReset;
             Drawing.OnPostReset += Drawing_OnPostReset;
