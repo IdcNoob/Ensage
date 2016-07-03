@@ -393,7 +393,7 @@
                 if (usableChakram != null
                     && (distanceToEnemy < 600 || target.GetTurnTime(heroPosition) <= 0 || timberChain.ChakramCombo)
                     && (!whirlingDeath.Combo || !whirlingDeath.ComboDelayPassed)
-                    && TimberPrediction.StraightTime(target.Hero) > 500)
+                    && (TimberPrediction.StraightTime(target.Hero) > 500 || distanceToEnemy < 300))
                 {
                     var predictedPosition = TimberPrediction.PredictedXYZ(
                         target,
