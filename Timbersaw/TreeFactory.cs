@@ -17,9 +17,9 @@
     {
         #region Fields
 
-        public List<TreeDestroyer> UnavailableTrees = new List<TreeDestroyer>();
-
         private readonly List<Tree> allTrees = ObjectManager.GetEntities<Tree>().ToList();
+
+        private readonly List<TreeDestroyer> unavailableTrees = new List<TreeDestroyer>();
 
         #endregion
 
@@ -40,7 +40,8 @@
         {
             if (complete)
             {
-                UnavailableTrees.Clear();
+                unavailableTrees.Clear();
+                return;
             }
 
             if (!Utils.SleepCheck("Timbersaw.ClearUnavailableTrees"))
@@ -48,28 +49,8 @@
                 return;
             }
 
-            UnavailableTrees.RemoveAll(x => x.Time + 2 < Game.RawGameTime);
+            unavailableTrees.RemoveAll(x => x.Time + 2 < Game.RawGameTime);
             Utils.Sleep(2000, "Timbersaw.ClearUnavailableTrees");
-        }
-
-        public IEnumerable<Tree> GetAvailableTrees(
-            Hero hero,
-            Vector3 target,
-            float range,
-            double time = 0,
-            float speed = 1)
-        {
-            return
-                allTrees.OrderBy(x => x.Distance2D(target))
-                    .Where(
-                        x =>
-                        x.Distance2D(hero) <= range && NavMesh.GetCellFlags(x.Position).HasFlag(NavMeshCellFlags.Tree)
-                        && (time <= 0
-                            || !UnavailableTrees.Any(
-                                z =>
-                                z.Position.Distance2D(x) <= z.Radius
-                                && time + hero.GetTurnTime(x) + x.Distance2D(hero) / speed + Game.Ping / 1000 + 0.3
-                                > z.Time)));
         }
 
         public Vector3 GetBlinkPosition(
@@ -131,7 +112,7 @@
 
         public Tree GetDamageTree(Hero hero, Vector3 target, TimberChain timberChain)
         {
-            var delay = Game.RawGameTime + timberChain.CastPoint - Game.Ping / 1000;
+            var delay = Game.RawGameTime + timberChain.CastPoint + Game.Ping / 1000;
 
             var trees = GetAvailableTrees(hero, target, timberChain.GetCastRange(), delay, timberChain.Speed).ToList();
             return
@@ -171,7 +152,7 @@
             {
                 var position = i == count ? end : start.Extend(end, precision * i);
 
-                UnavailableTrees.Add(
+                unavailableTrees.Add(
                     new TreeDestroyer
                         {
                             Position = position, Radius = chakram.Radius,
@@ -203,6 +184,26 @@
 
             return Math.Abs(endDistance + startDistance - distance)
                    < (forceRadius ? radius : (end.Distance2D(start) < radius ? radius : 50));
+        }
+
+        private IEnumerable<Tree> GetAvailableTrees(
+            Hero hero,
+            Vector3 target,
+            float range,
+            double time = 0,
+            float speed = 1)
+        {
+            return
+                allTrees.OrderBy(x => x.Distance2D(target))
+                    .Where(
+                        x =>
+                        x.Distance2D(hero) <= range && NavMesh.GetCellFlags(x.Position).HasFlag(NavMeshCellFlags.Tree)
+                        && (time <= 0
+                            || !unavailableTrees.Any(
+                                z =>
+                                z.Position.Distance2D(x) <= z.Radius
+                                && time + hero.GetTurnTime(x) + x.Distance2D(hero) / speed
+                                >= z.Time)));
         }
 
         #endregion

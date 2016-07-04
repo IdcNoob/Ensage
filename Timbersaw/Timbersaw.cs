@@ -322,7 +322,7 @@
                 {
                     if ((blink == null || !blink.CanBeCasted()) && usableChakram != null
                         && !chakrams.Any(x => x.IsSleeping || x.Casted) && distanceToEnemy < chakram.GetCastRange()
-                        && treeFactory.TreesInPath(hero, targetPosition, 100) > 4)
+                        && treeFactory.TreesInPath(hero, targetPosition, 100) >= 5)
                     {
                         var predictedPosition = TimberPrediction.PredictedXYZ(
                             target,
