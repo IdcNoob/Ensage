@@ -23,6 +23,14 @@
                 return;
             }
 
+            if (Variables.MenuManager.TestEnabled)
+            {
+                var text = Player.QuickBuyItems.Aggregate(
+                    "QB:",
+                    (current, quickBuyItem) => current + (" " + quickBuyItem));
+                Game.PrintMessage(text, MessageType.LogMessage);
+            }
+
             var module = Variables.Modules.FirstOrDefault(x => x.ShouldSpendGold());
             module?.BuyItems();
         }

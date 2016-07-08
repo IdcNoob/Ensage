@@ -18,6 +18,8 @@
 
         private readonly MenuItem nearDeathItems;
 
+        private readonly MenuItem testItem;
+
         #endregion
 
         #region Constructors and Destructors
@@ -45,6 +47,8 @@
                 nearDeathAutoDisable =
                 new MenuItem("nearDeathAutoDisable", "Auto disable after (mins)").SetValue(new Slider(20, 0, 60)));
 
+            menu.AddItem(testItem = new MenuItem("test", "Test")).SetValue(false);
+
             menu.AddSubMenu(nearDeathMenu);
             menu.AddToMainMenu();
         }
@@ -56,6 +60,8 @@
         public int NearDeathAutoDisableTime => nearDeathAutoDisable.GetValue<Slider>().Value;
 
         public bool NearDeathEnabled => nearDeath.IsActive();
+
+        public bool TestEnabled => testItem.IsActive();
 
         public int NearDeathEnemyDistance => nearDeathEnemyDistance.GetValue<Slider>().Value;
 
