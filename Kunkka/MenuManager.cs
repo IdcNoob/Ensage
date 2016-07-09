@@ -22,7 +22,7 @@
 
             menu.AddItem(enabled = new MenuItem("enabled", "Enabled").SetValue(true));
             menu.AddItem(autoReturn = new MenuItem("autoReturn", "Auto return").SetValue(true))
-                .SetTooltip("Will auto return enemy on Torrent, Arrow or Hook");
+                .SetTooltip("Will auto return enemy on Torrent, Ship, Arrow or Hook");
             menu.AddItem(new MenuItem("combo", "Combo").SetValue(new KeyBind('D', KeyBindType.Press)))
                 .SetTooltip("X Mark => Torrent => Return")
                 .ValueChanged += (sender, arg) => { ComboEnabled = arg.GetNewValue<KeyBind>().Active; };

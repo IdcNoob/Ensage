@@ -1,14 +1,16 @@
 ﻿namespace Kunkka.Abilities
 {
     using Ensage;
-    using Ensage.Common;
     using Ensage.Common.Extensions;
+    using Ensage.Common.Objects.UtilityObjects;
 
     using SharpDX;
 
     internal class Xmark : IAbility
     {
         #region Fields
+
+        private readonly Sleeper sleeper = new Sleeper();
 
         private Vector3 position;
 
@@ -19,7 +21,7 @@
         public Xmark(Ability ability)
         {
             Ability = ability;
-            CastPoint = ability.FindCastPoint();
+            CastPoint = (float)ability.FindCastPoint();
         }
 
         #endregion
@@ -28,15 +30,15 @@
 
         public Ability Ability { get; }
 
-        public bool CanBeCasted => Utils.SleepCheck("Kunkka.Xmark") && !Ability.IsHidden && Ability.CanBeCasted();
+        public bool CanBeCasted => !sleeper.Sleeping && !Ability.IsHidden && Ability.CanBeCasted();
 
         public bool Casted => Ability.AbilityState == AbilityState.OnCooldown;
 
-        public double CastPoint { get; }
+        public float CastPoint { get; }
 
         public float CastRange => Ability.Level > 0 ? Ability.GetCastRange() + 100 : 0;
 
-        public double GetSleepTime => CastPoint * 1000 + Game.Ping;
+        public float GetSleepTime => CastPoint * 1000 + Game.Ping;
 
         public bool IsInPhase => Ability.IsInAbilityPhase;
 
@@ -69,7 +71,7 @@
         {
             TimeCasted = Game.RawGameTime + Game.Ping / 1000;
             Ability.UseAbility(target);
-            Utils.Sleep(GetSleepTime + 300, "Kunkka.Xmark");
+            sleeper.Sleep(GetSleepTime + 300);
         }
 
         #endregion

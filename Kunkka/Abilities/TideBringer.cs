@@ -22,7 +22,7 @@
 
         public bool Casted => Ability.AbilityState == AbilityState.OnCooldown;
 
-        public double CastPoint { get; } = 0;
+        public float CastPoint { get; } = 0;
 
         public uint ManaCost { get; } = 0;
 

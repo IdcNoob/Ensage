@@ -12,7 +12,7 @@
 
         bool Casted { get; }
 
-        double CastPoint { get; }
+        float CastPoint { get; }
 
         uint ManaCost { get; }
 

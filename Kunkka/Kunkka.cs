@@ -9,6 +9,7 @@
     using Ensage.Common.Extensions;
     using Ensage.Common.Extensions.SharpDX;
     using Ensage.Common.Objects;
+    using Ensage.Common.Objects.UtilityObjects;
 
     using global::Kunkka.Abilities;
 
@@ -46,6 +47,8 @@
 
         private MenuManager menuManager;
 
+        private Sleeper sleeper;
+
         private Hero target;
 
         private bool targetLocked;
@@ -69,6 +72,9 @@
             menuManager.OnClose();
             allSpells.Clear();
             targetParticle?.Dispose();
+            targetParticle = null;
+            target = null;
+            targetLocked = false;
         }
 
         public void OnDraw()
@@ -125,26 +131,30 @@
 
             var ability = args.Ability;
 
-            if (ability == null || !ability.Equals(xMark.Ability))
+            if (ability == null)
             {
                 return;
             }
 
-            var newTarget = args.Target as Hero;
-
-            if (newTarget == null || newTarget.Team == heroTeam)
+            if (ability.Equals(xMark.Ability) && order == Order.AbilityTarget)
             {
-                return;
+                var newTarget = (Hero)args.Target;
+                if (newTarget.Team != heroTeam)
+                {
+                    manualTarget = newTarget;
+                }
             }
-
-            manualTarget = newTarget;
+            else if (ability.Equals(ghostShip.Ability) && order == Order.AbilityLocation)
+            {
+                ghostShip.Position = hero.Position.Extend(args.TargetPosition, ghostShip.CastRange);
+            }
         }
 
         public void OnLoad()
         {
             hero = ObjectManager.LocalHero;
             heroTeam = hero.Team;
-
+            sleeper = new Sleeper();
             menuManager = new MenuManager(hero.Name);
 
             allSpells.Add(torrent = new Torrent(hero.Spellbook.SpellQ));
@@ -156,14 +166,14 @@
 
         public void OnUpdate()
         {
-            if (!Utils.SleepCheck("Kunkka.Sleep"))
+            if (sleeper.Sleeping)
             {
                 return;
             }
 
             if (Game.IsPaused || !hero.IsAlive || !hero.CanCast() || hero.IsChanneling() || !menuManager.IsEnabled)
             {
-                Utils.Sleep(333, "Kunkka.Sleep");
+                sleeper.Sleep(333);
                 return;
             }
 
@@ -176,6 +186,13 @@
                 }
                 xMark.PhaseStarted = false;
                 xMark.PositionUpdated = true;
+            }
+
+            if (ghostShip.IsInPhase)
+            {
+                ghostShip.HitTime = Game.RawGameTime
+                                    + ghostShip.CastRange
+                                    / (hero.AghanimState() ? ghostShip.AghanimSpeed : ghostShip.Speed);
             }
 
             if (manualTarget != null && xMark.IsInPhase && !xMark.PhaseStarted)
@@ -210,7 +227,7 @@
 
                     xMark.UseAbility(hero);
                     teleport.UseAbility(fountain, true);
-                    Utils.Sleep(1000, "Kunkka.Sleep");
+                    sleeper.Sleep(1000);
                     return;
                 }
             }
@@ -218,11 +235,13 @@
             if (menuManager.HitAndRunEnabled)
             {
                 var blink = hero.FindItem("item_blink");
-
                 if (blink == null)
                 {
                     return;
                 }
+
+                var armlet = hero.FindItem("item_armlet");
+                var armletEnabled = hero.HasModifier("modifier_item_armlet_unholy_strength");
 
                 var hitTarget =
                     (Unit)
@@ -240,8 +259,12 @@
                 if (xReturn.CanBeCasted && !blink.CanBeCasted()
                     && (hitTarget == null || !hitTarget.IsAlive || tideBringer.Casted))
                 {
+                    if (armlet != null && armletEnabled)
+                    {
+                        armlet.ToggleAbility();
+                    }
                     xReturn.UseAbility();
-                    Utils.Sleep(500, "Kunkka.Sleep");
+                    sleeper.Sleep(2000);
                     return;
                 }
 
@@ -250,17 +273,22 @@
                     return;
                 }
 
+                if (armlet != null && !armletEnabled)
+                {
+                    armlet.ToggleAbility();
+                }
+
                 if (hitTarget.Distance2D(hero) > 1200)
                 {
                     hero.Move(hitTarget.Position);
-                    Utils.Sleep(500, "Kunkka.Sleep");
+                    sleeper.Sleep(500);
                     return;
                 }
 
                 if (xMark.CanBeCasted)
                 {
                     xMark.UseAbility(hero);
-                    Utils.Sleep(xMark.GetSleepTime, "Kunkka.Sleep");
+                    sleeper.Sleep(xMark.GetSleepTime);
                     return;
                 }
 
@@ -268,7 +296,7 @@
                 {
                     blink.UseAbility(hitTarget.Position.Extend(hero.Position, hero.AttackRange));
                     tideBringer.UseAbility(hitTarget, true);
-                    Utils.Sleep(300, "Kunkka.Sleep");
+                    sleeper.Sleep(300);
                     return;
                 }
             }
@@ -291,7 +319,7 @@
                 }
 
                 torrent.UseAbility(rune);
-                Utils.Sleep(torrent.GetSleepTime, "Kunkka.Sleep");
+                sleeper.Sleep(torrent.GetSleepTime);
                 return;
             }
 
@@ -344,7 +372,7 @@
                     if (!hero.AghanimState() && torrent.CanBeCasted)
                     {
                         ghostShip.UseAbility(xMark.Position);
-                        Utils.Sleep(ghostShip.GetSleepTime, "Kunkka.Sleep");
+                        sleeper.Sleep(ghostShip.GetSleepTime);
                         return;
                     }
 
@@ -360,7 +388,7 @@
                     && (!fullCombo || (ghostShip.CanBeCasted || !hero.AghanimState() && ghostShip.Cooldown > 2)))
                 {
                     torrent.UseAbility(xMark.Position);
-                    Utils.Sleep(torrent.GetSleepTime, "Kunkka.Sleep");
+                    sleeper.Sleep(torrent.GetSleepTime);
                     return;
                 }
 
@@ -368,7 +396,7 @@
                     && Game.RawGameTime >= torrent.HitTime - xReturn.CastPoint - Game.Ping / 1000)
                 {
                     xReturn.UseAbility();
-                    Utils.Sleep(xReturn.GetSleepTime, "Kunkka.Sleep");
+                    sleeper.Sleep(xReturn.GetSleepTime);
                     return;
                 }
             }
@@ -462,6 +490,23 @@
                     }
                 }
 
+                if (ghostShip.JustCasted)
+                {
+                    var hitTime = ghostShip.HitTime;
+                    if (!hero.AghanimState())
+                    {
+                        hitTime += 0.25 - 0.25 / (150 / Math.Min(Game.Ping, 150));
+                    }
+                    else
+                    {
+                        hitTime -= 0.25 / (150 / Math.Min(Game.Ping, 150));
+                    }
+                    if (xMark.Position.Distance2D(ghostShip.Position) <= ghostShip.Radius && hitTime <= gameTime - delay)
+                    {
+                        xReturn.UseAbility();
+                    }
+                }
+
                 if (arrowCasted && gameTime >= arrowHitTime - delay)
                 {
                     xReturn.UseAbility();
@@ -482,7 +527,7 @@
                 targetLocked = false;
             }
 
-            Utils.Sleep(50, "Kunkka.Sleep");
+            sleeper.Sleep(50);
         }
 
         #endregion
@@ -532,8 +577,8 @@
                 ObjectManager.GetEntities<Unit>()
                     .FirstOrDefault(
                         x =>
-                        x.ClassID == ClassID.CDOTA_BaseNPC && x.HasModifier("modifier_kunkka_torrent_thinker")
-                        && x.Team == heroTeam);
+                        x.ClassID == ClassID.CDOTA_BaseNPC
+                        && x.Modifiers.Any(z => z.Name == "modifier_kunkka_torrent_thinker") && x.Team == heroTeam);
         }
 
         #endregion

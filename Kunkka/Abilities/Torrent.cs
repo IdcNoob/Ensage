@@ -1,22 +1,28 @@
 ﻿namespace Kunkka.Abilities
 {
     using Ensage;
-    using Ensage.Common;
     using Ensage.Common.AbilityInfo;
     using Ensage.Common.Extensions;
+    using Ensage.Common.Objects.UtilityObjects;
 
     using SharpDX;
 
     internal class Torrent : IAbility
     {
+        #region Fields
+
+        private readonly Sleeper sleeper = new Sleeper();
+
+        #endregion
+
         #region Constructors and Destructors
 
         public Torrent(Ability ability)
         {
             Ability = ability;
-            CastPoint = ability.FindCastPoint();
+            CastPoint = (float)ability.FindCastPoint();
             AdditionalDelay = AbilityDatabase.Find(ability.Name).AdditionalDelay;
-            Radius = ability.GetRadius();
+            Radius = ability.GetRadius() + 25;
         }
 
         #endregion
@@ -27,17 +33,17 @@
 
         public double AdditionalDelay { get; }
 
-        public bool CanBeCasted => Utils.SleepCheck("Kunkka.Torrent") && Ability.CanBeCasted();
+        public bool CanBeCasted => !sleeper.Sleeping && Ability.CanBeCasted();
 
         public bool Casted => Ability.Cooldown > 5;
 
-        public double CastPoint { get; }
+        public float CastPoint { get; }
 
         public float CastRange => Ability.GetCastRange() + 100;
 
         public float Cooldown => Ability.Cooldown;
 
-        public double GetSleepTime => CastPoint * 1000 + Game.Ping;
+        public float GetSleepTime => CastPoint * 1000 + Game.Ping;
 
         public double HitTime { get; private set; }
 
@@ -63,7 +69,7 @@
         {
             CalculateHitTime();
             Ability.UseAbility(targetPosition);
-            Utils.Sleep(GetSleepTime + 300, "Kunkka.Torrent");
+            sleeper.Sleep(GetSleepTime + 300);
         }
 
         #endregion
