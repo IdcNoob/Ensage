@@ -7,6 +7,8 @@ using Ensage.Common.Extensions;
 using Ensage.Common.Objects;
 
 namespace AdvancedRangeDisplay {
+    using Ensage.Common.Objects.UtilityObjects;
+
     internal static class Main {
         public static Dictionary<string, uint> AbilitiesDictionary = new Dictionary<string, uint>();
         public static Dictionary<string, uint> ItemsDictionary = new Dictionary<string, uint>();
@@ -14,41 +16,44 @@ namespace AdvancedRangeDisplay {
         public static HashSet<string> ItemsSet = new HashSet<string>();
         private static readonly List<Hero> HeroesLens = new List<Hero>();
 
-        private static bool inGame;
         public static Hero Hero { get; private set; }
 
         public static void Init() {
-            Game.OnUpdate += Game_OnUpdate;
+            Events.OnLoad += Events_OnLoad;
+            Events.OnClose += Events_OnClose;
+        }
+
+        private static void Events_OnClose(object sender, EventArgs e)
+        {
+            Game.OnIngameUpdate -= Game_OnUpdate;
+            AbilitiesDictionary.Clear();
+            ItemsDictionary.Clear();
+            CustomRangesDictionary.Clear();
+            HeroesLens.Clear();
+            ItemsSet.Clear();
+            RangesMenu.HeroMenu.Clear();
+            RangesMenu.Menu.RemoveFromMainMenu();
+            RangesMenu.Menu = null;
+        }
+
+        private static Sleeper sleeper;
+
+        private static void Events_OnLoad(object sender, EventArgs e)
+        {
+            Hero = ObjectManager.LocalHero;
+
+            RangesMenu.Init();
+            Drawings.Init();
+
+            sleeper = new Sleeper();
+            sleeper.Sleep(2000);
+
+            Game.OnIngameUpdate += Game_OnUpdate;
         }
 
         private static void Game_OnUpdate(EventArgs args) {
-            if (!Utils.SleepCheck("advancedRangeDisplay"))
+            if (sleeper.Sleeping)
                 return;
-
-            if (!inGame) {
-                Hero = ObjectManager.LocalHero;
-
-                if (!Game.IsInGame || Hero == null) {
-                    Utils.Sleep(5000, "advancedRangeDisplay");
-                    return;
-                }
-
-                AbilitiesDictionary.Clear();
-                ItemsDictionary.Clear();
-                CustomRangesDictionary.Clear();
-                HeroesLens.Clear();
-                ItemsSet.Clear();
-
-                RangesMenu.Init();
-                Drawings.Init();
-
-                inGame = true;
-            }
-
-            if (!Game.IsInGame) {
-                inGame = false;
-                return;
-            }
 
             if (Game.IsPaused)
                 return;
@@ -131,7 +136,7 @@ namespace AdvancedRangeDisplay {
                 }
             }
 
-            Utils.Sleep(5000, "advancedRangeDisplay");
+            sleeper.Sleep(5555);
         }
 
         public static string GetDefaultName(this string name) {

@@ -11,13 +11,9 @@ namespace AdvancedRangeDisplay {
     internal static class RangesMenu {
         public static Dictionary<Hero, Menu> HeroMenu = new Dictionary<Hero, Menu>();
 
-        public static Menu Menu { get; private set; }
+        public static Menu Menu { get; set; }
 
         public static void Init() {
-            if (Menu != null) {
-                Menu.RemoveFromMainMenu();
-                HeroMenu.Clear();
-            }
             InitMenu();
         }
 
@@ -44,17 +40,17 @@ namespace AdvancedRangeDisplay {
                     (sender, arg) => { Drawings.ChangeRange(key, hero, arg.GetNewValue<Slider>().Value); };
 
                 spellMenu.AddItem(new MenuItem(key + "red", "Red").SetValue(new Slider(255, 0, 255)))
-                    .SetFontStyle(fontColor: Color.IndianRed)
+                    .SetFontColor(Color.IndianRed)
                     .ValueChanged +=
                     (sender, arg) => { Drawings.ChangeColor(key, arg.GetNewValue<Slider>().Value, Color.Red); };
 
                 spellMenu.AddItem(new MenuItem(key + "green", "Green").SetValue(new Slider(0, 0, 255)))
-                    .SetFontStyle(fontColor: Color.LightGreen)
+                    .SetFontColor(Color.LightGreen)
                     .ValueChanged +=
                     (sender, arg) => { Drawings.ChangeColor(key, arg.GetNewValue<Slider>().Value, Color.Green); };
 
                 spellMenu.AddItem(new MenuItem(key + "blue", "Blue").SetValue(new Slider(0, 0, 255)))
-                    .SetFontStyle(fontColor: Color.LightBlue)
+                    .SetFontColor(Color.LightBlue)
                     .ValueChanged +=
                     (sender, arg) => { Drawings.ChangeColor(key, arg.GetNewValue<Slider>().Value, Color.Blue); };
 
@@ -76,15 +72,21 @@ namespace AdvancedRangeDisplay {
             var castRange = item.GetCastRange();
             if (castRange >= 5000) castRange = item.GetRadius();
 
+            var key = hero.StoredName() + item.StoredName().GetDefaultName();
             var itemName = item.StoredName().GetDefaultName();
-            var key = hero.StoredName() + itemName;
+
+            // yolo temp fixes
+            var tempFix = hero;
+            var tempFix1 =  hero.StoredName() + item.StoredName().GetDefaultName();
+            var tempFix2 = hero.StoredName() + item.StoredName().GetDefaultName();
+            var tempFix3 = hero.StoredName() + item.StoredName().GetDefaultName();
 
             if (castRange > 0 && castRange <= 5000) {
                 var addItem = new Menu(string.Empty, key, false, itemName);
 
                 addItem.AddItem(new MenuItem(key + "enabled", "Enabled"))
                     .SetValue(false)
-                    .ValueChanged += (sender, arg) => { Drawings.DrawRange(hero, itemName, arg.GetNewValue<bool>()); };
+                    .ValueChanged += (sender, arg) => { Drawings.DrawRange(tempFix, itemName, arg.GetNewValue<bool>()); };
 
                 addItem.AddItem(
                     new MenuItem(key + "bonus", "Bonus range").SetValue(new Slider(0, -300, 300)))
@@ -92,19 +94,19 @@ namespace AdvancedRangeDisplay {
                     (sender, arg) => { Drawings.ChangeRange(key, hero, arg.GetNewValue<Slider>().Value); };
 
                 addItem.AddItem(new MenuItem(key + "red", "Red").SetValue(new Slider(255, 0, 255)))
-                    .SetFontStyle(fontColor: Color.IndianRed)
+                    .SetFontColor(Color.IndianRed)
                     .ValueChanged +=
-                    (sender, arg) => { Drawings.ChangeColor(key, arg.GetNewValue<Slider>().Value, Color.Red); };
+                    (sender, arg) => { Drawings.ChangeColor(tempFix1, arg.GetNewValue<Slider>().Value, Color.Red); };
 
                 addItem.AddItem(new MenuItem(key + "green", "Green").SetValue(new Slider(0, 0, 255)))
-                    .SetFontStyle(fontColor: Color.LightGreen)
+                    .SetFontColor(Color.LightGreen)
                     .ValueChanged +=
-                    (sender, arg) => { Drawings.ChangeColor(key, arg.GetNewValue<Slider>().Value, Color.Green); };
+                    (sender, arg) => { Drawings.ChangeColor(tempFix2, arg.GetNewValue<Slider>().Value, Color.Green); };
 
                 addItem.AddItem(new MenuItem(key + "blue", "Blue").SetValue(new Slider(0, 0, 255)))
-                    .SetFontStyle(fontColor: Color.LightBlue)
+                    .SetFontColor(Color.LightBlue)
                     .ValueChanged +=
-                    (sender, arg) => { Drawings.ChangeColor(key, arg.GetNewValue<Slider>().Value, Color.Blue); };
+                    (sender, arg) => { Drawings.ChangeColor(tempFix3, arg.GetNewValue<Slider>().Value, Color.Blue); };
 
                 rangeMenu.AddSubMenu(addItem);
 
@@ -123,13 +125,19 @@ namespace AdvancedRangeDisplay {
 
             var key = hero.StoredName() + texture;
 
+            // yolo temp fixes
+            var tempFix = hero;
+            var tempFix1 = texture + hero.StoredName();
+            var tempFix2 = texture + hero.StoredName();
+            var tempFix3 = texture + hero.StoredName();
+
             var addItem = new Menu(string.Empty, key, false, texture);
 
             addItem.AddItem(new MenuItem(key + "enabled", "Enabled"))
                 .SetValue(false)
                 .SetTooltip(tooltip)
                 .ValueChanged +=
-                (sender, arg) => { Drawings.DrawRange(hero, texture, arg.GetNewValue<bool>(), customRange: true); };
+                (sender, arg) => { Drawings.DrawRange(tempFix, texture, arg.GetNewValue<bool>(), customRange: true); };
 
             addItem.AddItem(
                 new MenuItem(key + "bonus", "Bonus range").SetValue(new Slider(0, -300, 300)))
@@ -137,19 +145,19 @@ namespace AdvancedRangeDisplay {
                 (sender, arg) => { Drawings.ChangeRange(key, hero, arg.GetNewValue<Slider>().Value, true); };
 
             addItem.AddItem(new MenuItem(key + "red", "Red").SetValue(new Slider(255, 0, 255)))
-                .SetFontStyle(fontColor: Color.IndianRed)
+                .SetFontColor(Color.IndianRed)
                 .ValueChanged +=
-                (sender, arg) => { Drawings.ChangeColor(key, arg.GetNewValue<Slider>().Value, Color.Red); };
+                (sender, arg) => { Drawings.ChangeColor(tempFix1, arg.GetNewValue<Slider>().Value, Color.Red); };
 
             addItem.AddItem(new MenuItem(key + "green", "Green").SetValue(new Slider(0, 0, 255)))
-                .SetFontStyle(fontColor: Color.LightGreen)
+                .SetFontColor(Color.LightGreen)
                 .ValueChanged +=
-                (sender, arg) => { Drawings.ChangeColor(key, arg.GetNewValue<Slider>().Value, Color.Green); };
+                (sender, arg) => { Drawings.ChangeColor(tempFix2, arg.GetNewValue<Slider>().Value, Color.Green); };
 
             addItem.AddItem(new MenuItem(key + "blue", "Blue").SetValue(new Slider(0, 0, 255)))
-                .SetFontStyle(fontColor: Color.LightBlue)
+                .SetFontColor(Color.LightBlue)
                 .ValueChanged +=
-                (sender, arg) => { Drawings.ChangeColor(key, arg.GetNewValue<Slider>().Value, Color.Blue); };
+                (sender, arg) => { Drawings.ChangeColor(tempFix3, arg.GetNewValue<Slider>().Value, Color.Blue); };
 
             rangeMenu.AddSubMenu(addItem);
 
