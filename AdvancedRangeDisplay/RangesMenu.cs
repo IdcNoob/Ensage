@@ -8,6 +8,8 @@ using Ensage.Common.Objects;
 using SharpDX;
 
 namespace AdvancedRangeDisplay {
+    using System.Threading.Tasks;
+
     internal static class RangesMenu {
         public static Dictionary<Hero, Menu> HeroMenu = new Dictionary<Hero, Menu>();
 
@@ -17,12 +19,10 @@ namespace AdvancedRangeDisplay {
             InitMenu();
         }
 
-        public static void AddSpells(Hero hero) {
+        public static async void AddSpells(Hero hero) {
             var heroName = hero.StoredName();
 
             var heroMenu = new Menu(string.Empty, heroName, false, heroName);
-
-            HeroMenu.Add(hero, heroMenu);
 
             foreach (
                 var spell in
@@ -34,31 +34,33 @@ namespace AdvancedRangeDisplay {
 
                 spellMenu.AddItem(new MenuItem(key + "enabled", "Enabled")).SetValue(false)
                     .ValueChanged += (sender, arg) => { Drawings.DrawRange(hero, spellName, arg.GetNewValue<bool>()); };
-
+                await Task.Delay(300);
                 spellMenu.AddItem(new MenuItem(key + "bonus", "Bonus range").SetValue(new Slider(0, -300, 300)))
                     .ValueChanged +=
                     (sender, arg) => { Drawings.ChangeRange(key, hero, arg.GetNewValue<Slider>().Value); };
-
+                await Task.Delay(300);
                 spellMenu.AddItem(new MenuItem(key + "red", "Red").SetValue(new Slider(255, 0, 255)))
                     .SetFontColor(Color.IndianRed)
                     .ValueChanged +=
                     (sender, arg) => { Drawings.ChangeColor(key, arg.GetNewValue<Slider>().Value, Color.Red); };
-
+                await Task.Delay(300);
                 spellMenu.AddItem(new MenuItem(key + "green", "Green").SetValue(new Slider(0, 0, 255)))
                     .SetFontColor(Color.LightGreen)
                     .ValueChanged +=
                     (sender, arg) => { Drawings.ChangeColor(key, arg.GetNewValue<Slider>().Value, Color.Green); };
-
+                await Task.Delay(300);
                 spellMenu.AddItem(new MenuItem(key + "blue", "Blue").SetValue(new Slider(0, 0, 255)))
                     .SetFontColor(Color.LightBlue)
                     .ValueChanged +=
                     (sender, arg) => { Drawings.ChangeColor(key, arg.GetNewValue<Slider>().Value, Color.Blue); };
-
+                await Task.Delay(300);
                 heroMenu.AddSubMenu(spellMenu);
 
                 Main.AbilitiesDictionary.Add(key, Math.Max(spell.Level, 1));
+                await Task.Delay(500);
             }
 
+            HeroMenu.Add(hero, heroMenu);
             Menu.AddSubMenu(heroMenu);
         }
 

@@ -31,6 +31,7 @@ namespace AdvancedRangeDisplay {
             CustomRangesDictionary.Clear();
             HeroesLens.Clear();
             ItemsSet.Clear();
+            HeroesAdded.Clear();
             RangesMenu.HeroMenu.Clear();
             RangesMenu.Menu.RemoveFromMainMenu();
             RangesMenu.Menu = null;
@@ -46,26 +47,34 @@ namespace AdvancedRangeDisplay {
             Drawings.Init();
 
             sleeper = new Sleeper();
-            sleeper.Sleep(2000);
 
             Game.OnIngameUpdate += Game_OnUpdate;
         }
+
+        private static readonly List<uint> HeroesAdded = new List<uint>(); 
 
         private static void Game_OnUpdate(EventArgs args) {
             if (sleeper.Sleeping)
                 return;
 
+            sleeper.Sleep(5555);
+
             if (Game.IsPaused)
                 return;
 
-            var allHeroes = ObjectManager.GetEntities<Hero>().Where(x => !x.IsIllusion).ToList();
+            var allHeroes = Heroes.All.Where(x => x.IsValid && !x.IsIllusion);
 
             foreach (var hero in allHeroes) {
                 var heroName = hero.StoredName();
 
                 if (!RangesMenu.HeroMenu.ContainsKey(hero)) {
-                    RangesMenu.AddSpells(hero);
-                    RangesMenu.AddCustomItem(hero, "attribute_bonus", 1300, "Experience range");
+                    if (!HeroesAdded.Contains(hero.Handle))
+                    {
+                        RangesMenu.AddSpells(hero);
+                        RangesMenu.AddCustomItem(hero, "attribute_bonus", 1300, "Experience range");
+                        HeroesAdded.Add(hero.Handle);
+                    }
+                    continue;
                 }
 
                 foreach (var spell in
@@ -135,8 +144,6 @@ namespace AdvancedRangeDisplay {
                     Drawings.DrawRange(hero, key.Substring(hero.StoredName().Length), true, customRange: true);
                 }
             }
-
-            sleeper.Sleep(5555);
         }
 
         public static string GetDefaultName(this string name) {
