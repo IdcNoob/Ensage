@@ -5,10 +5,10 @@
     using System.Linq;
 
     using Ensage;
-    using Ensage.Common;
     using Ensage.Common.Extensions;
     using Ensage.Common.Extensions.SharpDX;
     using Ensage.Common.Objects;
+    using Ensage.Common.Objects.UtilityObjects;
 
     using SharpDX;
 
@@ -20,11 +20,15 @@
 
         private readonly MenuManager menuManager = new MenuManager();
 
+        private DotaTexture creeepTexture;
+
         private CreepsData creepsData;
 
         private Hero hero;
 
         private Team heroTeam;
+
+        private MultiSleeper sleeper;
 
         #endregion
 
@@ -103,25 +107,41 @@
                     var mapSize = menuManager.ShowOnMapSize;
                     Vector2 position;
                     Drawing.WorldToScreen(wave.CurrentPosition, out position);
-                    Drawing.DrawText(
-                        "C",
-                        "Arial",
-                        position - new Vector2(0, mapSize),
-                        new Vector2(mapSize),
-                        Color.Orange,
-                        FontFlags.None);
+
+                    if (menuManager.ShowOnMapIcon)
+                    {
+                        Drawing.DrawRect(
+                            position - new Vector2(0, mapSize),
+                            new Vector2(mapSize, mapSize / 1.5f),
+                            creeepTexture);
+                    }
+                    else
+                    {
+                        Drawing.DrawText(
+                            "C",
+                            "Arial",
+                            position - new Vector2(0, mapSize),
+                            new Vector2(mapSize),
+                            Color.Orange,
+                            FontFlags.None);
+                    }
                 }
 
                 if (menuManager.ShowOnMinimapEnabled)
                 {
                     var minimapSize = menuManager.ShowOnMinimapSize;
-                    Drawing.DrawText(
-                        "C",
-                        "Arial",
-                        WorldToMiniMap(wave.CurrentPosition, minimapSize),
-                        new Vector2(minimapSize),
-                        Color.Orange,
-                        FontFlags.None);
+
+                    if (menuManager.ShowOnMinimapIcon)
+                    {
+                        var textureSize = new Vector2(minimapSize, minimapSize / 1.5f);
+                        var position = WorldToMiniMap(wave.CurrentPosition, textureSize);
+                        Drawing.DrawRect(position, textureSize, creeepTexture);
+                    }
+                    else
+                    {
+                        var position = WorldToMiniMap(wave.CurrentPosition, new Vector2(minimapSize));
+                        Drawing.DrawText("C", "Arial", position, new Vector2(minimapSize), Color.Orange, FontFlags.None);
+                    }
                 }
             }
         }
@@ -130,7 +150,11 @@
         {
             hero = ObjectManager.LocalHero;
             heroTeam = hero.Team;
+            creeepTexture =
+                Drawing.GetTexture(
+                    "materials/ensage_ui/heroes_horizontal/creep_" + (heroTeam == Team.Radiant ? "dire" : "radiant"));
             creepsData = new CreepsData(heroTeam);
+            sleeper = new MultiSleeper();
         }
 
         public void OnRemoveEntity(EntityEventArgs args)
@@ -147,14 +171,14 @@
 
         public void OnUpdate()
         {
-            if (!Utils.SleepCheck("PCL.Sleep"))
+            if (sleeper.Sleeping(this))
             {
                 return;
             }
 
-            if (!Utils.SleepCheck("PCL.WavesAdded"))
+            if (sleeper.Sleeping("WavesAdded"))
             {
-                Utils.Sleep(300, "PCL.Sleep");
+                sleeper.Sleep(300, this);
             }
 
             if (Game.IsPaused)
@@ -202,7 +226,7 @@
                 creepWaves.FirstOrDefault(x => x.CurrentPosition.Distance2D(creep) < 1000)?.Creeps.Add(creep);
             }
 
-            if (!Utils.SleepCheck("PCL.WavesAdded"))
+            if (sleeper.Sleeping("WavesAdded"))
             {
                 return;
             }
@@ -212,7 +236,7 @@
             if (Math.Abs(gameTime % 30 - spawnTime) < 0.5)
             {
                 creepsData.LaneData.ForEach(x => creepWaves.Add(new CreepWave(x)));
-                Utils.Sleep(28000, "PCL.WavesAdded");
+                sleeper.Sleep(28000, "WavesAdded");
             }
         }
 
@@ -229,7 +253,7 @@
             return Math.Abs(endDistance + startDistance - distance) < radius;
         }
 
-        private static Vector2 WorldToMiniMap(Vector3 pos, float size)
+        private static Vector2 WorldToMiniMap(Vector3 pos, Vector2 size)
         {
             const float MapLeft = -8000;
             const float MapTop = 7350;
@@ -272,7 +296,7 @@
             var screenX = px + scaledX;
             var screenY = Drawing.Height - scaledY - py;
 
-            return new Vector2((float)Math.Floor(screenX - size / 2), (float)Math.Floor(screenY - size / 2));
+            return new Vector2((float)Math.Floor(screenX - size.X / 2), (float)Math.Floor(screenY - size.Y / 2));
         }
 
         #endregion
