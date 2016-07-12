@@ -68,7 +68,7 @@
     <Compile Include="Helpers\Modifiers.cs" />
     <Compile Include="Items\ArcaneBoots.cs" />
     <Compile Include="Items\Bottle.cs" />
-    <Compile Include="Items\Greaves.cs" />
+    <Compile Include="Items\GuardianGreaves.cs" />
     <Compile Include="Items\MagicStick.cs" />
     <Compile Include="Items\SoulRing.cs" />
     <Compile Include="Items\StashBottle.cs" />

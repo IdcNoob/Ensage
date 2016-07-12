@@ -12,6 +12,8 @@
 
         private readonly MenuItem soulRingEnabled;
 
+        private readonly MenuItem soulRingFountain;
+
         private bool active;
 
         #endregion
@@ -26,6 +28,8 @@
                 .ValueChanged += (sender, args) => Active = args.GetNewValue<KeyBind>().Active;
             menu.AddItem(soulRingEnabled = new MenuItem("soulRingRecovery", "Use soul ring").SetValue(true))
                 .SetTooltip("Will use thresholds from auto soul ring");
+            menu.AddItem(
+                soulRingFountain = new MenuItem("soulRingFountain", "Use soul ring at fountain").SetValue(true));
 
             var forcePick = new Menu("Force Item picking", "forcePick");
             forcePick.AddItem(forcePickWhenMoved = new MenuItem("forcePickMoved", "When hero moved").SetValue(true));
@@ -62,6 +66,8 @@
         public int ForcePickEnemyDistance => forcePickEnemyDistance.GetValue<Slider>().Value;
 
         public bool ForcePickWhenMovedEnabled => forcePickWhenMoved.IsActive();
+
+        public bool SoulRingAtFountain => soulRingFountain.IsActive();
 
         public bool SoulRingEnabled => soulRingEnabled.IsActive();
 

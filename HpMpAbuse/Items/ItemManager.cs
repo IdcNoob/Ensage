@@ -35,7 +35,7 @@
 
             UsableItems.Add(new Mekansm("item_mekansm"));
             UsableItems.Add(new ArcaneBoots("item_arcane_boots"));
-            UsableItems.Add(new Greaves("item_guardian_greaves"));
+            UsableItems.Add(new GuardianGreaves("item_guardian_greaves"));
             UsableItems.Add(SoulRing = new SoulRing("item_soul_ring"));
             UsableItems.Add(Bottle = new Bottle("item_bottle"));
             UsableItems.Add(StashBottle = new StashBottle("item_bottle"));
@@ -193,7 +193,7 @@
             StashBottleTaken = true;
             Bottle.Item = StashBottle.Item;
             Bottle.SetSleep(300 + Game.Ping);
-            Sleeper.Sleep(5000, this);
+            Sleeper.Sleep(300 + Game.Ping, this);
         }
 
         #endregion

@@ -112,6 +112,12 @@
             }
             switch (args.Order)
             {
+                case Order.MoveItem:
+                case Order.DropItem:
+                case Order.PickItem:
+                case Order.BuyItem:
+                    Sleeper.Sleep(200 + Game.Ping, itemManager);
+                    break;
                 case Order.AttackTarget:
                 case Order.AttackLocation:
                     if (itemManager.PowerTreads.IsValid())

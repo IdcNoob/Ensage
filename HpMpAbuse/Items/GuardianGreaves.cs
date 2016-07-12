@@ -3,13 +3,12 @@
     using System.Linq;
 
     using Ensage;
-    using Ensage.Common.Extensions;
 
-    internal sealed class Greaves : UsableItem
+    internal sealed class GuardianGreaves : UsableItem
     {
         #region Constructors and Destructors
 
-        public Greaves(string name)
+        public GuardianGreaves(string name)
             : base(name)
         {
             ManaRestore =
@@ -25,8 +24,7 @@
 
         public override bool CanBeCasted()
         {
-            return base.CanBeCasted() && Item.CanBeCasted()
-                   && (Hero.Health < Hero.MaximumHealth || Hero.Mana < Hero.MaximumMana);
+            return base.CanBeCasted() && (Hero.Health < Hero.MaximumHealth || Hero.Mana < Hero.MaximumMana);
         }
 
         public override Attribute GetPowerTreadsAttribute()

@@ -1,6 +1,7 @@
 ﻿namespace HpMpAbuse.Items
 {
     using Ensage;
+    using Ensage.Common.Extensions;
 
     using HpMpAbuse.Helpers;
     using HpMpAbuse.Menu;
@@ -28,7 +29,8 @@
         {
             return base.CanBeCasted() && Hero.Health / Hero.MaximumHealth * 100 >= Menu.SoulRing.HealthThreshold
                    && Hero.Mana / Hero.MaximumMana * 100 <= Menu.SoulRing.ManaThreshold
-                   && ((Menu.Recovery.Active && Menu.Recovery.SoulRingEnabled)
+                   && ((Menu.Recovery.Active && Menu.Recovery.SoulRingEnabled
+                        && (Menu.Recovery.SoulRingAtFountain || !Hero.HasModifier(Modifiers.FountainRegeneration)))
                        || (!Menu.Recovery.Active && Menu.SoulRing.Enabled));
         }
 
