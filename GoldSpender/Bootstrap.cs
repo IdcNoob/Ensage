@@ -4,7 +4,6 @@
 
     using Ensage;
     using Ensage.Common;
-    using Ensage.Common.Extensions;
 
     internal class Bootstrap
     {
@@ -18,8 +17,8 @@
 
         public void Initialize()
         {
-            Events.OnLoad += OnLoad;
             Variables.MenuManager = new MenuManager();
+            Events.OnLoad += OnLoad;
         }
 
         #endregion
@@ -35,12 +34,12 @@
         {
             Events.OnClose -= OnClose;
             Game.OnIngameUpdate -= Game_OnUpdate;
+            goldSpender.OnClose();
         }
 
         private void OnLoad(object sender, EventArgs e)
         {
-            Variables.Hero = ObjectManager.LocalHero;
-
+            goldSpender.OnLoad();
             Events.OnClose += OnClose;
             Game.OnIngameUpdate += Game_OnUpdate;
         }

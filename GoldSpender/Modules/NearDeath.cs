@@ -1,38 +1,27 @@
 ﻿namespace GoldSpender.Modules
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
     using Ensage;
-    using Ensage.Common;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects;
+
+    using global::GoldSpender.Utils;
 
     internal class NearDeath : GoldManager
     {
         #region Fields
 
-        private readonly List<uint> boughtItems = new List<uint>();
-
-        private Team enemyTeam = Team.None;
-
-        private int lastGold;
+        private readonly Team enemyTeam;
 
         #endregion
 
-        #region Properties
+        #region Constructors and Destructors
 
-        private Team EnemyTeam
+        public NearDeath()
         {
-            get
-            {
-                if (enemyTeam == Team.None)
-                {
-                    enemyTeam = Hero.GetEnemyTeam();
-                }
-                return enemyTeam;
-            }
+            enemyTeam = Hero.GetEnemyTeam();
         }
 
         #endregion
@@ -41,78 +30,90 @@
 
         public override void BuyItems()
         {
-            var item =
-                Variables.ItemsToBuy.OrderByDescending(x => Menu.GetNearDeathItemPriority(x.Key))
-                    .FirstOrDefault(x => Menu.IsNearDeathItemActive(x.Key) && !boughtItems.Contains(x.Value));
+            var enabledItems =
+                Variables.ItemsToBuyNearDeath.OrderByDescending(x => Menu.GetNearDeathItemPriority(x.Key))
+                    .Where(x => Menu.IsNearDeathItemActive(x.Key))
+                    .Select(x => x.Value)
+                    .ToList();
 
-            var itemId = item.Value;
-
-            if (itemId > 0)
+            if (enabledItems.Contains(0))
             {
-                var itemName = item.Key;
+                enabledItems.InsertRange(enabledItems.FindIndex(x => x == 0), Player.QuickBuyItems);
+                enabledItems.Remove(0);
+            }
 
-                if (itemId == 1)
+            var itemsToBuy = new List<uint>();
+            var unreliableGold = UnreliableGold;
+            var reliableGold = ReliableGold;
+
+            if (ShouldSaveForBuyback(Menu.NearDeathSaveBuybackTime))
+            {
+                SaveBuyBackGold(out reliableGold, out unreliableGold);
+            }
+
+            foreach (var item in
+                enabledItems.Select(Ability.GetAbilityDataByID)
+                    .Where(x => ItemsData.IsPurchasable(x.ID, Hero.ActiveShop)))
+            {
+                switch (item.ID)
                 {
-                    if (Math.Abs(lastGold - TotalGold) > 10)
-                    {
-                        BuyItem(itemId);
-                    }
-                    else
-                    {
-                        boughtItems.Add(itemId);
-                    }
+                    case 42: // observer
+                    case 43: // sentry
+                        if (GetWardsCount(item.ID) >= 2)
+                        {
+                            continue;
+                        }
+                        break;
+                    case 46: // teleport scroll
+                        if (GetItemCount(item.ID) >= 2 || Hero.FindItem("item_travel_boots", true) != null
+                            || Hero.FindItem("item_travel_boots_2", true) != null)
+                        {
+                            continue;
+                        }
+                        break;
+                    case 59: // energy booster
+                        if (Hero.FindItem("item_arcane_boots") != null)
+                        {
+                            continue;
+                        }
+                        break;
+                    case 188: // smoke
+                        if (GetItemCount(item.ID) >= 1)
+                        {
+                            continue;
+                        }
+                        break;
                 }
-                else
+
+                if (unreliableGold >= item.Cost)
                 {
-                    var preventPurshase = false;
-
-                    switch (itemId)
-                    {
-                        case 46: // tp
-                            if (GetCount(itemName) >= 2 || Hero.FindItem("item_travel_boots", true) != null
-                                || Hero.FindItem("item_travel_boots_2", true) != null)
-                            {
-                                preventPurshase = true;
-                            }
-                            break;
-                        case 43: // sentry
-                            if (GetWardsCount(itemName) >= 3)
-                            {
-                                preventPurshase = true;
-                            }
-                            break;
-                    }
-
-                    if (!preventPurshase)
-                    {
-                        BuyItem(itemId);
-                    }
-
-                    boughtItems.Add(itemId);
+                    itemsToBuy.Add(item.ID);
+                    unreliableGold -= (int)item.Cost;
+                }
+                else if (reliableGold + unreliableGold >= item.Cost)
+                {
+                    itemsToBuy.Add(item.ID);
+                    break;
                 }
             }
-            else
+
+            itemsToBuy.ForEach(x => Player.BuyItem(Hero, x));
+
+            if (itemsToBuy.Any())
             {
-                Utils.Sleep(20000, "GoldSpender.NearDeath.AllBought");
-                boughtItems.Clear();
+                Sleeper.Sleep(20000);
             }
         }
 
         public override bool ShouldSpendGold()
         {
-            if (!Utils.SleepCheck("GoldSpender.NearDeath.AllBought"))
+            if (Sleeper.Sleeping)
             {
                 return false;
             }
 
-            var disableTime = Menu.NearDeathAutoDisableTime;
-
-            if (!Menu.NearDeathEnabled || disableTime > 0 && Game.GameTime / 60 > disableTime || UnreliableGold < 20)
+            if (!Menu.NearDeathEnabled || GoldLossOnDeath <= 20)
             {
-                if (boughtItems.Any())
-                {
-                    boughtItems.Clear();
-                }
                 return false;
             }
 
@@ -120,7 +121,7 @@
 
             return (float)Hero.Health / Hero.MaximumHealth <= (float)Menu.NearDeathHpThreshold / 100
                    && (distance <= 0
-                       || Heroes.GetByTeam(EnemyTeam)
+                       || Heroes.GetByTeam(enemyTeam)
                               .Any(x => !x.IsIllusion && x.IsAlive && x.Distance2D(Hero) <= distance));
         }
 
@@ -128,32 +129,19 @@
 
         #region Methods
 
-        private void BuyItem(uint id)
+        private uint GetItemCount(uint itemId)
         {
-            if (id == 1)
-            {
-                Game.ExecuteCommand("dota_purchase_quickbuy");
-                lastGold = TotalGold;
-            }
-            else
-            {
-                Player.BuyItem(Hero, id);
-            }
+            return (Hero.Inventory.Items.FirstOrDefault(x => x.ID == itemId)?.CurrentCharges ?? 0)
+                   + (Hero.Inventory.StashItems.FirstOrDefault(x => x.ID == itemId)?.CurrentCharges ?? 0);
         }
 
-        private uint GetCount(string itemName)
+        private uint GetWardsCount(uint itemId)
         {
-            return (Hero.Inventory.Items.FirstOrDefault(x => x.Name == itemName)?.CurrentCharges ?? 0)
-                   + (Hero.Inventory.StashItems.FirstOrDefault(x => x.Name == itemName)?.CurrentCharges ?? 0);
-        }
+            var inventoryDispenser = Hero.Inventory.Items.FirstOrDefault(x => x.ID == 218);
+            var stashDispenser = Hero.Inventory.StashItems.FirstOrDefault(x => x.ID == 218);
 
-        private uint GetWardsCount(string itemName)
-        {
-            var inventoryDispenser = Hero.Inventory.Items.FirstOrDefault(x => x.Name == "item_ward_dispenser");
-            var stashDispenser = Hero.Inventory.StashItems.FirstOrDefault(x => x.Name == "item_ward_dispenser");
-
-            return GetCount(itemName)
-                   + (itemName == "item_ward_observer"
+            return GetItemCount(itemId)
+                   + (itemId == 42
                           ? (inventoryDispenser?.CurrentCharges ?? 0) + (stashDispenser?.CurrentCharges ?? 0)
                           : (inventoryDispenser?.SecondaryCharges ?? 0) + (stashDispenser?.SecondaryCharges ?? 0));
         }

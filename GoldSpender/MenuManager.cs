@@ -8,9 +8,11 @@
     {
         #region Fields
 
-        private readonly MenuItem nearDeath;
+        private readonly MenuItem autoPurchase;
 
-        private readonly MenuItem nearDeathAutoDisable;
+        private readonly MenuItem autoPurchaseSaveBuyback;
+
+        private readonly MenuItem nearDeath;
 
         private readonly MenuItem nearDeathEnemyDistance;
 
@@ -18,7 +20,7 @@
 
         private readonly MenuItem nearDeathItems;
 
-        private readonly MenuItem testItem;
+        private readonly MenuItem nearDeathSaveBuyback;
 
         #endregion
 
@@ -29,7 +31,6 @@
             var menu = new Menu("Gold Spender", "goldSpender", true, "alchemist_goblins_greed", true);
 
             var nearDeathMenu = new Menu("Near death", "nearDeath");
-
             nearDeathMenu.AddItem(nearDeath = new MenuItem("nearDeathEnabled", "Enabled").SetValue(true));
             nearDeathMenu.AddItem(
                 nearDeathHp = new MenuItem("nearDeathHp", "HP threshold %").SetValue(new Slider(15, 1, 99)));
@@ -40,16 +41,22 @@
                 nearDeathItems =
                 new MenuItem("priorityNearDeathItems", "Items to buy").SetValue(
                     new PriorityChanger(
-                    Variables.ItemsToBuy.Select(x => x.Key).ToList(),
+                    Variables.ItemsToBuyNearDeath.Select(x => x.Key).ToList(),
                     "priorityChangerNearDeathItems",
                     true)));
             nearDeathMenu.AddItem(
-                nearDeathAutoDisable =
-                new MenuItem("nearDeathAutoDisable", "Auto disable after (mins)").SetValue(new Slider(20, 0, 60)));
+                nearDeathSaveBuyback =
+                new MenuItem("nearDeathSaveBuyback", "Save for buyback after (mins)").SetValue(new Slider(30, 0, 60)));
 
-            menu.AddItem(testItem = new MenuItem("test", "Test")).SetValue(false);
+            var autoPurchaseMenu = new Menu("Auto purchase", "autoPurchase");
+            autoPurchaseMenu.AddItem(autoPurchase = new MenuItem("autoPurchaseEnabled", "Enabled").SetValue(false))
+                .SetTooltip("Auto purchase items from quick buy when you are near shop");
+            autoPurchaseMenu.AddItem(
+                autoPurchaseSaveBuyback =
+                new MenuItem("autoPurchaseSaveBuyback", "Save for buyback after (mins)").SetValue(new Slider(30, 0, 60)));
 
             menu.AddSubMenu(nearDeathMenu);
+            menu.AddSubMenu(autoPurchaseMenu);
             menu.AddToMainMenu();
         }
 
@@ -57,15 +64,17 @@
 
         #region Public Properties
 
-        public int NearDeathAutoDisableTime => nearDeathAutoDisable.GetValue<Slider>().Value;
+        public bool AutoPurchaseEnabled => autoPurchase.IsActive();
+
+        public int AutoPurchaseSaveBuybackTime => autoPurchaseSaveBuyback.GetValue<Slider>().Value;
 
         public bool NearDeathEnabled => nearDeath.IsActive();
-
-        public bool TestEnabled => testItem.IsActive();
 
         public int NearDeathEnemyDistance => nearDeathEnemyDistance.GetValue<Slider>().Value;
 
         public int NearDeathHpThreshold => nearDeathHp.GetValue<Slider>().Value;
+
+        public int NearDeathSaveBuybackTime => nearDeathSaveBuyback.GetValue<Slider>().Value;
 
         #endregion
 

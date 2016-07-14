@@ -1,38 +1,56 @@
 ﻿namespace GoldSpender
 {
+    using System.Collections.Generic;
     using System.Linq;
 
     using Ensage;
-    using Ensage.Common;
+    using Ensage.Common.Objects.UtilityObjects;
+
+    using global::GoldSpender.Modules;
 
     internal class GoldSpender
     {
+        #region Fields
+
+        private readonly List<GoldManager> modules = new List<GoldManager>();
+
+        private readonly Sleeper sleeper = new Sleeper();
+
+        #endregion
+
         #region Public Methods and Operators
+
+        public void OnClose()
+        {
+            modules.Clear();
+        }
+
+        public void OnLoad()
+        {
+            Variables.Hero = ObjectManager.LocalHero;
+
+            modules.Add(new NearDeath());
+            modules.Add(new AutoPurchase());
+        }
 
         public void OnUpdate()
         {
-            if (!Utils.SleepCheck("GoldSpender.Sleep"))
+            if (sleeper.Sleeping)
             {
                 return;
             }
 
-            Utils.Sleep(200 + Game.Ping, "GoldSpender.Sleep");
+            sleeper.Sleep(200);
 
             if (Game.IsPaused || !Variables.Hero.IsAlive)
             {
                 return;
             }
 
-            if (Variables.MenuManager.TestEnabled)
+            foreach (var module in modules.Where(x => x.ShouldSpendGold()))
             {
-                var text = Player.QuickBuyItems.Aggregate(
-                    "QB:",
-                    (current, quickBuyItem) => current + (" " + quickBuyItem));
-                Game.PrintMessage(text, MessageType.LogMessage);
+                module.BuyItems();
             }
-
-            var module = Variables.Modules.FirstOrDefault(x => x.ShouldSpendGold());
-            module?.BuyItems();
         }
 
         #endregion
