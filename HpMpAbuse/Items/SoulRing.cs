@@ -27,7 +27,7 @@
 
         public override bool CanBeCasted()
         {
-            return base.CanBeCasted() && Hero.Health / Hero.MaximumHealth * 100 >= Menu.SoulRing.HealthThreshold
+            return base.CanBeCasted() && (float)Hero.Health / Hero.MaximumHealth * 100 >= Menu.SoulRing.HealthThreshold
                    && Hero.Mana / Hero.MaximumMana * 100 <= Menu.SoulRing.ManaThreshold
                    && ((Menu.Recovery.Active && Menu.Recovery.SoulRingEnabled
                         && (Menu.Recovery.SoulRingAtFountain || !Hero.HasModifier(Modifiers.FountainRegeneration)))

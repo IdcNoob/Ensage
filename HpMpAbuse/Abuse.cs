@@ -366,7 +366,7 @@
         {
             return
                 Heroes.GetByTeam(enemyTeam)
-                    .Any(x => !x.IsIllusion && x.IsAlive && x.Distance2D(Hero) <= Menu.Recovery.ForcePickEnemyDistance);
+                    .Any(x => x.IsAlive && x.Distance2D(Hero) <= Menu.Recovery.ForcePickEnemyDistance);
         }
 
         private void UseAbility(ExecuteOrderEventArgs args)
