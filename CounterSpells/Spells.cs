@@ -54,6 +54,7 @@
         public static readonly string[] InstaDisable = {
             "item_sheepstick",
             "item_orchid",
+            "item_bloodthorn",
             "puck_waning_rift",
             "dragon_knight_dragon_tail",
             "lion_voodoo",
@@ -82,7 +83,8 @@
             "keeper_of_the_light_blinding_light",
             "razor_static_link",
             "brewmaster_drunken_haze",
-            "tinker_laser"
+            "tinker_laser",
+            "oracle_fates_edict"
         };
 
         public static readonly string[] Fist = {
@@ -128,6 +130,7 @@
             "antimage_blink",
             "magnataur_skewer",
             "item_force_staff",
+            "item_hurricane_pike",
             "queenofpain_blink",
             "morphling_waveform",
             "sandking_burrowstrike",
@@ -136,6 +139,5 @@
             "earth_spirit_rolling_boulder",
             "ember_spirit_activate_fire_remnant"
         };
-
     }
 }

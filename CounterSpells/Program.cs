@@ -8,7 +8,6 @@ using SharpDX.Direct3D9;
 
 namespace CounterSpells {
     internal static class Program {
-        public static bool inGame;
         public static bool CameraCentered;
         private static Font text;
         public static readonly Menu Menu = new Menu("Counter Spells", "counterSpells", true);
@@ -55,59 +54,12 @@ namespace CounterSpells {
                     Width = 5 * (Menu.Item("size").GetValue<Slider>().Value / 2)
                 });
 
-            Game.OnUpdate += Game_OnUpdate;
-
-            Drawing.OnPreReset += Drawing_OnPreReset;
-            Drawing.OnPostReset += Drawing_OnPostReset;
-            Drawing.OnEndScene += Drawing_OnEndScene;
-        }
-
-        private static void Game_OnUpdate(EventArgs args) {
-            if (!Utils.SleepCheck("CounterDelay"))
-                return;
-
-            if (!inGame) {
-                Hero = ObjectManager.LocalHero;
-
-                if (!Game.IsInGame || Hero == null) {
-                    Utils.Sleep(1000, "CounterDelay");
-                    return;
-                }
-
-                Counter.SpellTimings.Clear();
-
-                inGame = true;
-            }
-
-            if (!Game.IsInGame) {
-                inGame = false;
-                return;
-            }
-
-            if (!Hero.IsAlive || Game.IsPaused || !Menu.Item("key").GetValue<KeyBind>().Active)
-                return;
-
-            if (CameraCentered) {
-                CameraCentered = false;
-                Game.ExecuteCommand("-dota_camera_center_on_hero");
-            }
-
-            if (!Hero.CanUseItems() || Hero.IsChanneling() || Hero.IsInvul() ||
-                (Hero.IsInvisible() && !Hero.IsVisibleToEnemies))
-                return;
-
-            if (Menu.Item("panicMode").GetValue<KeyBind>().Active)
-                Counter.PanicEscape();
-
-            Counter.MainCounters();
-            Counter.Projectile();
-            Counter.Modifier();
-            Counter.SpellModifier();
-            Counter.Effect();
+            Events.OnLoad += OnLoad;
+            Events.OnClose += OnClose;
         }
 
         private static void Drawing_OnEndScene(EventArgs args) {
-            if (Drawing.Direct3DDevice9 == null || Drawing.Direct3DDevice9.IsDisposed || !inGame ||
+            if (Drawing.Direct3DDevice9 == null || Drawing.Direct3DDevice9.IsDisposed ||
                 !Menu.Item("key").GetValue<KeyBind>().Active)
                 return;
 
@@ -129,6 +81,51 @@ namespace CounterSpells {
 
         private static void Drawing_OnPreReset(EventArgs args) {
             text.OnLostDevice();
+        }
+
+        private static void OnClose(object sender, EventArgs e)
+        {
+            Game.OnUpdate -= Game_OnUpdate;
+            Drawing.OnPreReset -= Drawing_OnPreReset;
+            Drawing.OnPostReset -= Drawing_OnPostReset;
+            Drawing.OnEndScene -= Drawing_OnEndScene;
+            Counter.SpellTimings.Clear();
+        }
+
+        private static void OnLoad(object sender, EventArgs e)
+        {
+            Hero = ObjectManager.LocalHero;
+
+            Game.OnUpdate += Game_OnUpdate;
+            Drawing.OnPreReset += Drawing_OnPreReset;
+            Drawing.OnPostReset += Drawing_OnPostReset;
+            Drawing.OnEndScene += Drawing_OnEndScene;
+        }
+
+        private static void Game_OnUpdate(EventArgs args) {
+            if (!Utils.SleepCheck("CounterDelay"))
+                return;
+
+            if (!Hero.IsAlive || Game.IsPaused || !Menu.Item("key").GetValue<KeyBind>().Active)
+                return;
+
+            if (CameraCentered) {
+                CameraCentered = false;
+                Game.ExecuteCommand("-dota_camera_center_on_hero");
+            }
+
+            if (!Hero.CanUseItems() || Hero.IsChanneling() || Hero.IsInvul() ||
+                (Hero.IsInvisible() && !Hero.IsVisibleToEnemies))
+                return;
+
+            if (Menu.Item("panicMode").GetValue<KeyBind>().Active)
+                Counter.PanicEscape();
+
+            Counter.MainCounters();
+            Counter.Projectile();
+            Counter.Modifier();
+            Counter.SpellModifier();
+            Counter.Effect();
         }
     }
 }

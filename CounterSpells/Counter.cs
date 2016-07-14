@@ -2875,7 +2875,6 @@ namespace CounterSpells {
 
                             if (UseOnSelf(castPoint,
                                 Spells.Shift,
-                                Spells.Eul,
                                 Spells.DefVsDamage,
                                 Spells.DefVsMagic,
                                 Spells.Invis)) return;
@@ -3314,7 +3313,7 @@ namespace CounterSpells {
             if (home == null)
                 return false;
 
-            var isLeap = blink.ClassID == ClassID.CDOTA_Item_ForceStaff ||
+            var isLeap = blink.ClassID == ClassID.CDOTA_Item_ForceStaff || blink.ClassID == ClassID.CDOTA_Item_Hurricane_Pike ||
                          blink.ClassID == ClassID.CDOTA_Ability_Mirana_Leap;
             var isInvul = blink.ClassID == ClassID.CDOTA_Ability_EmberSpirit_Activate_FireRemnant ||
                           blink.ClassID == ClassID.CDOTA_Ability_FacelessVoid_TimeWalk;
@@ -3335,7 +3334,7 @@ namespace CounterSpells {
             if (blink.ClassID == ClassID.CDOTA_Ability_Mirana_Leap)
                 castpoint -= Program.Hero.GetTurnTime(home);
 
-            if (blink.ClassID == ClassID.CDOTA_Item_ForceStaff)
+            if (blink.ClassID == ClassID.CDOTA_Item_ForceStaff || blink.ClassID == ClassID.CDOTA_Ability_Nian_Hurricane)
                 castpoint -= 0.13;
 
             if (Program.Hero.HasModifier("modifier_bloodseeker_rupture") && !isInvul)
