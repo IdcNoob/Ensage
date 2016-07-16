@@ -37,7 +37,6 @@
             }
 
             var gold = reliableGold + unreliableGold;
-
             var itemsToBuy = new List<uint>();
 
             foreach (var item in
@@ -62,6 +61,11 @@
                 }
             }
 
+            if (Hero.ActiveShop != ShopType.Base)
+            {
+                itemsToBuy = itemsToBuy.Take(Hero.Inventory.FreeSlots.Count()).ToList();
+            }
+
             itemsToBuy.ForEach(x => Player.BuyItem(Hero, x));
 
             if (itemsToBuy.Any())
@@ -77,7 +81,7 @@
                 return false;
             }
 
-            return Player.QuickBuyItems.Any() && Hero.Inventory.FreeSlots.Any() && Hero.ActiveShop != ShopType.None;
+            return Player.QuickBuyItems.Any() && Hero.ActiveShop != ShopType.None;
         }
 
         #endregion

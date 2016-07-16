@@ -1,13 +1,12 @@
 ﻿namespace GoldSpender.Utils
 {
-    using System;
     using System.Collections.Generic;
 
     using Ensage;
 
     internal static class ItemsData
     {
-        #region Fields
+        #region Static Fields
 
         private static readonly Dictionary<uint, ShopFlags> ItemShops = new Dictionary<uint, ShopFlags>
         {
@@ -56,18 +55,18 @@
 
         public static bool IsPurchasable(uint id, ShopType shop)
         {
-            var shopflags = ShopFlags.None;
+            var shopFlags = ShopFlags.None;
             switch (shop)
             {
                 case ShopType.Base:
-                shopflags = ShopFlags.Base;
-                break;
+                    shopFlags = ShopFlags.Base;
+                    break;
                 case ShopType.Side:
-                shopflags = ShopFlags.Side;
-                break;
+                    shopFlags = ShopFlags.Side;
+                    break;
                 case ShopType.Secret:
-                shopflags = ShopFlags.Secret;
-                break;
+                    shopFlags = ShopFlags.Secret;
+                    break;
             }
 
             ShopFlags itemFlags;
@@ -76,7 +75,7 @@
                 itemFlags = ShopFlags.Base;
             }
 
-            return itemFlags.HasFlag(shopflags);
+            return itemFlags.HasFlag(shopFlags);
         }
 
         #endregion

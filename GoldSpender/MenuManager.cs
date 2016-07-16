@@ -33,7 +33,7 @@
             var nearDeathMenu = new Menu("Near death", "nearDeath");
             nearDeathMenu.AddItem(nearDeath = new MenuItem("nearDeathEnabled", "Enabled").SetValue(true));
             nearDeathMenu.AddItem(
-                nearDeathHp = new MenuItem("nearDeathHp", "HP threshold %").SetValue(new Slider(15, 1, 99)));
+                nearDeathHp = new MenuItem("nearDeathHp", "HP threshold").SetValue(new Slider(250, 1, 500)));
             nearDeathMenu.AddItem(
                 nearDeathEnemyDistance =
                 new MenuItem("nearDeathEnemyDistance", "Enemy distance").SetValue(new Slider(600, 0, 2000)));

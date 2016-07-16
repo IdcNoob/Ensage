@@ -41,35 +41,33 @@
 
         protected void SaveBuyBackGold(out int reliableOut, out int unreliableOut)
         {
-            var reliableGold = ReliableGold;
-            var unreliableGold = UnreliableGold;
+            reliableOut = ReliableGold;
+            unreliableOut = UnreliableGold;
 
             var buybackCost = BuybackCost + GoldLossOnDeath;
 
-            if (unreliableGold + reliableGold >= buybackCost)
+            if (unreliableOut + reliableOut >= buybackCost)
             {
-                if (buybackCost - reliableGold > 0)
+                if (buybackCost - reliableOut > 0)
                 {
-                    buybackCost -= reliableGold;
-                    if (buybackCost - unreliableGold <= 0)
+                    buybackCost -= reliableOut;
+                    if (buybackCost - unreliableOut <= 0)
                     {
-                        reliableGold = 0;
-                        unreliableGold -= buybackCost;
+                        reliableOut = 0;
+                        unreliableOut -= buybackCost;
                     }
                 }
                 else
                 {
-                    reliableGold -= buybackCost;
+                    reliableOut -= buybackCost;
                 }
             }
-
-            reliableOut = reliableGold;
-            unreliableOut = unreliableGold;
         }
 
         protected bool ShouldSaveForBuyback(float time)
         {
-            return time > 0 && Game.GameTime / 60 > time && Hero.Player.BuybackCooldownTime <= 15;
+            return time > 0 && Game.GameTime / 60 > time
+                   && Hero.Player.BuybackCooldownTime < 3.8 * Hero.Level + 5 + Hero.RespawnTimePenalty;
         }
 
         #endregion

@@ -14,7 +14,7 @@
 
         private readonly List<GoldManager> modules = new List<GoldManager>();
 
-        private readonly Sleeper sleeper = new Sleeper();
+        private Sleeper sleeper;
 
         #endregion
 
@@ -28,6 +28,7 @@
         public void OnLoad()
         {
             Variables.Hero = ObjectManager.LocalHero;
+            sleeper = new Sleeper();
 
             modules.Add(new NearDeath());
             modules.Add(new AutoPurchase());
@@ -40,7 +41,7 @@
                 return;
             }
 
-            sleeper.Sleep(200);
+            sleeper.Sleep(100);
 
             if (Game.IsPaused || !Variables.Hero.IsAlive)
             {

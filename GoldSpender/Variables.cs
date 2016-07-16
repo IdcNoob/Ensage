@@ -10,7 +10,7 @@
 
         public static List<uint> HighPriorityItems = new List<uint>
                                                          {
-                                                             60 //Soul Booster
+                                                             60 //Point Booster
                                                          };
 
         public static Dictionary<string, uint> ItemsToBuyNearDeath = new Dictionary<string, uint>

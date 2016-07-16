@@ -97,6 +97,11 @@
                 }
             }
 
+            if (!Hero.IsAlive)
+            {
+                return;
+            }
+
             itemsToBuy.ForEach(x => Player.BuyItem(Hero, x));
 
             if (itemsToBuy.Any())
@@ -119,7 +124,7 @@
 
             var distance = Menu.NearDeathEnemyDistance;
 
-            return (float)Hero.Health / Hero.MaximumHealth <= (float)Menu.NearDeathHpThreshold / 100
+            return Hero.Health <= Menu.NearDeathHpThreshold
                    && (distance <= 0
                        || Heroes.GetByTeam(enemyTeam)
                               .Any(x => !x.IsIllusion && x.IsAlive && x.Distance2D(Hero) <= distance));
