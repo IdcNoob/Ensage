@@ -1,11 +1,17 @@
 ﻿namespace Timbersaw.Abilities
 {
     using Ensage;
-    using Ensage.Common;
     using Ensage.Common.Extensions;
+    using Ensage.Common.Objects.UtilityObjects;
 
     internal abstract class TimberAbility
     {
+        #region Fields
+
+        protected Sleeper Sleeper;
+
+        #endregion
+
         #region Constructors and Destructors
 
         protected TimberAbility(Ability ability)
@@ -13,6 +19,7 @@
             Ability = ability;
             CastPoint = (float)ability.FindCastPoint();
             Name = ability.Name;
+            Sleeper = new Sleeper();
         }
 
         #endregion
@@ -25,7 +32,7 @@
 
         public float GetSleepTime => CastPoint * 1000;
 
-        public bool IsSleeping => !Utils.SleepCheck("Timber." + Name);
+        public bool IsSleeping => Sleeper.Sleeping;
 
         #endregion
 
@@ -39,7 +46,7 @@
 
         public virtual bool CanBeCasted()
         {
-            return Utils.SleepCheck("Timber." + Name) && Ability.CanBeCasted();
+            return !IsSleeping && Ability.CanBeCasted();
         }
 
         public float GetCastRange()

@@ -1,17 +1,24 @@
 ﻿namespace Timbersaw.Abilities
 {
     using Ensage;
-    using Ensage.Common;
     using Ensage.Common.Extensions;
+    using Ensage.Common.Objects.UtilityObjects;
 
     internal class WhirlingDeath : TimberAbility
     {
+        #region Fields
+
+        private readonly Sleeper comboSleeper;
+
+        #endregion
+
         #region Constructors and Destructors
 
         public WhirlingDeath(Ability ability)
             : base(ability)
         {
             Radius = ability.GetRadius();
+            comboSleeper = new Sleeper();
         }
 
         #endregion
@@ -20,7 +27,7 @@
 
         public bool Combo { get; set; }
 
-        public bool ComboDelayPassed => Utils.SleepCheck("Timber.Combo." + Name);
+        public bool ComboDelayPassed => !comboSleeper.Sleeping;
 
         public float Radius { get; }
 
@@ -28,15 +35,15 @@
 
         #region Public Methods and Operators
 
-        public void SetComboDelay(double delay)
+        public void SetComboDelay(float delay)
         {
-            Utils.Sleep(delay, "Timber.Combo." + Name);
+            comboSleeper.Sleep(delay);
         }
 
-        public void UseAbility(bool queue = false)
+        public void UseAbility()
         {
-            Ability.UseAbility(queue);
-            Utils.Sleep(600, "Timber." + Name);
+            Ability.UseAbility();
+            Sleeper.Sleep(1000);
         }
 
         #endregion

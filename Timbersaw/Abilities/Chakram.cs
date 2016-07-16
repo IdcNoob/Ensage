@@ -1,9 +1,9 @@
 ﻿namespace Timbersaw.Abilities
 {
     using Ensage;
-    using Ensage.Common;
     using Ensage.Common.AbilityInfo;
     using Ensage.Common.Extensions;
+    using Ensage.Common.Objects.UtilityObjects;
 
     using SharpDX;
 
@@ -12,6 +12,8 @@
         #region Fields
 
         private readonly Ability returnAbility;
+
+        private readonly Sleeper returnSleeper;
 
         #endregion
 
@@ -24,13 +26,14 @@
             Radius = chakramAbility.GetRadius();
             this.returnAbility = returnAbility;
             ReturnName = returnAbility.Name;
+            returnSleeper = new Sleeper();
         }
 
         #endregion
 
         #region Public Properties
 
-        public bool CanReturn => Utils.SleepCheck("Timber." + ReturnName) && Casted;
+        public bool CanReturn => !returnSleeper.Sleeping && Casted;
 
         public bool Casted => Ability.IsHidden;
 
@@ -57,30 +60,41 @@
             return base.CanBeCasted() && !Casted;
         }
 
+        public bool Damaging(Target enemy)
+        {
+            return Casted && enemy.GetDistance(Position) < Radius - 50;
+        }
+
         public void Return()
         {
             returnAbility.UseAbility();
-            Utils.Sleep(500, "Timber." + ReturnName);
+            returnSleeper.Sleep(500);
         }
 
-        public bool ShouldReturn(Hero hero, Target enemy)
+        public bool ShouldReturn(Hero hero, Target enemy, bool doubleChakramDamage)
         {
-            return Utils.SleepCheck("Timber." + Name) && CanReturn && enemy.IsValid()
-                   && (enemy.GetDistance(Position) > Radius - 50 && enemy.GetTurnTime(Position) > 0
-                       || AbilityDamage.CalculateDamage(Ability, hero, enemy.Hero) / 2 >= enemy.Health);
+            var damage = AbilityDamage.CalculateDamage(Ability, hero, enemy.Hero);
+
+            if (!doubleChakramDamage)
+            {
+                damage /= 2;
+            }
+
+            return !Sleeper.Sleeping && CanReturn && enemy.IsValid()
+                   && (!Damaging(enemy) && enemy.GetTurnTime(Position) > 0 || damage >= enemy.Health);
         }
 
         public void Stop(Hero hero)
         {
             hero.Stop();
-            Utils.Sleep(0, "Timber." + Name);
+            Sleeper.Sleep(Game.Ping);
         }
 
-        public void UseAbility(Vector3 position, Hero enemy, bool queue = false)
+        public void UseAbility(Vector3 position, Hero enemy)
         {
             Position = position;
-            Ability.UseAbility(position, queue);
-            Utils.Sleep(GetSleepTime + 500, "Timber." + Name);
+            Ability.UseAbility(position);
+            Sleeper.Sleep(GetSleepTime + 1000);
         }
 
         #endregion

@@ -5,9 +5,9 @@
     using System.Linq;
 
     using Ensage;
-    using Ensage.Common;
     using Ensage.Common.Extensions;
     using Ensage.Common.Extensions.SharpDX;
+    using Ensage.Common.Objects.UtilityObjects;
 
     using global::Timbersaw.Abilities;
 
@@ -19,7 +19,9 @@
 
         private readonly List<Tree> allTrees = ObjectManager.GetEntities<Tree>().ToList();
 
-        private readonly List<TreeDestroyer> unavailableTrees = new List<TreeDestroyer>();
+        private readonly Sleeper sleeper = new Sleeper();
+
+        private readonly List<Tuple<Vector3, float, float>> unavailableTrees = new List<Tuple<Vector3, float, float>>();
 
         #endregion
 
@@ -44,13 +46,13 @@
                 return;
             }
 
-            if (!Utils.SleepCheck("Timbersaw.ClearUnavailableTrees"))
+            if (sleeper.Sleeping)
             {
                 return;
             }
 
-            unavailableTrees.RemoveAll(x => x.Time + 2 < Game.RawGameTime);
-            Utils.Sleep(2000, "Timbersaw.ClearUnavailableTrees");
+            unavailableTrees.RemoveAll(x => x.Item2 + 2 < Game.RawGameTime);
+            sleeper.Sleep(2000);
         }
 
         public Vector3 GetBlinkPosition(
@@ -110,18 +112,21 @@
                                 x.Distance2D(hero) > 150 && !IsPointOnLine(x.Position, hero.Position, z.Position, 25)));
         }
 
-        public Tree GetDamageTree(Hero hero, Vector3 target, TimberChain timberChain)
+        public Tree GetDamageTree(Hero hero, Vector3 target, TimberChain timberChain, bool dagger = false)
         {
             var delay = Game.RawGameTime + timberChain.CastPoint + Game.Ping / 1000;
 
             var trees = GetAvailableTrees(hero, target, timberChain.GetCastRange(), delay, timberChain.Speed).ToList();
             return
-                trees.FirstOrDefault(
-                    x =>
-                    trees.Where(z => !z.Equals(x))
-                        .All(z => z.Distance2D(hero) > 150 && !IsPointOnLine(z.Position, hero.Position, x.Position, 25))
-                    && (IsPointOnLine(target, hero.Position, x.Position, timberChain.Radius, false)
-                        || x.Distance2D(target) < timberChain.Radius - 50));
+                trees.OrderBy(x => x.Distance2D(target))
+                    .FirstOrDefault(
+                        x =>
+                        trees.Where(z => !z.Equals(x))
+                            .All(
+                                z =>
+                                z.Distance2D(hero) > 150 && !IsPointOnLine(z.Position, hero.Position, x.Position, 25))
+                        && (IsPointOnLine(target, hero.Position, x.Position, timberChain.Radius, false)
+                            || x.Distance2D(target) < timberChain.Radius - 50) && (dagger || x.Distance2D(target) < 600));
         }
 
         public Tree GetMoveTree(Hero hero, Vector3 mouse, float range, float minRange)
@@ -153,11 +158,10 @@
                 var position = i == count ? end : start.Extend(end, precision * i);
 
                 unavailableTrees.Add(
-                    new TreeDestroyer
-                        {
-                            Position = position, Radius = chakram.Radius,
-                            Time = chakram.CastPoint + ping + start.Distance2D(position) / chakram.Speed + time
-                        });
+                    Tuple.Create(
+                        position,
+                        chakram.Radius,
+                        chakram.CastPoint + ping + start.Distance2D(position) / chakram.Speed + time));
             }
         }
 
@@ -187,7 +191,7 @@
         }
 
         private IEnumerable<Tree> GetAvailableTrees(
-            Hero hero,
+            Entity hero,
             Vector3 target,
             float range,
             double time = 0,
@@ -201,9 +205,8 @@
                         && (time <= 0
                             || !unavailableTrees.Any(
                                 z =>
-                                z.Position.Distance2D(x) <= z.Radius
-                                && time + hero.GetTurnTime(x) + x.Distance2D(hero) / speed
-                                >= z.Time)));
+                                z.Item1.Distance2D(x) <= z.Item2
+                                && time + hero.GetTurnTime(x) + x.Distance2D(hero) / speed >= z.Item3)));
         }
 
         #endregion

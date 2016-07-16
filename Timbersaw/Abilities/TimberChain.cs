@@ -1,7 +1,6 @@
 ﻿namespace Timbersaw.Abilities
 {
     using Ensage;
-    using Ensage.Common;
 
     using SharpDX;
 
@@ -51,14 +50,14 @@
         public void Stop(Hero hero)
         {
             hero.Stop();
-            Utils.Sleep(0, "Timber." + Name);
+            Sleeper.Sleep(Game.Ping);
         }
 
         public void UseAbility(Vector3 position, bool enemy = false)
         {
             Ability.UseAbility(position);
             CastedOnEnemy = enemy;
-            Utils.Sleep(GetSleepTime + 1000, "Timber." + Name);
+            Sleeper.Sleep(GetSleepTime + 1000);
         }
 
         #endregion
