@@ -1,115 +1,151 @@
-﻿using System;
-using System.Linq;
-using Ensage;
-using Ensage.Common;
-using Ensage.Common.Extensions;
-using Ensage.Common.Menu;
+﻿namespace AnotherDagonStealer
+{
+    using System;
+    using System.Linq;
 
-namespace AnotherDagonStealer {
-    internal class Program {
-        private static Hero hero;
-        private static Hero heroClone;
+    using Ensage;
+    using Ensage.Common;
+    using Ensage.Common.AbilityInfo;
+    using Ensage.Common.Extensions;
+    using Ensage.Common.Menu;
+    using Ensage.Common.Objects.UtilityObjects;
 
-        private static Item dagon;
-        private static Item dagonClone;
+    internal class Program
+    {
+        #region Static Fields
 
-        private static bool inGame;
+        private static readonly string[] IgnoreModifiers =
+            {
+                "modifier_templar_assassin_refraction_absorb",
+                "modifier_item_blade_mail_reflect",
+                "modifier_item_lotus_orb_active",
+                "modifier_nyx_assassin_spiked_carapace"
+            };
 
         private static readonly Menu Menu = new Menu("Another Dagon Stealer", "dagonStealer", true);
 
-        private static readonly int[] DagonDamage = {400, 500, 600, 700, 800};
+        private static Item dagon;
 
-        private static readonly string[] IgnoreModifiers = {
-            "modifier_templar_assassin_refraction_absorb",
-            "modifier_item_blade_mail_reflect",
-            "modifier_item_lotus_orb_active",
-            "modifier_nyx_assassin_spiked_carapace"
-        };
+        private static Item dagonClone;
 
-        private static void Main() {
-            Menu.AddItem(new MenuItem("key", "Enabled").SetValue(new KeyBind('K', KeyBindType.Toggle, true)));
-            Menu.AddToMainMenu();
+        private static Hero hero;
 
-            Game.OnUpdate += Game_OnUpdate;
-        }
+        private static Hero heroClone;
 
-        private static void Game_OnUpdate(EventArgs args) {
-            if (!Utils.SleepCheck("dagonStealDelay"))
-                return;
+        private static Sleeper sleeper;
 
-            if (!inGame) {
-                hero = ObjectMgr.LocalHero;
+        #endregion
 
-                if (!Game.IsInGame || hero == null) {
-                    Utils.Sleep(1000, "dagonStealDelay");
-                    return;
-                }
+        #region Methods
 
-                inGame = true;
+        private static bool CheckTarget(Unit enemy, bool doubleOwnage = false)
+        {
+            if (enemy.IsIllusion || !enemy.IsValidTarget(dagon.GetCastRange(), true, hero.NetworkPosition))
+            {
+                return false;
             }
 
-            if (!Game.IsInGame) {
-                inGame = false;
+            if (enemy.IsLinkensProtected() || enemy.IsMagicImmune())
+            {
+                return false;
+            }
+
+            if (!enemy.CanDie() || enemy.Modifiers.Any(x => IgnoreModifiers.Any(x.Name.Equals)))
+            {
+                return false;
+            }
+
+            var damage = AbilityDamage.CalculateDamage(dagon, hero, enemy);
+
+            if (doubleOwnage)
+            {
+                damage *= 2;
+            }
+
+            return enemy.Health < damage;
+        }
+
+        private static void Events_OnClose(object sender, EventArgs e)
+        {
+            Game.OnIngameUpdate -= Game_OnUpdate;
+        }
+
+        private static void Events_OnLoad(object sender, EventArgs e)
+        {
+            hero = ObjectManager.LocalHero;
+            sleeper = new Sleeper();
+            Game.OnIngameUpdate += Game_OnUpdate;
+        }
+
+        private static void Game_OnUpdate(EventArgs args)
+        {
+            if (sleeper.Sleeping)
+            {
                 return;
             }
 
             dagon = hero.GetDagon();
 
-            if (dagon == null || Game.IsPaused || !Menu.Item("key").GetValue<KeyBind>().Active) {
-                Utils.Sleep(200, "dagonStealDelay");
+            if (dagon == null || Game.IsPaused || !Menu.Item("key").GetValue<KeyBind>().Active || hero.IsChanneling()
+                || (hero.IsInvisible() && !hero.IsVisibleToEnemies))
+            {
+                sleeper.Sleep(200);
                 return;
             }
 
-            if (hero.IsChanneling() || hero.IsInvisible()) {
-                Utils.Sleep(200, "dagonStealDelay");
-                return;
-            }
-
-            if (hero.ClassID == ClassID.CDOTA_Unit_Hero_ArcWarden) {
+            if (hero.ClassID == ClassID.CDOTA_Unit_Hero_ArcWarden)
+            {
                 heroClone =
-                    ObjectMgr.GetEntities<Hero>()
+                    ObjectManager.GetEntities<Hero>()
                         .FirstOrDefault(
                             x =>
-                                x.IsAlive && x.Team == hero.Team &&
-                                x.Modifiers.Any(mod => mod.Name == "modifier_arc_warden_tempest_double"));
+                            x.IsAlive && x.Team == hero.Team
+                            && x.HasModifier("modifier_arc_warden_tempest_double"));
 
-                if (heroClone != null) {
+                if (heroClone != null)
+                {
                     dagonClone = heroClone.GetDagon();
                 }
             }
 
-            var target = ObjectMgr.GetEntities<Hero>().FirstOrDefault(x => CheckTarget(x));
+            var target = ObjectManager.GetEntities<Hero>().FirstOrDefault(x => CheckTarget(x));
 
-            if (target != null) {
+            if (target != null)
+            {
                 if (hero.CanUseItems() && dagon.CanBeCasted())
+                {
                     dagon.UseAbility(target);
+                }
                 else if (heroClone != null && dagonClone.CanBeCasted() && heroClone.CanUseItems())
+                {
                     dagonClone.UseAbility(target);
-            } else if (heroClone != null) {
-                if (dagonClone.CanBeCasted() && heroClone.CanUseItems() && dagon.CanBeCasted() && hero.CanUseItems()) {
-                    target = ObjectMgr.GetEntities<Hero>().FirstOrDefault(x => CheckTarget(x, true));
-                    if (target != null) {
+                }
+            }
+            else if (heroClone != null)
+            {
+                if (dagonClone.CanBeCasted() && heroClone.CanUseItems() && dagon.CanBeCasted() && hero.CanUseItems())
+                {
+                    target = ObjectManager.GetEntities<Hero>().FirstOrDefault(x => CheckTarget(x, true));
+                    if (target != null)
+                    {
                         dagon.UseAbility(target);
                         dagonClone.UseAbility(target);
                     }
                 }
             }
 
-            Utils.Sleep(200, "dagonStealDelay");
+            sleeper.Sleep(200);
         }
 
-        private static bool CheckTarget(Unit enemy, bool doubleOwnage = false) {
-            if (enemy.IsIllusion || !enemy.IsValidTarget(dagon.GetCastRange(), true, hero.NetworkPosition))
-                return false;
+        private static void Main()
+        {
+            Menu.AddItem(new MenuItem("key", "Enabled").SetValue(new KeyBind('K', KeyBindType.Toggle, true)));
+            Menu.AddToMainMenu();
 
-            if (enemy.IsLinkensProtected() || enemy.IsMagicImmune())
-                return false;
-
-            if (!enemy.CanDie() || enemy.Modifiers.Any(x => IgnoreModifiers.Any(x.Name.Equals)))
-                return false;
-
-            return enemy.Health <
-                   enemy.DamageTaken(DagonDamage[dagon.Level - 1] * (doubleOwnage ? 2 : 1), DamageType.Magical, hero);
+            Events.OnClose += Events_OnClose;
+            Events.OnLoad += Events_OnLoad;
         }
+
+        #endregion
     }
 }

@@ -45,8 +45,7 @@
 
         private void OnLoad(object sender, EventArgs e)
         {
-            //if (ObjectManager.LocalHero.ClassID != ClassID.CDOTA_Unit_Hero_Shredder)
-            if (ObjectManager.LocalHero.Name != "npc_dota_hero_shredder")
+            if (ObjectManager.LocalHero.ClassID != ClassID.CDOTA_Unit_Hero_Shredder)
             {
                 return;
             }

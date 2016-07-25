@@ -121,14 +121,6 @@
             manualTarget = null;
 
             var order = args.Order;
-
-            if (xMark.PhaseStarted && (order == Order.Hold || order == Order.Stop))
-            {
-                xMark.PhaseStarted = false;
-                targetLocked = false;
-                return;
-            }
-
             var ability = args.Ability;
 
             if (ability == null)
@@ -164,6 +156,14 @@
             allSpells.Add(ghostShip = new GhostShip(hero.Spellbook.SpellR));
         }
 
+        public void OnParticleEffectAdded(Entity sender, ParticleEffectAddedEventArgs args)
+        {
+            if (args.Name == "particles/units/heroes/hero_kunkka/kunkka_spell_x_spot.vpcf")
+            {
+                xMark.ParticleEffect = args.ParticleEffect;
+            }
+        }
+
         public void OnUpdate()
         {
             if (sleeper.Sleeping)
@@ -177,15 +177,19 @@
                 return;
             }
 
-            if (!xMark.PositionUpdated && targetLocked)
+            if (xMark.ParticleEffect != null && xMark.Casted)
             {
-                if (xMark.TimeCasted + xMark.CastPoint >= Game.RawGameTime && target != null && target.IsVisible)
+                xMark.Position = xMark.ParticleEffect.Position;
+                if (!xMark.Position.IsZero)
                 {
-                    xMark.Position = target.NetworkPosition;
-                    return;
+                    xMark.ParticleEffect = null;
+                    xMark.TimeCasted = Game.RawGameTime;
+                    targetLocked = true;
+                    if (manualTarget != null)
+                    {
+                        target = manualTarget;
+                    }
                 }
-                xMark.PhaseStarted = false;
-                xMark.PositionUpdated = true;
             }
 
             if (ghostShip.IsInPhase)
@@ -193,17 +197,6 @@
                 ghostShip.HitTime = Game.RawGameTime
                                     + ghostShip.CastRange
                                     / (hero.AghanimState() ? ghostShip.AghanimSpeed : ghostShip.Speed);
-            }
-
-            if (manualTarget != null && xMark.IsInPhase && !xMark.PhaseStarted)
-            {
-                xMark.PhaseStarted = true;
-                target = manualTarget;
-                targetLocked = true;
-                xMark.Position = target.NetworkPosition;
-                xMark.TimeCasted = Game.RawGameTime + Game.Ping / 1000;
-                manualTarget = null;
-                return;
             }
 
             if (menuManager.TpHomeEanbled)
@@ -347,11 +340,6 @@
                         return;
                     }
 
-                    if (!targetLocked)
-                    {
-                        xMark.Position = target.NetworkPosition;
-                    }
-
                     targetLocked = true;
                     comboStarted = true;
                 }
@@ -364,6 +352,11 @@
                 if (xMark.CanBeCasted)
                 {
                     xMark.UseAbility(target);
+                    return;
+                }
+
+                if (xMark.Position.IsZero)
+                {
                     return;
                 }
 
@@ -525,6 +518,7 @@
             if (targetLocked && xMark.Casted && xReturn.Casted)
             {
                 targetLocked = false;
+                xMark.Position = new Vector3();
             }
 
             sleeper.Sleep(50);
