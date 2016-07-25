@@ -6,6 +6,8 @@
     {
         #region Fields
 
+        private readonly MenuItem bottleFountain;
+
         private readonly MenuItem forcePickEnemyDistance;
 
         private readonly MenuItem forcePickWhenMoved;
@@ -24,19 +26,21 @@
         {
             var menu = new Menu("Recovery Abuse", "recoveryAbuse", false, "item_bottle", true);
 
-            menu.AddItem(new MenuItem("recoveryKey", "Recovery key").SetValue(new KeyBind('T', KeyBindType.Press)))
-                .ValueChanged += (sender, args) => Active = args.GetNewValue<KeyBind>().Active;
-            menu.AddItem(soulRingEnabled = new MenuItem("soulRingRecovery", "Use soul ring").SetValue(true))
-                .SetTooltip("Will use thresholds from auto soul ring");
-            menu.AddItem(
-                soulRingFountain = new MenuItem("soulRingFountain", "Use soul ring at fountain").SetValue(true));
-
             var forcePick = new Menu("Force Item picking", "forcePick");
             forcePick.AddItem(forcePickWhenMoved = new MenuItem("forcePickMoved", "When hero moved").SetValue(true));
             forcePick.AddItem(
                 forcePickEnemyDistance =
                 new MenuItem("forcePickEnemyNearDistance", "When enemy in range").SetValue(new Slider(500, 0, 1000))
                     .SetTooltip("If enemy is closer then pick items"));
+
+            menu.AddItem(new MenuItem("recoveryKey", "Recovery key").SetValue(new KeyBind('T', KeyBindType.Press)))
+                .ValueChanged += (sender, args) => Active = args.GetNewValue<KeyBind>().Active;
+            menu.AddItem(soulRingEnabled = new MenuItem("soulRingRecovery", "Use soul ring").SetValue(true))
+                .SetTooltip("Will use thresholds from auto soul ring");
+            menu.AddItem(
+                soulRingFountain = new MenuItem("soulRingFountain", "Use soul ring at fountain").SetValue(true));
+            menu.AddItem(bottleFountain = new MenuItem("bottleFountain", "Auto use bottle at foutain").SetValue(true))
+                .SetTooltip("Will auto use bottle on you and your allies at fountain");
 
             menu.AddSubMenu(forcePick);
 
@@ -62,6 +66,8 @@
                 }
             }
         }
+
+        public bool BottleAtFountain => bottleFountain.IsActive();
 
         public int ForcePickEnemyDistance => forcePickEnemyDistance.GetValue<Slider>().Value;
 

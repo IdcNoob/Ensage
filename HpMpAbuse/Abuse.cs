@@ -26,6 +26,8 @@
 
         private bool heroAttacking;
 
+        private Team heroTeam;
+
         private ItemManager itemManager;
 
         private int manaLeft;
@@ -167,6 +169,7 @@
         {
             Hero = ObjectManager.LocalHero;
             enemyTeam = Hero.GetEnemyTeam();
+            heroTeam = Hero.Team;
             Menu = new MenuManager();
             Sleeper = new MultiSleeper();
 
@@ -274,6 +277,22 @@
                     Sleeper.Sleep(200 + Game.Ping, "Main");
                 }
                 return;
+            }
+
+            if (!Menu.Recovery.Active && itemManager.Bottle.CanBeAutoCasted())
+            {
+                var ally =
+                    Heroes.GetByTeam(heroTeam)
+                        .FirstOrDefault(
+                            x =>
+                            x.IsAlive && !x.IsIllusion && (x.Health < x.MaximumHealth || x.Mana < x.MaximumMana)
+                            && x.Distance2D(Hero) <= itemManager.Bottle.CastRange
+                            && !x.HasModifier(Modifiers.BottleRegeneration));
+
+                if (ally != null)
+                {
+                    itemManager.Bottle.UseOn(ally);
+                }
             }
 
             if (Menu.TranquilBoots.CombineEnabled && !Menu.Recovery.Active)
