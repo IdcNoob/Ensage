@@ -87,14 +87,19 @@
 
         public void OnExecuteAbilitiy(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!menuManager.IsEnabled || !menuManager.IsSafeChainEnabled)
+            if (!menuManager.IsEnabled)
             {
                 return;
             }
 
             if (menuManager.ChaseEnabled && args.Order == Order.MoveLocation)
             {
-                sleeper.Sleep(1000, orbwalker);
+                sleeper.Sleep(500, orbwalker);
+            }
+
+            if (!menuManager.IsSafeChainEnabled)
+            {
+                return;
             }
 
             var ability = args.Ability;
