@@ -37,7 +37,7 @@
             return Attribute.Agility;
         }
 
-        public override void Use()
+        public override void Use(bool queue = true)
         {
             Sleeper.Sleep(100 + Game.Ping, Name);
         }

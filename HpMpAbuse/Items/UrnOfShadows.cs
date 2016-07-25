@@ -37,9 +37,9 @@
             return Attribute.Agility;
         }
 
-        public override void Use()
+        public override void Use(bool queue = true)
         {
-            Item.UseAbility(Hero, true);
+            Item.UseAbility(Hero, queue);
             Sleeper.Sleep(1000, Name);
         }
 

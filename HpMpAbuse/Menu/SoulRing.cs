@@ -32,11 +32,11 @@
                 new MenuItem("enabledSRAbilities", "Enabled for").SetValue(new AbilityToggler(abilities)));
             menu.AddItem(
                 manaThreshold =
-                new MenuItem("soulringMPThreshold", "MP% threshold").SetValue(new Slider(90, 0, 100))
+                new MenuItem("soulringMPThreshold", "MP% threshold").SetValue(new Slider(90))
                     .SetTooltip("Don't use soul ring if you have more MP%"));
             menu.AddItem(
                 healthThreshold =
-                new MenuItem("soulringHPThreshold", "HP% threshold").SetValue(new Slider(30, 0, 100))
+                new MenuItem("soulringHPThreshold", "HP% threshold").SetValue(new Slider(30))
                     .SetTooltip("Don't use soul ring if you have less HP%"));
 
             mainMenu.AddSubMenu(menu);

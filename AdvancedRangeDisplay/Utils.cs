@@ -12,6 +12,11 @@
 
         public static string GetDefaultName(this Ability ability)
         {
+            if (ability == null || !ability.IsValid)
+            {
+                return string.Empty;
+            }
+
             var name = ability.StoredName();
             return char.IsDigit(name[name.Length - 1]) ? name.Remove(name.Length - 2) : name;
         }

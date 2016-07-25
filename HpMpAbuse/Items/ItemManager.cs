@@ -95,6 +95,11 @@
                 .ForEach(x => DropItem(x));
         }
 
+        public int DroppedItemsCount()
+        {
+            return droppedItems.Count;
+        }
+
         public void OnClose()
         {
             Game.OnIngameUpdate -= OnUpdate;

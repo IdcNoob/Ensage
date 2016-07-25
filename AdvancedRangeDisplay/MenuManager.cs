@@ -58,9 +58,15 @@
         public async void AddMenuItem(Hero hero, Ability ability)
         {
             var abilityName = ability is Item ? ability.GetDefaultName() : ability.StoredName();
+
+            if (string.IsNullOrEmpty(abilityName))
+            {
+                return;
+            }
+
             var key = hero.StoredName() + abilityName;
 
-            var spellMenu = new Menu("  ", key, false, abilityName, true);
+            var abilityMenu = new Menu("  ", key, false, abilityName, true);
 
             var enable = new MenuItem(key + "enabled", "Enabled").SetValue(false);
 
@@ -76,7 +82,7 @@
             enable.ValueChanged += (sender, arg) =>
                 {
                     var enabled = arg.GetNewValue<bool>();
-                    spellMenu.DisplayName = enabled ? " *" : "  ";
+                    abilityMenu.DisplayName = enabled ? " *" : "  ";
                     OnChange?.Invoke(
                         this,
                         new AbilityArgs { Hero = hero, Name = abilityName, Enabled = enabled, Redraw = true });
@@ -106,15 +112,15 @@
                             new AbilityArgs { Hero = hero, Name = abilityName, Blue = arg.GetNewValue<Slider>().Value });
                     };
 
-            spellMenu.AddItem(enable);
+            abilityMenu.AddItem(enable);
             await Task.Delay(222);
-            spellMenu.AddItem(red.SetFontColor(Color.IndianRed));
+            abilityMenu.AddItem(red.SetFontColor(Color.IndianRed));
             await Task.Delay(222);
-            spellMenu.AddItem(green.SetFontColor(Color.LightGreen));
+            abilityMenu.AddItem(green.SetFontColor(Color.LightGreen));
             await Task.Delay(222);
-            spellMenu.AddItem(blue.SetFontColor(Color.LightBlue));
+            abilityMenu.AddItem(blue.SetFontColor(Color.LightBlue));
             await Task.Delay(222);
-            heroMenus.First(x => x.Key.Equals(hero)).Value.AddSubMenu(spellMenu);
+            heroMenus.First(x => x.Key.Equals(hero)).Value.AddSubMenu(abilityMenu);
             await Task.Delay(222);
 
             OnChange?.Invoke(
@@ -125,7 +131,7 @@
                         Green = green.GetValue<Slider>().Value, Blue = blue.GetValue<Slider>().Value, Redraw = true
                     });
 
-            spellMenu.DisplayName = enable.IsActive() ? " *" : "  ";
+            abilityMenu.DisplayName = enable.IsActive() ? " *" : "  ";
         }
 
         public void OnClose()

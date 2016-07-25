@@ -246,7 +246,8 @@
                     itemManager.DropItems(item.GetDropItemStats(), item.Item);
                     item.Use();
                 }
-                Sleeper.Sleep(500 + Game.Ping, "Used");
+
+                Sleeper.Sleep(80 * itemManager.DroppedItemsCount() + Game.Ping, "Used");
             }
             else if (!healing || !Menu.Recovery.Active)
             {
@@ -412,7 +413,7 @@
 
             if (soulRingCondition)
             {
-                itemManager.SoulRing.Use();
+                itemManager.SoulRing.Use(false);
             }
 
             var sleep = Math.Max(ability.FindCastPoint() * 1000, 100) + Game.Ping / 1000 + 300;

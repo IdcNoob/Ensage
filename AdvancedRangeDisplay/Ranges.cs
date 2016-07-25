@@ -36,7 +36,6 @@
             drawedAbilities.SelectMany(x => x.Value).ForEach(x => x.ParticleEffect?.Dispose());
             addedHeroes.Clear();
             drawedAbilities.Clear();
-            drawedAbilities.Clear();
         }
 
         public void OnLoad()
@@ -72,7 +71,7 @@
                 {
                     var itemName = item.GetDefaultName();
 
-                    if (addedItems.ContainsKey(hero.StoredName() + itemName))
+                    if (string.IsNullOrEmpty(itemName) || addedItems.ContainsKey(hero.StoredName() + itemName))
                     {
                         continue;
                     }

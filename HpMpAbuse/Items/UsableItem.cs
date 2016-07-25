@@ -67,9 +67,9 @@ namespace HpMpAbuse.Items
 
         public abstract Attribute GetPowerTreadsAttribute();
 
-        public virtual void Use()
+        public virtual void Use(bool queue = true)
         {
-            Item.UseAbility(true);
+            Item.UseAbility(queue);
             Sleeper.Sleep(1000, Name);
         }
 

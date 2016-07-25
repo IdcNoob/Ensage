@@ -70,7 +70,7 @@
 
             if (itemsToBuy.Any())
             {
-                Sleeper.Sleep(5000);
+                Sleeper.Sleep(10000);
             }
         }
 
