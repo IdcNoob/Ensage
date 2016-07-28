@@ -233,7 +233,7 @@
                     return;
                 }
 
-                if (Hero.IsMoving)
+                if (Hero.NetworkActivity != NetworkActivity.Idle)
                 {
                     Hero.Stop();
                 }

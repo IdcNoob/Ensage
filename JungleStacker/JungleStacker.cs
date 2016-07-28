@@ -8,6 +8,7 @@
     using Ensage.Common;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects;
+    using Ensage.Common.Objects.UtilityObjects;
 
     using global::JungleStacker.Classes;
     using global::JungleStacker.Utils;
@@ -28,9 +29,9 @@
 
         private Team heroTeam;
 
-        private bool inGame;
-
         private JungleCamps jungleCamps;
+
+        private Sleeper sleeper;
 
         #endregion
 
@@ -59,36 +60,23 @@
                 1000f,
                 () =>
                     {
-                        if (!inGame)
+                        var unit = args.Entity as Unit;
+
+                        if (unit == null || !unit.IsValid || !unit.IsControllable || unit.Team != heroTeam
+                            || (unit.IsIllusion && unit.ClassID != hero.ClassID)
+                            || unit.AttackCapability == AttackCapability.None || ignoredUnits.Contains(unit.ClassID))
                         {
                             return;
                         }
 
-                        try
-                        {
-                            var unit = args.Entity as Unit;
-
-                            if (unit == null || !unit.IsControllable || unit.Team != heroTeam
-                                || (unit.IsIllusion && unit.ClassID != hero.ClassID)
-                                || unit.AttackCapability == AttackCapability.None || ignoredUnits.Contains(unit.ClassID))
-                            {
-                                return;
-                            }
-
-                            var contrallable = new Controllable(unit);
-                            contrallable.OnCampChange += OnCampChange;
-                            controllableUnits.Add(contrallable);
-                        }
-                        catch (EntityNotFoundException)
-                        {
-                            // ignored
-                        }
+                        var contrallable = new Controllable(unit);
+                        contrallable.OnCampChange += OnCampChange;
+                        controllableUnits.Add(contrallable);
                     });
         }
 
         public void OnClose()
         {
-            inGame = false;
             jungleCamps.OnClose();
 
             foreach (var unit in controllableUnits)
@@ -144,13 +132,13 @@
 
         public void OnLoad()
         {
-            inGame = true;
             hero = ObjectManager.LocalHero;
             heroTeam = hero.Team;
             jungleCamps = new JungleCamps(heroTeam);
             Camp.DisplayOverlay = menu.IsEnabled;
             Camp.Debug = Controllable.Debug = menu.IsDebugEnabled;
             controllableUnits.Add(new Controllable(hero, true));
+            sleeper = new Sleeper();
         }
 
         public void OnRemoveEntity(EntityEventArgs args)
@@ -176,14 +164,14 @@
 
         public void OnUpdate()
         {
-            if (!Ensage.Common.Utils.SleepCheck("JungleStacking.Sleep"))
+            if (sleeper.Sleeping)
             {
                 return;
             }
 
             if (Game.IsPaused || !menu.IsEnabled)
             {
-                Ensage.Common.Utils.Sleep(1000, "JungleStacking.Sleep");
+                sleeper.Sleep(1000);
                 return;
             }
 
@@ -254,7 +242,7 @@
                 }
             }
 
-            Ensage.Common.Utils.Sleep(500, "JungleStacking.Sleep");
+            sleeper.Sleep(500);
         }
 
         #endregion

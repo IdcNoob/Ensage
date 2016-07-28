@@ -10,6 +10,7 @@
     using Ensage.Common.Extensions.SharpDX;
     using Ensage.Common.Objects;
     using Ensage.Common.Objects.DrawObjects;
+    using Ensage.Common.Objects.UtilityObjects;
 
     using global::JungleStacker.Utils;
 
@@ -45,6 +46,8 @@
 
         private bool registered;
 
+        private Sleeper sleeper;
+
         private Vector3 targetPosition;
 
         #endregion
@@ -56,6 +59,8 @@
             Handle = unit.Handle;
             Unit = unit;
             IsHero = isHero;
+            sleeper = new Sleeper();
+
             if (Unit.AttackCapability == AttackCapability.Ranged)
             {
                 isRanged = true;
@@ -270,12 +275,12 @@
 
         private void Game_OnUpdate(EventArgs args)
         {
-            if (!Utils.SleepCheck("JungleStacking.Stack." + Handle))
+            if (sleeper.Sleeping)
             {
                 return;
             }
 
-            Utils.Sleep(200, "JungleStacking.Stack." + Handle);
+            sleeper.Sleep(200);
 
             var gameTime = Game.GameTime;
 

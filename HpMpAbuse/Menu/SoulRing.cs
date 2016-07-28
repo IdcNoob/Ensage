@@ -27,9 +27,7 @@
             var menu = new Menu("Auto Soul Ring", "soulringAbuse", false, "item_soul_ring", true);
 
             menu.AddItem(enabled = new MenuItem("enabledSR", "Enabled").SetValue(true));
-            menu.AddItem(
-                enabledAbilities =
-                new MenuItem("enabledSRAbilities", "Enabled for").SetValue(new AbilityToggler(abilities)));
+            menu.AddItem(enabledAbilities = new MenuItem("enabledSRAbilities", "Enabled for"));
             menu.AddItem(
                 manaThreshold =
                 new MenuItem("soulringMPThreshold", "MP% threshold").SetValue(new Slider(90))

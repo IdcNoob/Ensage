@@ -35,9 +35,7 @@
 
             menu.AddItem(enabled = new MenuItem("enabledMC", "Enabled").SetValue(false))
                 .SetTooltip("Don't forget to change text position");
-            menu.AddItem(
-                enabledAbilities =
-                new MenuItem("enabledMCAbilities", "Enabled for").SetValue(new AbilityToggler(abilities)));
+            menu.AddItem(enabledAbilities = new MenuItem("enabledMCAbilities", "Enabled for"));
             menu.AddItem(
                 manaInfo =
                 new MenuItem("mcManaInfo", "Show mana info").SetValue(true)

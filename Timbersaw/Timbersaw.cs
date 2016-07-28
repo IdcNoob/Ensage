@@ -97,19 +97,22 @@
                 sleeper.Sleep(500, orbwalker);
             }
 
-            if (!menuManager.IsSafeChainEnabled)
-            {
-                return;
-            }
-
             var ability = args.Ability;
 
-            if (ability == null || args.Order != Order.AbilityLocation || !ability.Equals(timberChain.Ability))
+            if (ability == null || args.Order != Order.AbilityLocation)
             {
                 return;
             }
 
-            if (!treeFactory.CheckTree(hero, args.TargetPosition, timberChain))
+            var chakram = chakrams.FirstOrDefault(x => x.Ability.Equals(ability));
+
+            if (chakram != null)
+            {
+                chakram.Position = args.TargetPosition;
+                return;
+            }
+
+            if (!menuManager.IsSafeChainEnabled && ability.Equals(timberChain.Ability) && !treeFactory.CheckTree(hero, args.TargetPosition, timberChain))
             {
                 args.Process = false;
             }
