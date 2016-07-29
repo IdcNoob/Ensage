@@ -50,7 +50,7 @@
         public bool CanBeAutoCasted()
         {
             return base.CanBeCasted() && Item.CurrentCharges > 0 && Menu.Recovery.BottleAtFountain
-                   && !Hero.IsChanneling() && Hero.HasModifier(Modifiers.FountainRegeneration);
+                   && !Hero.IsChanneling();
         }
 
         public override bool CanBeCasted()

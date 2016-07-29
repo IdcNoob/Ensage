@@ -158,13 +158,14 @@
 
         public void PickUpItemsOnMove(ExecuteOrderEventArgs args)
         {
-            if (Sleeper.Sleeping("PickOnMove"))
-            {
-                args.Process = false;
-            }
-
             if (!droppedItems.Any())
             {
+                return;
+            }
+
+            if (Sleeper.Sleeping("Used"))
+            {
+                args.Process = false;
                 return;
             }
 
@@ -172,7 +173,6 @@
             PickUpItems();
             Hero.Move(args.TargetPosition, true);
             Sleeper.Sleep(2000, "Main");
-            Sleeper.Sleep(300 + Game.Ping, "PickOnMove");
         }
 
         public void TakeBottleFromStash()

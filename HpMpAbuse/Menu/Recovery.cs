@@ -10,8 +10,6 @@
 
         private readonly MenuItem forcePickEnemyDistance;
 
-        private readonly MenuItem forcePickWhenMoved;
-
         private readonly MenuItem soulRingEnabled;
 
         private readonly MenuItem soulRingFountain;
@@ -27,7 +25,6 @@
             var menu = new Menu("Recovery Abuse", "recoveryAbuse", false, "item_bottle", true);
 
             var forcePick = new Menu("Force Item picking", "forcePick");
-            forcePick.AddItem(forcePickWhenMoved = new MenuItem("forcePickMoved", "When hero moved").SetValue(true));
             forcePick.AddItem(
                 forcePickEnemyDistance =
                 new MenuItem("forcePickEnemyNearDistance", "When enemy in range").SetValue(new Slider(500, 0, 1000))
@@ -70,8 +67,6 @@
         public bool BottleAtFountain => bottleFountain.IsActive();
 
         public int ForcePickEnemyDistance => forcePickEnemyDistance.GetValue<Slider>().Value;
-
-        public bool ForcePickWhenMovedEnabled => forcePickWhenMoved.IsActive();
 
         public bool SoulRingAtFountain => soulRingFountain.IsActive();
 

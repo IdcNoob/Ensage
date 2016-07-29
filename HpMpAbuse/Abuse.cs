@@ -24,6 +24,8 @@
 
         private Team enemyTeam;
 
+        private Fountain fountain;
+
         private bool heroAttacking;
 
         private Team heroTeam;
@@ -143,7 +145,7 @@
                     break;
                 case Order.MoveLocation:
                 case Order.MoveTarget:
-                    if (Menu.Recovery.Active && Menu.Recovery.ForcePickWhenMovedEnabled)
+                    if (Menu.Recovery.Active)
                     {
                         itemManager.PickUpItemsOnMove(args);
                     }
@@ -172,7 +174,7 @@
             heroTeam = Hero.Team;
             Menu = new MenuManager();
             Sleeper = new MultiSleeper();
-
+            fountain = new Fountain(heroTeam);
             itemManager = new ItemManager();
             abilityUpdater = new AbilityUpdater();
         }
@@ -279,15 +281,16 @@
                 return;
             }
 
-            if (!Menu.Recovery.Active && itemManager.Bottle.CanBeAutoCasted())
+            if (!Menu.Recovery.Active && fountain.BottleCanBeRefilled() && itemManager.Bottle.CanBeAutoCasted())
             {
                 var ally =
                     Heroes.GetByTeam(heroTeam)
+                        .OrderBy(x => x.FindModifier(Modifiers.BottleRegeneration)?.RemainingTime)
                         .FirstOrDefault(
                             x =>
-                            x.IsAlive && !x.IsIllusion && (x.Health < x.MaximumHealth || x.Mana < x.MaximumMana)
-                            && x.Distance2D(Hero) <= itemManager.Bottle.CastRange
-                            && !x.HasModifier(Modifiers.BottleRegeneration));
+                            x.IsAlive && !x.IsInvul() && !x.IsIllusion
+                            && (x.Health < x.MaximumHealth || x.Mana < x.MaximumMana)
+                            && x.Distance2D(Hero) <= itemManager.Bottle.CastRange);
 
                 if (ally != null)
                 {

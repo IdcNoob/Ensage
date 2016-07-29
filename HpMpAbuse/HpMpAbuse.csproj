@@ -64,6 +64,7 @@
     <Compile Include="Abuse.cs" />
     <Compile Include="Bootstrap.cs" />
     <Compile Include="Helpers\AbilityUpdater.cs" />
+    <Compile Include="Helpers\Fountain.cs" />
     <Compile Include="Helpers\ItemsStats.cs" />
     <Compile Include="Helpers\Modifiers.cs" />
     <Compile Include="Items\ArcaneBoots.cs" />
