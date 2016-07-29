@@ -5,8 +5,6 @@
     using Ensage;
     using Ensage.Common.Extensions;
 
-    using global::VisionControl.Units.Wards;
-
     using SharpDX;
 
     internal class EnemyHero
@@ -35,21 +33,11 @@
             Handle = enemy.Handle;
             ObserversCount = CountObservers();
             SentryCount = CountSentries();
-            var name = enemy.Name.Substring("npc_dota_hero_".Length);
-            TextureBig = Drawing.GetTexture("materials/ensage_ui/heroes_horizontal/" + name);
-            TextureSmall = Drawing.GetTexture("materials/ensage_ui/miniheroes/" + name);
-            BigTextureSize = new Vector2(50, 35);
-            SmallTextureSize = new Vector2(20, 20);
-            Class = enemy.ClassID;
         }
 
         #endregion
 
         #region Public Properties
-
-        public Vector2 BigTextureSize { get; }
-
-        public ClassID Class { get; }
 
         public uint Handle { get; }
 
@@ -62,12 +50,6 @@
         public Vector3 Position => hero.Position;
 
         public uint SentryCount { get; set; }
-
-        public Vector2 SmallTextureSize { get; }
-
-        public DotaTexture TextureBig { get; }
-
-        public DotaTexture TextureSmall { get; }
 
         #endregion
 
@@ -93,18 +75,6 @@
         public bool DroppedWard(ClassID id)
         {
             return ObjectManager.GetEntities<PhysicalItem>().Any(x => x.Item.ClassID == id && x.Distance2D(hero) < 100);
-        }
-
-        public bool PlacedWard(out Ward ward)
-        {
-            ward = new ObserverWard(hero.Position);
-            return true;
-        }
-
-        public void UpdateWardsCount()
-        {
-            ObserversCount = CountObservers();
-            SentryCount = CountSentries();
         }
 
         public Vector3 WardPosition()
