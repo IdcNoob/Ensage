@@ -22,8 +22,6 @@
             fountain =
                 ObjectManager.GetEntities<Unit>()
                     .First(x => x.ClassID == ClassID.CDOTA_Unit_Fountain && x.Team == heroTeam);
-
-            Console.WriteLine(fountain.Name);
         }
 
         #endregion
