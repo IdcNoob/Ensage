@@ -34,16 +34,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ensage">
-      <HintPath>D:\Games\PlaySharp\System\Ensage.dll</HintPath>
+      <HintPath>D:\Games\PlaySharp\References\Ensage.dll</HintPath>
     </Reference>
     <Reference Include="Ensage.Common">
-      <HintPath>D:\Games\PlaySharp\System\Ensage.Common.dll</HintPath>
+      <HintPath>D:\Games\PlaySharp\References\Ensage.Common.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>D:\Games\PlaySharp\System\SharpDX.dll</HintPath>
+      <HintPath>D:\Games\PlaySharp\References\SharpDX.dll</HintPath>
     </Reference>
-	<Reference Include="SharpDX.Direct3D9">
-      <HintPath>D:\Games\PlaySharp\System\SharpDX.Direct3D9.dll</HintPath>
+    <Reference Include="SharpDX.Direct3D9">
+      <HintPath>D:\Games\PlaySharp\References\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -54,14 +54,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HeroWard.cs" />
-    <Compile Include="MapWard.cs" />
+    <Compile Include="Bootstrap.cs" />
+    <Compile Include="MenuManager.cs" />
+    <Compile Include="Variables.cs" />
+    <Compile Include="Utils.cs" />
+    <Compile Include="Heroes\EnemyHero.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Units\IUnit.cs" />
+    <Compile Include="Units\Mines\LandMine.cs" />
+    <Compile Include="Units\Mines\Mine.cs" />
+    <Compile Include="Units\NetherWard.cs" />
+    <Compile Include="Units\Wards\ObserverWard.cs" />
+    <Compile Include="Units\PlagueWard.cs" />
+    <Compile Include="Units\PsionicTrap.cs" />
+    <Compile Include="Units\Mines\RemoteMine.cs" />
+    <Compile Include="Units\Wards\SentryWard.cs" />
+    <Compile Include="Units\Mines\StasisTrap.cs" />
+    <Compile Include="Units\Tombstone.cs" />
+    <Compile Include="Units\TreantEye.cs" />
+    <Compile Include="Units\Wards\Ward.cs" />
+    <Compile Include="VisionControl.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
