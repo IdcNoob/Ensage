@@ -37,12 +37,15 @@
             var ranges = new Dictionary<string, bool>(units);
 
             var timers = new Dictionary<string, bool>
-                             {
-                                 { "techies_stasis_trap", true }, { "techies_remote_mines", true },
-                                 { "pugna_nether_ward", true }, { "undying_tombstone", true },
-                                 { "venomancer_plague_ward", true }, { "item_ward_sentry", true },
-                                 { "item_ward_observer", true }
-                             };
+                {
+                    { "techies_stasis_trap", true },
+                    { "techies_remote_mines", true },
+                    { "pugna_nether_ward", true },
+                    { "undying_tombstone", true },
+                    { "venomancer_plague_ward", true },
+                    { "item_ward_sentry", true },
+                    { "item_ward_observer", true }
+                };
 
             unitsMenu.AddItem(enabled = new MenuItem("enabled", "For:").SetValue(new AbilityToggler(units)));
 
