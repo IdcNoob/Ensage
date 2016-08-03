@@ -92,7 +92,7 @@
         {
             if (args.Order == Order.DisassembleItem)
             {
-                Sleeper.Sleep(7000);
+                Sleeper.Sleep(10000);
             }
         }
 

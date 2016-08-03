@@ -15,10 +15,11 @@
         #region Fields
 
         public readonly List<string> IgnoredAbilities = new List<string>
-                                                            {
-                                                                "item_tpscroll", "item_travel_boots",
-                                                                "item_travel_boots_2"
-                                                            };
+            {
+                "item_tpscroll",
+                "item_travel_boots",
+                "item_travel_boots_2"
+            };
 
         private readonly List<string> addedAbilities = new List<string>();
 

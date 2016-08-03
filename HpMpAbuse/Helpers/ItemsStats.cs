@@ -10,11 +10,25 @@
     {
         #region Fields
 
-        private readonly List<string> bonusAllStats = new List<string> { "bonus_all_stats", "bonus_stats" };
+        private readonly List<string> bonusAllStats = new List<string>
+            {
+                "bonus_all_stats",
+                "bonus_stats"
+            };
 
-        private readonly List<string> bonusHealth = new List<string> { "bonus_strength", "bonus_str", "bonus_health", };
+        private readonly List<string> bonusHealth = new List<string>
+            {
+                "bonus_strength",
+                "bonus_str",
+                "bonus_health",
+            };
 
-        private readonly List<string> bonusMana = new List<string> { "bonus_intellect", "bonus_int", "bonus_mana", };
+        private readonly List<string> bonusMana = new List<string>
+            {
+                "bonus_intellect",
+                "bonus_int",
+                "bonus_mana",
+            };
 
         private readonly Dictionary<uint, Stats> savedStats = new Dictionary<uint, Stats>();
 

@@ -46,7 +46,7 @@
 
         private bool registered;
 
-        private Sleeper sleeper;
+        private readonly Sleeper sleeper;
 
         private Vector3 targetPosition;
 
@@ -260,10 +260,12 @@
             }
 
             var campName = new DrawText
-                               {
-                                   Position = campNameTextPosition, Text = text, Color = Color.White,
-                                   TextSize = new Vector2(16)
-                               };
+                {
+                    Position = campNameTextPosition,
+                    Text = text,
+                    Color = Color.White,
+                    TextSize = new Vector2(16)
+                };
 
             if (IsUnderCampNameText && !IsHero)
             {
@@ -361,7 +363,7 @@
                                ? GetAttackPoint() + Unit.Distance2D(target) / projectileSpeed + Unit.GetTurnTime(target)
                                  + Math.Max(0, Unit.Distance2D(target) - attackRange) / Unit.MovementSpeed
                                : Unit.Distance2D(targetPosition) / Unit.MovementSpeed)
-                        + Unit.GetTurnTime(targetPosition) >= CurrentCamp.StackTime)
+                        + Unit.GetTurnTime(targetPosition) + Game.Ping / 1000 >= CurrentCamp.StackTime)
                     {
                         if (attackTarget)
                         {
@@ -402,7 +404,7 @@
                     {
                         if (attackTime <= 0 && Unit.IsAttacking())
                         {
-                            attackTime = gameTime;
+                            attackTime = gameTime + Game.Ping / 1000;
                         }
                         else if (attackTime > 0 && gameTime >= attackTime + GetAttackPoint())
                         {

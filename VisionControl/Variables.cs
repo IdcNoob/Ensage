@@ -13,7 +13,7 @@
     {
         #region Static Fields
 
-        public static Dictionary<string, string> UnitAbilityNames = new Dictionary<string, string>
+        public static readonly Dictionary<string, string> UnitAbilityNames = new Dictionary<string, string>
             {
                 { "npc_dota_techies_land_mine", "techies_land_mines" },
                 { "npc_dota_techies_stasis_trap", "techies_stasis_trap" },
@@ -36,7 +36,7 @@
                 { "npc_dota_observer_wards", "item_ward_observer" }
             };
 
-        public static Dictionary<string, Func<Unit, IUnit>> Units = new Dictionary<string, Func<Unit, IUnit>>
+        public static readonly Dictionary<string, Func<Unit, IUnit>> Units = new Dictionary<string, Func<Unit, IUnit>>
             {
                 { "techies_land_mines", x => new LandMine(x) },
                 { "techies_stasis_trap", x => new StasisTrap(x) },

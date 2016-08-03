@@ -29,13 +29,8 @@
             var rangesMenu = new Menu("Show ranges", "showRanges");
             var timersMenu = new Menu("Show timers", "showTimers");
 
-            var units =
-                Variables.UnitAbilityNames.GroupBy(x => x.Value)
-                    .Select(x => x.First())
-                    .ToDictionary(x => x.Value, x => true);
-
+            var units = Variables.Units.ToDictionary(x => x.Key, x => true);
             var ranges = new Dictionary<string, bool>(units);
-
             var timers = new Dictionary<string, bool>
                 {
                     { "techies_stasis_trap", true },

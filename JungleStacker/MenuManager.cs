@@ -103,7 +103,12 @@
 
         private void OnStateChange(object sender, OnValueChangeEventArgs arg)
         {
-            OnProgramStateChange?.Invoke(this, new MenuArgs { Enabled = arg.GetNewValue<KeyBind>().Active });
+            OnProgramStateChange?.Invoke(
+                this,
+                new MenuArgs
+                    {
+                        Enabled = arg.GetNewValue<KeyBind>().Active
+                    });
         }
 
         private void StacksReset(object sender, OnValueChangeEventArgs arg)

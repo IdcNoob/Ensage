@@ -1,6 +1,5 @@
 ﻿namespace HpMpAbuse.Helpers
 {
-    using System;
     using System.Linq;
 
     using Ensage;

@@ -11,13 +11,13 @@
         #region Fields
 
         public readonly Dictionary<string, Attribute> Attributes = new Dictionary<string, Attribute>
-                                                                       {
-                                                                           { "Don't switch", Attribute.Invalid },
-                                                                           { "Main attribute", Attribute.Invalid },
-                                                                           { "Strength", Attribute.Strength },
-                                                                           { "Intelligence", Attribute.Intelligence },
-                                                                           { "Agility", Attribute.Agility }
-                                                                       };
+            {
+                { "Don't switch", Attribute.Invalid },
+                { "Main attribute", Attribute.Invalid },
+                { "Strength", Attribute.Strength },
+                { "Intelligence", Attribute.Intelligence },
+                { "Agility", Attribute.Agility }
+            };
 
         private readonly Dictionary<string, bool> abilities = new Dictionary<string, bool>();
 
