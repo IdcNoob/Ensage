@@ -6,6 +6,9 @@
     using Ensage;
     using Ensage.Common;
     using Ensage.Common.Objects;
+    using Ensage.Common.Objects.UtilityObjects;
+
+    using SharpDX;
 
     internal class AbilityLeveling
     {
@@ -13,9 +16,13 @@
 
         private IEnumerable<Ability> abilities;
 
+        private AbilityBuilder abilitylBuilder;
+
         private Hero hero;
 
         private MenuManager menuManager;
+
+        private Sleeper sleeper;
 
         #endregion
 
@@ -26,39 +33,149 @@
             menuManager.OnClose();
         }
 
+        public void OnDraw()
+        {
+            if (!menuManager.IsOpen)
+            {
+                return;
+            }
+
+            var build = abilitylBuilder.GetBestBuild().ToList();
+            var uniqueAbilities =
+                build.GroupBy(x => x)
+                    .Select(x => x.First())
+                    .OrderBy(x => x.AbilitySlot)
+                    .Select(x => x.StoredName())
+                    .ToList();
+
+            var ratio = HUDInfo.RatioPercentage();
+            var xStart = HUDInfo.ScreenSizeX() * 0.35f;
+            var yStart = HUDInfo.ScreenSizeY() * 0.55f;
+
+            var text = "Auto build preview (Win rate: " + abilitylBuilder.BestBuildWinRate + ")";
+
+            Drawing.DrawRect(
+                new Vector2(xStart - 2, yStart - 35 * ratio),
+                new Vector2(
+                    Drawing.MeasureText(text, "Arial", new Vector2(35 * ratio), FontFlags.None).X + 2,
+                    35 * ratio),
+                new Color(75, 75, 75, 175),
+                false);
+            Drawing.DrawRect(
+                new Vector2(xStart - 2, yStart),
+                new Vector2((build.Count + 1) * 48 * ratio + 2, uniqueAbilities.Count * 40 * ratio),
+                new Color(75, 75, 75, 175),
+                false);
+            Drawing.DrawText(
+                text,
+                "Arial",
+                new Vector2(xStart, yStart - 35 * ratio),
+                new Vector2(35 * ratio),
+                Color.Orange,
+                FontFlags.None);
+
+            var positions = new Dictionary<string, float>();
+            for (var i = 0; i < uniqueAbilities.Count; i++)
+            {
+                Drawing.DrawRect(
+                    new Vector2(xStart, yStart + i * 40 * ratio),
+                    new Vector2(45 * ratio, 40 * ratio),
+                    Textures.GetSpellTexture(uniqueAbilities[i]));
+                positions.Add(uniqueAbilities[i], xStart + i * 40 * ratio - 63 * ratio);
+                Drawing.DrawRect(
+                    new Vector2(xStart - 2, yStart - 2 + i * 40 * ratio),
+                    new Vector2((build.Count + 1) * 48 * ratio, 2),
+                    Color.Silver);
+            }
+
+            Drawing.DrawRect(
+                new Vector2(xStart - 2, yStart - 2 + uniqueAbilities.Count * 40 * ratio),
+                new Vector2((build.Count + 1) * 48 * ratio, 2),
+                Color.Silver);
+
+            for (var i = 0; i < build.Count; i++)
+            {
+                var number = (i + 1).ToString();
+                var size = Drawing.MeasureText(number, "Arial", new Vector2(35 * ratio), FontFlags.None);
+                Drawing.DrawText(
+                    number,
+                    "Arial",
+                    new Vector2(
+                        xStart + 45 * ratio + i * 48 * ratio + (48 * ratio - size.X) / 2,
+                        positions[build[i].StoredName()]),
+                    new Vector2(35 * ratio),
+                    Color.White,
+                    FontFlags.None);
+                Drawing.DrawRect(
+                    new Vector2(xStart - 2 + i * 48 * ratio, yStart - 2),
+                    new Vector2(2, uniqueAbilities.Count * 40 * ratio),
+                    Color.Silver);
+            }
+
+            Drawing.DrawRect(
+                new Vector2(xStart - 2 + build.Count * 48 * ratio, yStart - 2),
+                new Vector2(2, uniqueAbilities.Count * 40 * ratio),
+                Color.Silver);
+            Drawing.DrawRect(
+                new Vector2(xStart - 2 + (build.Count + 1) * 48 * ratio, yStart - 2),
+                new Vector2(2, uniqueAbilities.Count * 40 * ratio + 2),
+                Color.Silver);
+        }
+
         public void OnLoad()
         {
             hero = ObjectManager.LocalHero;
             abilities = hero.Spellbook.Spells.Where(x => !x.IsHidden && !IgnoredAbilities.List.Contains(x.StoredName()));
             menuManager = new MenuManager(abilities.Select(x => x.StoredName()).ToList(), hero.Name);
+            sleeper = new Sleeper();
+            abilitylBuilder = new AbilityBuilder(hero);
 
-            Utils.Sleep(10000, "AbilityLeveling.Sleep");
+            sleeper.Sleep(10000);
         }
 
         public void OnUpdate()
         {
-            if (!Utils.SleepCheck("AbilityLeveling.Sleep"))
+            if (sleeper.Sleeping)
             {
                 return;
             }
 
-            Utils.Sleep(1000, "AbilityLeveling.Sleep");
+            sleeper.Sleep(1000);
 
-            if (hero.AbilityPoints <= 0 || !menuManager.IsEnabled || Game.IsPaused)
+            if (hero.AbilityPoints <= 0 || Game.IsPaused)
             {
                 return;
             }
 
-            var learnableAbilities =
-                abilities.OrderByDescending(x => menuManager.GetAbilityPriority(x.StoredName()))
-                    .Where(
-                        x => menuManager.AbilityActive(x.StoredName()) && IsLearnable(x) // x.IsLearnable
-                    ).ToList();
+            if (menuManager.IsEnabledAuto)
+            {
+                var ability = abilitylBuilder.GetAbility(hero.Level);
 
-            var upgrade = learnableAbilities.FirstOrDefault(ForceLearn)
-                          ?? learnableAbilities.FirstOrDefault(x => !IsLocked(x, learnableAbilities));
+                if (ability == null || ability.IsHidden)
+                {
+                    return;
+                }
 
-            Player.UpgradeAbility(hero, upgrade ?? learnableAbilities.FirstOrDefault());
+                if (!IsLearnable(ability))
+                {
+                    ability = abilities.FirstOrDefault(IsLearnable);
+                }
+
+                Player.UpgradeAbility(hero, ability);
+            }
+            else if (menuManager.IsEnabledManual && !menuManager.IsLevelIgnored(hero.Level))
+            {
+                var learnableAbilities =
+                    abilities.OrderByDescending(x => menuManager.GetAbilityPriority(x.StoredName()))
+                        .Where(
+                            x => menuManager.AbilityActive(x.StoredName()) && IsLearnable(x) // x.IsLearnable
+                        ).ToList();
+
+                var upgrade = learnableAbilities.FirstOrDefault(ForceLearn)
+                              ?? learnableAbilities.FirstOrDefault(x => !IsLocked(x, learnableAbilities));
+
+                Player.UpgradeAbility(hero, upgrade ?? learnableAbilities.FirstOrDefault());
+            }
         }
 
         #endregion

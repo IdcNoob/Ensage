@@ -1,6 +1,7 @@
 ﻿namespace SimpleAbilityLeveling
 {
     using System.Collections.Generic;
+    using System.Linq;
 
     using Ensage.Common.Menu;
 
@@ -8,9 +9,17 @@
     {
         #region Fields
 
-        private readonly string heroName;
+        private readonly Dictionary<string, MenuItem> abilityItems = new Dictionary<string, MenuItem>();
+
+        private readonly MenuItem enabledAuto;
+
+        private readonly MenuItem enabledManual;
+
+        private readonly MenuItem heroLevel;
 
         private readonly Menu menu;
+
+        private readonly MenuItem priorityChanger;
 
         #endregion
 
@@ -18,37 +27,77 @@
 
         public MenuManager(List<string> abilties, string name)
         {
-            heroName = name;
-
             var advancedMenu = new Menu("Advanced", "advanced");
+
+            var levels = new string[26];
+            for (var i = 0; i < levels.Length; i++)
+            {
+                levels[i] = i.ToString();
+            }
 
             foreach (var spell in abilties)
             {
                 var abilityMenu = new Menu(string.Empty, spell, textureName: spell);
-                abilityMenu.AddItem(
-                    new MenuItem(spell + "levelLock", "Lock ability at level").SetValue(
-                        new StringList(new[] { "0", "1", "2", "3", "4", "5", "6" })));
-                abilityMenu.AddItem(new MenuItem(spell + "fullLock", "Full lock").SetValue(false))
+
+                var key = spell + "levelLock";
+                var abilityLocked =
+                    new MenuItem(key, "Lock ability at level").SetValue(
+                        new StringList(new[] { "0", "1", "2", "3", "4", "5", "6" }));
+                abilityMenu.AddItem(abilityLocked);
+                abilityItems.Add(key, abilityLocked);
+
+                key = spell + "fullLock";
+                var abilityFullLocked = new MenuItem(key, "Full lock").SetValue(false);
+                abilityMenu.AddItem(abilityFullLocked)
                     .SetTooltip(
                         "If enabled, this ability will be leveled after attributes at level ~23, otherwise before, at level ~12");
-                abilityMenu.AddItem(
-                    new MenuItem(spell + "forceLearn", "Force learn at hero level").SetValue(
-                        new StringList(
-                            new[]
-                                {
-                                    "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",
-                                    "16", "17", "18", "19", "20", "21", "22", "23"
-                                })));
+                abilityItems.Add(key, abilityFullLocked);
+
+                key = spell + "forceLearn";
+                var forceLearn = new MenuItem(key, "Force learn at hero level").SetValue(new StringList(levels));
+                abilityMenu.AddItem(forceLearn);
+                abilityItems.Add(key, forceLearn);
+
                 advancedMenu.AddSubMenu(abilityMenu);
             }
 
             abilties.Reverse(); // correct initial order for PriorityChanger
 
             menu = new Menu("Ability Leveling", "simpleAbilityLeveling", true);
-            menu.AddItem(new MenuItem("enabled", "Enabled for current hero", true).SetValue(false));
             menu.AddItem(
+                enabledAuto =
+                new MenuItem("enabledAuto", "Enabled auto mode", true).SetValue(false)
+                    .SetTooltip(
+                        "Abilities will be leveled by biggest win rate build on dotabuff.com (all settings will be ignored)"))
+                .ValueChanged += (sender, args) =>
+                    {
+                        if (args.GetNewValue<bool>())
+                        {
+                            enabledManual.SetValue(false);
+                        }
+                    };
+
+            menu.AddItem(
+                enabledManual =
+                new MenuItem("enabledManual", "Enabled manual mode", true).SetValue(false)
+                    .SetTooltip("Abilties will be leveled by selected order and settings")).ValueChanged +=
+                (sender, args) =>
+                    {
+                        if (args.GetNewValue<bool>())
+                        {
+                            enabledAuto.SetValue(false);
+                        }
+                    };
+            menu.AddItem(
+                heroLevel =
+                new MenuItem("heroLevel", "Required hero level", true).SetValue(
+                    new StringList(levels.Skip(1).ToArray()))
+                    .SetTooltip("Will start leveling abilities only when your hero will reach selected level"));
+
+            menu.AddItem(
+                priorityChanger =
                 new MenuItem("prioritySimpleAbilityLeveling", "Priority", true).SetValue(
-                    new PriorityChanger(abilties, heroName + "priorityChangerSimpleAbilityLeveling", true)));
+                    new PriorityChanger(abilties, name + "priorityChangerSimpleAbilityLeveling", true)));
 
             menu.AddSubMenu(advancedMenu);
             menu.AddToMainMenu();
@@ -58,7 +107,11 @@
 
         #region Public Properties
 
-        public bool IsEnabled => menu.Item(heroName + "enabled").IsActive();
+        public bool IsEnabledAuto => enabledAuto.IsActive();
+
+        public bool IsEnabledManual => enabledManual.IsActive();
+
+        public bool IsOpen => menu.IsOpen;
 
         #endregion
 
@@ -66,30 +119,39 @@
 
         public bool AbilityActive(string abilityName)
         {
-            return
-                menu.Item(heroName + "prioritySimpleAbilityLeveling")
-                    .GetValue<PriorityChanger>()
-                    .AbilityToggler.IsEnabled(abilityName);
+            return priorityChanger.GetValue<PriorityChanger>().AbilityToggler.IsEnabled(abilityName);
         }
 
         public bool AbilityFullyLocked(string abilityName)
         {
-            return menu.Item(abilityName + "fullLock").IsActive();
+            MenuItem item;
+            return abilityItems.TryGetValue(abilityName + "fullLock", out item) && item.IsActive();
         }
 
         public int AbilityLockLevel(string abilityName)
         {
-            return menu.Item(abilityName + "levelLock").GetValue<StringList>().SelectedIndex;
+            MenuItem item;
+            return abilityItems.TryGetValue(abilityName + "levelLock", out item)
+                       ? item.GetValue<StringList>().SelectedIndex
+                       : 0;
         }
 
         public int ForceAbilityLearnHeroLevel(string abilityName)
         {
-            return menu.Item(abilityName + "forceLearn").GetValue<StringList>().SelectedIndex;
+            MenuItem item;
+            return abilityItems.TryGetValue(abilityName + "forceLearn", out item)
+                       ? item.GetValue<StringList>().SelectedIndex
+                       : 0;
         }
 
         public uint GetAbilityPriority(string abilityName)
         {
-            return menu.Item(heroName + "prioritySimpleAbilityLeveling").GetValue<PriorityChanger>().GetPriority(abilityName);
+            return priorityChanger.GetValue<PriorityChanger>().GetPriority(abilityName);
+        }
+
+        public bool IsLevelIgnored(uint level)
+        {
+            return heroLevel.GetValue<StringList>().SelectedIndex + 1 > level;
         }
 
         public void OnClose()
