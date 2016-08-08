@@ -3,6 +3,7 @@
     using System.Linq;
 
     using Ensage;
+    using Ensage.Common.Extensions;
     using Ensage.Common.Objects;
 
     using SharpDX;
@@ -40,6 +41,12 @@
 
         public ParticleEffect ParticleEffect { get; set; }
 
+        public float Radius { get; set; }
+
+        public bool RadiusOnly { get; set; }
+
+        public float RealCastRange { get; set; }
+
         public int Red { get; set; }
 
         #endregion
@@ -52,7 +59,7 @@
                 Hero.Spellbook.Spells.Concat(Hero.Inventory.Items).FirstOrDefault(x => x.StoredName().StartsWith(Name));
         }
 
-        public void SetColor(int? red = null, int? green = null, int? blue = null)
+        public void SaveSettings(int? red = null, int? green = null, int? blue = null, bool? radiusOnly = null)
         {
             if (red != null)
             {
@@ -69,12 +76,21 @@
                 Blue = blue.Value;
             }
 
+            if (radiusOnly != null)
+            {
+                RadiusOnly = radiusOnly.Value;
+                ParticleEffect?.Dispose();
+                ParticleEffect = null;
+            }
+
             ParticleEffect?.SetControlPoint(1, new Vector3(Red, Green, Blue));
         }
 
-        public void UpdateCastRange()
+        public void UpdateCastRange(bool radiusOnly = false)
         {
-            CastRange = Ability.ClassID == ClassID.CDOTA_Ability_AttributeBonus ? 1450 : Ability.GetRealCastRange();
+            RealCastRange = Ability.ClassID == ClassID.CDOTA_Ability_AttributeBonus ? 1450 : Ability.GetRealCastRange();
+            CastRange = Ability.GetCastRange();
+            Radius = Ability.GetRadius() + 25;
         }
 
         #endregion

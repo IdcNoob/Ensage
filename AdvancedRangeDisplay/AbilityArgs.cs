@@ -18,6 +18,8 @@ namespace AdvancedRangeDisplay
 
         public string Name { get; set; }
 
+        public bool? RadiusOnly { get; set; } = null;
+
         public int? Red { get; set; } = null;
 
         public bool Redraw { get; set; }

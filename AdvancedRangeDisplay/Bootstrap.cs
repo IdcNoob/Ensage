@@ -24,6 +24,11 @@
 
         #region Methods
 
+        private void Drawing_OnDraw(EventArgs args)
+        {
+            ranges.OnDraw();
+        }
+
         private void Game_OnUpdate(EventArgs args)
         {
             ranges.OnUpdate();
@@ -33,6 +38,7 @@
         {
             Events.OnClose -= OnClose;
             Game.OnIngameUpdate -= Game_OnUpdate;
+            Drawing.OnDraw -= Drawing_OnDraw;
             ranges.OnClose();
         }
 
@@ -41,6 +47,7 @@
             ranges.OnLoad();
             Events.OnClose += OnClose;
             Game.OnIngameUpdate += Game_OnUpdate;
+            Drawing.OnDraw += Drawing_OnDraw;
         }
 
         #endregion

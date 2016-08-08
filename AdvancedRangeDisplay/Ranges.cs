@@ -38,6 +38,19 @@
             drawedAbilities.Clear();
         }
 
+        public void OnDraw()
+        {
+            foreach (var drawedAbilityPair in drawedAbilities)
+                foreach (var drawedAbility in drawedAbilityPair.Value.Where(x => x.RadiusOnly))
+                {
+                    var unit = drawedAbilityPair.Key;
+                    drawedAbility.ParticleEffect?.SetControlPoint(
+                        0,
+                        unit.Position
+                        + (Vector3)(VectorExtensions.FromPolarAngle(unit.RotationRad) * drawedAbility.CastRange));
+                }
+        }
+
         public void OnLoad()
         {
             menu = new MenuManager();
@@ -113,7 +126,7 @@
                     }
                     else if ((newAbility
                               || (drawedAbility.ParticleEffect != null
-                                  && Math.Abs(drawedAbility.CastRange - drawedAbility.Ability.GetRealCastRange()) > 5))
+                                  && Math.Abs(drawedAbility.RealCastRange - drawedAbility.Ability.GetRealCastRange()) > 5))
                              && !drawedAbility.Disabled)
                     {
                         Redraw(drawedAbility);
@@ -125,6 +138,27 @@
         #endregion
 
         #region Methods
+
+        private static void Redraw(AbilityDraw drawedAbility)
+        {
+            if (drawedAbility.ParticleEffect == null)
+            {
+                drawedAbility.ParticleEffect = drawedAbility.RadiusOnly
+                                                   ? new ParticleEffect(
+                                                         @"particles\ui_mouseactions\drag_selected_ring.vpcf",
+                                                         drawedAbility.Hero.Position)
+                                                   : drawedAbility.Hero.AddParticleEffect(
+                                                       @"particles\ui_mouseactions\drag_selected_ring.vpcf");
+            }
+
+            drawedAbility.UpdateCastRange();
+            drawedAbility.SaveSettings();
+
+            drawedAbility.ParticleEffect.SetControlPoint(
+                2,
+                new Vector3(drawedAbility.RadiusOnly ? drawedAbility.Radius : drawedAbility.RealCastRange, 255, 0));
+            drawedAbility.ParticleEffect.Restart();
+        }
 
         private void OnChange(object sender, AbilityArgs args)
         {
@@ -143,7 +177,7 @@
                 drawedAbilities[args.Hero].Add(drawedAbility);
             }
 
-            drawedAbility.SetColor(args.Red, args.Green, args.Blue);
+            drawedAbility.SaveSettings(args.Red, args.Green, args.Blue, args.RadiusOnly);
 
             if (!args.Redraw)
             {
@@ -173,24 +207,8 @@
                     drawedAbility.ParticleEffect.Dispose();
                     drawedAbility.ParticleEffect = null;
                 }
+
                 drawedAbility.Disabled = true;
-            }
-        }
-
-        private void Redraw(AbilityDraw drawedAbility)
-        {
-            if (drawedAbility.ParticleEffect == null)
-            {
-                drawedAbility.ParticleEffect =
-                    drawedAbility.Hero.AddParticleEffect(@"particles\ui_mouseactions\drag_selected_ring.vpcf");
-            }
-
-            drawedAbility.UpdateCastRange();
-            drawedAbility.SetColor();
-            if (drawedAbility.CastRange > 200)
-            {
-                drawedAbility.ParticleEffect.SetControlPoint(2, new Vector3(drawedAbility.CastRange, 255, 0));
-                drawedAbility.ParticleEffect.Restart();
             }
         }
 
