@@ -43,7 +43,9 @@
 
         public bool IsAlive => hero.IsAlive;
 
-        public bool IsVisible => hero.IsValid && hero.IsVisible;
+        public bool IsValid => hero.IsValid;
+
+        public bool IsVisible => IsValid && hero.IsVisible;
 
         public uint ObserversCount { get; set; }
 

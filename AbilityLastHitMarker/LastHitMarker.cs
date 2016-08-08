@@ -47,21 +47,14 @@
                 1000f,
                 () =>
                     {
-                        try
-                        {
-                            var unit = args.Entity as Creep;
+                        var unit = args.Entity as Creep;
 
-                            if (unit == null || unit.Team == heroTeam)
-                            {
-                                return;
-                            }
-
-                            killableList.Add(new Classes.Creep(unit));
-                        }
-                        catch (EntityNotFoundException)
+                        if (unit == null || !unit.IsValid || unit.Team == heroTeam)
                         {
-                            // ignored
+                            return;
                         }
+
+                        killableList.Add(new Classes.Creep(unit));
                     });
         }
 

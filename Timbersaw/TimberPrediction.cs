@@ -17,15 +17,15 @@
     {
         #region Static Fields
 
-        public static Dictionary<float, double> RotSpeedDictionary = new Dictionary<float, double>();
+        private static readonly Dictionary<float, double> RotSpeedDictionary = new Dictionary<float, double>();
 
-        public static Dictionary<float, float> RotTimeDictionary = new Dictionary<float, float>();
+        private static readonly Dictionary<float, float> RotTimeDictionary = new Dictionary<float, float>();
 
-        public static Dictionary<float, Vector3> SpeedDictionary = new Dictionary<float, Vector3>();
+        private static readonly Dictionary<float, Vector3> SpeedDictionary = new Dictionary<float, Vector3>();
 
-        public static List<Prediction> TrackTable = new List<Prediction>();
+        private static readonly List<Prediction> TrackTable = new List<Prediction>();
 
-        private static readonly Dictionary<float, float> lastRotRDictionary = new Dictionary<float, float>();
+        private static readonly Dictionary<float, float> LastRotRDictionary = new Dictionary<float, float>();
 
         private static List<Hero> playerList = new List<Hero>();
 
@@ -52,7 +52,7 @@
         public static void OnClose()
         {
             Events.OnUpdate -= SpeedTrack;
-            lastRotRDictionary.Clear();
+            LastRotRDictionary.Clear();
             RotSpeedDictionary.Clear();
             RotTimeDictionary.Clear();
             playerList.Clear();
@@ -73,20 +73,20 @@
             }
 
             var targetSpeed = new Vector3();
-            if (!lastRotRDictionary.ContainsKey(target.Handle))
+            if (!LastRotRDictionary.ContainsKey(target.Handle))
             {
-                lastRotRDictionary.Add(target.Handle, target.RotationRad);
+                LastRotRDictionary.Add(target.Handle, target.RotationRad);
             }
 
             var straightTime = StraightTime(target.Hero);
             if (straightTime > 180)
             {
-                lastRotRDictionary[target.Handle] = target.RotationRad;
+                LastRotRDictionary[target.Handle] = target.RotationRad;
             }
 
             if (straightTime < 10 || IsTurning(target.Hero, 0.18))
             {
-                var rotDiff = lastRotRDictionary[target.Handle] - target.RotationRad;
+                var rotDiff = LastRotRDictionary[target.Handle] - target.RotationRad;
                 var a = 10 * straightTime * Math.Pow(rotDiff, 2);
                 if (a >= 0 && a <= 1300)
                 {
@@ -99,12 +99,12 @@
 
                 targetSpeed =
                     (Vector3)
-                    VectorExtensions.FromPolarAngle((lastRotRDictionary[target.Handle] + target.RotationRad * 2) / 2)
+                    VectorExtensions.FromPolarAngle((LastRotRDictionary[target.Handle] + target.RotationRad * 2) / 2)
                     * target.MovementSpeed / (float)Math.Abs(a);
             }
             else if (straightTime < 180)
             {
-                var rotDiff = lastRotRDictionary[target.Handle] - target.RotationRad;
+                var rotDiff = LastRotRDictionary[target.Handle] - target.RotationRad;
                 var a = straightTime * Math.Pow(rotDiff, 2);
                 if (a >= 0 && a <= 1000)
                 {
@@ -117,12 +117,12 @@
 
                 targetSpeed =
                     (Vector3)
-                    (VectorExtensions.FromPolarAngle((lastRotRDictionary[target.Handle] + target.RotationRad) / 2)
+                    (VectorExtensions.FromPolarAngle((LastRotRDictionary[target.Handle] + target.RotationRad) / 2)
                      * target.MovementSpeed / (float)Math.Abs(a));
             }
             else
             {
-                lastRotRDictionary[target.Handle] = target.RotationRad;
+                LastRotRDictionary[target.Handle] = target.RotationRad;
                 if ((target.ClassID == ClassID.CDOTA_Unit_Hero_StormSpirit
                      || target.ClassID == ClassID.CDOTA_Unit_Hero_Rubick)
                     && target.HasModifier("modifier_storm_spirit_ball_lightning"))
@@ -214,9 +214,9 @@
                         RotTimeDictionary.Add(unit.Handle, tick);
                     }
 
-                    if (!lastRotRDictionary.ContainsKey(unit.Handle))
+                    if (!LastRotRDictionary.ContainsKey(unit.Handle))
                     {
-                        lastRotRDictionary.Add(unit.Handle, unit.RotationRad);
+                        LastRotRDictionary.Add(unit.Handle, unit.RotationRad);
                     }
 
                     var speed = (unit.Position - data.LastPosition) / (tick - data.Lasttick);
@@ -227,7 +227,7 @@
                     }
                     else
                     {
-                        lastRotRDictionary[unit.Handle] = unit.RotationRad;
+                        LastRotRDictionary[unit.Handle] = unit.RotationRad;
                         data.Speed = speed;
                     }
 

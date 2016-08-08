@@ -39,7 +39,6 @@
         public AbilityBuilder(Hero hero)
         {
             this.hero = hero;
-            SaveAbilityBuild(GetDotabuffName(hero.ClassID));
 
             JToken @object;
             if (JObject.Parse(Encoding.Default.GetString(Resource.Names)).TryGetValue("AbilityNames", out @object))
@@ -48,6 +47,8 @@
                     JsonConvert.DeserializeObject<AbilityNames[]>(@object.ToString())
                         .ToDictionary(x => x.Name, x => x.DotaName);
             }
+
+            SaveAbilityBuild(GetDotabuffName(hero.ClassID));
         }
 
         #endregion
@@ -185,8 +186,6 @@
                             abilityNames.TryGetValue(name, out dotaAbilityName);
                         }
 
-                        var level = Regex.Match(ability.Value, @"\>(\d{1,2})\<");
-
                         if (string.IsNullOrEmpty(dotaAbilityName))
                         {
                             Game.PrintMessage(
@@ -195,6 +194,8 @@
                                 MessageType.LogMessage);
                             error = true;
                         }
+
+                        var level = Regex.Match(ability.Value, @"\>(\d{1,2})\<");
 
                         while (level.Success)
                         {

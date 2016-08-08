@@ -112,7 +112,8 @@
                 return;
             }
 
-            if (!menuManager.IsSafeChainEnabled && ability.Equals(timberChain.Ability) && !treeFactory.CheckTree(hero, args.TargetPosition, timberChain))
+            if (!menuManager.IsSafeChainEnabled && ability.Equals(timberChain.Ability)
+                && !treeFactory.CheckTree(hero, args.TargetPosition, timberChain))
             {
                 args.Process = false;
             }

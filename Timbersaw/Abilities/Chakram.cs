@@ -62,7 +62,7 @@
 
         public bool Damaging(Target enemy)
         {
-            return Casted && enemy.GetDistance(Position) < Radius - 50;
+            return Casted && enemy.GetDistance(Position) < Radius - 60;
         }
 
         public void Return()

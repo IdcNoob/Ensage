@@ -63,7 +63,7 @@
 
             abilties.Reverse(); // correct initial order for PriorityChanger
 
-            menu = new Menu("Ability Leveling", "simpleAbilityLeveling", true);
+            menu = new Menu("Ability Leveling", "simpleAbilityLeveling", true, "attribute_bonus", true);
             menu.AddItem(
                 enabledAuto =
                 new MenuItem("enabledAuto", "Enabled auto mode", true).SetValue(false)

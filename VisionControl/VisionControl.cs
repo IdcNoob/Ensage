@@ -231,7 +231,7 @@
             return
                 enemyHeroes.Any(
                     x =>
-                    !x.Equals(enemy) && x.IsAlive && x.Distance(enemy) <= 600
+                    x.IsValid && !x.Equals(enemy) && x.IsAlive && x.Distance(enemy) <= 600
                     && x.ObserversCount + x.SentryCount < x.CountObservers() + x.CountSentries());
         }
 
@@ -240,7 +240,7 @@
             return
                 enemyHeroes.Any(
                     x =>
-                    !x.Equals(enemy) && x.IsAlive && x.Distance(enemy) <= 600
+                    x.IsValid && !x.Equals(enemy) && x.IsAlive && x.Distance(enemy) <= 600
                     && x.ObserversCount + x.SentryCount > x.CountObservers() + x.CountSentries());
         }
 
