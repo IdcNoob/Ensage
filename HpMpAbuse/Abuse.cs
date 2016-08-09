@@ -114,8 +114,10 @@
             {
                 return;
             }
+
             switch (args.Order)
             {
+                case Order.TransferItem:
                 case Order.MoveItem:
                 case Order.DropItem:
                 case Order.PickItem:
@@ -283,18 +285,20 @@
 
             if (!Menu.Recovery.Active && fountain.BottleCanBeRefilled() && itemManager.Bottle.CanBeAutoCasted())
             {
-                var ally =
+                var ignoreAllies = Menu.Recovery.BottleAtFountainIgnoreAllies;
+
+                var bottleTarget =
                     Heroes.GetByTeam(heroTeam)
                         .OrderBy(x => x.FindModifier(Modifiers.BottleRegeneration)?.RemainingTime)
                         .FirstOrDefault(
                             x =>
-                            x.IsAlive && !x.IsInvul() && !x.IsIllusion
+                            (!ignoreAllies || x.Equals(Hero)) && x.IsAlive && !x.IsInvul() && !x.IsIllusion
                             && (x.Health < x.MaximumHealth || x.Mana < x.MaximumMana)
                             && x.Distance2D(Hero) <= itemManager.Bottle.CastRange);
 
-                if (ally != null)
+                if (bottleTarget != null)
                 {
-                    itemManager.Bottle.UseOn(ally);
+                    itemManager.Bottle.Use(bottleTarget);
                 }
             }
 

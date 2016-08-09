@@ -8,6 +8,8 @@
 
         private readonly MenuItem bottleFountain;
 
+        private readonly MenuItem bottleFountainIgnoreAllies;
+
         private readonly MenuItem forcePickEnemyDistance;
 
         private readonly MenuItem soulRingEnabled;
@@ -36,8 +38,13 @@
                 .SetTooltip("Will use thresholds from auto soul ring");
             menu.AddItem(
                 soulRingFountain = new MenuItem("soulRingFountain", "Use soul ring at fountain").SetValue(true));
-            menu.AddItem(bottleFountain = new MenuItem("bottleFountain", "Auto use bottle at foutain").SetValue(true))
-                .SetTooltip("Will auto use bottle on you and your allies at fountain");
+            menu.AddItem(bottleFountain = new MenuItem("bottleFountain", "Auto bottle").SetValue(true))
+                .SetTooltip(
+                    "Will auto use bottle on you and your allies while under the effect of fountain regeneration");
+            menu.AddItem(
+                bottleFountainIgnoreAllies =
+                new MenuItem("bottleFountainIgnoreAllies", "Auto bottle ignore allies").SetValue(false))
+                .SetTooltip("If enabled auto bottle will be used only on yourself");
 
             menu.AddSubMenu(forcePick);
 
@@ -65,6 +72,8 @@
         }
 
         public bool BottleAtFountain => bottleFountain.IsActive();
+
+        public bool BottleAtFountainIgnoreAllies => bottleFountainIgnoreAllies.IsActive();
 
         public int ForcePickEnemyDistance => forcePickEnemyDistance.GetValue<Slider>().Value;
 

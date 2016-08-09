@@ -88,7 +88,7 @@
             Sleeper.Sleep(sleep, Name);
         }
 
-        public void UseOn(Hero target)
+        public void Use(Hero target)
         {
             Item.UseAbility(target);
             Sleeper.Sleep(restoreTime * 1000, "AutoBottle");
