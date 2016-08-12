@@ -24,7 +24,8 @@
 
         public override bool CanBeCasted()
         {
-            return base.CanBeCasted() && Item.CurrentCharges > 0 && !Hero.HasModifier(Modifiers.UrnRegeneration);
+            return base.CanBeCasted() && Menu.Recovery.IsEnabled(Name) && Item.CurrentCharges > 0
+                   && !Hero.HasModifier(Modifiers.UrnRegeneration);
         }
 
         public override ItemsStats.Stats GetDropItemStats()

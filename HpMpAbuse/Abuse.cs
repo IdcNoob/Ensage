@@ -256,7 +256,7 @@
 
                 Sleeper.Sleep(80 * itemManager.DroppedItemsCount() + Game.Ping, "Used");
             }
-            else if (!healing || !Menu.Recovery.Active)
+            else if ((!healing && !itemManager.StashBottleTaken) || !Menu.Recovery.Active)
             {
                 if (Sleeper.Sleeping("Used"))
                 {

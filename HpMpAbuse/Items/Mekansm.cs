@@ -21,7 +21,7 @@
 
         public override bool CanBeCasted()
         {
-            return base.CanBeCasted() && Hero.Health < Hero.MaximumHealth;
+            return base.CanBeCasted() && Menu.Recovery.IsEnabled(Name) && Hero.Health < Hero.MaximumHealth;
         }
 
         public override Attribute GetPowerTreadsAttribute()

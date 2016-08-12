@@ -6,7 +6,6 @@
     using Ensage.Common.Extensions;
 
     using HpMpAbuse.Helpers;
-    using HpMpAbuse.Menu;
 
     internal sealed class Bottle : UsableItem
     {
@@ -39,12 +38,6 @@
 
         #endregion
 
-        #region Properties
-
-        private static MenuManager Menu => Variables.Menu;
-
-        #endregion
-
         #region Public Methods and Operators
 
         public bool CanBeAutoCasted()
@@ -56,7 +49,7 @@
         public override bool CanBeCasted()
         {
             var bottleRegen = Hero.FindModifier(Modifiers.BottleRegeneration);
-            return base.CanBeCasted() && Item.CurrentCharges > 0
+            return base.CanBeCasted() && Menu.Recovery.IsEnabled(Name) && Item.CurrentCharges > 0
                    && (bottleRegen == null || bottleRegen.RemainingTime < Game.Ping / 1000
                        || Sleeper.Sleeping("AutoBottle"))
                    && (Hero.Health < Hero.MaximumHealth || Hero.Mana < Hero.MaximumMana);
@@ -92,6 +85,7 @@
         {
             Item.UseAbility(target);
             Sleeper.Sleep(restoreTime * 1000, "AutoBottle");
+            Sleeper.Sleep(300, "Used");
             SetSleep(200 + Game.Ping);
         }
 

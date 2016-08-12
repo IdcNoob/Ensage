@@ -42,7 +42,7 @@
 
         public override bool CanBeCasted()
         {
-            return base.CanBeCasted() && Item.CurrentCharges > 0
+            return base.CanBeCasted() && Menu.Recovery.IsEnabled(Name) && Item.CurrentCharges > 0
                    && (Hero.Health < Hero.MaximumHealth || Hero.Mana < Hero.MaximumMana);
         }
 

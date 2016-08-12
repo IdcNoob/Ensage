@@ -4,7 +4,6 @@
     using Ensage.Common.Extensions;
 
     using HpMpAbuse.Helpers;
-    using HpMpAbuse.Menu;
 
     internal class SoulRing : UsableItem
     {
@@ -17,19 +16,13 @@
 
         #endregion
 
-        #region Properties
-
-        private static MenuManager Menu => Variables.Menu;
-
-        #endregion
-
         #region Public Methods and Operators
 
         public override bool CanBeCasted()
         {
             return base.CanBeCasted() && (float)Hero.Health / Hero.MaximumHealth * 100 >= Menu.SoulRing.HealthThreshold
                    && Hero.Mana / Hero.MaximumMana * 100 <= Menu.SoulRing.ManaThreshold
-                   && ((Menu.Recovery.Active && Menu.Recovery.SoulRingEnabled
+                   && ((Menu.Recovery.Active && Menu.Recovery.IsEnabled(Name)
                         && (Menu.Recovery.SoulRingAtFountain || !Hero.HasModifier(Modifiers.FountainRegeneration)))
                        || (!Menu.Recovery.Active && Menu.SoulRing.Enabled));
         }

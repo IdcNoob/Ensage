@@ -5,6 +5,7 @@ namespace HpMpAbuse.Items
     using Ensage.Common.Objects.UtilityObjects;
 
     using HpMpAbuse.Helpers;
+    using HpMpAbuse.Menu;
 
     internal abstract class UsableItem
     {
@@ -26,6 +27,8 @@ namespace HpMpAbuse.Items
         #region Properties
 
         protected static Hero Hero => Variables.Hero;
+
+        protected static MenuManager Menu => Variables.Menu;
 
         protected static MultiSleeper Sleeper => Variables.Sleeper;
 

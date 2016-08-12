@@ -1,5 +1,7 @@
 ﻿namespace HpMpAbuse.Menu
 {
+    using System.Collections.Generic;
+
     using Ensage.Common.Menu;
 
     internal class Recovery
@@ -12,9 +14,8 @@
 
         private readonly MenuItem forcePickEnemyDistance;
 
-        private readonly MenuItem soulRingEnabled;
-
         private readonly MenuItem soulRingFountain;
+        private readonly MenuItem itemsToUse;
 
         private bool active;
 
@@ -26,16 +27,29 @@
         {
             var menu = new Menu("Recovery Abuse", "recoveryAbuse", false, "item_bottle", true);
 
-            var forcePick = new Menu("Force Item picking", "forcePick");
-            forcePick.AddItem(
+            var forcePickMenu = new Menu("Force Item picking", "forcePick");
+            forcePickMenu.AddItem(
                 forcePickEnemyDistance =
                 new MenuItem("forcePickEnemyNearDistance", "When enemy in range").SetValue(new Slider(500, 0, 1000))
                     .SetTooltip("If enemy is closer then pick items"));
 
+            var items = new Dictionary<string, bool>
+                {
+                {"item_arcane_boots", true },
+                {"item_bottle", true },
+                {"item_guardian_greaves", true },
+                {"item_magic_stick", true },
+                {"item_mekansm", true },
+                {"item_soul_ring", true },
+                {"item_urn_of_shadows", true },
+                };
+
+              var itemsMenu = new Menu("Items to use", "itemsToUse");
+            itemsMenu.AddItem(
+                itemsToUse = new MenuItem("itemsToUseEnabled", "Use: ").SetValue(new AbilityToggler(items)));
+
             menu.AddItem(new MenuItem("recoveryKey", "Recovery key").SetValue(new KeyBind('T', KeyBindType.Press)))
                 .ValueChanged += (sender, args) => Active = args.GetNewValue<KeyBind>().Active;
-            menu.AddItem(soulRingEnabled = new MenuItem("soulRingRecovery", "Use soul ring").SetValue(true))
-                .SetTooltip("Will use thresholds from auto soul ring");
             menu.AddItem(
                 soulRingFountain = new MenuItem("soulRingFountain", "Use soul ring at fountain").SetValue(true));
             menu.AddItem(bottleFountain = new MenuItem("bottleFountain", "Auto bottle").SetValue(true))
@@ -46,7 +60,8 @@
                 new MenuItem("bottleFountainIgnoreAllies", "Auto bottle ignore allies").SetValue(false))
                 .SetTooltip("If enabled auto bottle will be used only on yourself");
 
-            menu.AddSubMenu(forcePick);
+            menu.AddSubMenu(forcePickMenu);
+            menu.AddSubMenu(itemsMenu);
 
             mainMenu.AddSubMenu(menu);
         }
@@ -79,7 +94,11 @@
 
         public bool SoulRingAtFountain => soulRingFountain.IsActive();
 
-        public bool SoulRingEnabled => soulRingEnabled.IsActive();
+
+        public bool IsEnabled(string abilityName)
+        {
+            return itemsToUse.GetValue<AbilityToggler>().IsEnabled(abilityName);
+        }
 
         #endregion
     }

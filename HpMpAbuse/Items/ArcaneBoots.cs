@@ -21,7 +21,7 @@ namespace HpMpAbuse.Items
 
         public override bool CanBeCasted()
         {
-            return base.CanBeCasted() && Hero.Mana < Hero.MaximumMana;
+            return base.CanBeCasted() && Menu.Recovery.IsEnabled(Name) && Hero.Mana < Hero.MaximumMana;
         }
 
         public override Attribute GetPowerTreadsAttribute()
