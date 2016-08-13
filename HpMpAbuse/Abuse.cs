@@ -254,7 +254,7 @@
                     item.Use();
                 }
 
-                Sleeper.Sleep(80 * itemManager.DroppedItemsCount() + Game.Ping, "Used");
+                Sleeper.Sleep(80 * itemManager.DroppedItemsCount() + Game.Ping, "Used", true);
             }
             else if ((!healing && !itemManager.StashBottleTaken) || !Menu.Recovery.Active)
             {
@@ -262,6 +262,7 @@
                 {
                     return;
                 }
+
                 if (!Menu.TranquilBoots.DropActive)
                 {
                     itemManager.PickUpItems();

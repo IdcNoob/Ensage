@@ -25,7 +25,7 @@
         public override bool CanBeCasted()
         {
             return base.CanBeCasted() && Menu.Recovery.IsEnabled(Name) && Item.CurrentCharges > 0
-                   && !Hero.HasModifier(Modifiers.UrnRegeneration);
+                   && !Hero.HasModifier(Modifiers.UrnRegeneration) && Hero.MaximumHealth - Hero.Health >= HealthRestore;
         }
 
         public override ItemsStats.Stats GetDropItemStats()
@@ -42,6 +42,7 @@
         {
             Item.UseAbility(Hero, queue);
             Sleeper.Sleep(1000, Name);
+            Sleeper.Sleep(300, "Used");
         }
 
         #endregion
