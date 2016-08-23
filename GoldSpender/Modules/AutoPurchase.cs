@@ -39,12 +39,11 @@
             var gold = reliableGold + unreliableGold;
             var itemsToBuy = new List<uint>();
 
-            foreach (var item in
+            foreach (var itemID in
                 Player.QuickBuyItems.OrderByDescending(x => Variables.HighPriorityItems.Contains(x))
-                    .Select(Ability.GetAbilityDataByID)
-                    .Where(x => ItemsData.IsPurchasable(x.ID, Hero.ActiveShop)))
+                    .Where(x => ItemsData.IsPurchasable(x, Hero.ActiveShop)))
             {
-                switch (item.ID)
+                switch (itemID)
                 {
                     case 59: // energy booster
                         if (Hero.FindItem("item_arcane_boots") != null)
@@ -54,10 +53,12 @@
                         break;
                 }
 
-                if (gold >= item.Cost)
+                var cost = Ability.GetAbilityDataByID(itemID).Cost;
+
+                if (gold >= cost)
                 {
-                    itemsToBuy.Add(item.ID);
-                    gold -= (int)item.Cost;
+                    itemsToBuy.Add(itemID);
+                    gold -= (int)cost;
                 }
             }
 

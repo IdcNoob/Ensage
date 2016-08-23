@@ -1,5 +1,6 @@
 ﻿namespace GoldSpender.Modules
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -42,7 +43,7 @@
                 enabledItems.Remove(0);
             }
 
-            var itemsToBuy = new List<uint>();
+            var itemsToBuy = new List<Tuple<Unit, uint>>();
             var unreliableGold = UnreliableGold;
             var reliableGold = ReliableGold;
 
@@ -51,21 +52,36 @@
                 SaveBuyBackGold(out reliableGold, out unreliableGold);
             }
 
-            foreach (var item in
-                enabledItems.Select(Ability.GetAbilityDataByID)
-                    .Where(x => ItemsData.IsPurchasable(x.ID, Hero.ActiveShop)))
+            var courier = ObjectManager.GetEntities<Courier>().FirstOrDefault(x => x.Team != enemyTeam && x.IsAlive);
+
+            foreach (var itemID in enabledItems)
             {
-                switch (item.ID)
+                Unit unit;
+
+                if (ItemsData.IsPurchasable(itemID, Hero.ActiveShop))
+                {
+                    unit = Hero;
+                }
+                else if (courier != null && ItemsData.IsPurchasable(itemID, courier.ActiveShop))
+                {
+                    unit = courier;
+                }
+                else
+                {
+                    continue;
+                }
+
+                switch (itemID)
                 {
                     case 42: // observer
                     case 43: // sentry
-                        if (GetWardsCount(item.ID) >= 2)
+                        if (GetWardsCount(itemID) >= 2)
                         {
                             continue;
                         }
                         break;
                     case 46: // teleport scroll
-                        if (GetItemCount(item.ID) >= 2 || Hero.FindItem("item_travel_boots", true) != null
+                        if (GetItemCount(itemID) >= 2 || Hero.FindItem("item_travel_boots", true) != null
                             || Hero.FindItem("item_travel_boots_2", true) != null)
                         {
                             continue;
@@ -78,21 +94,23 @@
                         }
                         break;
                     case 188: // smoke
-                        if (GetItemCount(item.ID) >= 1)
+                        if (GetItemCount(itemID) >= 1)
                         {
                             continue;
                         }
                         break;
                 }
 
-                if (unreliableGold >= item.Cost)
+                var cost = Ability.GetAbilityDataByID(itemID).Cost;
+
+                if (unreliableGold >= cost)
                 {
-                    itemsToBuy.Add(item.ID);
-                    unreliableGold -= (int)item.Cost;
+                    itemsToBuy.Add(Tuple.Create(unit, itemID));
+                    unreliableGold -= (int)cost;
                 }
-                else if (reliableGold + unreliableGold >= item.Cost)
+                else if (reliableGold + unreliableGold >= cost)
                 {
-                    itemsToBuy.Add(item.ID);
+                    itemsToBuy.Add(Tuple.Create(unit, itemID));
                     break;
                 }
             }
@@ -102,7 +120,7 @@
                 return;
             }
 
-            itemsToBuy.ForEach(x => Player.BuyItem(Hero, x));
+            itemsToBuy.ForEach(x => Player.BuyItem(x.Item1, x.Item2));
 
             if (itemsToBuy.Any())
             {
