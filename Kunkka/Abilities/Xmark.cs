@@ -12,6 +12,8 @@
 
         private readonly Sleeper sleeper = new Sleeper();
 
+        private Vector3 position;
+
         #endregion
 
         #region Constructors and Destructors
@@ -42,11 +44,22 @@
 
         public uint ManaCost => Ability.ManaCost;
 
-        public ParticleEffect ParticleEffect { get; set; }
-
         public bool PhaseStarted { get; set; }
 
-        public Vector3 Position { get; set; }
+        public Vector3 Position
+        {
+            get
+            {
+                return position;
+            }
+            set
+            {
+                position = value;
+                PositionUpdated = false;
+            }
+        }
+
+        public bool PositionUpdated { get; set; }
 
         public float TimeCasted { get; set; }
 

@@ -29,11 +29,6 @@
             kunkka.OnDraw();
         }
 
-        private void Entity_OnParticleEffectAdded(Entity sender, ParticleEffectAddedEventArgs args)
-        {
-            kunkka.OnParticleEffectAdded(sender, args);
-        }
-
         private void Game_OnUpdate(EventArgs args)
         {
             kunkka.OnUpdate();
@@ -41,7 +36,6 @@
 
         private void OnClose(object sender, EventArgs e)
         {
-            Entity.OnParticleEffectAdded -= Entity_OnParticleEffectAdded;
             Events.OnClose -= OnClose;
             Game.OnIngameUpdate -= Game_OnUpdate;
             Player.OnExecuteOrder -= Player_OnExecuteAction;
@@ -61,7 +55,6 @@
             Game.OnIngameUpdate += Game_OnUpdate;
             Player.OnExecuteOrder += Player_OnExecuteAction;
             Drawing.OnDraw += Drawing_OnDraw;
-            Entity.OnParticleEffectAdded += Entity_OnParticleEffectAdded;
         }
 
         private void Player_OnExecuteAction(Player sender, ExecuteOrderEventArgs args)
