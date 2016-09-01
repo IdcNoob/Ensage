@@ -2,9 +2,9 @@
 {
     using System;
 
-    using Ensage.Common.Menu;
+    using Classes;
 
-    using global::JungleStacker.Classes;
+    using Ensage.Common.Menu;
 
     internal class MenuArgs : EventArgs
     {

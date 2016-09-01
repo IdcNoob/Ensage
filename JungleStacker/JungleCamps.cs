@@ -2,9 +2,9 @@
 {
     using System.Collections.Generic;
 
-    using Ensage;
+    using Classes;
 
-    using global::JungleStacker.Classes;
+    using Ensage;
 
     using SharpDX;
 

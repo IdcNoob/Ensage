@@ -4,14 +4,14 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using Classes;
+
     using Ensage;
-    using Ensage.Common;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects;
     using Ensage.Common.Objects.UtilityObjects;
 
-    using global::JungleStacker.Classes;
-    using global::JungleStacker.Utils;
+    using Utils;
 
     internal class JungleStacker
     {
@@ -56,23 +56,18 @@
 
         public void OnAddEntity(EntityEventArgs args)
         {
-            DelayAction.Add(
-                1000f,
-                () =>
-                    {
-                        var unit = args.Entity as Unit;
+            var unit = args.Entity as Unit;
 
-                        if (unit == null || !unit.IsValid || !unit.IsControllable || unit.Team != heroTeam
-                            || (unit.IsIllusion && unit.ClassID != hero.ClassID)
-                            || unit.AttackCapability == AttackCapability.None || ignoredUnits.Contains(unit.ClassID))
-                        {
-                            return;
-                        }
+            if (unit == null || !unit.IsValid || !unit.IsControllable || unit.Team != heroTeam
+                || (unit.IsIllusion && unit.ClassID != hero.ClassID) || unit.AttackCapability == AttackCapability.None
+                || ignoredUnits.Contains(unit.ClassID) || unit.Equals(hero))
+            {
+                return;
+            }
 
-                        var contrallable = new Controllable(unit);
-                        contrallable.OnCampChange += OnCampChange;
-                        controllableUnits.Add(contrallable);
-                    });
+            var contrallable = new Controllable(unit);
+            contrallable.OnCampChange += OnCampChange;
+            controllableUnits.Add(contrallable);
         }
 
         public void OnClose()
@@ -93,19 +88,17 @@
         {
             var order = args.Order;
 
-            if (order == Order.Hold)
+            if (order == Order.Hold || order == Order.MoveLocation)
             {
-                var selected = hero.Player.Selection.FirstOrDefault() as Unit;
-                if (selected == null || selected.Equals(hero))
+                foreach (var entity in args.Entities)
                 {
-                    return;
+                    var controlable = controllableUnits.FirstOrDefault(x => x.Handle == entity.Handle);
+                    if (controlable != null)
+                    {
+                        controlable.Pause = 3;
+                    }
                 }
-
-                var controlable = controllableUnits.FirstOrDefault(x => x.Handle == selected.Handle);
-                if (controlable != null)
-                {
-                    controlable.Pause = 3;
-                }
+                return;
             }
 
             var ability = args.Ability;
@@ -220,7 +213,8 @@
                             || z.CurrentStatus == Controllable.Status.TryingToCheckStacks))))
             {
                 var campCreeps =
-                    Creeps.All.Where(x => x.Distance2D(camp.CampPosition) < 600 && x.IsNeutral && x.Team != heroTeam)
+                    Creeps.All.Where(
+                        x => x.IsValid && x.Distance2D(camp.CampPosition) < 600 && x.IsNeutral && x.Team != heroTeam)
                         .ToList();
 
                 var aliveCampCreeps = campCreeps.Where(x => x.IsSpawned && x.IsAlive).ToList();

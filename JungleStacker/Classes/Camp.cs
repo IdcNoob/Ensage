@@ -6,9 +6,9 @@
     using Ensage.Common;
     using Ensage.Common.Objects;
 
-    using global::JungleStacker.Utils;
-
     using SharpDX;
+
+    using Utils;
 
     internal class Camp : JungleCamp
     {

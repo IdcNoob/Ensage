@@ -12,9 +12,9 @@
     using Ensage.Common.Objects.DrawObjects;
     using Ensage.Common.Objects.UtilityObjects;
 
-    using global::JungleStacker.Utils;
-
     using SharpDX;
+
+    using Utils;
 
     internal class Controllable
     {
@@ -32,6 +32,8 @@
 
         private readonly double projectileSpeed;
 
+        private readonly Sleeper sleeper;
+
         private float attackTime;
 
         private bool campAvailable;
@@ -45,8 +47,6 @@
         private float pause;
 
         private bool registered;
-
-        private readonly Sleeper sleeper;
 
         private Vector3 targetPosition;
 
@@ -329,10 +329,18 @@
                         return;
                     }
 
-                    if (Unit.Health < lastHealth && Unit.NetworkActivity == NetworkActivity.Idle)
+                    if (Unit.NetworkActivity == NetworkActivity.Idle)
                     {
-                        CurrentStatus = Status.DropAggro;
-                        return;
+                        if (Unit.Health < lastHealth)
+                        {
+                            CurrentStatus = Status.DropAggro;
+                            return;
+                        }
+                        if (Unit.Distance2D(CurrentCamp.WaitPosition) > 50)
+                        {
+                            CurrentStatus = Status.MovingToWaitPosition;
+                            return;
+                        }
                     }
 
                     lastHealth = Unit.Health;
