@@ -1,5 +1,7 @@
 ﻿namespace Timbersaw
 {
+    using System.Collections.Generic;
+
     using Ensage.Common.Menu;
 
     internal class MenuManager
@@ -9,6 +11,8 @@
         private readonly MenuItem centerHero;
 
         private readonly MenuItem enabled;
+
+        private readonly MenuItem items;
 
         private readonly Menu menu;
 
@@ -27,6 +31,15 @@
                 .SetTooltip("Will prevent chain cast if it wont hit tree when used manually");
             menu.AddItem(centerHero = new MenuItem("centerHero", "Center camera").SetValue(false))
                 .SetTooltip("Center camera on timbersaw when chase enabled");
+            menu.AddItem(
+                items = new MenuItem("itemToUse", "Use:").SetValue(
+                    new AbilityToggler(
+                            new Dictionary<string, bool>
+                                {
+                                    { "item_blink", true },
+                                    { "item_shivas_guard", true },
+                                    { "item_soul_ring", true },
+                                })));
             menu.AddItem(new MenuItem("comboKey", "Chase").SetValue(new KeyBind('F', KeyBindType.Press)))
                 .SetTooltip("Chase/Kill enemy using abilities and items")
                 .ValueChanged += (sender, arg) => { ChaseEnabled = arg.GetNewValue<KeyBind>().Active; };
@@ -54,6 +67,11 @@
         #endregion
 
         #region Public Methods and Operators
+
+        public bool IsItemEnabled(string itemName)
+        {
+            return items.GetValue<AbilityToggler>().IsEnabled(itemName);
+        }
 
         public void OnClose()
         {

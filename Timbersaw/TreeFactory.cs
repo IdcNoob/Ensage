@@ -4,12 +4,12 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using Abilities;
+
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Extensions.SharpDX;
     using Ensage.Common.Objects.UtilityObjects;
-
-    using global::Timbersaw.Abilities;
 
     using SharpDX;
 

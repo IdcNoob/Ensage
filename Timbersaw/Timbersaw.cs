@@ -3,12 +3,13 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using Abilities;
+
     using Ensage;
     using Ensage.Common;
     using Ensage.Common.Extensions;
+    using Ensage.Common.Objects;
     using Ensage.Common.Objects.UtilityObjects;
-
-    using global::Timbersaw.Abilities;
 
     using SharpDX;
 
@@ -170,8 +171,8 @@
                 var blink = hero.FindItem("item_blink", true);
                 var mousePosition = Game.MousePosition;
 
-                if (blink != null && !sleeper.Sleeping(blink) && blink.CanBeCasted()
-                    && mousePosition.Distance2D(hero) > 500)
+                if (blink != null && !sleeper.Sleeping(blink) && menuManager.IsItemEnabled(blink.StoredName())
+                    && blink.CanBeCasted() && mousePosition.Distance2D(hero) > 500)
                 {
                     var castRange = blink.GetCastRange();
 
@@ -274,7 +275,8 @@
 
                 var usableChakram = chakrams.FirstOrDefault(x => x.CanBeCasted());
 
-                if (blink != null && !sleeper.Sleeping(blink) && blink.CanBeCasted() && distanceToEnemy > 500
+                if (blink != null && !sleeper.Sleeping(blink) && menuManager.IsItemEnabled(blink.StoredName())
+                    && blink.CanBeCasted() && distanceToEnemy > 500
                     && (target.GetTurnTime(heroPosition) > 0 || distanceToEnemy > 700)
                     && (timberChain.Cooldown > 2 || distanceToEnemy > 800)
                     && (whirlingDeath.CanBeCasted() || usableChakram != null)
@@ -309,13 +311,15 @@
                     return;
                 }
 
-                if (soulRing != null && !sleeper.Sleeping(soulRing) && soulRing.CanBeCasted() && hero.Health > 600)
+                if (soulRing != null && !sleeper.Sleeping(soulRing) && menuManager.IsItemEnabled(soulRing.StoredName())
+                    && soulRing.CanBeCasted() && hero.Health > 600)
                 {
                     soulRing.UseAbility();
                     sleeper.Sleep(1000, soulRing);
                 }
 
-                if (shivasGuard != null && !sleeper.Sleeping(shivasGuard) && shivasGuard.CanBeCasted()
+                if (shivasGuard != null && !sleeper.Sleeping(shivasGuard)
+                    && menuManager.IsItemEnabled(shivasGuard.StoredName()) && shivasGuard.CanBeCasted()
                     && distanceToEnemy < 500)
                 {
                     shivasGuard.UseAbility();
@@ -333,8 +337,8 @@
 
                 if (timberChain.CanBeCasted() && (usableChakram == null || distanceToEnemy > 300))
                 {
-                    if ((blink == null || !blink.CanBeCasted()) && usableChakram != null
-                        && !chakrams.Any(x => x.IsSleeping || x.Casted)
+                    if ((blink == null || !blink.CanBeCasted() || !menuManager.IsItemEnabled(blink.Name))
+                        && usableChakram != null && !chakrams.Any(x => x.IsSleeping || x.Casted)
                         && distanceToEnemy < chakrams.First().GetCastRange()
                         && treeFactory.TreesInPath(hero, targetPosition, 100) >= 5)
                     {
@@ -365,7 +369,8 @@
                             hero,
                             predictedPosition,
                             timberChain,
-                            blink != null && !sleeper.Sleeping(blink) && blink.CanBeCasted());
+                            blink != null && !sleeper.Sleeping(blink) && menuManager.IsItemEnabled(blink.Name)
+                            && blink.CanBeCasted());
 
                         if (damageTreeWithPrediction != null)
                         {

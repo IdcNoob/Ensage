@@ -17,6 +17,8 @@
     {
         #region Static Fields
 
+        private static readonly Dictionary<float, float> LastRotRDictionary = new Dictionary<float, float>();
+
         private static readonly Dictionary<float, double> RotSpeedDictionary = new Dictionary<float, double>();
 
         private static readonly Dictionary<float, float> RotTimeDictionary = new Dictionary<float, float>();
@@ -24,8 +26,6 @@
         private static readonly Dictionary<float, Vector3> SpeedDictionary = new Dictionary<float, Vector3>();
 
         private static readonly List<Prediction> TrackTable = new List<Prediction>();
-
-        private static readonly Dictionary<float, float> LastRotRDictionary = new Dictionary<float, float>();
 
         private static List<Hero> playerList = new List<Hero>();
 
