@@ -10,6 +10,8 @@
 
         private readonly MenuItem enabled;
 
+        private readonly MenuItem hitAndRunDamage;
+
         private readonly Menu menu;
 
         #endregion
@@ -39,6 +41,8 @@
             menu.AddItem(new MenuItem("torrentRune", "Torrent on rune").SetValue(new KeyBind('J', KeyBindType.Press)))
                 .SetTooltip("Will cast torrent at rune's position, right before spawn")
                 .ValueChanged += (sender, arg) => { TorrentOnRuneEnabled = arg.GetNewValue<KeyBind>().Active; };
+            menu.AddItem(hitAndRunDamage = new MenuItem("hitAndRunDamage", "Hit & run AD").SetValue(true))
+                .SetTooltip("Use additional damage when using hit & run (shadow blade etc.)");
 
             menu.AddToMainMenu();
         }
@@ -52,6 +56,8 @@
         public bool ComboEnabled { get; private set; }
 
         public bool FullComboEnabled { get; private set; }
+
+        public bool HitAndRunDamageEnabled => hitAndRunDamage.GetValue<bool>();
 
         public bool HitAndRunEnabled { get; private set; }
 
