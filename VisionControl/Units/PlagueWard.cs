@@ -30,7 +30,7 @@
             Duration =
                 Ability.GetAbilityDataByName(AbilityName).AbilitySpecialData.First(x => x.Name == "duration").Value;
             Position = unit.Position;
-            Texture = Drawing.GetTexture("materials/ensage_ui/spellicons/venomancer_plague_ward");
+            Texture = Drawing.GetTexture("materials/ensage_ui/other/plague_ward");
             Handle = unit.Handle;
             TextureSize = new Vector2(40);
             EndTime = Game.RawGameTime + Duration;
@@ -54,7 +54,6 @@
 
         public uint Handle { get; }
 
-        public bool IsValid => unit != null && unit.IsValid && unit.IsAlive;
 
         public bool IsVisible => unit.IsVisible;
 

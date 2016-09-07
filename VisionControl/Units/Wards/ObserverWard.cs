@@ -76,7 +76,7 @@
             PositionCorrection = new Vector2(25);
             Radius =
                 Ability.GetAbilityDataByName(AbilityName).AbilitySpecialData.First(x => x.Name == "vision_range").Value;
-            Texture = Drawing.GetTexture("materials/ensage_ui/items/ward_observer");
+            Texture = Drawing.GetTexture("materials/ensage_ui/other/item_ward_observer");
             DrawRange();
         }
 

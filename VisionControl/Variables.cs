@@ -5,9 +5,9 @@
 
     using Ensage;
 
-    using global::VisionControl.Units;
-    using global::VisionControl.Units.Mines;
-    using global::VisionControl.Units.Wards;
+    using Units;
+    using Units.Mines;
+    using Units.Wards;
 
     internal static class Variables
     {

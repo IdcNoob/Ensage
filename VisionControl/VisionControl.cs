@@ -9,11 +9,13 @@
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
 
-    using global::VisionControl.Heroes;
-    using global::VisionControl.Units;
-    using global::VisionControl.Units.Wards;
+    using Heroes;
 
     using SharpDX;
+
+    using Units;
+    using Units.Mines;
+    using Units.Wards;
 
     internal class VisionControl
     {
@@ -64,9 +66,18 @@
                         Func<Unit, IUnit> func;
                         if (Variables.Units.TryGetValue(abilityName, out func))
                         {
-                            if (unit.ClassID == ClassID.CDOTA_NPC_Observer_Ward && UpdateWardData<ObserverWard>(unit)
-                                || unit.ClassID == ClassID.CDOTA_NPC_Observer_Ward_TrueSight
-                                && UpdateWardData<SentryWard>(unit))
+                            if (unit.ClassID == ClassID.CDOTA_NPC_Observer_Ward && UpdateData<ObserverWard>(unit))
+                            {
+                                return;
+                            }
+
+                            if (unit.ClassID == ClassID.CDOTA_NPC_Observer_Ward_TrueSight
+                                && UpdateData<SentryWard>(unit))
+                            {
+                                return;
+                            }
+
+                            if (unit.Name == "npc_dota_techies_remote_mine" && UpdateData<RemoteMine>(unit, 20))
                             {
                                 return;
                             }
@@ -138,6 +149,60 @@
             enemyTeam = hero.GetEnemyTeam();
             heroTeam = hero.Team;
             sleeper = new MultiSleeper();
+
+            try
+            {
+                Drawing.GetTexture("materials/ensage_ui/other/plague_ward");
+            }
+            catch (DotaTextureNotFoundException)
+            {
+                Game.PrintMessage(
+                    "<font color='#ff5b2f'>[Vision Control]</font> Please update texture pack",
+                    MessageType.LogMessage);
+            }
+        }
+
+        public void OnParticleEffectAdded(Entity sender, ParticleEffectAddedEventArgs args)
+        {
+            DelayAction.Add(
+                1000f,
+                () =>
+                    {
+                        if (args.Name == "particles/units/heroes/hero_techies/techies_remote_mine_plant.vpcf")
+                        {
+                            if (!Menu.IsEnabled("techies_remote_mines") || sender.Team == heroTeam)
+                            {
+                                return;
+                            }
+
+                            var position = args.ParticleEffect.GetControlPoint(1);
+
+                            if (position.IsZero
+                                || units.Any(x => x is RemoteMine && x.Position.Distance2D(position) < 10))
+                            {
+                                return;
+                            }
+
+                            units.Add(new RemoteMine(position));
+                        }
+
+                        if (args.Name == "particles/units/heroes/hero_techies/techies_remote_mines_detonate.vpcf")
+                        {
+                            var remote =
+                                units.FirstOrDefault(
+                                    x =>
+                                    x is RemoteMine
+                                    && x.Position.Distance2D(args.ParticleEffect.GetControlPoint(0)) < 10);
+
+                            Console.WriteLine(sender.Team);
+
+                            if (remote != null)
+                            {
+                                remote.ParticleEffect?.Dispose();
+                                units.Remove(remote);
+                            }
+                        }
+                    });
         }
 
         public void OnRemoveUnit(Unit unit)
@@ -149,11 +214,13 @@
 
             var dead = units.FirstOrDefault(x => x.Handle == unit.Handle);
 
-            if (dead != null)
+            if (dead == null)
             {
-                dead.ParticleEffect?.Dispose();
-                units.Remove(dead);
+                return;
             }
+
+            dead.ParticleEffect?.Dispose();
+            units.Remove(dead);
         }
 
         public void OnUpdate()
@@ -215,9 +282,12 @@
                 }
             }
 
-            var removeUnits = units.Where(x => x.Duration > 0 && x.EndTime <= Game.RawGameTime || !x.IsValid).ToList();
-            removeUnits.ForEach(x => x.ParticleEffect?.Dispose());
-            units.RemoveAll(x => removeUnits.Contains(x));
+            var removeUnits = units.Where(x => x.Duration > 0 && x.EndTime <= Game.RawGameTime).ToList();
+            if (removeUnits.Any())
+            {
+                removeUnits.ForEach(x => x.ParticleEffect?.Dispose());
+                units.RemoveAll(x => removeUnits.Contains(x));
+            }
 
             sleeper.Sleep(333, this);
         }
@@ -244,16 +314,16 @@
                     && x.ObserversCount + x.SentryCount > x.CountObservers() + x.CountSentries());
         }
 
-        private bool UpdateWardData<T>(Unit unit) where T : Ward
+        private bool UpdateData<T>(Unit unit, float maxDistance = 400) where T : IUpdatable
         {
-            var ward = units.OfType<T>().FirstOrDefault(x => x.Distance(unit) < 500 && x.RequiresUpdate);
+            var updatable = units.OfType<T>().FirstOrDefault(x => x.Distance(unit) < maxDistance && x.RequiresUpdate);
 
-            if (ward == null)
+            if (updatable == null)
             {
                 return false;
             }
 
-            ward.UpdateData(unit);
+            updatable.UpdateData(unit);
             return true;
         }
 

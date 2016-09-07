@@ -14,8 +14,6 @@ namespace VisionControl.Units
 
         uint Handle { get; }
 
-        bool IsValid { get; }
-
         ParticleEffect ParticleEffect { get; }
 
         Vector3 Position { get; }

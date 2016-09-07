@@ -5,7 +5,7 @@
 
     using SharpDX;
 
-    internal abstract class Ward : IUnit
+    internal abstract class Ward : IUnit, IUpdatable
     {
         #region Constructors and Destructors
 
@@ -44,8 +44,6 @@
         public float EndTime { get; protected set; }
 
         public uint Handle { get; private set; }
-
-        public bool IsValid => RequiresUpdate || Unit.IsValid && Unit.IsAlive;
 
         public ParticleEffect ParticleEffect { get; protected set; }
 

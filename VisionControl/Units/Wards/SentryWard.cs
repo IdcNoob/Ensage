@@ -79,7 +79,7 @@
                     .AbilitySpecialData.First(x => x.Name == "true_sight_range")
                     .Value;
             DrawRange();
-            Texture = Drawing.GetTexture("materials/ensage_ui/items/ward_sentry");
+            Texture = Drawing.GetTexture("materials/ensage_ui/other/item_ward_sentry");
         }
 
         #endregion

@@ -32,7 +32,7 @@
                     .AbilitySpecialData.First(x => x.Name == "ward_duration_tooltip")
                     .Value;
             Position = unit.Position;
-            Texture = Drawing.GetTexture("materials/ensage_ui/spellicons/pugna_nether_ward");
+            Texture = Drawing.GetTexture("materials/ensage_ui/other/nether_ward");
             Handle = unit.Handle;
             TextureSize = new Vector2(40);
             EndTime = Game.RawGameTime + Duration;
@@ -55,8 +55,6 @@
         public float EndTime { get; }
 
         public uint Handle { get; }
-
-        public bool IsValid => unit != null && unit.IsValid && unit.IsAlive;
 
         public ParticleEffect ParticleEffect { get; }
 

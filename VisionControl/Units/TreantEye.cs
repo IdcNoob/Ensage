@@ -29,7 +29,7 @@
             Radius =
                 Ability.GetAbilityDataByName(AbilityName).AbilitySpecialData.First(x => x.Name == "vision_aoe").Value;
             Position = unit.Position;
-            Texture = Drawing.GetTexture("materials/ensage_ui/spellicons/treant_eyes_in_the_forest");
+            Texture = Drawing.GetTexture("materials/ensage_ui/other/eyes_in_the_forest");
             Handle = unit.Handle;
             TextureSize = new Vector2(40);
 
@@ -51,7 +51,6 @@
 
         public uint Handle { get; }
 
-        public bool IsValid => unit != null && unit.IsValid && unit.IsAlive;
 
         public bool IsVisible => unit.IsVisible;
 

@@ -34,6 +34,11 @@
             visionControl.OnInt32PropertyChange(sender, args);
         }
 
+        private void Entity_OnParticleEffectAdded(Entity sender, ParticleEffectAddedEventArgs args)
+        {
+            visionControl.OnParticleEffectAdded(sender, args);
+        }
+
         private void Game_OnUpdate(EventArgs args)
         {
             visionControl.OnUpdate();
@@ -51,12 +56,12 @@
 
         private void OnClose(object sender, EventArgs e)
         {
+            Events.OnClose -= OnClose;
             Drawing.OnDraw -= Drawing_OnDraw;
             Game.OnIngameUpdate -= Game_OnUpdate;
             ObjectManager.OnAddEntity -= ObjectManager_OnAddEntity;
             ObjectManager.OnRemoveEntity -= ObjectManager_OnRemoveEntity;
-            Events.OnClose -= OnClose;
-            //Entity.OnInt32PropertyChange -= Entity_OnInt32PropertyChange;
+            Entity.OnInt32PropertyChange -= Entity_OnInt32PropertyChange;
             visionControl.OnClose();
         }
 
@@ -68,7 +73,8 @@
             Drawing.OnDraw += Drawing_OnDraw;
             ObjectManager.OnAddEntity += ObjectManager_OnAddEntity;
             ObjectManager.OnRemoveEntity += ObjectManager_OnRemoveEntity;
-            //Entity.OnInt32PropertyChange += Entity_OnInt32PropertyChange;
+            Entity.OnInt32PropertyChange += Entity_OnInt32PropertyChange;
+            Entity.OnParticleEffectAdded += Entity_OnParticleEffectAdded;
         }
 
         #endregion

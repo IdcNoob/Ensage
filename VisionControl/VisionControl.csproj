@@ -56,6 +56,7 @@
   <ItemGroup>
     <Compile Include="Bootstrap.cs" />
     <Compile Include="MenuManager.cs" />
+    <Compile Include="Units\IUpdatable.cs" />
     <Compile Include="Variables.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Heroes\EnemyHero.cs" />

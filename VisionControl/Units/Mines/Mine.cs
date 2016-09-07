@@ -22,6 +22,13 @@
             }
         }
 
+        protected Mine(Vector3 position)
+        {
+            TextureSize = new Vector2(40);
+            Position = position;
+            Texture = Drawing.GetTexture("materials/ensage_ui/other/npc_dota_techies_remote_mine");
+        }
+
         #endregion
 
         #region Public Properties
@@ -30,23 +37,21 @@
 
         public float EndTime { get; protected set; }
 
-        public uint Handle { get; }
-
-        public bool IsValid => Unit != null && Unit.IsValid && Unit.IsAlive;
+        public uint Handle { get; protected set; }
 
         public ParticleEffect ParticleEffect { get; protected set; }
 
-        public Vector3 Position { get; }
+        public Vector3 Position { get; protected set; }
 
         public Vector2 PositionCorrection { get; protected set; }
 
         public float Radius { get; protected set; }
 
-        public bool ShowTexture => !Unit.IsVisible;
+        public virtual bool ShowTexture => !Unit.IsVisible;
 
         public abstract bool ShowTimer { get; }
 
-        public DotaTexture Texture { get; }
+        public DotaTexture Texture { get; protected set; }
 
         public Vector2 TextureSize { get; set; }
 
@@ -56,7 +61,7 @@
 
         protected static MenuManager Menu => Variables.Menu;
 
-        protected Unit Unit { get; }
+        protected Unit Unit { get; set; }
 
         #endregion
     }
