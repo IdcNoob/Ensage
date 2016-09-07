@@ -62,6 +62,7 @@
             ObjectManager.OnAddEntity -= ObjectManager_OnAddEntity;
             ObjectManager.OnRemoveEntity -= ObjectManager_OnRemoveEntity;
             Entity.OnInt32PropertyChange -= Entity_OnInt32PropertyChange;
+            Entity.OnParticleEffectAdded -= Entity_OnParticleEffectAdded;
             visionControl.OnClose();
         }
 
