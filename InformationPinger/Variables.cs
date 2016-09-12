@@ -45,8 +45,6 @@
 
         #region Public Properties
 
-        public static bool LoadedAfterGameStart { get; set; }
-
         public static MultiSleeper Sleeper { get; set; }
 
         #endregion

@@ -30,6 +30,8 @@
 
         private Hero hero;
 
+        private bool loadedAfterGameStart;
+
         private WardPinger wardPinger;
 
         #endregion
@@ -39,7 +41,7 @@
         public void OnClose()
         {
             heroesPinger.Clear();
-            Variables.LoadedAfterGameStart = false;
+            loadedAfterGameStart = false;
         }
 
         public void OnLoad()
@@ -53,7 +55,7 @@
 
             if (Game.GameTime > 0)
             {
-                Variables.LoadedAfterGameStart = true;
+                loadedAfterGameStart = true;
             }
         }
 
@@ -80,7 +82,7 @@
                     )
                 {
                     var heroPinger = new HeroPinger(enemy);
-                    if (Variables.LoadedAfterGameStart)
+                    if (loadedAfterGameStart)
                     {
                         heroPinger.IgnoreCurrentAbilities();
                     }
@@ -95,13 +97,23 @@
                 return;
             }
 
-            if (
-                heroesPinger.Any(
-                    x =>
-                    menuManager.ItemPingEnabled && x.ItemPinger(menuManager.ItemWardsEnabled)
-                    || menuManager.AbilityPingEnabled && x.AbilityPinger()))
+            if (menuManager.AbilityPingEnabled)
             {
-                return;
+                var doublePing = menuManager.DoubleAbilityPingEnabled;
+                if (heroesPinger.Any(x => x.IsVisible && x.AbilityPinger(doublePing)))
+                {
+                    return;
+                }
+            }
+
+            if (menuManager.ItemPingEnabled)
+            {
+                var doublePing = menuManager.DoubleItemPingEnabled;
+                var wards = menuManager.ItemWardsEnabled;
+                if (heroesPinger.Any(x => x.IsVisible && x.ItemPinger(wards, doublePing)))
+                {
+                    return;
+                }
             }
 
             if (roshanPinger.RoshanKilled && menuManager.RoshanKillTimeEnabled)

@@ -12,6 +12,10 @@
 
         private readonly MenuItem courierUpgradeReminder;
 
+        private readonly MenuItem doubleAbilityPing;
+
+        private readonly MenuItem doubleItemPing;
+
         private readonly MenuItem enabled;
 
         private readonly MenuItem items;
@@ -40,10 +44,14 @@
 
             var itemMenu = new Menu("Enemy items", "items");
             itemMenu.AddItem(items = new MenuItem("itemsEnabled", "Enabled").SetValue(true));
+            itemMenu.AddItem(doubleItemPing = new MenuItem("itemsDoublePing", "Double ping").SetValue(false))
+                .SetTooltip("Will ping item 2 times, like most people do");
             itemMenu.AddItem(itemWards = new MenuItem("wardsEnabled", "Ping wards").SetValue(false));
 
             var abilityMenu = new Menu("Enemy abilities", "abilities");
             abilityMenu.AddItem(abilities = new MenuItem("abilitiesEnabled", "Enabled").SetValue(true));
+            abilityMenu.AddItem(doubleAbilityPing = new MenuItem("abilitiesDoublePing", "Double ping").SetValue(false))
+                .SetTooltip("Will ping ability 2 times, like most people do");
 
             var roshanMenu = new Menu("Roshan", "roshan");
             roshanMenu.AddItem(roshanKillTime = new MenuItem("roshanEnabled", "Kill time").SetValue(true));
@@ -89,6 +97,10 @@
         public int CourierUpgradeDelay => courierUpgradeDelay.GetValue<Slider>().Value;
 
         public bool CourierUpgradeReminder => courierUpgradeReminder.IsActive();
+
+        public bool DoubleAbilityPingEnabled => doubleAbilityPing.IsActive();
+
+        public bool DoubleItemPingEnabled => doubleItemPing.IsActive();
 
         public bool Enabled => enabled.IsActive();
 
