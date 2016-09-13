@@ -100,7 +100,7 @@
             if (menuManager.AbilityPingEnabled)
             {
                 var doublePing = menuManager.DoubleAbilityPingEnabled;
-                if (heroesPinger.Any(x => x.IsVisible && x.AbilityPinger(doublePing)))
+                if (heroesPinger.Any(x => x.ShouldPing && x.AbilityPinger(doublePing)))
                 {
                     return;
                 }
@@ -110,7 +110,7 @@
             {
                 var doublePing = menuManager.DoubleItemPingEnabled;
                 var wards = menuManager.ItemWardsEnabled;
-                if (heroesPinger.Any(x => x.IsVisible && x.ItemPinger(wards, doublePing)))
+                if (heroesPinger.Any(x => x.ShouldPing && x.ItemPinger(wards, doublePing)))
                 {
                     return;
                 }

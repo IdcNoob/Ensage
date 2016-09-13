@@ -33,7 +33,7 @@
 
         public Hero Hero { get; }
 
-        public bool IsVisible => Hero.IsVisible;
+        public bool ShouldPing => Hero.IsVisible && Hero.IsAlive;
 
         #endregion
 
