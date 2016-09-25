@@ -234,7 +234,7 @@
             {
                 foreach (var enemy in
                     Ensage.Common.Objects.Heroes.GetByTeam(enemyTeam)
-                        .Where(x => !x.IsIllusion && !enemyHeroes.Exists(z => z.Handle == x.Handle)))
+                        .Where(x => x.IsValid && !x.IsIllusion && !enemyHeroes.Exists(z => z.Handle == x.Handle)))
                 {
                     enemyHeroes.Add(new EnemyHero(enemy));
                 }
