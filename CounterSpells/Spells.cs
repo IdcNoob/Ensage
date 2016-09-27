@@ -45,7 +45,6 @@
             "windrunner_windrun",
             "winter_wyvern_cold_embrace",
             "lich_frost_armor",
-            "arc_warden_magnetic_field",
             "item_crimson_guard",
             "item_shivas_guard",
             "item_buckler"
