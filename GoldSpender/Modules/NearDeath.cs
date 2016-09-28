@@ -8,7 +8,7 @@
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects;
 
-    using global::GoldSpender.Utils;
+    using Utils;
 
     internal class NearDeath : GoldManager
     {
@@ -145,7 +145,7 @@
             return Hero.Health <= Menu.NearDeathHpThreshold
                    && (distance <= 0
                        || Heroes.GetByTeam(enemyTeam)
-                              .Any(x => !x.IsIllusion && x.IsAlive && x.Distance2D(Hero) <= distance));
+                              .Any(x => x.IsValid && !x.IsIllusion && x.IsAlive && x.Distance2D(Hero) <= distance));
         }
 
         #endregion

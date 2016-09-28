@@ -168,7 +168,9 @@
                 1000f,
                 () =>
                     {
-                        if (args.Name == "particles/units/heroes/hero_techies/techies_remote_mine_plant.vpcf")
+                        if (args.Name == "particles/units/heroes/hero_techies/techies_remote_mine_plant.vpcf"
+                            || args.Name
+                            == "particles/econ/items/techies/techies_arcana/techies_remote_mine_plant_arcana.vpcf")
                         {
                             if (!Menu.IsEnabled("techies_remote_mines") || sender.Team == heroTeam)
                             {
@@ -186,7 +188,9 @@
                             units.Add(new RemoteMine(position));
                         }
 
-                        if (args.Name == "particles/units/heroes/hero_techies/techies_remote_mines_detonate.vpcf")
+                        if (args.Name == "particles/units/heroes/hero_techies/techies_remote_mines_detonate.vpcf"
+                            || args.Name
+                            == " particles/econ/items/techies/techies_arcana/techies_remote_mines_detonate_arcana.vpcf")
                         {
                             var remote =
                                 units.FirstOrDefault(
