@@ -1,0 +1,250 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{57208C8E-4BED-4B41-BC80-2964C1E09DEF}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Evader</RootNamespace>
+    <AssemblyName>Evader</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Ensage">
+      <HintPath>D:\Games\BanIsComing\References\Ensage.dll</HintPath>
+    </Reference>
+    <Reference Include="Ensage.Common, Version=1.2.5.3, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\Games\BanIsComing\References\Ensage.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX">
+      <HintPath>D:\Games\BanIsComing\References\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Bootstrap.cs" />
+    <Compile Include="Core\Abilities.cs" />
+    <Compile Include="Core\Data.cs" />
+    <Compile Include="Core\Enums.cs" />
+    <Compile Include="Core\Evader.cs" />
+    <Compile Include="Core\MenuManager.cs" />
+    <Compile Include="Core\Pathfinder.cs" />
+    <Compile Include="Core\Variables.cs" />
+    <Compile Include="EvadableAbilities\Base\AOE.cs" />
+    <Compile Include="EvadableAbilities\Base\EvadableAbility.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Abaddon\MistCoil.cs" />
+    <Compile Include="EvadableAbilities\Heroes\ArcWarden\Flux.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Bane\BrainSap.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Bane\FiendsGrip.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Bane\Nightmare.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Batrider\FlamingLasso.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Beastmaster\WildAxes.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Bloodseeker\Rupture.cs" />
+    <Compile Include="EvadableAbilities\Heroes\BountyHunter\ShurikenToss.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Broodmother\SpawnSpiderlings.cs" />
+    <Compile Include="EvadableAbilities\Heroes\CentaurWarrunner\DoubleEdge.cs" />
+    <Compile Include="EvadableAbilities\Heroes\ChaosKnight\ChaosBolt.cs" />
+    <Compile Include="EvadableAbilities\Heroes\ChaosKnight\RealityRift.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Clockwerk\Hookshot.cs" />
+    <Compile Include="EvadableAbilities\Heroes\CrystalMaiden\Frostbite.cs" />
+    <Compile Include="EvadableAbilities\Heroes\DarkSeer\Vacuum.cs" />
+    <Compile Include="EvadableAbilities\Heroes\AntiMage\ManaVoid.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Brewmaster\ThunderClap.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Broodmother\InsatiableHunger.cs" />
+    <Compile Include="EvadableAbilities\Heroes\CentaurWarrunner\HoofStomp.cs" />
+    <Compile Include="EvadableAbilities\Heroes\CrystalMaiden\CrystalNova.cs" />
+    <Compile Include="EvadableAbilities\Heroes\CrystalMaiden\FreezingField.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Dazzle\PoisonTouch.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Dazzle\ShadowWave.cs" />
+    <Compile Include="EvadableAbilities\Heroes\DeathProphet\Silence.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Disruptor\StaticStorm.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Disruptor\ThunderStrike.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Doom\Doom.cs" />
+    <Compile Include="EvadableAbilities\Heroes\DrowRanger\WaveOfSilence.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Earthshaker\EnchantTotem.cs" />
+    <Compile Include="EvadableAbilities\Heroes\ElderTitan\EarthSplitter.cs" />
+    <Compile Include="EvadableAbilities\Heroes\ElderTitan\EchoStomp.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Enigma\BlackHole.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Enigma\Malefice.cs" />
+    <Compile Include="EvadableAbilities\Heroes\FacelessVoid\Chronosphere.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Huskar\LifeBreak.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Jakiro\DualBreath.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Jakiro\IcePath.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Jakiro\Macropyre.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Juggernaut\Omnislash.cs" />
+    <Compile Include="EvadableAbilities\Heroes\KeeperOfTheLight\BlindingLight.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Kunkka\Torrent.cs" />
+    <Compile Include="EvadableAbilities\Heroes\LegionCommander\Duel.cs" />
+    <Compile Include="EvadableAbilities\Heroes\LegionCommander\OverwhelmingOdds.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Lich\FrostBlast.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Lina\LagunaBlade.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Lina\LightStrikeArray.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Lion\EarthSpike.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Lion\FingerOfDeath.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Luna\Eclipse.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Luna\LucentBeam.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Magnus\ReversePolarity.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Magnus\Shockwave.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Magnus\Skewer.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Medusa\MysticSnake.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Mirana\Starstorm.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Morphling\AdaptiveStrike.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Morphling\Waveform.cs" />
+    <Compile Include="EvadableAbilities\Heroes\NagaSiren\Ensnare.cs" />
+    <Compile Include="EvadableAbilities\Heroes\NagaSiren\SongOfTheSiren.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Necrophos\DeathPulse.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Necrophos\ReapersScythe.cs" />
+    <Compile Include="EvadableAbilities\Heroes\NightStalker\CripplingFear.cs" />
+    <Compile Include="EvadableAbilities\Heroes\NightStalker\Void.cs" />
+    <Compile Include="EvadableAbilities\Heroes\NyxAssassin\Impale.cs" />
+    <Compile Include="EvadableAbilities\Heroes\NyxAssassin\ManaBurn.cs" />
+    <Compile Include="EvadableAbilities\Heroes\OgreMagi\Fireblast.cs" />
+    <Compile Include="EvadableAbilities\Heroes\OgreMagi\Ignite.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Omniknight\Purification.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Oracle\FortunesEnd.cs" />
+    <Compile Include="EvadableAbilities\Heroes\OutworldDevourer\AstralImprisonment.cs" />
+    <Compile Include="EvadableAbilities\Heroes\OutworldDevourer\SanitysEclipse.cs" />
+    <Compile Include="EvadableAbilities\Heroes\PhantomAssassin\StiflingDagger.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Puck\IllusoryOrb.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Pudge\Dismember.cs" />
+    <Compile Include="EvadableAbilities\Heroes\QueenOfPain\ScreamOfPain.cs" />
+    <Compile Include="EvadableAbilities\Heroes\QueenOfPain\ShadowStrike.cs" />
+    <Compile Include="EvadableAbilities\Heroes\ShadowDemon\Disruption.cs" />
+    <Compile Include="EvadableAbilities\Heroes\ShadowDemon\ShadowPoison.cs" />
+    <Compile Include="EvadableAbilities\Heroes\ShadowFiend\Shadowraze.cs" />
+    <Compile Include="EvadableAbilities\Heroes\ShadowShaman\EtherShock.cs" />
+    <Compile Include="EvadableAbilities\Heroes\ShadowShaman\Shackles.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Silencer\ArcaneCurse.cs" />
+    <Compile Include="EvadableAbilities\Heroes\SkywrathMage\ArcaneBolt.cs" />
+    <Compile Include="EvadableAbilities\Heroes\SkywrathMage\ConcussiveShot.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Slardar\SlithereenCrush.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Slark\Pounce.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Sniper\Assassinate.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Spectre\SpectralDagger.cs" />
+    <Compile Include="EvadableAbilities\Heroes\SpiritBreaker\NetherStrike.cs" />
+    <Compile Include="EvadableAbilities\Heroes\StormSpirit\Vortex.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Terrorblade\Sunder.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Tidehunter\AnchorSmash.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Timbersaw\Chakram.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Timbersaw\TimberChain.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Tinker\HeatSeekingMissile.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Tinker\Laser.cs" />
+    <Compile Include="EvadableAbilities\Heroes\TreantProtector\LeechSeed.cs" />
+    <Compile Include="EvadableAbilities\Heroes\TrollWarlord\WhirlingAxesMelee.cs" />
+    <Compile Include="EvadableAbilities\Heroes\TrollWarlord\WhirlingAxesRanged.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Tusk\IceShards.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Tusk\WalrusKick.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Tusk\WalrusPunch.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Undying\Decay.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Undying\SoulRip.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Ursa\Earthshock.cs" />
+    <Compile Include="EvadableAbilities\Heroes\VengefulSpirit\MagicMissile.cs" />
+    <Compile Include="EvadableAbilities\Heroes\VengefulSpirit\NetherSwap.cs" />
+    <Compile Include="EvadableAbilities\Heroes\VengefulSpirit\WaveOfTerror.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Venomancer\PoisonNova.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Venomancer\VenomousGale.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Viper\ViperStrike.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Visage\GraveChill.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Visage\SoulAssumption.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Warlock\ChaoticOffering.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Warlock\FatalBonds.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Windranger\Powershot.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Windranger\Shackleshot.cs" />
+    <Compile Include="EvadableAbilities\Heroes\WitchDoctor\Maledict.cs" />
+    <Compile Include="EvadableAbilities\Base\Interfaces\IModifier.cs" />
+    <Compile Include="EvadableAbilities\Base\Interfaces\IParticle.cs" />
+    <Compile Include="EvadableAbilities\Base\Linear.cs" />
+    <Compile Include="EvadableAbilities\Base\LinearAOE.cs" />
+    <Compile Include="EvadableAbilities\Base\LinearDynamicProjectile.cs" />
+    <Compile Include="EvadableAbilities\Base\LinearProjectile.cs" />
+    <Compile Include="EvadableAbilities\Base\LinearTarget.cs" />
+    <Compile Include="EvadableAbilities\Base\Projectile.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Alchemist\UnstableConcoction.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Axe\BerserkersCall.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Axe\CullingBlade.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Beastmaster\PrimalRoar.cs" />
+    <Compile Include="EvadableAbilities\Heroes\DeathProphet\CryptSwarm.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Earthshaker\Fissure.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Invoker\SunStrike.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Leshrac\SplitEarth.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Lina\DragonSlave.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Mirana\SacredArrow.cs" />
+    <Compile Include="EvadableAbilities\Heroes\PhantomLancer\SpiritLance.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Pudge\MeatHook.cs" />
+    <Compile Include="EvadableAbilities\Heroes\QueenOfPain\SonicWave.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Sven\StormHammer.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Tidehunter\Ravage.cs" />
+    <Compile Include="EvadableAbilities\Heroes\WitchDoctor\ParalyzingCask.cs" />
+    <Compile Include="EvadableAbilities\Heroes\WraithKing\WraithfireBlast.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Zeus\LightningBolt.cs" />
+    <Compile Include="EvadableAbilities\Items\EtherealBlade.cs" />
+    <Compile Include="EvadableAbilities\Units\CentaurConqueror\WarStomp.cs" />
+    <Compile Include="EvadableAbilities\Units\Familiar\StoneForm.cs" />
+    <Compile Include="UsableAbilities\Abilities\BallLightning.cs" />
+    <Compile Include="UsableAbilities\Abilities\DarkRift.cs" />
+    <Compile Include="UsableAbilities\Abilities\EchoSlam.cs" />
+    <Compile Include="UsableAbilities\Abilities\FireRemnant.cs" />
+    <Compile Include="UsableAbilities\Abilities\FortunesEnd.cs" />
+    <Compile Include="UsableAbilities\Items\LinkensSphere.cs" />
+    <Compile Include="UsableAbilities\Abilities\SearingChains.cs" />
+    <Compile Include="UsableAbilities\Abilities\SleightOfFist.cs" />
+    <Compile Include="UsableAbilities\Abilities\Snowball.cs" />
+    <Compile Include="UsableAbilities\Abilities\Supernova.cs" />
+    <Compile Include="UsableAbilities\Items\ForceStaff.cs" />
+    <Compile Include="UsableAbilities\Abilities\Leap.cs" />
+    <Compile Include="UsableAbilities\Base\TargetBlink.cs" />
+    <Compile Include="UsableAbilities\Base\BlinkAbility.cs" />
+    <Compile Include="UsableAbilities\Abilities\Replicate.cs" />
+    <Compile Include="UsableAbilities\Base\NotTargetable.cs" />
+    <Compile Include="UsableAbilities\Base\Targetable.cs" />
+    <Compile Include="UsableAbilities\Base\UsableAbility.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\Debugger.cs" />
+    <Compile Include="Utils\MouseEmulation.cs" />
+    <Compile Include="Utils\Utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

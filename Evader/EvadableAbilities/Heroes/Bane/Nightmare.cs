@@ -1,0 +1,30 @@
+﻿namespace Evader.EvadableAbilities.Heroes
+{
+    using Base;
+
+    using Ensage;
+
+    using static Core.Abilities;
+
+    internal class Nightmare : LinearTarget
+    {
+        #region Constructors and Destructors
+
+        public Nightmare(Ability ability)
+            : base(ability)
+        {
+            CounterAbilities.Add(PhaseShift);
+            CounterAbilities.Add(Manta);
+            CounterAbilities.Add(Eul);
+            CounterAbilities.Add(SleightOfFist);
+            CounterAbilities.AddRange(VsDisable);
+            CounterAbilities.AddRange(VsDamage);
+            CounterAbilities.AddRange(VsMagic);
+            CounterAbilities.AddRange(Invul);
+            CounterAbilities.Add(SnowBall);
+            CounterAbilities.Add(NetherWard);
+        }
+
+        #endregion
+    }
+}
