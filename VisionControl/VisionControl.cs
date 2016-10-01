@@ -198,8 +198,6 @@
                                     x is RemoteMine
                                     && x.Position.Distance2D(args.ParticleEffect.GetControlPoint(0)) < 10);
 
-                            Console.WriteLine(sender.Team);
-
                             if (remote != null)
                             {
                                 remote.ParticleEffect?.Dispose();
