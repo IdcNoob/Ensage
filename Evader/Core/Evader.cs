@@ -453,7 +453,7 @@
                     ObjectManager.GetEntities<Unit>()
                         .Where(
                             x =>
-                            (x is Hero || x is Creep) && x.IsValid
+                            (x is Hero || x is Creep) && x.IsValid && x.IsAlive
                             && (!x.IsIllusion
                                 || x.HasModifiers(
                                     new[]

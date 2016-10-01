@@ -121,6 +121,7 @@
 
             base.End();
             modifierAdded = false;
+            modifier = null;
         }
 
         #endregion

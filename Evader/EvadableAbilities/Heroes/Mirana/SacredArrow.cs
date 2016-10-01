@@ -52,7 +52,7 @@
             arrow = unit;
             StartCast = Game.RawGameTime;
             EndCast = Game.RawGameTime + GetCastRange() / GetProjectileSpeed();
-            StartPosition = unit.Position;
+            StartPosition = unit.Position.SetZ(Owner.Position.Z);
             fowCast = true;
         }
 
@@ -64,7 +64,7 @@
         public override void Check()
         {
             var time = Game.RawGameTime;
-            var phase = IsInPhase;
+            var phase = IsInPhase && Owner.IsVisible;
 
             if (phase && StartCast + CastPoint <= time)
             {
@@ -80,7 +80,12 @@
 
                 if (fowCast)
                 {
-                    EndPosition = StartPosition.Extend(arrow.Position, GetCastRange());
+                    EndPosition = StartPosition.Extend(arrow.Position.SetZ(Owner.Position.Z), GetCastRange());
+
+                    if (EndPosition.Distance2D(StartPosition) < 10)
+                    {
+                        return;
+                    }
                 }
                 else
                 {
@@ -151,7 +156,7 @@
                 return base.GetRemainingTime();
             }
 
-            return (hero.NetworkPosition.Distance2D(arrow) - Radius) / GetProjectileSpeed();
+            return StartCast + (hero.Distance2D(StartPosition) - Radius) / GetProjectileSpeed() - Game.RawGameTime;
         }
 
         public override bool IsStopped()
