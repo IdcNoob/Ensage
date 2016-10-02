@@ -67,7 +67,6 @@
             Unit.OnModifierAdded -= Unit_OnModifierAdded;
             Entity.OnParticleEffectAdded -= Entity_OnParticleEffectAdded;
             ObjectManager.OnAddTrackingProjectile -= ObjectManagerOnAddTrackingProjectile;
-
             evader.OnClose();
         }
 

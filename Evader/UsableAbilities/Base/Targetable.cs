@@ -26,7 +26,7 @@
 
         public override float GetRequiredTime(EvadableAbility ability, Unit unit)
         {
-            return CastPoint + (unit.Equals(Hero) ? 0 : (float)Hero.GetTurnTime(unit));
+            return CastPoint + (unit.Equals(Hero) ? 0 : (float)Hero.GetTurnTime(unit)) * 1.5f;
         }
 
         public override void Use(EvadableAbility ability, Unit target)

@@ -1,5 +1,7 @@
 ﻿namespace Evader.EvadableAbilities.Heroes
 {
+    using System;
+
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Extensions.SharpDX;
@@ -66,7 +68,7 @@
             var time = Game.RawGameTime;
             var phase = IsInPhase && Owner.IsVisible;
 
-            if (phase && StartCast + CastPoint <= time)
+            if (phase && StartCast + CastPoint <= time && time > EndCast)
             {
                 StartCast = time;
                 EndCast = StartCast + CastPoint + GetCastRange() / GetProjectileSpeed();
@@ -150,13 +152,22 @@
             {
                 hero = Hero;
             }
+        
+            var position = hero.NetworkPosition;
 
             if (!IsValidArrow())
             {
-                return base.GetRemainingTime();
+
+                if (IsInPhase && position.Distance2D(StartPosition) < Radius)
+                {
+                    return StartCast + CastPoint - Game.RawGameTime;
+                }
+
+                return StartCast + CastPoint + (position.Distance2D(StartPosition) - Radius*2) / GetProjectileSpeed()
+                       - Game.RawGameTime;
             }
 
-            return StartCast + (hero.Distance2D(StartPosition) - Radius) / GetProjectileSpeed() - Game.RawGameTime;
+            return StartCast + (position.Distance2D(StartPosition) - Radius*2) / GetProjectileSpeed() - Game.RawGameTime;
         }
 
         public override bool IsStopped()

@@ -199,29 +199,6 @@
                 { "modifier_faceless_void_chronosphere", "faceless_void_chronosphere" },
             };
 
-        //public static Dictionary<string, string> AbilityParticles { get; } = new Dictionary<string, string>
-        //    {
-        //        {
-        //            "particles/units/heroes/hero_death_prophet/death_prophet_carrion_swarm.vpcf",
-        //            "death_prophet_carrion_swarm"
-        //        },
-        //        { "particles/units/heroes/hero_pudge/pudge_meathook.vpcf", "pudge_meat_hook" },
-        //        { "particles/units/heroes/hero_slark/slark_pounce_trail.vpcf", "slark_pounce" },
-        //        {
-        //            "particles/units/heroes/hero_windrunner/windrunner_spell_powershot_channel.vpcf",
-        //            "windrunner_powershot"
-        //        },
-        //        {
-        //            "particles/units/heroes/hero_venomancer/venomancer_venomous_gale_mouth.vpcf",
-        //            "venomancer_venomous_gale"
-        //        },
-        //        { "particles/units/heroes/hero_venomancer/venomancer_poison_nova.vpcf", "venomancer_poison_nova" },
-        //        {
-        //            "particles/units/heroes/hero_troll_warlord/troll_warlord_whirling_axe_melee.vpcf",
-        //            "troll_warlord_whirling_axes_melee"
-        //        },
-        //    };
-
         public static Dictionary<string, Func<Ability, UsableAbility>> EvadeBlinkAbilities { get; } = new Dictionary
             <string, Func<Ability, UsableAbility>>
             {

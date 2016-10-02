@@ -82,7 +82,19 @@
 
         public PriorityChanger PriorityChanger { get; set; }
 
-        public float StartCast { get; protected set; }
+        private float startCast;
+
+        public float StartCast
+        {
+            get
+            {
+                return startCast;
+            }
+            protected set
+            {
+                startCast = value - 0.01f;
+            }
+        }
 
         public bool UseCustomPriority { get; set; }
 
@@ -124,6 +136,7 @@
             Particle = null;
             Pathfinder.RemoveObstacle(Obstacle.Value);
             Obstacle = null;
+            EndCast = 0;
             StartCast = 0;
         }
 
@@ -181,7 +194,6 @@
         {
             if (!IsInPhase && CanBeStopped())
             {
-                Debugger.WriteLine("Phase canceled: " + Name);
                 End();
                 return true;
             }

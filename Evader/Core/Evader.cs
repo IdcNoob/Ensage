@@ -463,7 +463,20 @@
                                         },
                                     false))))
                 {
-                    var abilities = unit.Spellbook.Spells.ToList();
+                    var abilities = new List<Ability>();
+
+                    try
+                    {
+                        abilities.AddRange(unit.Spellbook.Spells);
+                    }
+                    catch (Exception)
+                    {
+                        Debugger.WriteLine("=============>>>>>>>>>>>>>>>>>>>> Exception");
+                        Debugger.WriteLine("Unit name: " + unit.Name);
+                        Debugger.WriteLine("Unit alive: " + unit.IsAlive);
+                        Debugger.WriteLine("Unit spawned: " + unit.IsSpawned);
+                        Debugger.WriteLine("Unit valid: " + unit.IsValid);
+                    }
 
                     if (unit.HasInventory)
                     {
@@ -621,13 +634,14 @@
             {
                 var ally = obstaclePair.Key;
                 var allyLinkens = ally.IsLinkensProtected();
-                var allyMagicImune = ally.IsMagicImmune();
+                var allyMagicImmune = ally.IsMagicImmune();
                 var allyIsMe = ally.Equals(Hero);
 
-                foreach (var obstacle in obstaclePair.Value)
+                foreach (
+                    var ability in
+                        obstaclePair.Value.Select(x => evadableAbilities.FirstOrDefault(z => z.Obstacle == x))
+                            .OrderByDescending(x => x.IsDisable))
                 {
-                    var ability = evadableAbilities.FirstOrDefault(x => x.Obstacle == obstacle);
-
                     if (ability != null)
                     {
                         if (sleeper.Sleeping(ability))
@@ -638,7 +652,7 @@
                         Debugger.WriteLine(ally.GetRealName() + " intersecting: " + ability.Name);
 
                         if ((allyLinkens && (ability is Projectile || ability is LinearTarget))
-                            || (!ability.PiercesMagicImmunity && allyMagicImune))
+                            || (!ability.PiercesMagicImmunity && allyMagicImmune))
                         {
                             continue;
                         }
@@ -716,9 +730,9 @@
                                                 }
 
                                                 //  sleeper.Sleep(ability.ObstacleRemainingTime() * 1000, "avoiding");
-                                                sleeper.Sleep(Math.Min(time, 1) * 1000, "avoiding");
                                                 sleeper.Sleep(200, "block");
                                                 sleeper.Sleep(Math.Min(time, 1) * 1000, ability);
+                                                sleeper.Sleep(Math.Min(time, 1) * 1000, "avoiding");
                                                 sleeper.Sleep(1000, debugPath);
 
                                                 Debugger.WriteLine(">>>>>>>>>>>>>>>");
@@ -762,7 +776,6 @@
 
                                     break;
                                 case Priority.Blink:
-
                                     if (!allyIsMe)
                                     {
                                         continue;

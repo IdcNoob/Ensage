@@ -50,7 +50,7 @@
                 return float.MaxValue;
             }
 
-            return CastPoint + (float)Hero.GetTurnTime(blinkUnit);
+            return CastPoint + (float)Hero.GetTurnTime(blinkUnit) * 1.5f;
         }
 
         public override void Use(EvadableAbility ability, Unit target)

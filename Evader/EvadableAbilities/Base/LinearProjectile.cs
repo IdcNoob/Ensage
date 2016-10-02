@@ -1,5 +1,7 @@
 ﻿namespace Evader.EvadableAbilities.Base
 {
+    using System;
+
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Extensions.SharpDX;
@@ -43,7 +45,7 @@
             var time = Game.RawGameTime;
             var phase = IsInPhase;
 
-            if (phase && StartCast + CastPoint <= time)
+            if (phase && StartCast + CastPoint <= time && time > EndCast)
             {
                 StartCast = time;
                 EndCast = StartCast + CastPoint + GetCastRange() / GetProjectileSpeed();
@@ -99,7 +101,6 @@
                 hero = Hero;
             }
 
-            // var position = hero.BasePredict(hero.MovementSpeed);
             var position = hero.NetworkPosition;
 
             if (IsInPhase && position.Distance2D(StartPosition) < Radius)
