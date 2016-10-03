@@ -6,8 +6,9 @@
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
 
-    using HpMpAbuse.Helpers;
-    using HpMpAbuse.Menu;
+    using Helpers;
+
+    using Menu;
 
     internal class PowerTreads
     {

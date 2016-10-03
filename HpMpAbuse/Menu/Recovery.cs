@@ -14,8 +14,9 @@
 
         private readonly MenuItem forcePickEnemyDistance;
 
-        private readonly MenuItem soulRingFountain;
         private readonly MenuItem itemsToUse;
+
+        private readonly MenuItem soulRingFountain;
 
         private bool active;
 
@@ -35,16 +36,16 @@
 
             var items = new Dictionary<string, bool>
                 {
-                {"item_arcane_boots", true },
-                {"item_bottle", true },
-                {"item_guardian_greaves", true },
-                {"item_magic_stick", true },
-                {"item_mekansm", true },
-                {"item_soul_ring", true },
-                {"item_urn_of_shadows", true },
+                    { "item_arcane_boots", true },
+                    { "item_bottle", true },
+                    { "item_guardian_greaves", true },
+                    { "item_magic_stick", true },
+                    { "item_mekansm", true },
+                    { "item_soul_ring", true },
+                    { "item_urn_of_shadows", true },
                 };
 
-              var itemsMenu = new Menu("Items to use", "itemsToUse");
+            var itemsMenu = new Menu("Items to use", "itemsToUse");
             itemsMenu.AddItem(
                 itemsToUse = new MenuItem("itemsToUseEnabled", "Use: ").SetValue(new AbilityToggler(items)));
 
@@ -94,6 +95,9 @@
 
         public bool SoulRingAtFountain => soulRingFountain.IsActive();
 
+        #endregion
+
+        #region Public Methods and Operators
 
         public bool IsEnabled(string abilityName)
         {

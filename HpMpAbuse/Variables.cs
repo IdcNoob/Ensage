@@ -3,7 +3,7 @@
     using Ensage;
     using Ensage.Common.Objects.UtilityObjects;
 
-    using HpMpAbuse.Menu;
+    using Menu;
 
     internal class Variables
     {

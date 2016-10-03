@@ -8,9 +8,11 @@
     using Ensage.Common.Objects;
     using Ensage.Common.Objects.UtilityObjects;
 
-    using HpMpAbuse.Helpers;
-    using HpMpAbuse.Items;
-    using HpMpAbuse.Menu;
+    using Helpers;
+
+    using Items;
+
+    using Menu;
 
     using SharpDX;
 
@@ -142,6 +144,15 @@
                 case Order.ToggleAbility:
                     if (!args.IsQueued)
                     {
+                        var ability = args.Ability;
+                        if (ability.ClassID == ClassID.CDOTA_Item_TeleportScroll
+                            || ability.ClassID == ClassID.CDOTA_Item_BootsOfTravel
+                            || ability.ClassID == ClassID.CDOTA_Item_BootsOfTravel_2)
+                        {
+                            Sleeper.Sleep(1000, "Main");
+                            return;
+                        }
+
                         UseAbility(args);
                     }
                     break;
@@ -299,7 +310,7 @@
 
                 if (bottleTarget != null)
                 {
-                    itemManager.Bottle.Use(bottleTarget);
+                    itemManager.Bottle.Use(bottleTarget.Equals(Hero) ? null : bottleTarget);
                 }
             }
 

@@ -5,7 +5,7 @@
     using Ensage;
     using Ensage.Common.Extensions;
 
-    using HpMpAbuse.Helpers;
+    using Helpers;
 
     internal sealed class Bottle : UsableItem
     {
@@ -83,7 +83,14 @@
 
         public void Use(Hero target)
         {
-            Item.UseAbility(target);
+            if (target == null)
+            {
+                Item.UseAbility();
+            }
+            else
+            {
+                Item.UseAbility(target);
+            }
             Sleeper.Sleep(restoreTime * 1000, "AutoBottle");
             Sleeper.Sleep(300, "Used");
             SetSleep(200 + Game.Ping);

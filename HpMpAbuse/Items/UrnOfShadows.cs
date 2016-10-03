@@ -5,7 +5,7 @@
     using Ensage;
     using Ensage.Common.Extensions;
 
-    using HpMpAbuse.Helpers;
+    using Helpers;
 
     internal sealed class UrnOfShadows : UsableItem
     {

@@ -6,7 +6,7 @@
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects;
 
-    using HpMpAbuse.Helpers;
+    using Helpers;
 
     internal class StashBottle : UsableItem
     {

@@ -3,7 +3,7 @@
     using Ensage;
     using Ensage.Common.Extensions;
 
-    using HpMpAbuse.Helpers;
+    using Helpers;
 
     internal class SoulRing : UsableItem
     {
