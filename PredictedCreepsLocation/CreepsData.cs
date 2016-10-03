@@ -104,9 +104,27 @@
                 botPath.Add(new Vector3(6113, 2214, 256));
             }
 
-            LaneData.Add(new LaneData { LanePosition = LanePosition.Top, Points = topPath, Team = team });
-            LaneData.Add(new LaneData { LanePosition = LanePosition.Middle, Points = midPath, Team = team });
-            LaneData.Add(new LaneData { LanePosition = LanePosition.Bottom, Points = botPath, Team = team });
+            LaneData.Add(
+                new LaneData
+                    {
+                        LanePosition = LanePosition.Top,
+                        Points = topPath,
+                        Team = team
+                    });
+            LaneData.Add(
+                new LaneData
+                    {
+                        LanePosition = LanePosition.Middle,
+                        Points = midPath,
+                        Team = team
+                    });
+            LaneData.Add(
+                new LaneData
+                    {
+                        LanePosition = LanePosition.Bottom,
+                        Points = botPath,
+                        Team = team
+                    });
         }
 
         #endregion

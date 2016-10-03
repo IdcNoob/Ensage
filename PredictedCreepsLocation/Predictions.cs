@@ -213,9 +213,6 @@
 
             creepWaves.RemoveAll(x => remove.Contains(x));
 
-            //foreach (
-            //    var creep in
-            //        Creeps.All.Where(
             foreach (var creep in
                 ObjectManager.GetEntities<Creep>()
                     .Where(
@@ -231,9 +228,7 @@
                 return;
             }
 
-            var spawnTime = Math.Min(Math.Floor(gameTime / 360) * 0.25, 2) + 1;
-
-            if (Math.Abs(gameTime % 30 - spawnTime) < 0.5)
+            if (Math.Abs(gameTime % 30 - 1) < 0.5)
             {
                 creepsData.LaneData.ForEach(x => creepWaves.Add(new CreepWave(x)));
                 sleeper.Sleep(28000, "WavesAdded");
