@@ -4,6 +4,7 @@
     using System.Linq;
 
     using Ensage;
+    using Ensage.Common.AbilityInfo;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects;
     using Ensage.Common.Objects.UtilityObjects;
@@ -472,7 +473,9 @@
                     break;
                 case Order.AbilityLocation:
                     var targetLocation = args.TargetPosition;
-                    if (powerTreadsCondition && Hero.Distance2D(targetLocation) <= ability.GetCastRange() + 300)
+                    if (powerTreadsCondition
+                        && (Hero.Distance2D(targetLocation) <= ability.GetCastRange() + 300
+                            || AbilityDatabase.Find(ability.StoredName()).FakeCastRange))
                     {
                         itemManager.PowerTreads.SwitchTo(Attribute.Intelligence);
                         sleep += Hero.GetTurnTime(targetLocation) * 1000;

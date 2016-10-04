@@ -100,6 +100,10 @@ namespace CounterSpells {
             Drawing.OnPreReset += Drawing_OnPreReset;
             Drawing.OnPostReset += Drawing_OnPostReset;
             Drawing.OnEndScene += Drawing_OnEndScene;
+
+            Game.PrintMessage(
+                "<font color='#FF0000'>Counter Spells is obsolete, try Evader instead.</font>",
+                MessageType.LogMessage);
         }
 
         private static void Game_OnUpdate(EventArgs args) {
