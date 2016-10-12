@@ -7,8 +7,6 @@
 
     using EvadableAbilities.Base;
 
-    using Utils;
-
     using AbilityType = Core.AbilityType;
 
     internal class Targetable : UsableAbility
@@ -26,7 +24,7 @@
 
         public override float GetRequiredTime(EvadableAbility ability, Unit unit)
         {
-            return CastPoint + (unit.Equals(Hero) ? 0 : (float)Hero.GetTurnTime(unit)) * 1.5f;
+            return CastPoint + (unit.Equals(Hero) ? 0 : (float)Hero.GetTurnTime(unit));
         }
 
         public override void Use(EvadableAbility ability, Unit target)

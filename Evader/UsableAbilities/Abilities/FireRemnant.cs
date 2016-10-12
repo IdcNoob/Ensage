@@ -27,7 +27,7 @@
         public override bool CanBeCasted(Unit unit)
         {
             return !Sleeper.Sleeping && Hero.HasModifier("modifier_ember_spirit_fire_remnant_timer")
-                   && Ability.CanBeCasted() && Hero.CanCast();
+                   && Ability.CanBeCasted();
         }
 
         public override float GetRequiredTime(EvadableAbility ability, Unit unit)

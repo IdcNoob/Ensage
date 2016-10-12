@@ -34,14 +34,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ensage">
-      <HintPath>D:\Games\BanIsComing\References\Ensage.dll</HintPath>
+      <HintPath>C:\BanIsComing\References\Ensage.dll</HintPath>
     </Reference>
-    <Reference Include="Ensage.Common, Version=1.2.5.3, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="Ensage.Common, Version=1.2.5.4, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\Games\BanIsComing\References\Ensage.Common.dll</HintPath>
+      <HintPath>C:\BanIsComing\References\Ensage.Common.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>D:\Games\BanIsComing\References\SharpDX.dll</HintPath>
+      <HintPath>C:\BanIsComing\References\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -63,6 +63,7 @@
     <Compile Include="Core\Variables.cs" />
     <Compile Include="EvadableAbilities\Base\AOE.cs" />
     <Compile Include="EvadableAbilities\Base\EvadableAbility.cs" />
+    <Compile Include="EvadableAbilities\Base\Interfaces\IModifier.cs" />
     <Compile Include="EvadableAbilities\Heroes\Abaddon\MistCoil.cs" />
     <Compile Include="EvadableAbilities\Heroes\ArcWarden\Flux.cs" />
     <Compile Include="EvadableAbilities\Heroes\Bane\BrainSap.cs" />
@@ -101,7 +102,6 @@
     <Compile Include="EvadableAbilities\Heroes\Huskar\LifeBreak.cs" />
     <Compile Include="EvadableAbilities\Heroes\Jakiro\DualBreath.cs" />
     <Compile Include="EvadableAbilities\Heroes\Jakiro\IcePath.cs" />
-    <Compile Include="EvadableAbilities\Heroes\Jakiro\Macropyre.cs" />
     <Compile Include="EvadableAbilities\Heroes\Juggernaut\Omnislash.cs" />
     <Compile Include="EvadableAbilities\Heroes\KeeperOfTheLight\BlindingLight.cs" />
     <Compile Include="EvadableAbilities\Heroes\Kunkka\Torrent.cs" />
@@ -182,11 +182,9 @@
     <Compile Include="EvadableAbilities\Heroes\Windranger\Powershot.cs" />
     <Compile Include="EvadableAbilities\Heroes\Windranger\Shackleshot.cs" />
     <Compile Include="EvadableAbilities\Heroes\WitchDoctor\Maledict.cs" />
-    <Compile Include="EvadableAbilities\Base\Interfaces\IModifier.cs" />
+    <Compile Include="EvadableAbilities\Base\Interfaces\IModifierThinker.cs" />
     <Compile Include="EvadableAbilities\Base\Interfaces\IParticle.cs" />
-    <Compile Include="EvadableAbilities\Base\Linear.cs" />
     <Compile Include="EvadableAbilities\Base\LinearAOE.cs" />
-    <Compile Include="EvadableAbilities\Base\LinearDynamicProjectile.cs" />
     <Compile Include="EvadableAbilities\Base\LinearProjectile.cs" />
     <Compile Include="EvadableAbilities\Base\LinearTarget.cs" />
     <Compile Include="EvadableAbilities\Base\Projectile.cs" />
@@ -216,6 +214,7 @@
     <Compile Include="UsableAbilities\Abilities\EchoSlam.cs" />
     <Compile Include="UsableAbilities\Abilities\FireRemnant.cs" />
     <Compile Include="UsableAbilities\Abilities\FortunesEnd.cs" />
+    <Compile Include="UsableAbilities\Items\BlinkDagger.cs" />
     <Compile Include="UsableAbilities\Items\LinkensSphere.cs" />
     <Compile Include="UsableAbilities\Abilities\SearingChains.cs" />
     <Compile Include="UsableAbilities\Abilities\SleightOfFist.cs" />
@@ -232,7 +231,10 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\Debugger.cs" />
+    <Compile Include="Utils\AbilityDrawer.cs" />
+    <Compile Include="Utils\MapDrawer.cs" />
     <Compile Include="Utils\MouseEmulation.cs" />
+    <Compile Include="Utils\StatusDrawer.cs" />
     <Compile Include="Utils\Utils.cs" />
   </ItemGroup>
   <ItemGroup>

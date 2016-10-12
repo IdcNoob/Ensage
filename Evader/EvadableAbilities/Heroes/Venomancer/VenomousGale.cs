@@ -11,12 +11,6 @@
 
     internal class VenomousGale : LinearProjectile, IParticle
     {
-        #region Fields
-
-        private bool particleAdded;
-
-        #endregion
-
         #region Constructors and Destructors
 
         public VenomousGale(Ability ability)
@@ -26,8 +20,6 @@
             CounterAbilities.Add(Eul);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);
-
-            Radius += 30;
         }
 
         #endregion
@@ -36,11 +28,16 @@
 
         public void AddParticle(ParticleEffect particle)
         {
-            if (Obstacle != null || !Owner.IsVisible)
+            if (Obstacle != null || !AbilityOwner.IsVisible)
             {
                 return;
             }
-            particleAdded = true;
+
+            StartCast = Game.RawGameTime;
+            StartPosition = AbilityOwner.NetworkPosition;
+            EndPosition = AbilityOwner.InFront(GetCastRange());
+            EndCast = StartCast + GetCastRange() / GetProjectileSpeed();
+            Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
         }
 
         public override bool CanBeStopped()
@@ -50,23 +47,15 @@
 
         public override void Check()
         {
-            if (particleAdded && (int)Owner.RotationDifference == 0)
-            {
-                StartCast = Game.RawGameTime;
-                StartPosition = Owner.NetworkPosition;
-                EndPosition = Owner.InFront(GetCastRange());
-                EndCast = StartCast + GetCastRange() / GetProjectileSpeed();
-                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, Radius, Obstacle);
-                particleAdded = false;
-            }
-            else if (StartCast > 0 && Game.RawGameTime > EndCast)
+            if (StartCast > 0 && Game.RawGameTime > EndCast)
             {
                 End();
             }
-            else if (Obstacle != null)
-            {
-                Pathfinder.UpdateObstacle(Obstacle.Value, GetProjectilePosition(), EndPosition);
-            }
+        }
+
+        public override float GetProjectileSpeed()
+        {
+            return base.GetProjectileSpeed() + 100;
         }
 
         public override float GetRemainingTime(Hero hero = null)
@@ -76,7 +65,12 @@
                 hero = Hero;
             }
 
-            return StartCast + (hero.NetworkPosition.Distance2D(StartPosition) - Radius) / GetProjectileSpeed()
+            if (hero.NetworkPosition.Distance2D(StartPosition) < GetRadius())
+            {
+                return 0;
+            }
+
+            return StartCast + (hero.NetworkPosition.Distance2D(StartPosition) - GetRadius()) / GetProjectileSpeed()
                    - Game.RawGameTime;
         }
 
@@ -87,11 +81,6 @@
         protected override float GetCastRange()
         {
             return base.GetCastRange() + 100;
-        }
-
-        protected override float GetProjectileSpeed()
-        {
-            return base.GetProjectileSpeed() + 100;
         }
 
         #endregion

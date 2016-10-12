@@ -5,10 +5,9 @@
     using Core;
 
     using Ensage;
+    using Ensage.Common.Extensions;
 
     using EvadableAbilities.Base;
-
-    using Utils;
 
     using AbilityType = Core.AbilityType;
 

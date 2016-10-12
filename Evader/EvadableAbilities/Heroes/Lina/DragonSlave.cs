@@ -21,9 +21,9 @@
 
         #endregion
 
-        #region Methods
+        #region Public Methods and Operators
 
-        protected override float GetProjectileSpeed()
+        public override float GetProjectileSpeed()
         {
             return base.GetProjectileSpeed() + 400;
         }

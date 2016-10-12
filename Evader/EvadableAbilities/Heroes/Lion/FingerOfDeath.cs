@@ -13,7 +13,7 @@
     {
         #region Fields
 
-        private readonly float additionalDelay;
+        private readonly float aghanimRadius;
 
         #endregion
 
@@ -22,8 +22,6 @@
         public FingerOfDeath(Ability ability)
             : base(ability)
         {
-            //todo add aghanim
-
             BlinkAbilities.AddRange(BlinkAbilityNames);
             DisableAbilities.AddRange(DisableAbilityNames);
 
@@ -41,38 +39,17 @@
             CounterAbilities.Add(NetherWard);
             CounterAbilities.AddRange(Invis);
 
-            additionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "damage_delay").Value;
+            AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "damage_delay").Value;
+            aghanimRadius = Ability.AbilitySpecialData.First(x => x.Name == "splash_radius_scepter").Value + 60;
         }
 
         #endregion
 
-        #region Public Methods and Operators
+        #region Methods
 
-        public override void Check()
+        protected override float GetRadius()
         {
-            var time = Game.RawGameTime;
-            var phase = IsInPhase;
-
-            if (phase && StartCast + CastPoint <= time)
-            {
-                StartCast = time;
-                EndCast = StartCast + CastPoint + additionalDelay;
-            }
-            else if (phase && Obstacle == null && (int)Owner.RotationDifference == 0)
-            {
-                StartPosition = Owner.NetworkPosition;
-                EndPosition = Owner.InFront(GetCastRange());
-                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetWidth(), Obstacle);
-            }
-            else if (StartCast > 0 && time > EndCast)
-            {
-                End();
-            }
-        }
-
-        public override float GetRemainingTime(Hero hero = null)
-        {
-            return StartCast + CastPoint + additionalDelay - Game.RawGameTime;
+            return AbilityOwner.AghanimState() ? aghanimRadius : base.GetRadius();
         }
 
         #endregion

@@ -3,25 +3,23 @@
     using Ensage;
     using Ensage.Common.Extensions;
 
-    using SharpDX;
-
     using Utils;
 
-    internal class LinearTarget : Linear
+    internal abstract class LinearTarget : LinearAOE
     {
         #region Fields
 
-        private readonly float width;
+        private readonly float radius;
 
         #endregion
 
         #region Constructors and Destructors
 
-        public LinearTarget(Ability ability)
+        protected LinearTarget(Ability ability)
             : base(ability)
         {
             IgnorePathfinder = true;
-            width = 75;
+            radius = 75;
         }
 
         #endregion
@@ -30,58 +28,30 @@
 
         public override void Check()
         {
-            var time = Game.RawGameTime;
-            var phase = IsInPhase;
-
-            if (phase && StartCast + CastPoint <= time)
+            if (StartCast <= 0 && IsInPhase && AbilityOwner.IsVisible)
             {
-                StartCast = time;
-                EndCast = StartCast + CastPoint;
+                StartCast = Game.RawGameTime;
+                EndCast = StartCast + CastPoint + AdditionalDelay;
             }
-            else if (phase && Obstacle == null && (int)Owner.RotationDifference == 0)
+            else if (StartCast > 0 && Obstacle == null && CanBeStopped() && !AbilityOwner.IsTurning())
             {
-                StartPosition = Owner.NetworkPosition;
-                EndPosition = Owner.InFront(GetCastRange());
-                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetWidth(), Obstacle);
+                StartPosition = AbilityOwner.NetworkPosition;
+                EndPosition = AbilityOwner.InFront(GetCastRange() + 150);
+                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
             }
-            else if (StartCast > 0 && time > EndCast)
+            else if (StartCast > 0 && Game.RawGameTime > EndCast)
             {
                 End();
             }
-        }
-
-        public override void Draw()
-        {
-            if (Obstacle == null)
-            {
-                return;
-            }
-
-            Utils.DrawRectangle(StartPosition, EndPosition, GetWidth());
-
-            Vector2 textPosition;
-            Drawing.WorldToScreen(StartPosition, out textPosition);
-            Drawing.DrawText(
-                GetRemainingTime().ToString("0.00"),
-                "Arial",
-                textPosition,
-                new Vector2(20),
-                Color.White,
-                FontFlags.None);
-        }
-
-        public override float GetRemainingTime(Hero hero = null)
-        {
-            return StartCast + CastPoint - Game.RawGameTime;
         }
 
         #endregion
 
         #region Methods
 
-        protected virtual float GetWidth()
+        protected override float GetRadius()
         {
-            return width;
+            return radius;
         }
 
         #endregion

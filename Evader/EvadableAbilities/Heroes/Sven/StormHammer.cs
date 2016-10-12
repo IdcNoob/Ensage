@@ -24,6 +24,8 @@
             CounterAbilities.AddRange(Invis);
             CounterAbilities.Add(SnowBall);
             CounterAbilities.Add(Lotus);
+
+            //todo add projectile aoe stun
         }
 
         #endregion

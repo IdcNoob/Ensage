@@ -30,7 +30,7 @@
 
         protected override float GetCastRange()
         {
-            return base.GetCastRange() + GetRadius() / 2;
+            return base.GetCastRange() + 200;
         }
 
         #endregion

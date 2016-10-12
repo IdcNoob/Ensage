@@ -8,8 +8,6 @@
 
     using EvadableAbilities.Base;
 
-    using Utils;
-
     using AbilityType = Core.AbilityType;
 
     internal class BlinkAbility : UsableAbility
@@ -27,17 +25,17 @@
 
         public override bool CanBeCasted(Unit unit)
         {
-            return !Sleeper.Sleeping && Ability.CanBeCasted() && (IsItem || Hero.CanCast());
+            return !Sleeper.Sleeping && Ability.CanBeCasted();
         }
 
         public override float GetRequiredTime(EvadableAbility ability, Unit unit)
         {
-            return CastPoint + (float)Hero.GetTurnTime(unit) * 1.5f;
+            return CastPoint + (float)Hero.GetTurnTime(unit);
         }
 
         public override void Use(EvadableAbility ability, Unit target)
         {
-            Ability.UseAbility(Hero.NetworkPosition.Extend(target.Position, GetCastRange() - 50));
+            Ability.UseAbility(Hero.NetworkPosition.Extend(target.Position, GetCastRange() - 60));
             Sleep();
         }
 

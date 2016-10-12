@@ -23,16 +23,20 @@
 
         #endregion
 
+        #region Public Methods and Operators
+
+        public override float GetProjectileSpeed()
+        {
+            return base.GetProjectileSpeed() + 200;
+        }
+
+        #endregion
+
         #region Methods
 
         protected override float GetCastRange()
         {
             return base.GetCastRange() + 100;
-        }
-
-        protected override float GetProjectileSpeed()
-        {
-            return base.GetProjectileSpeed() + 200;
         }
 
         #endregion

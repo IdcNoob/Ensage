@@ -13,12 +13,19 @@
         public Shockwave(Ability ability)
             : base(ability)
         {
-            Radius += 50;
-
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(BallLightning);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);
+        }
+
+        #endregion
+
+        #region Methods
+
+        protected override float GetRadius()
+        {
+            return base.GetRadius() + 60;
         }
 
         #endregion

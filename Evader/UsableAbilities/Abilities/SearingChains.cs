@@ -29,7 +29,7 @@
             // todo: fix ally check
 
             if (
-                ObjectManager.GetEntities<Unit>()
+                ObjectManager.GetEntitiesParallel<Unit>()
                     .Count(
                         x =>
                         x.IsValid && x.Team != HeroTeam && x.IsAlive && !x.IsMagicImmune()
@@ -39,8 +39,8 @@
                 return false;
             }
 
-            return !Sleeper.Sleeping && Ability.CanBeCasted() && Hero.CanCast()
-                   && Hero.Distance2D(unit) <= GetCastRange() && CheckEnemy(unit);
+            return !Sleeper.Sleeping && Ability.CanBeCasted() && Hero.Distance2D(unit) <= GetCastRange()
+                   && CheckEnemy(unit);
         }
 
         #endregion

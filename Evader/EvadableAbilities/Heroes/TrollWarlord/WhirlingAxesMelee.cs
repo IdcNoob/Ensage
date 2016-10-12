@@ -7,7 +7,7 @@
 
     using Ensage;
 
-    using SharpDX;
+    using UsableAbilities.Base;
 
     using static Core.Abilities;
 
@@ -28,7 +28,7 @@
         {
             ModifierName = "modifier_troll_warlord_whirling_axes_blind";
 
-            radius = Ability.AbilitySpecialData.First(x => x.Name == "max_range").Value + 50;
+            radius = Ability.AbilitySpecialData.First(x => x.Name == "max_range").Value + 60;
             duration = Ability.AbilitySpecialData.First(x => x.Name == "whirl_duration").Value;
 
             IgnorePathfinder = true;
@@ -46,15 +46,15 @@
 
         public void AddParticle(ParticleEffect particle)
         {
-            if (Obstacle != null || !Owner.IsVisible)
+            if (Obstacle != null || !AbilityOwner.IsVisible)
             {
                 return;
             }
 
             StartCast = Game.RawGameTime;
-            Position = Owner.NetworkPosition;
+            StartPosition = AbilityOwner.NetworkPosition;
             EndCast = StartCast + duration;
-            Obstacle = Pathfinder.AddObstacle(Position, GetRadius(), Obstacle);
+            Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
         }
 
         public override bool CanBeStopped()
@@ -64,15 +64,13 @@
 
         public override void Check()
         {
-            var time = Game.RawGameTime;
-
-            if (StartCast > 0 && time > EndCast)
+            if (StartCast > 0 && Game.RawGameTime > EndCast)
             {
                 End();
             }
             else if (Obstacle != null)
             {
-                Pathfinder.UpdateObstacle(Obstacle.Value, Owner.NetworkPosition, GetRadius());
+                Pathfinder.UpdateObstacle(Obstacle.Value, AbilityOwner.NetworkPosition, GetRadius());
             }
         }
 
@@ -83,27 +81,11 @@
                 return;
             }
 
-            Vector2 textPosition;
-            Drawing.WorldToScreen(Owner.NetworkPosition, out textPosition);
-            Drawing.DrawText(
-                GetRemainingTime().ToString("0.00"),
-                "Arial",
-                textPosition,
-                new Vector2(20),
-                Color.White,
-                FontFlags.None);
-
-            if (Particle == null)
-            {
-                Particle = new ParticleEffect(@"particles\ui_mouseactions\drag_selected_ring.vpcf", Position);
-                Particle.SetControlPoint(1, new Vector3(255, 0, 0));
-                Particle.SetControlPoint(2, new Vector3(GetRadius() * -1, 255, 0));
-            }
-
-            Particle?.SetControlPoint(0, Owner.NetworkPosition);
+            AbilityDrawer.DrawCircle(StartPosition, GetRadius());
+            AbilityDrawer.UpdateCirclePosition(AbilityOwner.NetworkPosition);
         }
 
-        public override bool IgnoreRemainingTime(float remainingTime = 0)
+        public override bool IgnoreRemainingTime(UsableAbility ability, float remainingTime = 0)
         {
             return Obstacle != null;
         }

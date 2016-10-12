@@ -13,8 +13,6 @@
         public ShadowPoison(Ability ability)
             : base(ability)
         {
-            Radius += 20;
-
             CounterAbilities.Add(PhaseShift);
         }
 

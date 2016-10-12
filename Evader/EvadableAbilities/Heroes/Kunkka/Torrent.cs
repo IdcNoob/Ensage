@@ -7,19 +7,13 @@
 
     using Ensage;
 
-    using SharpDX;
-
     using static Core.Abilities;
 
-    internal class Torrent : AOE, IModifier
+    internal class Torrent : AOE, IModifierThinker
     {
         #region Fields
 
-        private readonly float additionalDelay;
-
-        private Modifier modifier;
-
-        private bool modifierAdded;
+        private Modifier modifierThinker;
 
         #endregion
 
@@ -39,18 +33,18 @@
             CounterAbilities.AddRange(Invis);
             CounterAbilities.Add(SnowBall);
 
-            additionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "delay").Value;
+            AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "delay").Value;
         }
 
         #endregion
 
         #region Public Methods and Operators
 
-        public void AddModifier(Modifier mod, Unit unit)
+        public void AddModifierThinker(Modifier mod, Unit unit)
         {
-            modifier = mod;
-            Position = unit.Position;
-            modifierAdded = true;
+            modifierThinker = mod;
+            StartPosition = unit.Position;
+            StartCast = Game.RawGameTime;
         }
 
         public override bool CanBeStopped()
@@ -60,7 +54,7 @@
 
         public override void Check()
         {
-            if (!modifierAdded)
+            if (modifierThinker == null)
             {
                 return;
             }
@@ -74,42 +68,8 @@
                 return;
             }
 
-            if (modifier == null || !modifier.IsValid)
-            {
-                if (Obstacle != null)
-                {
-                    End();
-                }
-                return;
-            }
-
-            EndCast = Game.RawGameTime + (additionalDelay - modifier.ElapsedTime);
-            Obstacle = Pathfinder.AddObstacle(Position, GetRadius(), Obstacle);
-        }
-
-        public override void Draw()
-        {
-            if (Obstacle == null)
-            {
-                return;
-            }
-
-            Vector2 textPosition;
-            Drawing.WorldToScreen(Position, out textPosition);
-            Drawing.DrawText(
-                GetRemainingTime().ToString("0.00"),
-                "Arial",
-                textPosition,
-                new Vector2(20),
-                Color.White,
-                FontFlags.None);
-
-            if (Particle == null)
-            {
-                Particle = new ParticleEffect(@"particles\ui_mouseactions\drag_selected_ring.vpcf", Position);
-                Particle.SetControlPoint(1, new Vector3(255, 0, 0));
-                Particle.SetControlPoint(2, new Vector3(GetRadius() * -1, 255, 0));
-            }
+            EndCast = Game.RawGameTime + (AdditionalDelay - modifierThinker.ElapsedTime);
+            Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
         }
 
         public override void End()
@@ -120,8 +80,12 @@
             }
 
             base.End();
-            modifierAdded = false;
-            modifier = null;
+            modifierThinker = null;
+        }
+
+        public override float GetRemainingTime(Hero hero = null)
+        {
+            return EndCast - Game.RawGameTime;
         }
 
         #endregion

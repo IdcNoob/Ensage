@@ -1,12 +1,12 @@
 ﻿namespace Evader.EvadableAbilities.Heroes
 {
-    using Base;
-
     using Ensage;
 
     using static Core.Abilities;
 
-    internal class SonicWave : LinearDynamicProjectile
+    using LinearProjectile = Base.LinearProjectile;
+
+    internal class SonicWave : LinearProjectile
     {
         #region Constructors and Destructors
 
@@ -25,6 +25,15 @@
             CounterAbilities.Add(SnowBall);
             CounterAbilities.Add(NetherWard);
             CounterAbilities.AddRange(Invis);
+        }
+
+        #endregion
+
+        #region Methods
+
+        protected override float GetCastRange()
+        {
+            return base.GetCastRange() + GetEndRadius();
         }
 
         #endregion

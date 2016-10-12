@@ -5,11 +5,10 @@
     using Core;
 
     using Ensage;
+    using Ensage.Common.Extensions;
     using Ensage.Common.Extensions.SharpDX;
 
     using EvadableAbilities.Base;
-
-    using Utils;
 
     using AbilityType = Core.AbilityType;
 

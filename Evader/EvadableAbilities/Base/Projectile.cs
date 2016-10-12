@@ -1,20 +1,22 @@
 ﻿namespace Evader.EvadableAbilities.Base
 {
+    using System;
+
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Extensions.SharpDX;
 
     using SharpDX;
 
+    using UsableAbilities.Base;
+
     using Utils;
 
-    internal class Projectile : LinearTarget
+    internal abstract class Projectile : LinearProjectile
     {
         #region Fields
 
-        private readonly float speed;
-
-        private readonly float width;
+        private readonly float radius;
 
         private bool fowCast;
 
@@ -28,14 +30,12 @@
 
         #region Constructors and Destructors
 
-        public Projectile(Ability ability)
+        protected Projectile(Ability ability)
             : base(ability)
         {
-            speed = ability.GetProjectileSpeed();
             IsDisjointable = true;
-            width = 100;
-            Debugger.WriteLine("// Speed: " + speed);
-            Debugger.WriteLine("// Width: " + width);
+            radius = 75;
+            IgnorePathfinder = true;
         }
 
         #endregion
@@ -50,28 +50,24 @@
 
         public override void Check()
         {
-            var time = Game.RawGameTime;
-            var phase = IsInPhase;
-
-            if (phase && StartCast + CastPoint <= time)
+            if (StartCast <= 0 && IsInPhase && AbilityOwner.IsVisible)
             {
-                StartCast = time;
+                StartCast = Game.RawGameTime;
                 EndCast = StartCast + CastPoint + GetCastRange() / GetProjectileSpeed();
-                StartPosition = Owner.NetworkPosition;
-                EndPosition = Owner.InFront(GetCastRange());
-                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetWidth(), Obstacle);
+                StartPosition = AbilityOwner.NetworkPosition;
+                EndPosition = AbilityOwner.InFront(GetCastRange());
+                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
             }
             else if (projectileTarget != null && Obstacle == null && !fowCast)
             {
                 fowCast = true;
-                StartCast = time;
-                //EndCast = StartCast + GetProjectilePosition(fowCast).Distance2D(projectileTarget) / GetProjectileSpeed();
+                StartCast = Game.RawGameTime;
                 EndCast = StartCast + GetCastRange() / GetProjectileSpeed();
-                StartPosition = Owner.NetworkPosition;
+                StartPosition = AbilityOwner.NetworkPosition;
                 EndPosition = StartPosition.Extend(projectileTarget.Position, GetCastRange());
-                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetWidth(), Obstacle);
+                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
             }
-            else if (StartCast > 0 && time > EndCast)
+            else if (StartCast > 0 && Game.RawGameTime > EndCast)
             {
                 End();
             }
@@ -79,24 +75,21 @@
             {
                 if (!ProjectileLaunched())
                 {
-                    EndPosition = Owner.InFront(GetCastRange());
+                    EndPosition = AbilityOwner.InFront(GetCastRange());
                     Pathfinder.UpdateObstacle(Obstacle.Value, StartPosition, EndPosition);
+                    AbilityDrawer.UpdateRectaglePosition(StartPosition, EndPosition, GetRadius());
                 }
                 else if (projectileTarget != null)
                 {
-                    //    EndCast = time + GetProjectilePosition(fowCast).Distance2D(projectileTarget) / GetProjectileSpeed();
+                    AbilityDrawer.Dispose(AbilityDrawer.Type.Rectangle);
+                    //    EndCast = Game.RawGameTime + GetProjectilePosition(fowCast).Distance2D(projectileTarget) / GetProjectileSpeed();
                     EndPosition = StartPosition.Extend(
                         projectileTarget.Position,
-                        projectileTarget.Distance2D(StartPosition) + width);
-
+                        projectileTarget.Distance2D(StartPosition) + GetRadius());
                     Pathfinder.UpdateObstacle(
                         Obstacle.Value,
-                        projectileTarget.NetworkPosition.Extend(StartPosition, width),
-                        projectileTarget.NetworkPosition.Extend(EndPosition, width));
-                    //Pathfinder.UpdateObstacle(
-                    //    Obstacle.Value,
-                    //    StartPosition,
-                    //    projectileTarget.NetworkPosition.Extend(EndPosition, width));
+                        projectileTarget.NetworkPosition.Extend(StartPosition, GetRadius()),
+                        projectileTarget.NetworkPosition.Extend(EndPosition, GetRadius()));
                 }
             }
         }
@@ -108,30 +101,15 @@
                 return;
             }
 
-            if (Particle == null && !GetProjectilePosition(fowCast).IsZero)
+            if (!ProjectileLaunched())
             {
-                Particle = new ParticleEffect(@"particles\ui_mouseactions\drag_selected_ring.vpcf", StartPosition);
-                Particle.SetControlPoint(1, new Vector3(255, 0, 0));
-                Particle.SetControlPoint(2, new Vector3(GetWidth(), 255, 0));
+                AbilityDrawer.DrawRectangle(StartPosition, EndPosition, GetRadius());
             }
 
-            Particle?.SetControlPoint(0, GetProjectilePosition(fowCast));
+            AbilityDrawer.DrawTime(GetRemainingTime(), StartPosition);
+            AbilityDrawer.DrawCircle(StartPosition, GetRadius());
 
-            if (!projectileAdded)
-
-            {
-                Utils.DrawRectangle(StartPosition, EndPosition, GetWidth());
-            }
-
-            Vector2 textPosition;
-            Drawing.WorldToScreen(StartPosition, out textPosition);
-            Drawing.DrawText(
-                GetRemainingTime().ToString("0.00"),
-                "Arial",
-                textPosition,
-                new Vector2(20),
-                Color.White,
-                FontFlags.None);
+            AbilityDrawer.UpdateCirclePosition(GetProjectilePosition());
         }
 
         public override void End()
@@ -149,9 +127,9 @@
             projectileAdded = false;
         }
 
-        public virtual float GetProjectileSpeed()
+        public override float GetRemainingDisableTime()
         {
-            return speed;
+            return fowCast ? 0 : base.GetRemainingDisableTime();
         }
 
         public override float GetRemainingTime(Hero hero = null)
@@ -161,43 +139,31 @@
                 hero = Hero;
             }
 
-            if (projectileTarget == null)
-            {
-                if (IsDisjointable)
-                {
-                    return StartCast + CastPoint - Game.RawGameTime + 0.2f;
-                }
+            var position = projectileTarget?.NetworkPosition ?? hero.NetworkPosition;
 
-                return StartCast + CastPoint
-                       + hero.NetworkPosition.Distance2D(GetProjectilePosition()) / GetProjectileSpeed()
-                       - Game.RawGameTime;
+            if (position.Distance2D(AbilityOwner) < 250)
+            {
+                return StartCast + CastPoint - Game.RawGameTime;
             }
 
             return StartCast + (fowCast ? -0.1f : CastPoint)
-                   + projectileTarget.NetworkPosition.Distance2D(GetProjectilePosition(fowCast)) / GetProjectileSpeed()
-                   - Game.RawGameTime;
+                   + Math.Max(position.Distance2D(GetProjectilePosition(fowCast)) - 100 - GetRadius(), 0)
+                   / GetProjectileSpeed() - Game.RawGameTime;
         }
 
-        public override bool IgnoreRemainingTime(float remainingTime = 0)
+        public override bool IgnoreRemainingTime(UsableAbility ability, float remainingTime = 0)
         {
             return IsDisjointable && ProjectileLaunched() && remainingTime > 0;
         }
 
         public override bool IsStopped()
         {
-            var check = !IsInPhase && CanBeStopped() && !fowCast;
-
-            if (check)
-            {
-                End();
-            }
-
-            return check;
+            return base.IsStopped() && !fowCast;
         }
 
         public bool ProjectileLaunched()
         {
-            return Game.RawGameTime >= StartCast + CastPoint || projectileAdded;
+            return Game.RawGameTime >= StartCast + CastPoint - 0.06f || projectileAdded;
         }
 
         public void SetProjectile(Vector3 position, Hero target)
@@ -212,42 +178,32 @@
 
         public float TimeSinceCast()
         {
-            if (Ability.Level <= 0 || !Owner.IsVisible)
+            if (Ability.Level <= 0 || !AbilityOwner.IsVisible)
             {
                 return float.MaxValue;
             }
 
             var cooldownLength = Ability.CooldownLength;
-
-            if (cooldownLength <= 0)
-            {
-                return float.MaxValue;
-            }
-
-            return cooldownLength - Ability.Cooldown;
+            return cooldownLength <= 0 ? float.MaxValue : cooldownLength - Ability.Cooldown;
         }
 
         #endregion
 
         #region Methods
 
-        //protected virtual Vector3 GetProjectilePosition()
-        //{
-        //    return IsInPhase ? StartPosition : projectilePostion;
-        //}
-
-        protected virtual Vector3 GetProjectilePosition(bool ignoreCastPoint = false)
+        protected override float GetEndRadius()
         {
-            return IsInPhase
-                       ? StartPosition
-                       : StartPosition.Extend(
-                           EndPosition,
-                           (Game.RawGameTime - StartCast - (ignoreCastPoint ? -0.2f : CastPoint)) * GetProjectileSpeed());
+            return radius;
         }
 
-        protected override float GetWidth()
+        protected override Vector3 GetProjectilePosition(bool ignoreCastPoint = false)
         {
-            return width;
+            return projectileAdded ? projectilePostion : StartPosition;
+        }
+
+        protected override float GetRadius()
+        {
+            return radius;
         }
 
         #endregion

@@ -15,8 +15,6 @@
         {
             //todo: add particle support
 
-            Radius += 50;
-
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(SleightOfFist);
             CounterAbilities.Add(Eul);
@@ -26,6 +24,15 @@
             CounterAbilities.AddRange(VsMagic);
             CounterAbilities.Add(SnowBall);
             CounterAbilities.AddRange(Invis);
+        }
+
+        #endregion
+
+        #region Methods
+
+        protected override float GetRadius()
+        {
+            return base.GetRadius() + 60;
         }
 
         #endregion

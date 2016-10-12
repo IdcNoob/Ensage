@@ -7,22 +7,21 @@
 
     using Utils;
 
-    internal class LinearAOE : Linear
+    internal abstract class LinearAOE : AOE
     {
-        #region Fields
+        #region Constructors and Destructors
 
-        private readonly float radius;
+        protected LinearAOE(Ability ability)
+            : base(ability)
+        {
+            Debugger.WriteLine("// Cast range: " + Ability.GetRealCastRange());
+        }
 
         #endregion
 
-        #region Constructors and Destructors
+        #region Properties
 
-        public LinearAOE(Ability ability)
-            : base(ability)
-        {
-            radius = ability.GetRadius() + 50;
-            Debugger.WriteLine("// Radius: " + radius);
-        }
+        protected Vector3 EndPosition { get; set; }
 
         #endregion
 
@@ -30,21 +29,18 @@
 
         public override void Check()
         {
-            var time = Game.RawGameTime;
-            var phase = IsInPhase;
-
-            if (phase && StartCast + CastPoint <= time)
+            if (StartCast <= 0 && IsInPhase && AbilityOwner.IsVisible)
             {
-                StartCast = time;
-                EndCast = StartCast + CastPoint;
+                StartCast = Game.RawGameTime;
+                EndCast = StartCast + CastPoint + AdditionalDelay;
             }
-            else if (phase && Obstacle == null && (int)Owner.RotationDifference == 0)
+            else if (StartCast > 0 && Obstacle == null && CanBeStopped() && !AbilityOwner.IsTurning())
             {
-                StartPosition = Owner.NetworkPosition;
-                EndPosition = Owner.InFront(GetCastRange());
+                StartPosition = AbilityOwner.InFront(-GetRadius() * 0.9f);
+                EndPosition = AbilityOwner.InFront(GetCastRange());
                 Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
             }
-            else if (StartCast > 0 && time > EndCast)
+            else if (StartCast > 0 && Game.RawGameTime > EndCast)
             {
                 End();
             }
@@ -57,31 +53,17 @@
                 return;
             }
 
-            Utils.DrawRectangle(StartPosition, EndPosition, GetRadius());
-
-            Vector2 textPosition;
-            Drawing.WorldToScreen(StartPosition, out textPosition);
-            Drawing.DrawText(
-                GetRemainingTime().ToString("0.00"),
-                "Arial",
-                textPosition,
-                new Vector2(20),
-                Color.White,
-                FontFlags.None);
-        }
-
-        public override float GetRemainingTime(Hero hero = null)
-        {
-            return StartCast + CastPoint - Game.RawGameTime;
+            AbilityDrawer.DrawTime(GetRemainingTime(), AbilityOwner.Position);
+            AbilityDrawer.DrawDoubleArcRectangle(StartPosition, EndPosition, GetRadius());
         }
 
         #endregion
 
         #region Methods
 
-        protected virtual float GetRadius()
+        protected virtual float GetCastRange()
         {
-            return radius;
+            return Ability.GetRealCastRange();
         }
 
         #endregion

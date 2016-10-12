@@ -7,7 +7,7 @@
 
     using Utils;
 
-    internal class AOE : EvadableAbility
+    internal abstract class AOE : EvadableAbility
     {
         #region Fields
 
@@ -17,10 +17,10 @@
 
         #region Constructors and Destructors
 
-        public AOE(Ability ability)
+        protected AOE(Ability ability)
             : base(ability)
         {
-            radius = ability.GetRadius() + 75;
+            radius = ability.GetRadius() + 60;
             Debugger.WriteLine("// Radius: " + radius);
         }
 
@@ -28,7 +28,7 @@
 
         #region Properties
 
-        protected Vector3 Position { get; set; }
+        protected Vector3 StartPosition { get; set; }
 
         #endregion
 
@@ -36,16 +36,14 @@
 
         public override void Check()
         {
-            var time = Game.RawGameTime;
-
-            if (Obstacle == null && IsInPhase && StartCast + CastPoint <= time)
+            if (StartCast <= 0 && IsInPhase && AbilityOwner.IsVisible)
             {
-                StartCast = time;
-                Position = Owner.NetworkPosition;
+                StartCast = Game.RawGameTime;
+                StartPosition = AbilityOwner.NetworkPosition;
                 EndCast = StartCast + CastPoint;
-                Obstacle = Pathfinder.AddObstacle(Position, GetRadius(), Obstacle);
+                Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
             }
-            else if (StartCast > 0 && time > EndCast)
+            else if (StartCast > 0 && Game.RawGameTime > EndCast)
             {
                 End();
             }
@@ -58,27 +56,13 @@
                 return;
             }
 
-            Vector2 textPosition;
-            Drawing.WorldToScreen(Position, out textPosition);
-            Drawing.DrawText(
-                GetRemainingTime().ToString("0.00"),
-                "Arial",
-                textPosition,
-                new Vector2(20),
-                Color.White,
-                FontFlags.None);
-
-            if (Particle == null)
-            {
-                Particle = new ParticleEffect(@"particles\ui_mouseactions\drag_selected_ring.vpcf", Position);
-                Particle.SetControlPoint(1, new Vector3(255, 0, 0));
-                Particle.SetControlPoint(2, new Vector3(radius * -1, 255, 0));
-            }
+            AbilityDrawer.DrawTime(GetRemainingTime(), StartPosition);
+            AbilityDrawer.DrawCircle(StartPosition, GetRadius());
         }
 
         public override float GetRemainingTime(Hero hero = null)
         {
-            return EndCast - Game.RawGameTime;
+            return StartCast + CastPoint + AdditionalDelay - Game.RawGameTime;
         }
 
         #endregion

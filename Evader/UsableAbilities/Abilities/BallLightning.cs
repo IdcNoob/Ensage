@@ -10,8 +10,6 @@
 
     using EvadableAbilities.Base;
 
-    using Utils;
-
     using AbilityType = Core.AbilityType;
     using Projectile = EvadableAbilities.Base.Projectile;
 
@@ -31,7 +29,7 @@
 
         public override bool CanBeCasted(Unit unit)
         {
-            return !Sleeper.Sleeping && Ability.CanBeCasted() && (IsItem || Hero.CanCast());
+            return !Sleeper.Sleeping && Ability.CanBeCasted();
         }
 
         public override float GetRequiredTime(EvadableAbility ability, Unit unit)
@@ -40,7 +38,7 @@
 
             if (projectile != null && !projectile.IsDisjointable)
             {
-                return CastPoint + (float)Hero.GetTurnTime(ability.Owner);
+                return CastPoint + (float)Hero.GetTurnTime(ability.AbilityOwner);
             }
 
             return CastPoint;
@@ -54,7 +52,7 @@
             {
                 if (!projectile.IsDisjointable)
                 {
-                    Ability.UseAbility(Hero.NetworkPosition.Extend(ability.Owner.Position, 250));
+                    Ability.UseAbility(Hero.NetworkPosition.Extend(ability.AbilityOwner.Position, 250));
                 }
                 else
                 {

@@ -8,6 +8,10 @@
 
     using SharpDX;
 
+    using Utils;
+
+    using static Core.Abilities;
+
     using LinearProjectile = Base.LinearProjectile;
 
     internal class Powershot : LinearProjectile, IParticle
@@ -29,7 +33,13 @@
         public Powershot(Ability ability)
             : base(ability)
         {
+            //todo add fow cast ?
+
             channelTime = ability.GetChannelTime(0);
+
+            CounterAbilities.Add(PhaseShift);
+            CounterAbilities.AddRange(VsDamage);
+            CounterAbilities.AddRange(VsMagic);
         }
 
         #endregion
@@ -38,38 +48,42 @@
 
         public void AddParticle(ParticleEffect particle)
         {
-            if (Obstacle != null || !Owner.IsVisible)
+            if (Obstacle != null || !AbilityOwner.IsVisible)
             {
                 return;
             }
 
+            StartCast = Game.RawGameTime;
             particleAdded = true;
+        }
+
+        public override bool CanBeStopped()
+        {
+            return false;
         }
 
         public override void Check()
         {
-            var time = Game.RawGameTime;
-
-            if (particleAdded && (int)Owner.RotationDifference == 0)
+            if (particleAdded && !AbilityOwner.IsTurning())
             {
-                StartCast = time;
-                StartPosition = Owner.NetworkPosition;
-                EndPosition = Owner.InFront(GetCastRange());
+                StartPosition = AbilityOwner.NetworkPosition;
+                EndPosition = AbilityOwner.InFront(GetCastRange());
                 EndCast = StartCast + channelTime + GetCastRange() / GetProjectileSpeed();
-                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, Radius, Obstacle);
+                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
                 particleAdded = false;
             }
             else if (Obstacle != null && !Ability.IsChanneling && !channelFix)
             {
+                var time = Game.RawGameTime;
                 channelFix = true;
                 channelingTime = time - StartCast;
                 EndCast = time + GetCastRange() / GetProjectileSpeed();
             }
-            else if (StartCast > 0 && time > EndCast)
+            else if (StartCast > 0 && Game.RawGameTime > EndCast)
             {
                 End();
             }
-            else if (Obstacle != null)
+            else if (Obstacle != null && !Ability.IsChanneling)
             {
                 Pathfinder.UpdateObstacle(Obstacle.Value, GetProjectilePosition(), EndPosition);
             }
@@ -94,8 +108,16 @@
                 hero = Hero;
             }
 
-            return StartCast + channelTime - channelingTime
-                   + (hero.Distance2D(StartPosition) - Radius) / GetProjectileSpeed() - Game.RawGameTime;
+            var position = hero.NetworkPosition;
+
+            if (IsInPhase && position.Distance2D(StartPosition) <= GetRadius())
+            {
+                return StartCast + CastPoint + channelTime - Game.RawGameTime;
+            }
+
+            return StartCast + CastPoint + (Ability.IsChanneling ? channelTime : channelingTime)
+                   + (position.Distance2D(StartPosition) - GetProjectileRadius(position) - 60) / GetProjectileSpeed()
+                   - Game.RawGameTime;
         }
 
         #endregion

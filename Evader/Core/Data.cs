@@ -25,30 +25,20 @@
             <string, Func<Ability, EvadableAbility>>
             {
                 //// custom
-                { "death_prophet_carrion_swarm", ability => new CryptSwarm(ability) },
                 { "pudge_meat_hook", ability => new MeatHook(ability) },
                 { "invoker_sun_strike", ability => new SunStrike(ability) },
-                { "lina_dragon_slave", ability => new DragonSlave(ability) },
                 { "leshrac_split_earth", ability => new SplitEarth(ability) },
                 { "kunkka_torrent", ability => new Torrent(ability) },
                 { "crystal_maiden_freezing_field", ability => new FreezingField(ability) },
                 { "elder_titan_echo_stomp", ability => new EchoStomp(ability) },
                 { "luna_eclipse", ability => new Eclipse(ability) },
-                { "venomancer_poison_nova", ability => new PoisonNova(ability) },
                 { "enigma_black_hole", ability => new BlackHole(ability) },
-                { "shredder_chakram", ability => new Chakram(ability) },
-                { "shredder_chakram_2", ability => new Chakram(ability) },
                 { "venomancer_venomous_gale", ability => new VenomousGale(ability) },
                 { "windrunner_powershot", ability => new Powershot(ability) },
-                { "elder_titan_earth_splitter", ability => new EarthSplitter(ability) },
                 { "nevermore_shadowraze1", ability => new Shadowraze(ability) },
                 { "nevermore_shadowraze2", ability => new Shadowraze(ability) },
                 { "nevermore_shadowraze3", ability => new Shadowraze(ability) },
                 { "jakiro_ice_path", ability => new IcePath(ability) },
-                { "omniknight_purification", ability => new Purification(ability) },
-                { "lina_laguna_blade", ability => new LagunaBlade(ability) },
-                { "lion_finger_of_death", ability => new FingerOfDeath(ability) },
-                { "beastmaster_wild_axes", ability => new WildAxes(ability) },
                 { "lina_light_strike_array", ability => new LightStrikeArray(ability) },
                 { "disruptor_static_storm", ability => new StaticStorm(ability) },
                 { "faceless_void_chronosphere", ability => new Chronosphere(ability) },
@@ -56,12 +46,17 @@
                 // custom + modifier
                 { "troll_warlord_whirling_axes_melee", ability => new WhirlingAxesMelee(ability) },
                 { "slark_pounce", ability => new Pounce(ability) },
+                { "venomancer_poison_nova", ability => new PoisonNova(ability) },
 
-
-
-           
 
                 //// default
+                { "omniknight_purification", ability => new Purification(ability) },
+                { "lion_finger_of_death", ability => new FingerOfDeath(ability) },
+                { "lina_laguna_blade", ability => new LagunaBlade(ability) },
+                { "shredder_chakram", ability => new Chakram(ability) },
+                { "shredder_chakram_2", ability => new Chakram(ability) },
+                { "beastmaster_wild_axes", ability => new WildAxes(ability) },
+                { "death_prophet_carrion_swarm", ability => new CryptSwarm(ability) },
                 { "axe_berserkers_call", ability => new BerserkersCall(ability) },
                 { "queenofpain_sonic_wave", ability => new SonicWave(ability) },
                 { "tidehunter_ravage", ability => new Ravage(ability) },
@@ -110,6 +105,7 @@
                 { "bane_nightmare", ability => new Nightmare(ability) },
                 { "bane_fiends_grip", ability => new FiendsGrip(ability) },
                 { "bloodseeker_rupture", ability => new Rupture(ability) },
+                { "lina_dragon_slave", ability => new DragonSlave(ability) },
                 { "bounty_hunter_shuriken_toss", ability => new ShurikenToss(ability) },
                 { "centaur_double_edge", ability => new DoubleEdge(ability) },
                 { "chaos_knight_reality_rift", ability => new RealityRift(ability) },
@@ -157,6 +153,7 @@
                 { "witch_doctor_paralyzing_cask", ability => new ParalyzingCask(ability) },
                 { "skeleton_king_hellfire_blast", ability => new WraithfireBlast(ability) },
                 { "shadow_demon_shadow_poison", ability => new ShadowPoison(ability) },
+                { "elder_titan_earth_splitter", ability => new EarthSplitter(ability) },
 
                 // default + modifier
                 { "tinker_laser", ability => new Laser(ability) },
@@ -176,12 +173,9 @@
                 { "visage_grave_chill", ability => new GraveChill(ability) },
                 { "juggernaut_omni_slash", ability => new Omnislash(ability) },
 
-
-
                 
                 //// modifier only
                 // { "broodmother_insatiable_hunger", ability => new InsatiableHunger(ability) },
-
 
 
                 //// units
@@ -197,6 +191,17 @@
                 { "modifier_lina_light_strike_array", "lina_light_strike_array" },
                 { "modifier_disruptor_static_storm_thinker", "disruptor_static_storm" },
                 { "modifier_faceless_void_chronosphere", "faceless_void_chronosphere" },
+                { "modifier_enigma_black_hole_thinker", "enigma_black_hole" },
+            };
+
+        public static Dictionary<string, string> AbilityParticles { get; } = new Dictionary<string, string>
+            {
+                { "meathook", "pudge_meat_hook" },
+                { "pounce_trail", "slark_pounce" },
+                { "powershot_channel", "windrunner_powershot" },
+                { "venomous_gale", "venomancer_venomous_gale" },
+                { "poison_nova", "venomancer_poison_nova" },
+                { "whirling_axe_melee", "troll_warlord_whirling_axes_melee" },
             };
 
         public static Dictionary<string, Func<Ability, UsableAbility>> EvadeBlinkAbilities { get; } = new Dictionary
@@ -207,7 +212,7 @@
                 { "morphling_morph_replicate", ability => new Replicate(ability, AbilityType.Blink) },
 
                 // default
-                { "item_blink", ability => new BlinkAbility(ability, AbilityType.Blink) },
+                { "item_blink", ability => new BlinkDagger(ability, AbilityType.Blink) },
                 { "antimage_blink", ability => new BlinkAbility(ability, AbilityType.Blink) },
                 { "queenofpain_blink", ability => new BlinkAbility(ability, AbilityType.Blink) },
                 { "faceless_void_time_walk", ability => new BlinkAbility(ability, AbilityType.Blink) },
@@ -254,10 +259,7 @@
                 },
 
                 //// default
-                {
-                    "puck_phase_shift",
-                    ability => new NotTargetable(ability, AbilityType.Counter, AbilityFlags.DisjointsProjectile)
-                },
+                { "puck_phase_shift", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "alchemist_chemical_rage", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "riki_tricks_of_the_trade", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "item_cyclone", ability => new Targetable(ability, AbilityType.Counter) },

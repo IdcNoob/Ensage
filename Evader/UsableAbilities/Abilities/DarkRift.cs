@@ -17,7 +17,8 @@
         #region Fields
 
         private readonly Unit fountain =
-            ObjectManager.GetEntities<Unit>().First(x => x.ClassID == ClassID.CDOTA_Unit_Fountain && x.Team == HeroTeam);
+            ObjectManager.GetEntitiesFast<Unit>()
+                .First(x => x.ClassID == ClassID.CDOTA_Unit_Fountain && x.Team == HeroTeam);
 
         #endregion
 

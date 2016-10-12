@@ -19,12 +19,6 @@
 
         #endregion
 
-        #region Properties
-
-        protected bool DisjointsProjectile => AbilityFlags.HasFlag(AbilityFlags.DisjointsProjectile);
-
-        #endregion
-
         #region Public Methods and Operators
 
         public override float GetRequiredTime(EvadableAbility ability, Unit unit)

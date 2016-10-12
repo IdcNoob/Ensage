@@ -8,6 +8,8 @@
 
     using SharpDX;
 
+    using Utils;
+
     using static Core.Abilities;
 
     using LinearProjectile = Base.LinearProjectile;
@@ -48,36 +50,33 @@
 
         public override void Check()
         {
-            var time = Game.RawGameTime;
-            var phase = IsInPhase;
-
-            if (phase && StartCast + CastPoint <= time)
+            if (StartCast <= 0 && IsInPhase && AbilityOwner.IsVisible)
             {
-                StartCast = time;
+                StartCast = Game.RawGameTime;
                 EndCast = StartCast + CastPoint + GetCastRange() / GetProjectileSpeed();
             }
-            else if (phase && Obstacle == null && (int)Owner.RotationDifference == 0)
+            else if (StartCast > 0 && Obstacle == null && CanBeStopped() && !AbilityOwner.IsTurning())
             {
-                StartPosition = Owner.NetworkPosition;
-                EndPosition = Owner.InFront(GetCastRange());
-                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, Radius, Obstacle);
+                StartPosition = AbilityOwner.NetworkPosition;
+                EndPosition = AbilityOwner.InFront(GetCastRange() + GetRadius() / 2);
+                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
             }
-            else if (particleEffect != null && particleEffect.IsValid && !particleAdded && Obstacle == null)
+            else if (Obstacle == null && particleEffect != null && !particleAdded)
             {
                 particleAdded = true;
                 StartPosition = particleEffect.GetControlPoint(0);
-                EndPosition = StartPosition.Extend(particleEffect.GetControlPoint(1), GetCastRange() + Radius / 2);
-                StartCast = time - 0.1f;
+                EndPosition = StartPosition.Extend(particleEffect.GetControlPoint(1), GetCastRange() + GetRadius() / 2);
+                StartCast = Game.RawGameTime;
                 EndCast = StartCast + GetCastRange() / GetProjectileSpeed();
-                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, Radius, Obstacle);
+                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
             }
-            else if (StartCast > 0 && time > EndCast)
+            else if (StartCast > 0 && Game.RawGameTime > EndCast)
             {
                 End();
             }
-            else if (Obstacle != null && !phase)
+            else if (Obstacle != null && !CanBeStopped())
             {
-                Pathfinder.UpdateObstacle(Obstacle.Value, GetProjectilePosition(particleAdded), EndPosition);
+                Pathfinder.UpdateObstacle(Obstacle.Value, GetProjectilePosition(), GetRadius(), GetEndRadius());
             }
         }
 
@@ -101,31 +100,26 @@
                 hero = Hero;
             }
 
+            var position = hero.NetworkPosition;
+
             if (particleAdded)
             {
-                return StartCast + (hero.NetworkPosition.Distance2D(StartPosition) - Radius) / GetProjectileSpeed()
+                return StartCast + (position.Distance2D(StartPosition) - GetRadius() - 60) / GetProjectileSpeed()
                        - Game.RawGameTime;
             }
 
-            if (IsInPhase && hero.NetworkPosition.Distance2D(StartPosition) <= Radius)
+            if (IsInPhase && position.Distance2D(StartPosition) <= GetRadius())
             {
                 return StartCast + CastPoint - Game.RawGameTime;
             }
 
             return StartCast + CastPoint
-                   + (hero.NetworkPosition.Distance2D(StartPosition) - Radius) / GetProjectileSpeed() - Game.RawGameTime;
+                   + (position.Distance2D(StartPosition) - GetRadius() - 60) / GetProjectileSpeed() - Game.RawGameTime;
         }
 
         public override bool IsStopped()
         {
-            var check = !IsInPhase && CanBeStopped() && !particleAdded;
-
-            if (check)
-            {
-                End();
-            }
-
-            return check;
+            return !particleAdded && base.IsStopped();
         }
 
         #endregion

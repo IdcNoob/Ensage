@@ -31,20 +31,20 @@
             Handle = ability.Handle;
             IsItem = ability is Item;
             Type = type;
-            AbilityFlags = flags;
+            ClassID = ability.ClassID;
             IgnoresLinkensSphere = ability.IsAbilityBehavior(AbilityBehavior.NoTarget)
                                    || ability.IsAbilityBehavior(AbilityBehavior.AreaOfEffect);
             PiercesMagicImmunity = ability.PiercesMagicImmunity();
-            BasicDispel = AbilityFlags.HasFlag(AbilityFlags.BasicDispel);
-            CanBeUsedOnAlly = AbilityFlags.HasFlag(AbilityFlags.CanBeCastedOnAlly);
-            TargetEnemy = AbilityFlags.HasFlag(AbilityFlags.TargetEnemy);
-            StrongDispel = AbilityFlags.HasFlag(AbilityFlags.StrongDispel);
+            BasicDispel = flags.HasFlag(AbilityFlags.BasicDispel);
+            CanBeUsedOnAlly = flags.HasFlag(AbilityFlags.CanBeCastedOnAlly);
+            TargetEnemy = flags.HasFlag(AbilityFlags.TargetEnemy);
+            StrongDispel = flags.HasFlag(AbilityFlags.StrongDispel);
 
             Debugger.WriteLine("///////// " + Name);
             Debugger.WriteLine("// Type: " + Type);
             Debugger.WriteLine("// Cast point: " + CastPoint);
             Debugger.WriteLine("// Cast range: " + Ability.GetRealCastRange());
-            Debugger.WriteLine("// Ability flags: " + AbilityFlags);
+            Debugger.WriteLine("// Ability flags: " + flags);
             Debugger.WriteLine("// Ignores linkens sphere: " + IgnoresLinkensSphere);
             Debugger.WriteLine("// Pierces magic immunity: " + PiercesMagicImmunity);
             if (type == AbilityType.Counter)
@@ -63,9 +63,13 @@
 
         public bool CanBeUsedOnAlly { get; }
 
+        public ClassID ClassID { get; }
+
         public uint Handle { get; }
 
         public bool IgnoresLinkensSphere { get; set; }
+
+        public bool IsItem { get; }
 
         public string Name { get; }
 
@@ -83,13 +87,9 @@
 
         protected Ability Ability { get; }
 
-        protected AbilityFlags AbilityFlags { get; }
-
         protected float CastPoint { get; set; }
 
         protected Hero Hero => Variables.Hero;
-
-        protected bool IsItem { get; }
 
         protected bool PiercesMagicImmunity { get; set; }
 
@@ -99,8 +99,8 @@
 
         public virtual bool CanBeCasted(Unit unit)
         {
-            return !Sleeper.Sleeping && Ability.CanBeCasted() && (IsItem || Hero.CanCast())
-                   && Hero.Distance2D(unit) <= GetCastRange() && CheckEnemy(unit);
+            return !Sleeper.Sleeping && Ability.CanBeCasted() && Hero.Distance2D(unit) <= GetCastRange()
+                   && CheckEnemy(unit);
         }
 
         public abstract float GetRequiredTime(EvadableAbility ability, Unit unit);
@@ -126,7 +126,7 @@
 
         protected void Sleep(float time = 1000)
         {
-            Sleeper.Sleep(1000);
+            Sleeper.Sleep(time);
         }
 
         #endregion

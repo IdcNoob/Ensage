@@ -1,19 +1,25 @@
 ﻿namespace Evader.EvadableAbilities.Heroes
 {
+    using System.Linq;
+
     using Base;
 
     using Ensage;
     using Ensage.Common.Extensions;
 
-    using SharpDX;
+    using UsableAbilities.Base;
 
     using static Core.Abilities;
+
+    using AbilityType = Core.AbilityType;
 
     internal class Eclipse : AOE
     {
         #region Fields
 
-        private readonly float[] eclipseTimings = { 2.4f, 4.2f, 6f, 1.8f, 3.6f, 5.4f };
+        private readonly float[] duration = new float[3];
+
+        private readonly float[] durationAghanim = new float[3];
 
         #endregion
 
@@ -35,6 +41,13 @@
             CounterAbilities.AddRange(Invis);
 
             IgnorePathfinder = true;
+
+            for (var i = 0u; i < duration.Length; i++)
+            {
+                duration[i] = ability.AbilitySpecialData.First(x => x.Name == "duration_tooltip").GetValue(i);
+                durationAghanim[i] =
+                    ability.AbilitySpecialData.First(x => x.Name == "duration_tooltip_scepter").GetValue(i);
+            }
         }
 
         #endregion
@@ -43,22 +56,20 @@
 
         public override void Check()
         {
-            var time = Game.RawGameTime;
-
-            if (IsInPhase && StartCast + CastPoint <= time)
+            if (StartCast <= 0 && IsInPhase && AbilityOwner.IsVisible)
             {
-                StartCast = time;
-                Position = Owner.NetworkPosition;
-                EndCast = StartCast + GetEclipseTime() + CastPoint;
-                Obstacle = Pathfinder.AddObstacle(Position, GetRadius(), Obstacle);
+                StartCast = Game.RawGameTime;
+                StartPosition = AbilityOwner.NetworkPosition;
+                EndCast = StartCast + CastPoint + GetEclipseDuration();
+                Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
             }
-            else if (StartCast > 0 && time > EndCast)
+            else if (StartCast > 0 && Game.RawGameTime > EndCast)
             {
                 End();
             }
-            else if (Obstacle != null && !IsInPhase)
+            else if (Obstacle != null && !CanBeStopped())
             {
-                Pathfinder.UpdateObstacle(Obstacle.Value, Owner.NetworkPosition, GetRadius());
+                Pathfinder.UpdateObstacle(Obstacle.Value, AbilityOwner.NetworkPosition, GetRadius());
             }
         }
 
@@ -69,43 +80,30 @@
                 return;
             }
 
-            Vector2 textPosition;
-            Drawing.WorldToScreen(Owner.NetworkPosition, out textPosition);
-            Drawing.DrawText(
-                GetRemainingTime().ToString("0.00"),
-                "Arial",
-                textPosition,
-                new Vector2(20),
-                Color.White,
-                FontFlags.None);
+            AbilityDrawer.DrawTime(GetRemainingTime(), AbilityOwner.Position);
+            AbilityDrawer.DrawCircle(StartPosition, GetRadius());
 
-            if (Particle == null)
-            {
-                Particle = new ParticleEffect(@"particles\ui_mouseactions\drag_selected_ring.vpcf", Position);
-                Particle.SetControlPoint(1, new Vector3(255, 0, 0));
-                Particle.SetControlPoint(2, new Vector3(GetRadius() * -1, 255, 0));
-            }
-
-            Particle?.SetControlPoint(0, Owner.NetworkPosition);
+            AbilityDrawer.UpdateCirclePosition(AbilityOwner.NetworkPosition);
         }
 
         public override float GetRemainingTime(Hero hero = null)
         {
-            return EndCast - Game.RawGameTime;
+            return StartCast + CastPoint - Game.RawGameTime;
         }
 
-        public override bool IgnoreRemainingTime(float remainingTime = 0)
+        public override bool IgnoreRemainingTime(UsableAbility ability, float remainingTime = 0)
         {
-            return Owner.HasModifier("modifier_luna_eclipse");
+            return ability.Type != AbilityType.Disable && AbilityOwner.HasModifier("modifier_luna_eclipse");
         }
 
         #endregion
 
         #region Methods
 
-        private float GetEclipseTime()
+        private float GetEclipseDuration()
         {
-            return eclipseTimings[Ability.Level + (Owner.AghanimState() ? 2 : -1)];
+            var level = Ability.Level - 1;
+            return AbilityOwner.AghanimState() ? durationAghanim[level] : duration[level];
         }
 
         #endregion

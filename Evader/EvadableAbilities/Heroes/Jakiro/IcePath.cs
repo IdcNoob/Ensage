@@ -7,13 +7,13 @@
     using Ensage;
     using Ensage.Common.Extensions;
 
+    using Utils;
+
     using static Core.Abilities;
 
     internal class IcePath : LinearAOE
     {
         #region Fields
-
-        private readonly float additionalDelay;
 
         private readonly float[] duration = new float[4];
 
@@ -28,11 +28,11 @@
             CounterAbilities.Add(BallLightning);
             CounterAbilities.Add(Eul);
             CounterAbilities.AddRange(VsDisable);
-            CounterAbilities.AddRange(VsDamage);
-            CounterAbilities.AddRange(VsMagic);
             CounterAbilities.Add(SnowBall);
 
-            additionalDelay = ability.AbilitySpecialData.First(x => x.Name == "path_delay").Value;
+            CounterAbilities.Remove("bane_nightmare");
+
+            AdditionalDelay = ability.AbilitySpecialData.First(x => x.Name == "path_delay").Value;
 
             for (var i = 0u; i < duration.Length; i++)
             {
@@ -48,29 +48,21 @@
 
         public override void Check()
         {
-            var time = Game.RawGameTime;
-            var phase = IsInPhase;
-
-            if (phase && StartCast + CastPoint <= time)
+            if (StartCast <= 0 && IsInPhase && AbilityOwner.IsVisible)
             {
-                StartCast = time;
-                EndCast = StartCast + CastPoint + additionalDelay + GetDuration();
+                StartCast = Game.RawGameTime;
+                EndCast = StartCast + CastPoint + AdditionalDelay + GetDuration();
             }
-            else if (phase && Obstacle == null && (int)Owner.RotationDifference == 0)
+            else if (StartCast > 0 && Obstacle == null && CanBeStopped() && !AbilityOwner.IsTurning())
             {
-                StartPosition = Owner.NetworkPosition;
-                EndPosition = Owner.InFront(GetCastRange());
+                StartPosition = AbilityOwner.InFront(-GetRadius() * 0.9f);
+                EndPosition = AbilityOwner.InFront(GetCastRange() + GetRadius() / 5);
                 Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
             }
-            else if (StartCast > 0 && time > EndCast)
+            else if (StartCast > 0 && Game.RawGameTime > EndCast)
             {
                 End();
             }
-        }
-
-        public override float GetRemainingTime(Hero hero = null)
-        {
-            return StartCast + CastPoint + additionalDelay - Game.RawGameTime;
         }
 
         #endregion

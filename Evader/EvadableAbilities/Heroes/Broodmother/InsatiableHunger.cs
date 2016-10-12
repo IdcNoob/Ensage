@@ -26,6 +26,11 @@
         {
         }
 
+        public override float GetRemainingTime(Hero hero = null)
+        {
+            return 0;
+        }
+
         #endregion
     }
 }

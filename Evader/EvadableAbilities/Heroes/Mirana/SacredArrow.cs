@@ -1,12 +1,8 @@
 ﻿namespace Evader.EvadableAbilities.Heroes
 {
-    using System;
-
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Extensions.SharpDX;
-
-    using SharpDX;
 
     using Utils;
 
@@ -46,7 +42,7 @@
 
         public void AddUnit(Unit unit)
         {
-            if (Owner.IsVisible)
+            if (AbilityOwner.IsVisible)
             {
                 return;
             }
@@ -54,7 +50,7 @@
             arrow = unit;
             StartCast = Game.RawGameTime;
             EndCast = Game.RawGameTime + GetCastRange() / GetProjectileSpeed();
-            StartPosition = unit.Position.SetZ(Owner.Position.Z);
+            StartPosition = unit.Position.SetZ(AbilityOwner.Position.Z);
             fowCast = true;
         }
 
@@ -66,14 +62,14 @@
         public override void Check()
         {
             var time = Game.RawGameTime;
-            var phase = IsInPhase && Owner.IsVisible;
+            var phase = IsInPhase && AbilityOwner.IsVisible;
 
             if (phase && StartCast + CastPoint <= time && time > EndCast)
             {
                 StartCast = time;
                 EndCast = StartCast + CastPoint + GetCastRange() / GetProjectileSpeed();
             }
-            else if ((phase && Obstacle == null && (int)Owner.RotationDifference == 0) || (fowCast && Obstacle == null))
+            else if ((phase && Obstacle == null && !AbilityOwner.IsTurning()) || (fowCast && Obstacle == null))
             {
                 if (fowCast && (!IsValidArrow() || !arrow.IsVisible))
                 {
@@ -82,7 +78,7 @@
 
                 if (fowCast)
                 {
-                    EndPosition = StartPosition.Extend(arrow.Position.SetZ(Owner.Position.Z), GetCastRange());
+                    EndPosition = StartPosition.Extend(arrow.Position.SetZ(AbilityOwner.Position.Z), GetCastRange());
 
                     if (EndPosition.Distance2D(StartPosition) < 10)
                     {
@@ -91,11 +87,11 @@
                 }
                 else
                 {
-                    StartPosition = Owner.NetworkPosition;
-                    EndPosition = Owner.InFront(GetCastRange() + Radius / 2);
+                    StartPosition = AbilityOwner.NetworkPosition;
+                    EndPosition = AbilityOwner.InFront(GetCastRange() + GetRadius() / 2);
                 }
 
-                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, Radius, Obstacle);
+                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
             }
             else if ((StartCast > 0 && time > EndCast) || (fowCast && !IsValidArrow()))
             {
@@ -103,7 +99,7 @@
             }
             else if (Obstacle != null && !phase)
             {
-                Pathfinder.UpdateObstacle(Obstacle.Value, GetProjectilePosition(fowCast), Radius);
+                Pathfinder.UpdateObstacle(Obstacle.Value, GetProjectilePosition(fowCast), GetRadius());
             }
         }
 
@@ -114,25 +110,7 @@
                 return;
             }
 
-            if (Particle == null)
-            {
-                Particle = new ParticleEffect(@"particles\ui_mouseactions\drag_selected_ring.vpcf", StartPosition);
-                Particle.SetControlPoint(1, new Vector3(255, 0, 0));
-                Particle.SetControlPoint(2, new Vector3(Radius, 255, 0));
-            }
-
-            Utils.DrawRectangle(StartPosition, EndPosition, Radius);
-            Vector2 textPosition;
-            Drawing.WorldToScreen(StartPosition, out textPosition);
-            Drawing.DrawText(
-                GetRemainingTime().ToString("0.00"),
-                "Arial",
-                textPosition,
-                new Vector2(20),
-                Color.White,
-                FontFlags.None);
-
-            Particle?.SetControlPoint(0, GetProjectilePosition(fowCast));
+            base.Draw();
         }
 
         public override void End()
@@ -152,22 +130,23 @@
             {
                 hero = Hero;
             }
-        
+
             var position = hero.NetworkPosition;
 
             if (!IsValidArrow())
             {
-
-                if (IsInPhase && position.Distance2D(StartPosition) < Radius)
+                if (IsInPhase && position.Distance2D(StartPosition) < GetRadius())
                 {
                     return StartCast + CastPoint - Game.RawGameTime;
                 }
 
-                return StartCast + CastPoint + (position.Distance2D(StartPosition) - Radius*2) / GetProjectileSpeed()
+                return StartCast + CastPoint
+                       + (position.Distance2D(StartPosition) - GetRadius() * 2) / GetProjectileSpeed()
                        - Game.RawGameTime;
             }
 
-            return StartCast + (position.Distance2D(StartPosition) - Radius*2) / GetProjectileSpeed() - Game.RawGameTime;
+            return StartCast + (position.Distance2D(StartPosition) - GetRadius() * 2) / GetProjectileSpeed()
+                   - Game.RawGameTime;
         }
 
         public override bool IsStopped()

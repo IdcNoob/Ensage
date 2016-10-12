@@ -39,19 +39,27 @@
 
         public override void Check()
         {
-            var time = Game.RawGameTime;
-
-            if (IsInPhase && StartCast + CastPoint <= time)
+            if (StartCast <= 0 && IsInPhase && AbilityOwner.IsVisible)
             {
-                StartCast = time;
-                Position = Owner.NetworkPosition;
-                EndCast = StartCast + channelTime + CastPoint;
-                Obstacle = Pathfinder.AddObstacle(Position, GetRadius(), Obstacle);
+                StartCast = Game.RawGameTime;
+                StartPosition = AbilityOwner.NetworkPosition;
+                EndCast = StartCast + CastPoint;
+                Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
             }
-            else if (StartCast > 0 && time > EndCast)
+            else if (StartCast > 0 && Game.RawGameTime > EndCast && !Ability.IsChanneling)
             {
                 End();
             }
+        }
+
+        public override float GetRemainingDisableTime()
+        {
+            return GetRemainingTime() - 0.05f;
+        }
+
+        public override float GetRemainingTime(Hero hero = null)
+        {
+            return EndCast + channelTime - Game.RawGameTime;
         }
 
         #endregion

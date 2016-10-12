@@ -50,9 +50,9 @@
             if (IsInPhase && StartCast + CastPoint <= time)
             {
                 StartCast = time;
-                Position = Owner.NetworkPosition;
+                StartPosition = AbilityOwner.NetworkPosition;
                 EndCast = StartCast + CastPoint + tavelTime;
-                Obstacle = Pathfinder.AddObstacle(Position, GetRadius(), Obstacle);
+                Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
             }
             else if (StartCast > 0 && time > EndCast)
             {
@@ -67,12 +67,12 @@
                 hero = Hero;
             }
 
-            if (IsInPhase && hero.NetworkPosition.Distance2D(Position) < width)
+            if (IsInPhase && hero.NetworkPosition.Distance2D(StartPosition) < width)
             {
                 return StartCast + CastPoint - Game.RawGameTime;
             }
 
-            return StartCast + CastPoint + (hero.NetworkPosition.Distance2D(Position) - width) / speed
+            return StartCast + CastPoint + (hero.NetworkPosition.Distance2D(StartPosition) - width) / speed
                    - Game.RawGameTime;
         }
 

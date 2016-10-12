@@ -32,16 +32,16 @@
 
         public void AddParticle(ParticleEffect particle)
         {
-            if (Obstacle != null || !Owner.IsVisible)
+            if (Obstacle != null || !AbilityOwner.IsVisible)
             {
                 return;
             }
 
             StartCast = Game.RawGameTime;
-            StartPosition = Owner.NetworkPosition;
-            EndPosition = Owner.InFront(GetCastRange());
+            StartPosition = AbilityOwner.NetworkPosition;
+            EndPosition = AbilityOwner.InFront(GetCastRange());
             EndCast = StartCast + GetCastRange() / GetProjectileSpeed();
-            Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, Radius, Obstacle);
+            Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
         }
 
         public override bool CanBeStopped()
@@ -51,9 +51,7 @@
 
         public override void Check()
         {
-            var time = Game.RawGameTime;
-
-            if (StartCast > 0 && time > EndCast)
+            if (StartCast > 0 && Game.RawGameTime > EndCast)
             {
                 End();
             }

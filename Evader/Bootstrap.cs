@@ -59,12 +59,13 @@
         private void OnClose(object sender, EventArgs e)
         {
             Events.OnClose -= OnClose;
-            Game.OnIngameUpdate -= Game_OnUpdate;
+            Game.OnUpdate -= Game_OnUpdate;
             Player.OnExecuteOrder -= Player_OnExecuteAction;
             Drawing.OnDraw -= Drawing_OnDraw;
             ObjectManager.OnRemoveEntity -= ObjectManagerOnRemoveEntity;
             ObjectManager.OnAddEntity -= ObjectManager_OnAddEntity;
             Unit.OnModifierAdded -= Unit_OnModifierAdded;
+            Unit.OnModifierRemoved -= Unit_OnModifierRemoved;
             Entity.OnParticleEffectAdded -= Entity_OnParticleEffectAdded;
             ObjectManager.OnAddTrackingProjectile -= ObjectManagerOnAddTrackingProjectile;
             evader.OnClose();
@@ -74,12 +75,13 @@
         {
             evader.OnLoad();
             Events.OnClose += OnClose;
-            Game.OnIngameUpdate += Game_OnUpdate;
+            Game.OnUpdate += Game_OnUpdate;
             Player.OnExecuteOrder += Player_OnExecuteAction;
             Drawing.OnDraw += Drawing_OnDraw;
             ObjectManager.OnRemoveEntity += ObjectManagerOnRemoveEntity;
             ObjectManager.OnAddEntity += ObjectManager_OnAddEntity;
             Unit.OnModifierAdded += Unit_OnModifierAdded;
+            Unit.OnModifierRemoved += Unit_OnModifierRemoved;
             Entity.OnParticleEffectAdded += Entity_OnParticleEffectAdded;
             ObjectManager.OnAddTrackingProjectile += ObjectManagerOnAddTrackingProjectile;
         }
@@ -92,6 +94,11 @@
         private void Unit_OnModifierAdded(Unit sender, ModifierChangedEventArgs args)
         {
             evader.OnModifierAdded(sender, args.Modifier);
+        }
+
+        private void Unit_OnModifierRemoved(Unit sender, ModifierChangedEventArgs args)
+        {
+            evader.OnModifierRemoved(args.Modifier);
         }
 
         #endregion

@@ -1,7 +1,6 @@
 ﻿namespace Evader.EvadableAbilities.Heroes
 {
     using Ensage;
-    using Ensage.Common.Extensions;
 
     using static Core.Abilities;
 
@@ -32,40 +31,18 @@
 
         #region Public Methods and Operators
 
-        public override void Check()
+        public override float GetProjectileSpeed()
         {
-            var time = Game.RawGameTime;
-            var phase = IsInPhase;
-
-            if (phase && StartCast + CastPoint <= time)
-            {
-                StartCast = time;
-                EndCast = StartCast + CastPoint + GetCastRange() / GetProjectileSpeed();
-            }
-            else if (phase && Obstacle == null && (int)Owner.RotationDifference == 0)
-            {
-                StartPosition = Owner.NetworkPosition;
-                EndPosition = Owner.InFront(GetCastRange() + Radius / 2);
-                Obstacle = Pathfinder.AddObstacle(
-                    // StartPosition.Extend(EndPosition, StartWidth),
-                    StartPosition,
-                    EndPosition,
-                    Radius,
-                    Obstacle);
-            }
-            else if (StartCast > 0 && time > EndCast)
-            {
-                End();
-            }
+            return speed;
         }
 
         #endregion
 
         #region Methods
 
-        protected override float GetProjectileSpeed()
+        protected override float GetCastRange()
         {
-            return speed;
+            return base.GetCastRange() - 150;
         }
 
         #endregion

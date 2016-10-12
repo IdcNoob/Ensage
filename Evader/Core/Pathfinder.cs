@@ -11,13 +11,13 @@
 
     using SharpDX;
 
+    using Utils;
+
     internal class Pathfinder
     {
         #region Fields
 
         private readonly MultiSleeper sleeper = new MultiSleeper();
-
-        private readonly float turnRate;
 
         private readonly Dictionary<Unit, uint> units = new Dictionary<Unit, uint>();
 
@@ -28,16 +28,7 @@
         public Pathfinder()
         {
             Pathfinding = new NavMeshPathfinding();
-            Game.OnIngameUpdate += PositionUpdater;
-            try
-            {
-                turnRate = (float)Hero.GetTurnRate();
-            }
-            catch (Exception)
-            {
-                // demo mode, lets set random value
-                turnRate = 0.5f;
-            }
+            Game.OnUpdate += PositionUpdater;
         }
 
         #endregion
@@ -63,11 +54,6 @@
                 RemoveObstacle(obstacle.Value);
             }
 
-            if (radius > 5000)
-            {
-                return null;
-            }
-
             //todo delete setz after intersection fix
             return Pathfinding.AddObstacle(position.SetZ(600), radius);
         }
@@ -77,11 +63,6 @@
             if (obstacle != null)
             {
                 RemoveObstacle(obstacle.Value);
-            }
-
-            if (startPosition.Distance2D(endPosition) > 5000)
-            {
-                return null;
             }
 
             //todo delete setz after intersection fix
@@ -103,16 +84,8 @@
                 RemoveObstacle(obstacle.Value);
             }
 
-            if (startPosition.Distance2D(endPosition) > 5000)
-            {
-                return null;
-            }
-
             //todo delete setz after intersection fix
-            return Pathfinding.AddObstacle(
-                startPosition.SetZ(600),
-                endPosition.SetZ(600),
-                Math.Max(startWidth, endWidth));
+            return Pathfinding.AddObstacle(startPosition.SetZ(600), endPosition.SetZ(600), endWidth);
         }
 
         public IEnumerable<Vector3> CalculateDebugPathFromObstacle(float remainingTime)
@@ -123,7 +96,7 @@
                 Hero.NetworkPosition,
                 Hero.RotationRad,
                 Hero.MovementSpeed,
-                turnRate,
+                (float)Hero.GetTurnRate(),
                 remainingTime * 1000,
                 false,
                 out success);
@@ -147,7 +120,7 @@
                 Hero.NetworkPosition,
                 Hero.RotationRad,
                 Hero.MovementSpeed,
-                turnRate,
+                (float)Hero.GetTurnRate(),
                 remainingTime * 1000,
                 true,
                 out success);
@@ -163,7 +136,7 @@
                 Hero.NetworkPosition,
                 Hero.RotationRad,
                 Hero.MovementSpeed,
-                turnRate,
+                (float)Hero.GetTurnRate(),
                 remainingTime * 1000,
                 true,
                 out success);
@@ -171,19 +144,19 @@
 
         public void Close()
         {
-            Game.OnIngameUpdate -= PositionUpdater;
+            Game.OnUpdate -= PositionUpdater;
             units.Clear();
         }
 
         public IEnumerable<uint> GetIntersectingObstacles(Hero hero)
         {
             //////////<<<<<<<<<<<
-            /// 
             var obstacles = Pathfinding.GetIntersectingObstacleIDs(hero.NetworkPosition, hero.HullRadius).ToList();
-            if (hero.IsMoving)
+            if (hero.IsMoving || hero.IsTurning())
             {
                 obstacles.AddRange(Pathfinding.GetIntersectingObstacleIDs(hero.InFront(150), hero.HullRadius));
             }
+
             return obstacles;
         }
 
@@ -227,7 +200,7 @@
             if (!sleeper.Sleeping(units))
             {
                 foreach (var unit in
-                    ObjectManager.GetEntities<Unit>()
+                    ObjectManager.GetEntitiesParallel<Unit>()
                         .Where(
                             x =>
                             x.IsValid && !units.ContainsKey(x) && (x is Creep || x is Hero || x is Building)
@@ -249,16 +222,16 @@
                 foreach (var unitPair in units)
                 {
                     var unit = unitPair.Key;
-                    var id = unitPair.Value;
+                    var obstacle = unitPair.Value;
 
                     if (unit == null || !unit.IsValid || !unit.IsAlive)
                     {
                         remove.Add(unit);
-                        RemoveObstacle(id);
+                        RemoveObstacle(obstacle);
                         continue;
                     }
 
-                    UpdateObstacle(id, unit.NetworkPosition, unit.HullRadius);
+                    UpdateObstacle(obstacle, unit.NetworkPosition, unit.HullRadius);
                 }
 
                 foreach (var unit in remove)

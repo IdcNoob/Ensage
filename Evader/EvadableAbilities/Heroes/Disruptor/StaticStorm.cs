@@ -8,19 +8,19 @@
     using Ensage;
     using Ensage.Common.Extensions;
 
-    using SharpDX;
+    using UsableAbilities.Base;
 
     using static Core.Abilities;
 
-    internal class StaticStorm : AOE, IModifier
+    using AbilityType = Core.AbilityType;
+
+    internal class StaticStorm : AOE, IModifierThinker
     {
         #region Fields
 
         private readonly float duration, durationAghanim;
 
-        private Modifier modifier;
-
-        private bool modifierAdded;
+        private Modifier modifierThinker;
 
         #endregion
 
@@ -39,17 +39,19 @@
 
             duration = Ability.AbilitySpecialData.First(x => x.Name == "duration").Value;
             durationAghanim = Ability.AbilitySpecialData.First(x => x.Name == "duration_scepter").Value;
+
+            ObstacleStays = true;
         }
 
         #endregion
 
         #region Public Methods and Operators
 
-        public void AddModifier(Modifier mod, Unit unit)
+        public void AddModifierThinker(Modifier mod, Unit unit)
         {
-            modifier = mod;
-            Position = unit.Position;
-            modifierAdded = true;
+            modifierThinker = mod;
+            StartPosition = unit.Position;
+            StartCast = Game.RawGameTime;
         }
 
         public override bool CanBeStopped()
@@ -59,56 +61,22 @@
 
         public override void Check()
         {
-            if (!modifierAdded)
+            if (modifierThinker == null)
             {
                 return;
             }
 
             if (Obstacle != null)
             {
-                if (GetRemainingTime() <= 0)
+                if (StartCast > 0 && Game.RawGameTime > EndCast)
                 {
                     End();
                 }
                 return;
             }
 
-            if (modifier == null || !modifier.IsValid)
-            {
-                if (Obstacle != null)
-                {
-                    End();
-                }
-                return;
-            }
-
-            EndCast = Game.RawGameTime + (GetDuration() - modifier.ElapsedTime);
-            Obstacle = Pathfinder.AddObstacle(Position, GetRadius(), Obstacle);
-        }
-
-        public override void Draw()
-        {
-            if (Obstacle == null)
-            {
-                return;
-            }
-
-            Vector2 textPosition;
-            Drawing.WorldToScreen(Position, out textPosition);
-            Drawing.DrawText(
-                GetRemainingTime().ToString("0.00"),
-                "Arial",
-                textPosition,
-                new Vector2(20),
-                Color.White,
-                FontFlags.None);
-
-            if (Particle == null)
-            {
-                Particle = new ParticleEffect(@"particles\ui_mouseactions\drag_selected_ring.vpcf", Position);
-                Particle.SetControlPoint(1, new Vector3(255, 0, 0));
-                Particle.SetControlPoint(2, new Vector3(GetRadius() * -1, 255, 0));
-            }
+            EndCast = Game.RawGameTime + (GetDuration() - modifierThinker.ElapsedTime);
+            Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
         }
 
         public override void End()
@@ -119,12 +87,17 @@
             }
 
             base.End();
-            modifierAdded = false;
+            modifierThinker = null;
         }
 
-        public override bool IgnoreRemainingTime(float remainingTime = 0)
+        public override float GetRemainingTime(Hero hero = null)
         {
-            return modifierAdded;
+            return StartCast + CastPoint - Game.RawGameTime;
+        }
+
+        public override bool IgnoreRemainingTime(UsableAbility ability, float remainingTime = 0)
+        {
+            return ability.Type != AbilityType.Disable && modifierThinker != null;
         }
 
         #endregion
@@ -133,7 +106,7 @@
 
         private float GetDuration()
         {
-            return Owner.AghanimState() ? durationAghanim : duration;
+            return AbilityOwner.AghanimState() ? durationAghanim : duration;
         }
 
         #endregion

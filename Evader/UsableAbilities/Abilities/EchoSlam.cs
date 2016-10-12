@@ -22,7 +22,7 @@
         public EchoSlam(Ability ability, AbilityType type, AbilityFlags flags = AbilityFlags.None)
             : base(ability, type, flags)
         {
-            aftershockRadius = Ability.GetCastRange("earthshaker_aftershock") + 50;
+            aftershockRadius = Hero.FindSpell("earthshaker_aftershock").GetRadius();
         }
 
         #endregion
@@ -33,8 +33,8 @@
         {
             // todo: fix ally check
 
-            return !Sleeper.Sleeping && Ability.CanBeCasted() && (IsItem || Hero.CanCast())
-                   && Hero.Distance2D(unit) <= aftershockRadius && CheckEnemy(unit);
+            return !Sleeper.Sleeping && Ability.CanBeCasted() && Hero.Distance2D(unit) <= aftershockRadius
+                   && CheckEnemy(unit);
         }
 
         #endregion

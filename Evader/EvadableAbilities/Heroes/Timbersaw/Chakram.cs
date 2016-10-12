@@ -1,20 +1,20 @@
 ﻿namespace Evader.EvadableAbilities.Heroes
 {
-    using Base;
-
     using Ensage;
 
     using static Core.Abilities;
 
-    internal class Chakram : LinearAOE
+    using LinearProjectile = Base.LinearProjectile;
+
+    internal class Chakram : LinearProjectile
     {
         #region Constructors and Destructors
 
         public Chakram(Ability ability)
             : base(ability)
         {
-            //todo add particle
-
+            //todo can be improved
+            CounterAbilities.Add(PhaseShift);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsLowPureMagic);
         }

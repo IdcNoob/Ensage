@@ -5,18 +5,11 @@
     using Base;
 
     using Ensage;
-    using Ensage.Common.Extensions;
 
     using static Core.Abilities;
 
     internal class LagunaBlade : LinearTarget
     {
-        #region Fields
-
-        private readonly float additionalDelay;
-
-        #endregion
-
         #region Constructors and Destructors
 
         public LagunaBlade(Ability ability)
@@ -39,38 +32,7 @@
             CounterAbilities.Add(NetherWard);
             CounterAbilities.AddRange(Invis);
 
-            additionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "damage_delay").Value;
-        }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        public override void Check()
-        {
-            var time = Game.RawGameTime;
-            var phase = IsInPhase;
-
-            if (phase && StartCast + CastPoint <= time)
-            {
-                StartCast = time;
-                EndCast = StartCast + CastPoint + additionalDelay;
-            }
-            else if (phase && Obstacle == null && (int)Owner.RotationDifference == 0)
-            {
-                StartPosition = Owner.NetworkPosition;
-                EndPosition = Owner.InFront(GetCastRange());
-                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetWidth(), Obstacle);
-            }
-            else if (StartCast > 0 && time > EndCast)
-            {
-                End();
-            }
-        }
-
-        public override float GetRemainingTime(Hero hero = null)
-        {
-            return StartCast + CastPoint + additionalDelay - Game.RawGameTime;
+            AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "damage_delay").Value;
         }
 
         #endregion

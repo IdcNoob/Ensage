@@ -1,20 +1,28 @@
 ﻿namespace Evader.EvadableAbilities.Heroes
 {
     using Base;
+    using Base.Interfaces;
 
     using Ensage;
+    using Ensage.Common.Extensions;
 
-    using SharpDX;
+    using UsableAbilities.Base;
+
+    using Utils;
 
     using static Core.Abilities;
 
-    internal class BlackHole : LinearAOE
+    using AbilityType = Core.AbilityType;
+
+    internal class BlackHole : LinearAOE, IModifierThinker
     {
         #region Fields
 
         private readonly float channelTime;
 
-        private Vector3 position;
+        private bool fowCast;
+
+        private bool modifierAdded;
 
         #endregion
 
@@ -36,38 +44,96 @@
             CounterAbilities.Add(SnowBall);
             CounterAbilities.Add(Manta);
 
-            //todo fix
+            ObstacleStays = true;
         }
 
         #endregion
 
         #region Public Methods and Operators
 
+        public void AddModifierThinker(Modifier modifier, Unit unit)
+        {
+            var position = unit.Position;
+            modifierAdded = true;
+
+            AbilityDrawer.Dispose(AbilityDrawer.Type.Rectangle);
+            AbilityDrawer.DrawCircle(position, GetRadius());
+
+            if (Obstacle == null)
+            {
+                StartCast = Game.RawGameTime;
+                EndCast = StartCast + channelTime;
+                fowCast = true;
+            }
+
+            Obstacle = Pathfinder.AddObstacle(position, GetRadius(), Obstacle);
+        }
+
+        public override bool CanBeStopped()
+        {
+            return !modifierAdded && base.CanBeStopped();
+        }
+
         public override void Check()
         {
-            var time = Game.RawGameTime;
-
-            if (IsInPhase && StartCast + CastPoint <= time)
+            if (StartCast <= 0 && IsInPhase && AbilityOwner.IsVisible)
             {
-                StartCast = time;
-                position = Owner.NetworkPosition;
-                EndCast = StartCast + CastPoint;
-                Obstacle = Pathfinder.AddObstacle(position, GetRadius(), Obstacle);
+                StartCast = Game.RawGameTime;
+                EndCast = StartCast + CastPoint + channelTime;
             }
-            else if (StartCast > 0 && time > EndCast && !IgnoreRemainingTime())
+            else if (StartCast > 0 && Obstacle == null && CanBeStopped() && !AbilityOwner.IsTurning())
+            {
+                StartPosition = AbilityOwner.InFront(-GetRadius() * 0.9f);
+                EndPosition = AbilityOwner.InFront(GetCastRange() + GetRadius() * 0.8f);
+                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
+            }
+            else if (StartCast > 0
+                     && (Game.RawGameTime > EndCast || !fowCast && !CanBeStopped() && !Ability.IsChanneling))
             {
                 End();
             }
         }
 
-        public override float GetRemainingTime(Hero hero = null)
+        public override void Draw()
         {
-            return EndCast + channelTime - Game.RawGameTime;
+            if (Obstacle == null)
+            {
+                return;
+            }
+
+            AbilityDrawer.DrawTime(GetRemainingTime(), AbilityOwner.Position);
+
+            if (!modifierAdded)
+            {
+                AbilityDrawer.DrawDoubleArcRectangle(StartPosition, EndPosition, GetRadius());
+            }
         }
 
-        public override bool IgnoreRemainingTime(float remainingTime = 0)
+        public override void End()
         {
-            return Ability.IsChanneling;
+            if (Obstacle == null)
+            {
+                return;
+            }
+
+            base.End();
+            modifierAdded = false;
+            fowCast = false;
+        }
+
+        public override float GetRemainingTime(Hero hero = null)
+        {
+            return StartCast + CastPoint - Game.RawGameTime;
+        }
+
+        public override bool IgnoreRemainingTime(UsableAbility ability, float remainingTime = 0)
+        {
+            if (ability.Type == AbilityType.Blink)
+            {
+                return false;
+            }
+
+            return Ability.IsChanneling || fowCast;
         }
 
         #endregion

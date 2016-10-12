@@ -104,6 +104,7 @@
             "sandking_sand_storm",
             "templar_assassin_meld",
             "weaver_shukuchi",
+            //todo: add glimmer delay
             "item_glimmer_cape",
             "item_invis_sword",
             "item_silver_edge",

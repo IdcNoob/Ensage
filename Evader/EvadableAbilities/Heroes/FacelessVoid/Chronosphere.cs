@@ -10,21 +10,19 @@
     using Ensage;
     using Ensage.Common.Extensions;
 
-    using SharpDX;
-
     using Utils;
 
     using static Core.Abilities;
 
-    internal class Chronosphere : LinearAOE, IModifier
+    internal class Chronosphere : LinearAOE, IModifierThinker
     {
         #region Fields
 
         private readonly float[] duration = new float[3];
 
-        private bool modifierAdded;
+        private bool fowCast;
 
-        private Vector3 position;
+        private bool modifierAdded;
 
         #endregion
 
@@ -45,7 +43,7 @@
             CounterAbilities.Remove("slark_dark_pact");
             BlinkAbilities.Remove("slark_pounce");
 
-            if (Owner.Team == Variables.HeroTeam)
+            if (AbilityOwner.Team == Variables.HeroTeam)
             {
                 // leave only blink abilities
                 // if void is ally
@@ -65,19 +63,22 @@
 
         #region Public Methods and Operators
 
-        public void AddModifier(Modifier mod, Unit unit)
+        public void AddModifierThinker(Modifier mod, Unit unit)
         {
-            position = unit.Position;
+            var position = unit.Position;
             modifierAdded = true;
 
-            if (Particle == null)
+            AbilityDrawer.Dispose(AbilityDrawer.Type.Rectangle);
+            AbilityDrawer.DrawCircle(position, GetRadius());
+
+            if (Obstacle == null)
             {
-                Particle = new ParticleEffect(@"particles\ui_mouseactions\drag_selected_ring.vpcf", position);
-                Particle.SetControlPoint(1, new Vector3(255, 0, 0));
-                Particle.SetControlPoint(2, new Vector3(GetRadius(), 255, 0));
-                Particle.SetControlPoint(0, position);
-                Obstacle = Pathfinder.AddObstacle(position, GetRadius(), Obstacle);
+                StartCast = Game.RawGameTime;
+                EndCast = StartCast + GetDuration();
+                fowCast = true;
             }
+
+            Obstacle = Pathfinder.AddObstacle(position, GetRadius(), Obstacle);
         }
 
         public override bool CanBeStopped()
@@ -87,21 +88,18 @@
 
         public override void Check()
         {
-            var time = Game.RawGameTime;
-            var phase = IsInPhase;
-
-            if (phase && StartCast + CastPoint <= time)
+            if (StartCast <= 0 && IsInPhase && AbilityOwner.IsVisible)
             {
-                StartCast = time;
+                StartCast = Game.RawGameTime;
                 EndCast = StartCast + CastPoint + GetDuration();
             }
-            else if (phase && Obstacle == null && (int)Owner.RotationDifference == 0)
+            else if (StartCast > 0 && Obstacle == null && CanBeStopped() && !AbilityOwner.IsTurning())
             {
-                StartPosition = Owner.NetworkPosition;
-                EndPosition = Owner.InFront(GetCastRange() + GetRadius());
+                StartPosition = AbilityOwner.InFront(-GetRadius() * 0.9f);
+                EndPosition = AbilityOwner.InFront(GetCastRange() + GetRadius() * 0.8f);
                 Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
             }
-            else if (StartCast > 0 && time > EndCast)
+            else if (StartCast > 0 && Game.RawGameTime > EndCast)
             {
                 End();
             }
@@ -114,20 +112,15 @@
                 return;
             }
 
-            if (!modifierAdded)
+            if (modifierAdded)
             {
-                Utils.DrawRectangle(StartPosition, EndPosition, GetRadius());
+                AbilityDrawer.DrawTime(GetRemainingTime(), AbilityOwner.Position);
             }
-
-            Vector2 textPosition;
-            Drawing.WorldToScreen(StartPosition, out textPosition);
-            Drawing.DrawText(
-                GetRemainingTime().ToString("0.00"),
-                "Arial",
-                textPosition,
-                new Vector2(20),
-                Color.White,
-                FontFlags.None);
+            else
+            {
+                AbilityDrawer.DrawDoubleArcRectangle(StartPosition, EndPosition, GetRadius());
+                AbilityDrawer.DrawTime(GetRemainingTime(), AbilityOwner.Position);
+            }
         }
 
         public override void End()
@@ -139,6 +132,12 @@
 
             base.End();
             modifierAdded = false;
+            fowCast = false;
+        }
+
+        public override float GetRemainingTime(Hero hero = null)
+        {
+            return StartCast + (fowCast ? 0 : CastPoint) - Game.RawGameTime;
         }
 
         #endregion
@@ -147,7 +146,7 @@
 
         protected override float GetRadius()
         {
-            return base.GetRadius() + 75;
+            return base.GetRadius() + 50;
         }
 
         private float GetDuration()

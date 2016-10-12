@@ -1,5 +1,7 @@
 ﻿namespace Evader.EvadableAbilities.Heroes
 {
+    using System.Linq;
+
     using Base;
     using Base.Interfaces;
 
@@ -12,11 +14,11 @@
     {
         #region Fields
 
+        private readonly float projectileSize;
+
         private readonly float speed;
 
         private readonly float tavelTime;
-
-        private readonly float width;
 
         #endregion
 
@@ -27,7 +29,9 @@
         {
             speed = ability.GetProjectileSpeed();
             tavelTime = GetRadius() / speed;
-            width = 250;
+            projectileSize = Ability.AbilitySpecialData.First(x => x.Name == "start_radius").Value + 60;
+
+            ModifierName = "modifier_venomancer_poison_nova";
 
             BlinkAbilities.AddRange(BlinkAbilityNames);
 
@@ -45,15 +49,15 @@
 
         public void AddParticle(ParticleEffect particle)
         {
-            if (Obstacle != null || !Owner.IsVisible)
+            if (Obstacle != null || !AbilityOwner.IsVisible)
             {
                 return;
             }
 
             StartCast = Game.RawGameTime;
-            Position = Owner.NetworkPosition;
+            StartPosition = AbilityOwner.NetworkPosition;
             EndCast = StartCast + tavelTime;
-            Obstacle = Pathfinder.AddObstacle(Position, GetRadius(), Obstacle);
+            Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
         }
 
         public override bool CanBeStopped()
@@ -76,7 +80,13 @@
                 hero = Hero;
             }
 
-            return StartCast + (hero.NetworkPosition.Distance2D(Position) - width) / speed - Game.RawGameTime;
+            if (hero.NetworkPosition.Distance2D(StartPosition) < projectileSize)
+            {
+                return 0;
+            }
+
+            return StartCast + (hero.NetworkPosition.Distance2D(StartPosition) - projectileSize) / speed
+                   - Game.RawGameTime;
         }
 
         #endregion

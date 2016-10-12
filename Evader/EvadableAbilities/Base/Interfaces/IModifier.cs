@@ -6,7 +6,15 @@
     {
         #region Public Methods and Operators
 
-        void AddModifier(Modifier modifier, Unit unit);
+        void AddModifer(Modifier modifier, Hero hero);
+
+        bool CanBeCountered();
+
+        float GetModiferRemainingTime();
+
+        Hero GetModifierHero();
+
+        void RemoveModifier();
 
         #endregion
     }

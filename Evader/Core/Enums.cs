@@ -13,9 +13,7 @@
 
         BasicDispel = 4,
 
-        StrongDispel = 8 | BasicDispel,
-
-        DisjointsProjectile = 16
+        StrongDispel = 8 | BasicDispel
     }
 
     public enum AbilityType

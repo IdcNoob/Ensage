@@ -9,8 +9,6 @@
 
     using EvadableAbilities.Base;
 
-    using Utils;
-
     using AbilityType = Core.AbilityType;
 
     internal class TargetBlink : UsableAbility
@@ -35,12 +33,12 @@
         public override bool CanBeCasted(Unit unit)
         {
             blinkUnit =
-                ObjectManager.GetEntities<Unit>()
+                ObjectManager.GetEntitiesFast<Unit>()
                     .FirstOrDefault(
                         x =>
                         x.IsValid && x.IsAlive && (x is Creep || x is Hero) && !x.Equals(Hero) && x.Team == HeroTeam
                         && x.Distance2D(Hero) < GetCastRange() && x.Distance2D(Hero) > 200);
-            return !Sleeper.Sleeping && blinkUnit != null && Ability.CanBeCasted() && (IsItem || Hero.CanCast());
+            return !Sleeper.Sleeping && blinkUnit != null && Ability.CanBeCasted();
         }
 
         public override float GetRequiredTime(EvadableAbility ability, Unit unit)
@@ -50,7 +48,7 @@
                 return float.MaxValue;
             }
 
-            return CastPoint + (float)Hero.GetTurnTime(blinkUnit) * 1.5f;
+            return CastPoint + (float)Hero.GetTurnTime(blinkUnit);
         }
 
         public override void Use(EvadableAbility ability, Unit target)

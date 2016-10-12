@@ -4,6 +4,8 @@
 
     using Ensage;
 
+    using UsableAbilities.Base;
+
     using static Core.Abilities;
 
     internal class FreezingField : AOE
@@ -36,16 +38,14 @@
 
         public override void Check()
         {
-            var time = Game.RawGameTime;
-
-            if (IsInPhase && StartCast + CastPoint <= time)
+            if (StartCast <= 0 && IsInPhase && AbilityOwner.IsVisible)
             {
-                StartCast = time;
-                Position = Owner.NetworkPosition;
+                StartCast = Game.RawGameTime;
+                StartPosition = AbilityOwner.NetworkPosition;
                 EndCast = StartCast + CastPoint;
-                Obstacle = Pathfinder.AddObstacle(Position, GetRadius(), Obstacle);
+                Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
             }
-            else if (StartCast > 0 && time > EndCast && !IgnoreRemainingTime())
+            else if (StartCast > 0 && Game.RawGameTime > EndCast && !IgnoreRemainingTime(null))
             {
                 End();
             }
@@ -56,7 +56,7 @@
             return EndCast + channelTime - Game.RawGameTime;
         }
 
-        public override bool IgnoreRemainingTime(float remainingTime = 0)
+        public override bool IgnoreRemainingTime(UsableAbility ability, float remainingTime = 0)
         {
             return Ability.IsChanneling;
         }
