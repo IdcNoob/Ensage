@@ -5,8 +5,6 @@
     using Ensage;
     using Ensage.Common;
 
-    using SharpDX;
-
     internal class RoshanPinger
     {
         #region Fields
@@ -37,7 +35,7 @@
         {
             if (args.GameEvent.Name == "dota_roshan_kill")
             {
-                DelayAction.Add(random.NextFloat(500, 2500), () => RoshanKilled = true);
+                DelayAction.Add(random.Next(500, 2500), () => RoshanKilled = true);
             }
         }
 
