@@ -34,14 +34,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ensage">
-      <HintPath>D:\Games\Fz3k8DhRe\References\Ensage.dll</HintPath>
+      <HintPath>C:\BanIsComing\References\Ensage.dll</HintPath>
     </Reference>
     <Reference Include="Ensage.Common">
-      <HintPath>D:\Games\Fz3k8DhRe\References\Ensage.Common.dll</HintPath>
+      <HintPath>C:\BanIsComing\References\Ensage.Common.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX, Version=2.6.3.0, Culture=neutral, PublicKeyToken=345b829e6e492981, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\Games\Fz3k8DhRe\References\SharpDX.dll</HintPath>
+      <HintPath>C:\BanIsComing\References\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

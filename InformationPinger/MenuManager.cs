@@ -1,5 +1,9 @@
 ﻿namespace InformationPinger
 {
+    using System.Collections.Generic;
+    using System.Linq;
+
+    using Ensage;
     using Ensage.Common.Menu;
 
     internal class MenuManager
@@ -7,6 +11,10 @@
         #region Fields
 
         private readonly MenuItem abilities;
+
+        private readonly MenuItem abilityEnemyCheck;
+
+        private readonly MenuItem bottleRune;
 
         private readonly MenuItem courierUpgradeDelay;
 
@@ -18,9 +26,13 @@
 
         private readonly MenuItem enabled;
 
-        private readonly MenuItem items;
+        private readonly MenuItem forcePing;
 
-        private readonly MenuItem itemWards;
+        private readonly MenuItem itemCostGoldThreshold;
+
+        private readonly MenuItem itemEnemyCheck;
+
+        private readonly MenuItem items;
 
         private readonly MenuItem roshanKillTime;
 
@@ -44,14 +56,48 @@
 
             var itemMenu = new Menu("Enemy items", "items");
             itemMenu.AddItem(items = new MenuItem("itemsEnabled", "Enabled").SetValue(true));
+            itemMenu.AddItem(
+                itemCostGoldThreshold = new MenuItem("itemCost", "Item cost").SetValue(new Slider(1800, 99, 5000)))
+                .SetTooltip("Will ping items that costs more");
             itemMenu.AddItem(doubleItemPing = new MenuItem("itemsDoublePing", "Double ping").SetValue(false))
                 .SetTooltip("Will ping item 2 times, like most people do");
-            itemMenu.AddItem(itemWards = new MenuItem("wardsEnabled", "Ping wards").SetValue(false));
+            itemMenu.AddItem(
+                forcePing =
+                new MenuItem("forcePing", "Force ping:").SetValue(
+                    new AbilityToggler(
+                    new Dictionary<string, bool>
+                        {
+                            { "item_smoke_of_deceit", true },
+                            { "item_dust", true },
+                            { "item_gem", true },
+                            { "item_bottle", true },
+                            { "item_ward_dispenser", true },
+                            { "item_ward_sentry", true },
+                            { "item_ward_observer", true }
+                        })));
+            itemMenu.AddItem(
+                bottleRune =
+                new MenuItem("bottleRune", "Bottled rune:").SetValue(
+                    new AbilityToggler(
+                    new Dictionary<string, bool>
+                        {
+                            { "item_bottle_illusion", false },
+                            { "item_bottle_regeneration", true },
+                            { "item_bottle_arcane", true },
+                            { "item_bottle_invisibility", true },
+                            { "item_bottle_doubledamage", true },
+                            { "item_bottle_haste", true }
+                        })));
+            itemMenu.AddItem(itemEnemyCheck = new MenuItem("itemEnemyCheck", "Check for enemies").SetValue(false))
+                .SetTooltip("If there is any enemy hero/creep near you it wont ping, unless it's pinged enemy");
 
             var abilityMenu = new Menu("Enemy abilities", "abilities");
             abilityMenu.AddItem(abilities = new MenuItem("abilitiesEnabled", "Enabled").SetValue(true));
             abilityMenu.AddItem(doubleAbilityPing = new MenuItem("abilitiesDoublePing", "Double ping").SetValue(false))
                 .SetTooltip("Will ping ability 2 times, like most people do");
+            abilityMenu.AddItem(
+                abilityEnemyCheck = new MenuItem("abilityEnemyCheck", "Check for enemies").SetValue(false))
+                .SetTooltip("If there is any enemy hero/creep near you it wont ping");
 
             var roshanMenu = new Menu("Roshan", "roshan");
             roshanMenu.AddItem(roshanKillTime = new MenuItem("roshanEnabled", "Kill time").SetValue(true));
@@ -92,6 +138,8 @@
 
         #region Public Properties
 
+        public bool AbilityEnemyCheckEnabled => abilityEnemyCheck.IsActive();
+
         public bool AbilityPingEnabled => abilities.IsActive();
 
         public int CourierUpgradeDelay => courierUpgradeDelay.GetValue<Slider>().Value;
@@ -104,9 +152,11 @@
 
         public bool Enabled => enabled.IsActive();
 
-        public bool ItemPingEnabled => items.IsActive();
+        public float ItemCostGoldThreshold => itemCostGoldThreshold.GetValue<Slider>().Value;
 
-        public bool ItemWardsEnabled => itemWards.IsActive();
+        public bool ItemEnemyCheckEnabled => itemEnemyCheck.IsActive();
+
+        public bool ItemPingEnabled => items.IsActive();
 
         public bool RoshanKillTimeEnabled => roshanKillTime.IsActive();
 
@@ -119,6 +169,48 @@
         public int WardsDelay => wardsDelay.GetValue<Slider>().Value;
 
         public bool WardsReminderEnabled => wardsReminder.IsActive();
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public List<RuneType> BottleRunes()
+        {
+            var list = new List<RuneType>();
+
+            foreach (var rune in bottleRune.GetValue<AbilityToggler>().Dictionary.Where(x => x.Value).Select(x => x.Key)
+                )
+            {
+                switch (rune)
+                {
+                    case "item_bottle_illusion":
+                        list.Add(RuneType.Illusion);
+                        break;
+                    case "item_bottle_regeneration":
+                        list.Add(RuneType.Regeneration);
+                        break;
+                    case "item_bottle_arcane":
+                        list.Add(RuneType.Arcane);
+                        break;
+                    case "item_bottle_invisibility":
+                        list.Add(RuneType.Invisibility);
+                        break;
+                    case "item_bottle_doubledamage":
+                        list.Add(RuneType.DoubleDamage);
+                        break;
+                    case "item_bottle_haste":
+                        list.Add(RuneType.Haste);
+                        break;
+                }
+            }
+
+            return list;
+        }
+
+        public IEnumerable<string> ForcePingItems()
+        {
+            return forcePing.GetValue<AbilityToggler>().Dictionary.Where(x => x.Value).Select(x => x.Key).ToList();
+        }
 
         #endregion
     }

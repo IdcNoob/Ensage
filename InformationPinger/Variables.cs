@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
 
+    using Ensage;
     using Ensage.Common.Objects.UtilityObjects;
 
     internal class Variables
@@ -33,13 +34,9 @@
                 "zuus_thundergods_wrath"
             };
 
-        public static List<string> IncludedItems = new List<string>
-            {
-                "item_smoke_of_deceit",
-                "item_dust",
-                "item_gem",
-                "item_ghost"
-            };
+        public static Team EnemyTeam;
+
+        public static Hero Hero;
 
         #endregion
 

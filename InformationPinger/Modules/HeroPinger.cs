@@ -5,11 +5,15 @@
     using System.Linq;
 
     using Ensage;
+    using Ensage.Common.Extensions;
     using Ensage.Common.Objects;
+    using Ensage.Items;
 
     internal class HeroPinger
     {
         #region Fields
+
+        private readonly Dictionary<uint, RuneType> bottleRunePinged = new Dictionary<uint, RuneType>();
 
         private readonly List<uint> pinged = new List<uint>();
 
@@ -39,23 +43,57 @@
 
         #region Public Methods and Operators
 
+        public bool BottledRunePinger(bool doublePing, bool checkEnemies, IEnumerable<RuneType> runes)
+        {
+            var bottle = Hero.FindItem("item_bottle") as Bottle;
+            if (bottle == null)
+            {
+                return false;
+            }
+
+            var storedRune = bottle.StoredRune;
+            var handle = bottle.Handle;
+
+            RuneType lastRune;
+            if (bottleRunePinged.TryGetValue(handle, out lastRune) && lastRune == storedRune)
+            {
+                return false;
+            }
+
+            if (!runes.Contains(storedRune))
+            {
+                bottleRunePinged[handle] = storedRune;
+                return false;
+            }
+
+            if (checkEnemies && OtherEnemiesNear())
+            {
+                return false;
+            }
+
+            bottleRunePinged[handle] = storedRune;
+
+            return Announce(bottle, doublePing, true);
+        }
+
         public void IgnoreCurrentAbilities()
         {
             pinged.AddRange(Hero.Inventory.Items.Select(x => x.Handle));
             pinged.AddRange(Hero.Spellbook.Spells.Select(x => x.Handle));
         }
 
-        public bool ItemPinger(bool wardsEnabled, bool doublePing)
+        public bool ItemPinger(bool doublePing, bool checkEnemies, float cost, IEnumerable<string> forcePingItems)
         {
+            if (checkEnemies && OtherEnemiesNear())
+            {
+                return false;
+            }
+
             var newItem =
                 Hero.Inventory.Items.FirstOrDefault(
                     x =>
                     x.IsValid && !pinged.Contains(x.Handle)
-                    && (x.Cost >= 1800 || Variables.IncludedItems.Contains(x.StoredName())
-                        || (wardsEnabled
-                            && (x.ClassID == ClassID.CDOTA_Item_ObserverWard
-                                || x.ClassID == ClassID.CDOTA_Item_SentryWard
-                                || x.ClassID == ClassID.CDOTA_Item_Ward_Dispenser))));
+                    && (x.Cost >= cost || forcePingItems.Contains(x.StoredName())));
 
             return Announce(newItem, doublePing);
         }
@@ -64,8 +102,13 @@
 
         #region Methods
 
-        internal bool AbilityPinger(bool doublePing)
+        internal bool AbilityPinger(bool doublePing, bool checkEnemies)
         {
+            if (checkEnemies && OtherEnemiesNear())
+            {
+                return false;
+            }
+
             var newAbility =
                 Hero.Spellbook.Spells.FirstOrDefault(
                     x =>
@@ -98,7 +141,7 @@
             return true;
         }
 
-        private bool Announce(Item item, bool doublePing)
+        private bool Announce(Item item, bool doublePing, bool ignoreList = false)
         {
             if (item == null)
             {
@@ -117,8 +160,22 @@
                 Variables.Sleeper.Sleep(random.Next(1111, 1333), "CanPing");
             }
 
-            pinged.Add(item.Handle);
+            if (!ignoreList)
+            {
+                pinged.Add(item.Handle);
+            }
+
             return true;
+        }
+
+        private bool OtherEnemiesNear()
+        {
+            return
+                ObjectManager.GetEntitiesParallel<Unit>()
+                    .Any(
+                        x =>
+                        x.IsValid && !x.Equals(Hero) && x.IsAlive && x.Team == Variables.EnemyTeam
+                        && x.Distance2D(Variables.Hero) <= 700 && x.Distance2D(Hero) >= 700);
         }
 
         #endregion

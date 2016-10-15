@@ -5,7 +5,6 @@
 
     using Ensage;
     using Ensage.Common.Extensions;
-    using Ensage.Common.Objects;
     using Ensage.Common.Objects.UtilityObjects;
 
     using Modules;
@@ -18,7 +17,7 @@
 
         private readonly List<HeroPinger> heroesPinger = new List<HeroPinger>();
 
-        private readonly MenuManager menuManager = new MenuManager();
+        private readonly MenuManager menu = new MenuManager();
 
         private readonly RoshanPinger roshanPinger = new RoshanPinger();
 
@@ -26,13 +25,17 @@
 
         private CourierPinger courierPinger;
 
-        private Team enemyTeam;
-
-        private Hero hero;
-
         private bool loadedAfterGameStart;
 
         private WardPinger wardPinger;
+
+        #endregion
+
+        #region Properties
+
+        private static Team EnemyTeam => Variables.EnemyTeam;
+
+        private static Hero Hero => Variables.Hero;
 
         #endregion
 
@@ -46,10 +49,10 @@
 
         public void OnLoad()
         {
-            hero = ObjectManager.LocalHero;
-            enemyTeam = hero.GetEnemyTeam();
+            Variables.Hero = ObjectManager.LocalHero;
+            Variables.EnemyTeam = Hero.GetEnemyTeam();
             Variables.Sleeper = new MultiSleeper();
-            var heroTeam = hero.Team;
+            var heroTeam = Hero.Team;
             wardPinger = new WardPinger(heroTeam);
             courierPinger = new CourierPinger(heroTeam);
 
@@ -68,7 +71,7 @@
 
             Variables.Sleeper.Sleep(500, this);
 
-            if (Game.IsPaused || !menuManager.Enabled)
+            if (Game.IsPaused || !menu.Enabled)
             {
                 return;
             }
@@ -76,10 +79,11 @@
             if (!Variables.Sleeper.Sleeping(heroesPinger))
             {
                 foreach (var enemy in
-                    Heroes.GetByTeam(enemyTeam)
+                    ObjectManager.GetEntitiesParallel<Hero>()
                         .Where(
-                            x => !x.IsIllusion && x.IsVisible && !heroesPinger.Select(z => z.Handle).Contains(x.Handle))
-                    )
+                            x =>
+                            x.IsValid && x.Team == EnemyTeam && !x.IsIllusion && x.IsVisible
+                            && !heroesPinger.Select(z => z.Handle).Contains(x.Handle)))
                 {
                     var heroPinger = new HeroPinger(enemy);
                     if (loadedAfterGameStart)
@@ -97,47 +101,61 @@
                 return;
             }
 
-            if (menuManager.AbilityPingEnabled)
+            if (menu.AbilityPingEnabled)
             {
-                var doublePing = menuManager.DoubleAbilityPingEnabled;
-                if (heroesPinger.Any(x => x.ShouldPing && x.AbilityPinger(doublePing)))
+                var doublePing = menu.DoubleAbilityPingEnabled;
+                var abilityEnemyCheck = menu.AbilityEnemyCheckEnabled;
+                if (heroesPinger.Any(x => x.ShouldPing && x.AbilityPinger(doublePing, abilityEnemyCheck)))
                 {
                     return;
                 }
             }
 
-            if (menuManager.ItemPingEnabled)
+            if (menu.ItemPingEnabled)
             {
-                var doublePing = menuManager.DoubleItemPingEnabled;
-                var wards = menuManager.ItemWardsEnabled;
-                if (heroesPinger.Any(x => x.ShouldPing && x.ItemPinger(wards, doublePing)))
+                var doublePing = menu.DoubleItemPingEnabled;
+                var itemEnemyCheck = menu.ItemEnemyCheckEnabled;
+                var cost = menu.ItemCostGoldThreshold;
+                var forceItems = menu.ForcePingItems();
+                if (heroesPinger.Any(x => x.ShouldPing && x.ItemPinger(doublePing, itemEnemyCheck, cost, forceItems)))
                 {
                     return;
                 }
             }
 
-            if (roshanPinger.RoshanKilled && menuManager.RoshanKillTimeEnabled)
+            var bottleRunes = menu.BottleRunes();
+            if (bottleRunes.Any())
+            {
+                var doublePing = menu.DoubleItemPingEnabled;
+                var itemEnemyCheck = menu.ItemEnemyCheckEnabled;
+                if (heroesPinger.Any(x => x.ShouldPing && x.BottledRunePinger(doublePing, itemEnemyCheck, bottleRunes)))
+                {
+                    return;
+                }
+            }
+
+            if (roshanPinger.RoshanKilled && menu.RoshanKillTimeEnabled)
             {
                 chatWheel.Say(ChatWheel.Phrase.Roshan, true);
                 roshanPinger.RoshanKilled = false;
                 return;
             }
 
-            if (menuManager.RuneReminderEnabled
-                && (menuManager.RuneAutoDisableTime == 0 || Game.GameTime / 60 <= menuManager.RuneAutoDisableTime)
-                && runePinger.TimeToSpawn(menuManager.RuneReminderTime))
+            if (menu.RuneReminderEnabled
+                && (menu.RuneAutoDisableTime == 0 || Game.GameTime / 60 <= menu.RuneAutoDisableTime)
+                && runePinger.TimeToSpawn(menu.RuneReminderTime))
             {
                 chatWheel.Say(ChatWheel.Phrase.CheckRunes, true);
                 return;
             }
 
-            if (wardPinger.ShouldRemind(menuManager.WardsDelay) && menuManager.WardsReminderEnabled)
+            if (wardPinger.ShouldRemind(menu.WardsDelay) && menu.WardsReminderEnabled)
             {
                 chatWheel.Say(ChatWheel.Phrase.NeedWards);
                 return;
             }
 
-            if (courierPinger.ShouldRemind(menuManager.CourierUpgradeDelay) && menuManager.CourierUpgradeReminder)
+            if (courierPinger.ShouldRemind(menu.CourierUpgradeDelay) && menu.CourierUpgradeReminder)
             {
                 chatWheel.Say(ChatWheel.Phrase.UpgradeCourier);
                 return;
