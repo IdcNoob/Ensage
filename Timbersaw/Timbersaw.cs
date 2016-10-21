@@ -31,6 +31,8 @@
 
         private Orbwalker orbwalker;
 
+        //private ParticleEffect debug;
+
         private MultiSleeper sleeper;
 
         private ParticleEffect targetParticle;
@@ -73,6 +75,16 @@
                 }
                 return;
             }
+
+            //if (debug == null)
+            //{
+            //    debug = new ParticleEffect(
+            //        @"materials\ensage_ui\particles\drag_selected_ring_mod.vpcf",
+            //        target.GetPosition());
+            //    debug.SetControlPoint(1, new Vector3(0, 255, 0));
+            //    debug.SetControlPoint(2, new Vector3(50, 255, 0));
+            //}
+            //debug.SetControlPoint(0, TimberPrediction.PredictedXYZ(target, 700));
 
             if (targetParticle == null)
             {
@@ -277,7 +289,7 @@
 
                 if (blink != null && !sleeper.Sleeping(blink) && menuManager.IsItemEnabled(blink.StoredName())
                     && blink.CanBeCasted() && distanceToEnemy > 500
-                    && (target.GetTurnTime(heroPosition) > 0 || distanceToEnemy > 700)
+                    && (target.FindAngle(heroPosition) > 0.6 || distanceToEnemy > 700)
                     && (timberChain.Cooldown > 2 || distanceToEnemy > 800)
                     && (whirlingDeath.CanBeCasted() || usableChakram != null)
                     && hero.Modifiers.All(x => x.Name != timberChain.ModifierName) && !timberChain.IsSleeping)
@@ -348,7 +360,7 @@
                             + target.GetDistance(heroPosition) / usableChakram.Speed * 1000
                             + usableChakram.Radius / 2 / target.Hero.MovementSpeed * 1000);
 
-                        usableChakram.UseAbility(predictedPosition, target.Hero);
+                        usableChakram.UseAbility(predictedPosition, target.Hero, hero);
                         treeFactory.SetUnavailableTrees(hero.Position, predictedPosition, usableChakram);
 
                         sleeper.Sleep(usableChakram.GetSleepTime + ping, this);
@@ -415,9 +427,9 @@
                 }
 
                 if (usableChakram != null
-                    && (distanceToEnemy < 600 || target.GetTurnTime(heroPosition) <= 0 || timberChain.ChakramCombo)
+                    && (distanceToEnemy < 600 || target.FindAngle(heroPosition) <= 0.6 || timberChain.ChakramCombo)
                     && (!whirlingDeath.Combo || !whirlingDeath.ComboDelayPassed)
-                    && (TimberPrediction.StraightTime(target.Hero) > 500 || distanceToEnemy < 300))
+                    /*&& (TimberPrediction.StraightTime(target.Hero) > 500 || distanceToEnemy < 300)*/)
                 {
                     var predictedPosition = TimberPrediction.PredictedXYZ(
                         target,
@@ -425,7 +437,7 @@
                         + target.GetDistance(heroPosition) / usableChakram.Speed * 1000
                         + usableChakram.Radius / 2 / target.Hero.MovementSpeed * 1000);
 
-                    usableChakram.UseAbility(predictedPosition, target.Hero);
+                    usableChakram.UseAbility(predictedPosition, target.Hero, hero);
                     timberChain.ChakramCombo = false;
 
                     treeFactory.SetUnavailableTrees(hero.Position, predictedPosition, usableChakram);

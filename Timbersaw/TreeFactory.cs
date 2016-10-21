@@ -191,7 +191,7 @@
         }
 
         private IEnumerable<Tree> GetAvailableTrees(
-            Entity hero,
+            Unit hero,
             Vector3 target,
             float range,
             double time = 0,

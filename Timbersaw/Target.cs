@@ -38,6 +38,11 @@
 
         #region Public Methods and Operators
 
+        public double FindAngle(Vector3 position)
+        {
+            return Hero.FindRelativeAngle(position);
+        }
+
         public Ability FindSpell(string name, bool cache)
         {
             return Hero.FindSpell(name, cache);
@@ -68,11 +73,6 @@
             }
 
             return TimberPrediction.IsIdle(Hero) ? Position : Prediction.InFront(Hero, MovementSpeed * GetInvisTime());
-        }
-
-        public double GetTurnTime(Vector3 position)
-        {
-            return Hero.GetTurnTime(position);
         }
 
         public bool HasModifier(string name)

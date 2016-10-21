@@ -25,7 +25,6 @@
             Speed = chakramAbility.GetProjectileSpeed();
             Radius = chakramAbility.GetRadius();
             this.returnAbility = returnAbility;
-            ReturnName = returnAbility.Name;
             returnSleeper = new Sleeper();
         }
 
@@ -44,12 +43,6 @@
         public float Radius { get; }
 
         public float Speed { get; }
-
-        #endregion
-
-        #region Properties
-
-        private string ReturnName { get; }
 
         #endregion
 
@@ -81,7 +74,7 @@
             }
 
             return !Sleeper.Sleeping && CanReturn && enemy.IsValid()
-                   && (!Damaging(enemy) && enemy.GetTurnTime(Position) > 0 || damage >= enemy.Health);
+                   && (!Damaging(enemy) && enemy.FindAngle(Position) > 0.5 || damage >= enemy.Health);
         }
 
         public void Stop(Hero hero)
@@ -90,11 +83,11 @@
             Sleeper.Sleep(Game.Ping);
         }
 
-        public void UseAbility(Vector3 position, Hero enemy)
+        public void UseAbility(Vector3 position, Hero enemy, Hero hero)
         {
             Position = position;
             Ability.UseAbility(position);
-            Sleeper.Sleep(GetSleepTime + 1000);
+            Sleeper.Sleep(GetSleepTime + hero.Distance2D(position) / Speed * 1000);
         }
 
         #endregion

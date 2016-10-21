@@ -6,7 +6,6 @@
 
     using Ensage;
     using Ensage.Common;
-    using Ensage.Common.Extensions;
     using Ensage.Common.Objects;
 
     using SharpDX;
@@ -36,17 +35,6 @@
         public static bool IsIdle(Unit unit)
         {
             return unit.NetworkActivity != NetworkActivity.Move;
-        }
-
-        public static bool IsTurning(Unit unit, double tolerancy = 0)
-        {
-            double rotSpeed;
-            if (!RotSpeedDictionary.TryGetValue(unit.Handle, out rotSpeed))
-            {
-                return false;
-            }
-
-            return Math.Abs(rotSpeed) > tolerancy;
         }
 
         public static void OnClose()
@@ -84,64 +72,24 @@
                 LastRotRDictionary[target.Handle] = target.RotationRad;
             }
 
-            if (straightTime < 10 || IsTurning(target.Hero, 0.18))
+            LastRotRDictionary[target.Handle] = target.RotationRad;
+            if ((target.ClassID == ClassID.CDOTA_Unit_Hero_StormSpirit
+                 || target.ClassID == ClassID.CDOTA_Unit_Hero_Rubick)
+                && target.HasModifier("modifier_storm_spirit_ball_lightning"))
             {
-                var rotDiff = LastRotRDictionary[target.Handle] - target.RotationRad;
-                var a = 10 * straightTime * Math.Pow(rotDiff, 2);
-                if (a >= 0 && a <= 1300)
+                var ballLightning = target.FindSpell("storm_spirit_ball_lightning", true);
+                var firstOrDefault =
+                    ballLightning.AbilitySpecialData.FirstOrDefault(x => x.Name == "ball_lightning_move_speed");
+                if (firstOrDefault != null)
                 {
-                    a = 1300 + a;
+                    var ballSpeed = firstOrDefault.GetValue(ballLightning.Level - 1);
+                    var newpredict = target.Vector3FromPolarAngle() * (ballSpeed / 1000f);
+                    targetSpeed = newpredict;
                 }
-                else if (a <= 0 && a >= -1300)
-                {
-                    a = 1300 - a;
-                }
-
-                targetSpeed =
-                    (Vector3)
-                    VectorExtensions.FromPolarAngle((LastRotRDictionary[target.Handle] + target.RotationRad * 2) / 2)
-                    * target.MovementSpeed / (float)Math.Abs(a);
-            }
-            else if (straightTime < 180)
-            {
-                var rotDiff = LastRotRDictionary[target.Handle] - target.RotationRad;
-                var a = straightTime * Math.Pow(rotDiff, 2);
-                if (a >= 0 && a <= 1000)
-                {
-                    a = 1000 + a;
-                }
-                else if (a <= 0 && a >= -1000)
-                {
-                    a = 1000 - a;
-                }
-
-                targetSpeed =
-                    (Vector3)
-                    (VectorExtensions.FromPolarAngle((LastRotRDictionary[target.Handle] + target.RotationRad) / 2)
-                     * target.MovementSpeed / (float)Math.Abs(a));
             }
             else
             {
-                LastRotRDictionary[target.Handle] = target.RotationRad;
-                if ((target.ClassID == ClassID.CDOTA_Unit_Hero_StormSpirit
-                     || target.ClassID == ClassID.CDOTA_Unit_Hero_Rubick)
-                    && target.HasModifier("modifier_storm_spirit_ball_lightning"))
-                {
-                    var ballLightning = target.FindSpell("storm_spirit_ball_lightning", true);
-                    var firstOrDefault =
-                        ballLightning.AbilitySpecialData.FirstOrDefault(x => x.Name == "ball_lightning_move_speed");
-                    if (firstOrDefault != null)
-                    {
-                        var ballSpeed = firstOrDefault.GetValue(ballLightning.Level - 1);
-                        var newpredict = target.Vector3FromPolarAngle() * (ballSpeed / 1000);
-                        targetSpeed = newpredict;
-                    }
-                }
-                else
-                {
-                    targetSpeed =
-                        (Vector3)(VectorExtensions.FromPolarAngle(target.RotationRad) * target.MovementSpeed / 1000);
-                }
+                targetSpeed = target.Vector3FromPolarAngle() * (target.MovementSpeed / 1000f);
             }
 
             var v = target.GetPosition() + targetSpeed * delay;
