@@ -51,7 +51,6 @@
 
         public uint Handle { get; }
 
-
         public bool IsVisible => unit.IsVisible;
 
         public ParticleEffect ParticleEffect { get; }

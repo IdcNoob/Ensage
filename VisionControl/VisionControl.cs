@@ -318,6 +318,11 @@
 
         private bool UpdateData<T>(Unit unit, float maxDistance = 400) where T : IUpdatable
         {
+            if (unit == null || !unit.IsValid)
+            {
+                return false;
+            }
+
             var updatable = units.OfType<T>().FirstOrDefault(x => x.Distance(unit) < maxDistance && x.RequiresUpdate);
 
             if (updatable == null)
