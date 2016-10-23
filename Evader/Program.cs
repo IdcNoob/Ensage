@@ -1,5 +1,7 @@
 ﻿namespace Evader
 {
+    using Core;
+
     internal class Program
     {
         #region Static Fields

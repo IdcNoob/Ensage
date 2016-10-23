@@ -1,20 +1,20 @@
 ﻿namespace Evader.UsableAbilities.Base
 {
-    using Core;
+    using Data;
 
     using Ensage;
     using Ensage.Common.Extensions;
 
     using EvadableAbilities.Base;
 
-    using AbilityType = Core.AbilityType;
+    using AbilityType = Data.AbilityType;
 
     internal class Targetable : UsableAbility
     {
         #region Constructors and Destructors
 
-        public Targetable(Ability ability, AbilityType type, AbilityFlags flags = AbilityFlags.None)
-            : base(ability, type, flags)
+        public Targetable(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
+            : base(ability, type, target)
         {
         }
 
@@ -24,7 +24,7 @@
 
         public override float GetRequiredTime(EvadableAbility ability, Unit unit)
         {
-            return CastPoint + (unit.Equals(Hero) ? 0 : (float)Hero.GetTurnTime(unit));
+            return CastPoint + (unit.Equals(Hero) ? 0 : (float)Hero.GetTurnTime(unit) * 1.35f);
         }
 
         public override void Use(EvadableAbility ability, Unit target)

@@ -1,4 +1,4 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.Venomancer
 {
     using System.Linq;
 
@@ -8,7 +8,7 @@
     using Ensage;
     using Ensage.Common.Extensions;
 
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
     internal sealed class PoisonNova : AOE, IParticle
     {
@@ -30,8 +30,6 @@
             speed = ability.GetProjectileSpeed();
             tavelTime = GetRadius() / speed;
             projectileSize = Ability.AbilitySpecialData.First(x => x.Name == "start_radius").Value + 60;
-
-            ModifierName = "modifier_venomancer_poison_nova";
 
             BlinkAbilities.AddRange(BlinkAbilityNames);
 

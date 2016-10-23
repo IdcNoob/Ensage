@@ -2,12 +2,12 @@
 {
     using Base;
 
-    using Core;
+    using Data;
 
     using Ensage;
     using Ensage.Common.Extensions;
 
-    using AbilityType = Core.AbilityType;
+    using AbilityType = Data.AbilityType;
 
     internal class EchoSlam : NotTargetable
     {
@@ -19,8 +19,8 @@
 
         #region Constructors and Destructors
 
-        public EchoSlam(Ability ability, AbilityType type, AbilityFlags flags = AbilityFlags.None)
-            : base(ability, type, flags)
+        public EchoSlam(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
+            : base(ability, type, target)
         {
             aftershockRadius = Hero.FindSpell("earthshaker_aftershock").GetRadius();
         }

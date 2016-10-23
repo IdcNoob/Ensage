@@ -1,11 +1,11 @@
-﻿namespace Evader.EvadableAbilities.Units
+﻿namespace Evader.EvadableAbilities.Units.CentaurConqueror
 {
     using Base;
 
     using Ensage;
     using Ensage.Common.Extensions;
 
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
     internal class WarStomp : AOE
     {

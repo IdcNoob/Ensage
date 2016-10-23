@@ -1,10 +1,10 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.Undying
 {
     using Base;
 
     using Ensage;
 
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
     internal class Decay : LinearAOE
     {

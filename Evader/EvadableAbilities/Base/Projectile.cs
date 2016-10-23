@@ -2,6 +2,8 @@
 {
     using System;
 
+    using Common;
+
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Extensions.SharpDX;
@@ -9,8 +11,6 @@
     using SharpDX;
 
     using UsableAbilities.Base;
-
-    using Utils;
 
     internal abstract class Projectile : LinearProjectile
     {
@@ -174,17 +174,6 @@
                 projectileAdded = true;
             }
             projectilePostion = position;
-        }
-
-        public float TimeSinceCast()
-        {
-            if (Ability.Level <= 0 || !AbilityOwner.IsVisible)
-            {
-                return float.MaxValue;
-            }
-
-            var cooldownLength = Ability.CooldownLength;
-            return cooldownLength <= 0 ? float.MaxValue : cooldownLength - Ability.Cooldown;
         }
 
         #endregion

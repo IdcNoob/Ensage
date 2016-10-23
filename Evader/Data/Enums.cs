@@ -1,19 +1,15 @@
-﻿namespace Evader.Core
+﻿namespace Evader.Data
 {
     using System;
 
     [Flags]
-    public enum AbilityFlags
+    public enum AbilityCastTarget
     {
-        None = 0,
+        Self,
 
-        TargetEnemy = 1,
+        Ally,
 
-        CanBeCastedOnAlly = 2,
-
-        BasicDispel = 4,
-
-        StrongDispel = 8 | BasicDispel
+        Enemy,
     }
 
     public enum AbilityType

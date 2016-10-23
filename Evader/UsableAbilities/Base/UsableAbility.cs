@@ -1,6 +1,10 @@
 ﻿namespace Evader.UsableAbilities.Base
 {
+    using Common;
+
     using Core;
+
+    using Data;
 
     using Ensage;
     using Ensage.Common.Extensions;
@@ -8,9 +12,7 @@
 
     using EvadableAbilities.Base;
 
-    using Utils;
-
-    using AbilityType = Core.AbilityType;
+    using AbilityType = Data.AbilityType;
 
     internal abstract class UsableAbility
     {
@@ -22,7 +24,7 @@
 
         #region Constructors and Destructors
 
-        protected UsableAbility(Ability ability, AbilityType type, AbilityFlags flags)
+        protected UsableAbility(Ability ability, AbilityType type, AbilityCastTarget target)
         {
             Ability = ability;
             CastPoint = (float)ability.FindCastPoint();
@@ -35,33 +37,26 @@
             IgnoresLinkensSphere = ability.IsAbilityBehavior(AbilityBehavior.NoTarget)
                                    || ability.IsAbilityBehavior(AbilityBehavior.AreaOfEffect);
             PiercesMagicImmunity = ability.PiercesMagicImmunity();
-            BasicDispel = flags.HasFlag(AbilityFlags.BasicDispel);
-            CanBeUsedOnAlly = flags.HasFlag(AbilityFlags.CanBeCastedOnAlly);
-            TargetEnemy = flags.HasFlag(AbilityFlags.TargetEnemy);
-            StrongDispel = flags.HasFlag(AbilityFlags.StrongDispel);
+            CanBeUsedOnEnemy = target.HasFlag(AbilityCastTarget.Enemy) || type == AbilityType.Disable;
+            CanBeUsedOnAlly = target.HasFlag(AbilityCastTarget.Ally);
 
             Debugger.WriteLine("///////// " + Name);
             Debugger.WriteLine("// Type: " + Type);
             Debugger.WriteLine("// Cast point: " + CastPoint);
             Debugger.WriteLine("// Cast range: " + Ability.GetRealCastRange());
-            Debugger.WriteLine("// Ability flags: " + flags);
             Debugger.WriteLine("// Ignores linkens sphere: " + IgnoresLinkensSphere);
             Debugger.WriteLine("// Pierces magic immunity: " + PiercesMagicImmunity);
-            if (type == AbilityType.Counter)
-            {
-                Debugger.WriteLine("// Can be used on ally: " + CanBeUsedOnAlly);
-                Debugger.WriteLine("// Strong dispel: " + StrongDispel);
-                Debugger.WriteLine("// Basic dispel: " + BasicDispel);
-            }
+            Debugger.WriteLine("// Can be used on ally: " + CanBeUsedOnAlly);
+            Debugger.WriteLine("// Can be used on enemy: " + CanBeUsedOnEnemy);
         }
 
         #endregion
 
         #region Public Properties
 
-        public bool BasicDispel { get; }
-
         public bool CanBeUsedOnAlly { get; }
+
+        public bool CanBeUsedOnEnemy { get; }
 
         public ClassID ClassID { get; }
 
@@ -72,10 +67,6 @@
         public bool IsItem { get; }
 
         public string Name { get; }
-
-        public bool StrongDispel { get; }
-
-        public bool TargetEnemy { get; }
 
         public AbilityType Type { get; protected set; }
 

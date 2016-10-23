@@ -1,11 +1,11 @@
 ﻿namespace Evader.EvadableAbilities.Base
 {
+    using Common;
+
     using Ensage;
     using Ensage.Common.Extensions;
 
     using SharpDX;
-
-    using Utils;
 
     internal abstract class AOE : EvadableAbility
     {

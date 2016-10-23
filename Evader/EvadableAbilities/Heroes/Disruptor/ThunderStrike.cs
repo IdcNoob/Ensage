@@ -1,10 +1,10 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.Disruptor
 {
     using Base;
 
     using Ensage;
 
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
     internal class ThunderStrike : LinearTarget
     {
@@ -13,8 +13,6 @@
         public ThunderStrike(Ability ability)
             : base(ability)
         {
-            ModifierName = "modifier_disruptor_thunder_strike";
-
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);

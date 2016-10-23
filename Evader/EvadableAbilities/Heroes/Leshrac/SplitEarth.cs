@@ -1,20 +1,24 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.Leshrac
 {
     using System.Linq;
 
     using Base;
     using Base.Interfaces;
 
+    using Common;
+
     using Ensage;
     using Ensage.Common.Extensions;
 
-    using Utils;
+    using static Data.AbilityNames;
 
-    using static Core.Abilities;
-
-    internal class SplitEarth : LinearAOE, IModifierThinker
+    internal class SplitEarth : LinearAOE, IModifierObstacle, IModifier
     {
         #region Fields
+
+        private readonly float modifierDuration;
+
+        private Modifier abilityModifier;
 
         private bool fowCast;
 
@@ -37,15 +41,38 @@
             CounterAbilities.AddRange(VsMagic);
             CounterAbilities.AddRange(Invis);
             CounterAbilities.Add(SnowBall);
+            CounterAbilities.Remove("abaddon_aphotic_shield");
 
+            ModifierAllyCounter.AddRange(AllyShields);
+            ModifierAllyCounter.AddRange(Invul);
+            ModifierAllyCounter.AddRange(VsMagic);
+
+            modifierDuration = Ability.AbilitySpecialData.First(x => x.Name == "duration").Value;
             AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "delay").Value;
         }
 
         #endregion
 
+        #region Public Properties
+
+        public uint ModifierHandle { get; private set; }
+
+        #endregion
+
         #region Public Methods and Operators
 
-        public void AddModifierThinker(Modifier mod, Unit unit)
+        public void AddModifer(Modifier modifier, Hero hero)
+        {
+            if (hero.Team != HeroTeam)
+            {
+                return;
+            }
+
+            abilityModifier = modifier;
+            ModifierHandle = modifier.Handle;
+        }
+
+        public void AddModifierObstacle(Modifier mod, Unit unit)
         {
             var position = unit.Position;
             modifierAdded = true;
@@ -61,6 +88,11 @@
             }
 
             Obstacle = Pathfinder.AddObstacle(position, GetRadius(), Obstacle);
+        }
+
+        public bool CanBeCountered()
+        {
+            return abilityModifier != null && abilityModifier.IsValid;
         }
 
         public override bool CanBeStopped()
@@ -95,9 +127,25 @@
             fowCast = false;
         }
 
+        public float GetModiferRemainingTime()
+        {
+            return modifierDuration - abilityModifier.ElapsedTime;
+        }
+
+        public Hero GetModifierHero(ParallelQuery<Hero> allies)
+        {
+            return
+                allies.Where(x => x.HasModifier(abilityModifier.Name)).OrderByDescending(x => x.Health).FirstOrDefault();
+        }
+
         public override float GetRemainingTime(Hero hero = null)
         {
             return StartCast + (fowCast ? 0 : CastPoint) + AdditionalDelay - Game.RawGameTime;
+        }
+
+        public void RemoveModifier(Modifier modifier)
+        {
+            abilityModifier = null;
         }
 
         #endregion

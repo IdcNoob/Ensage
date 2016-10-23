@@ -1,10 +1,10 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.Visage
 {
     using Base;
 
     using Ensage;
 
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
     internal class GraveChill : LinearTarget
     {
@@ -13,8 +13,6 @@
         public GraveChill(Ability ability)
             : base(ability)
         {
-            ModifierName = "modifier_visage_grave_chill_debuff";
-
             CounterAbilities.Add(PhaseShift);
         }
 

@@ -1,4 +1,4 @@
-﻿namespace Evader.Core
+﻿namespace Evader.Data
 {
     using System;
     using System.Collections.Generic;
@@ -6,22 +6,131 @@
     using Ensage;
 
     using EvadableAbilities.Base;
-    using EvadableAbilities.Heroes;
+    using EvadableAbilities.Heroes.Abaddon;
+    using EvadableAbilities.Heroes.Alchemist;
+    using EvadableAbilities.Heroes.AncientApparition;
+    using EvadableAbilities.Heroes.AntiMage;
+    using EvadableAbilities.Heroes.ArcWarden;
+    using EvadableAbilities.Heroes.Axe;
+    using EvadableAbilities.Heroes.Bane;
+    using EvadableAbilities.Heroes.Batrider;
+    using EvadableAbilities.Heroes.Beastmaster;
+    using EvadableAbilities.Heroes.Bloodseeker;
+    using EvadableAbilities.Heroes.BountyHunter;
+    using EvadableAbilities.Heroes.Brewmaster;
+    using EvadableAbilities.Heroes.Broodmother;
+    using EvadableAbilities.Heroes.CentaurWarrunner;
+    using EvadableAbilities.Heroes.ChaosKnight;
+    using EvadableAbilities.Heroes.Clockwerk;
+    using EvadableAbilities.Heroes.CrystalMaiden;
+    using EvadableAbilities.Heroes.DarkSeer;
+    using EvadableAbilities.Heroes.Dazzle;
+    using EvadableAbilities.Heroes.DeathProphet;
+    using EvadableAbilities.Heroes.Disruptor;
+    using EvadableAbilities.Heroes.Doom;
+    using EvadableAbilities.Heroes.DrowRanger;
+    using EvadableAbilities.Heroes.Earthshaker;
+    using EvadableAbilities.Heroes.ElderTitan;
+    using EvadableAbilities.Heroes.Enigma;
+    using EvadableAbilities.Heroes.FacelessVoid;
+    using EvadableAbilities.Heroes.Huskar;
+    using EvadableAbilities.Heroes.Invoker;
+    using EvadableAbilities.Heroes.Jakiro;
+    using EvadableAbilities.Heroes.Juggernaut;
+    using EvadableAbilities.Heroes.KeeperOfTheLight;
+    using EvadableAbilities.Heroes.Kunkka;
+    using EvadableAbilities.Heroes.LegionCommander;
+    using EvadableAbilities.Heroes.Leshrac;
+    using EvadableAbilities.Heroes.Lich;
+    using EvadableAbilities.Heroes.Lina;
+    using EvadableAbilities.Heroes.Lion;
+    using EvadableAbilities.Heroes.Luna;
+    using EvadableAbilities.Heroes.Magnus;
+    using EvadableAbilities.Heroes.Medusa;
+    using EvadableAbilities.Heroes.Mirana;
+    using EvadableAbilities.Heroes.Morphling;
+    using EvadableAbilities.Heroes.NagaSiren;
+    using EvadableAbilities.Heroes.Necrophos;
+    using EvadableAbilities.Heroes.NightStalker;
+    using EvadableAbilities.Heroes.NyxAssassin;
+    using EvadableAbilities.Heroes.OgreMagi;
+    using EvadableAbilities.Heroes.Omniknight;
+    using EvadableAbilities.Heroes.OutworldDevourer;
+    using EvadableAbilities.Heroes.PhantomAssassin;
+    using EvadableAbilities.Heroes.PhantomLancer;
+    using EvadableAbilities.Heroes.Puck;
+    using EvadableAbilities.Heroes.Pudge;
+    using EvadableAbilities.Heroes.QueenOfPain;
+    using EvadableAbilities.Heroes.ShadowDemon;
+    using EvadableAbilities.Heroes.ShadowFiend;
+    using EvadableAbilities.Heroes.ShadowShaman;
+    using EvadableAbilities.Heroes.Silencer;
+    using EvadableAbilities.Heroes.SkywrathMage;
+    using EvadableAbilities.Heroes.Slardar;
+    using EvadableAbilities.Heroes.Slark;
+    using EvadableAbilities.Heroes.Sniper;
+    using EvadableAbilities.Heroes.Spectre;
+    using EvadableAbilities.Heroes.SpiritBreaker;
+    using EvadableAbilities.Heroes.StormSpirit;
+    using EvadableAbilities.Heroes.Sven;
+    using EvadableAbilities.Heroes.Terrorblade;
+    using EvadableAbilities.Heroes.Tidehunter;
+    using EvadableAbilities.Heroes.Timbersaw;
+    using EvadableAbilities.Heroes.Tinker;
+    using EvadableAbilities.Heroes.TreantProtector;
+    using EvadableAbilities.Heroes.TrollWarlord;
+    using EvadableAbilities.Heroes.Tusk;
+    using EvadableAbilities.Heroes.Undying;
+    using EvadableAbilities.Heroes.Ursa;
+    using EvadableAbilities.Heroes.VengefulSpirit;
+    using EvadableAbilities.Heroes.Venomancer;
+    using EvadableAbilities.Heroes.Viper;
+    using EvadableAbilities.Heroes.Visage;
+    using EvadableAbilities.Heroes.Warlock;
+    using EvadableAbilities.Heroes.Windranger;
+    using EvadableAbilities.Heroes.WitchDoctor;
+    using EvadableAbilities.Heroes.WraithKing;
+    using EvadableAbilities.Heroes.Zeus;
     using EvadableAbilities.Items;
-    using EvadableAbilities.Units;
+    using EvadableAbilities.Units.CentaurConqueror;
 
     using UsableAbilities.Abilities;
     using UsableAbilities.Base;
     using UsableAbilities.Items;
 
-    using FortunesEnd = EvadableAbilities.Heroes.FortunesEnd;
-    using Void = EvadableAbilities.Heroes.Void;
+    using FortunesEnd = EvadableAbilities.Heroes.Oracle.FortunesEnd;
+    using Void = EvadableAbilities.Heroes.NightStalker.Void;
 
-    internal static class Data
+    #region
+
+    #endregion
+
+    internal static class Abilities
     {
         #region Public Properties
 
-        public static Dictionary<string, Func<Ability, EvadableAbility>> Abilities { get; } = new Dictionary
+        public static Dictionary<string, string> AbilityModifierThinkers { get; } = new Dictionary<string, string>
+            {
+                { "modifier_invoker_sun_strike", "invoker_sun_strike" },
+                { "modifier_kunkka_torrent_thinker", "kunkka_torrent" },
+                { "modifier_leshrac_split_earth_thinker", "leshrac_split_earth" },
+                { "modifier_lina_light_strike_array", "lina_light_strike_array" },
+                { "modifier_disruptor_static_storm_thinker", "disruptor_static_storm" },
+                { "modifier_faceless_void_chronosphere", "faceless_void_chronosphere" },
+                { "modifier_enigma_black_hole_thinker", "enigma_black_hole" }
+            };
+
+        public static Dictionary<string, string> AbilityParticles { get; } = new Dictionary<string, string>
+            {
+                { "meathook", "pudge_meat_hook" },
+                { "pounce_trail", "slark_pounce" },
+                { "powershot_channel", "windrunner_powershot" },
+                { "venomous_gale", "venomancer_venomous_gale" },
+                { "poison_nova", "venomancer_poison_nova" },
+                { "whirling_axe_melee", "troll_warlord_whirling_axes_melee" }
+            };
+
+        public static Dictionary<string, Func<Ability, EvadableAbility>> EvadableAbilities { get; } = new Dictionary
             <string, Func<Ability, EvadableAbility>>
             {
                 //// custom
@@ -47,6 +156,7 @@
                 { "troll_warlord_whirling_axes_melee", ability => new WhirlingAxesMelee(ability) },
                 { "slark_pounce", ability => new Pounce(ability) },
                 { "venomancer_poison_nova", ability => new PoisonNova(ability) },
+                { "ancient_apparition_ice_blast", ability => new IceBlast(ability) },
 
 
                 //// default
@@ -110,7 +220,6 @@
                 { "centaur_double_edge", ability => new DoubleEdge(ability) },
                 { "chaos_knight_reality_rift", ability => new RealityRift(ability) },
                 { "rattletrap_hookshot", ability => new Hookshot(ability) },
-                { "legion_commander_duel", ability => new Duel(ability) },
                 { "lich_frost_nova", ability => new FrostBlast(ability) },
                 { "luna_lucent_beam", ability => new LucentBeam(ability) },
                 { "night_stalker_crippling_fear", ability => new CripplingFear(ability) },
@@ -172,36 +281,25 @@
                 { "treant_leech_seed", ability => new LeechSeed(ability) },
                 { "visage_grave_chill", ability => new GraveChill(ability) },
                 { "juggernaut_omni_slash", ability => new Omnislash(ability) },
+                { "legion_commander_duel", ability => new Duel(ability) },
 
                 
                 //// modifier only
-                // { "broodmother_insatiable_hunger", ability => new InsatiableHunger(ability) },
+                { "broodmother_insatiable_hunger", ability => new InsatiableHunger(ability) },
+                { "abaddon_borrowed_time", ability => new BorrowedTime(ability) },
+                { "lion_voodoo", ability => new LionHex(ability) },
+                { "shadow_shaman_voodoo", ability => new ShamanHex(ability) },
+                { "phantom_assassin_phantom_strike", ability => new PhantomStrike(ability) },
+                { "silencer_global_silence", ability => new GlobalSilence(ability) },
+                { "puck_waning_rift", ability => new WaningRift(ability) },
+                { "skywrath_mage_ancient_seal", ability => new AncientSeal(ability) },
+                { "item_orchid", ability => new OrchidMalevolence(ability) },
+                { "item_bloodthorn", ability => new Bloodthorn(ability) },
 
 
                 //// units
-                { "centaur_khan_war_stomp", ability => new WarStomp(ability) },
+                { "centaur_khan_war_stomp", ability => new WarStomp(ability) }
                 //     { "visage_summon_familiars_stone_form",ability => new StoneForm( ability) },
-            };
-
-        public static Dictionary<string, string> AbilityModifiers { get; } = new Dictionary<string, string>
-            {
-                { "modifier_invoker_sun_strike", "invoker_sun_strike" },
-                { "modifier_kunkka_torrent_thinker", "kunkka_torrent" },
-                { "modifier_leshrac_split_earth_thinker", "leshrac_split_earth" },
-                { "modifier_lina_light_strike_array", "lina_light_strike_array" },
-                { "modifier_disruptor_static_storm_thinker", "disruptor_static_storm" },
-                { "modifier_faceless_void_chronosphere", "faceless_void_chronosphere" },
-                { "modifier_enigma_black_hole_thinker", "enigma_black_hole" },
-            };
-
-        public static Dictionary<string, string> AbilityParticles { get; } = new Dictionary<string, string>
-            {
-                { "meathook", "pudge_meat_hook" },
-                { "pounce_trail", "slark_pounce" },
-                { "powershot_channel", "windrunner_powershot" },
-                { "venomous_gale", "venomancer_venomous_gale" },
-                { "poison_nova", "venomancer_poison_nova" },
-                { "whirling_axe_melee", "troll_warlord_whirling_axes_melee" },
             };
 
         public static Dictionary<string, Func<Ability, UsableAbility>> EvadeBlinkAbilities { get; } = new Dictionary
@@ -226,7 +324,7 @@
                 { "slark_pounce", ability => new Leap(ability, AbilityType.Blink) },
                 { "mirana_leap", ability => new Leap(ability, AbilityType.Blink) },
                 { "item_hurricane_pike", ability => new ForceStaff(ability, AbilityType.Blink) },
-                { "item_force_staff", ability => new ForceStaff(ability, AbilityType.Blink) },
+                { "item_force_staff", ability => new ForceStaff(ability, AbilityType.Blink) }
             };
 
         public static Dictionary<string, Func<Ability, UsableAbility>> EvadeCounterAbilities { get; } = new Dictionary
@@ -236,7 +334,7 @@
                 { "storm_spirit_ball_lightning", ability => new BallLightning(ability, AbilityType.Counter) },
                 {
                     "ember_spirit_sleight_of_fist",
-                    ability => new SleightOfFist(ability, AbilityType.Counter, AbilityFlags.TargetEnemy)
+                    ability => new SleightOfFist(ability, AbilityType.Counter, AbilityCastTarget.Enemy)
                 },
                 {
                     "oracle_fortunes_end",
@@ -244,19 +342,16 @@
                     new UsableAbilities.Abilities.FortunesEnd(
                         ability,
                         AbilityType.Counter,
-                        AbilityFlags.CanBeCastedOnAlly | AbilityFlags.BasicDispel)
+                        AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 { "phoenix_supernova", ability => new Supernova(ability, AbilityType.Counter) },
                 { "tusk_snowball", ability => new Snowball(ability, AbilityType.Counter) },
                 {
                     //todo: check dark rift
                     "abyssal_underlord_dark_rift",
-                    ability => new DarkRift(ability, AbilityType.Counter, AbilityFlags.CanBeCastedOnAlly)
+                    ability => new DarkRift(ability, AbilityType.Counter, AbilityCastTarget.Ally)
                 },
-                {
-                    "item_sphere",
-                    ability => new LinkensSphere(ability, AbilityType.Counter, AbilityFlags.CanBeCastedOnAlly)
-                },
+                { "item_sphere", ability => new LinkensSphere(ability, AbilityType.Counter, AbilityCastTarget.Ally) },
 
                 //// default
                 { "puck_phase_shift", ability => new NotTargetable(ability, AbilityType.Counter) },
@@ -297,140 +392,102 @@
                 { "pugna_nether_ward", ability => new Targetable(ability, AbilityType.Counter) },
                 { "razor_static_link", ability => new Targetable(ability, AbilityType.Counter) },
 
-                // cast on enemy
-                {
-                    "brewmaster_drunken_haze",
-                    ability => new Targetable(ability, AbilityType.Counter, AbilityFlags.TargetEnemy)
-                },
+                // cast on all
                 {
                     "item_ethereal_blade",
-                    ability => new Targetable(ability, AbilityType.Counter, AbilityFlags.TargetEnemy)
-                },
-                { "tinker_laser", ability => new Targetable(ability, AbilityType.Counter, AbilityFlags.TargetEnemy) },
-                {
-                    "item_heavens_halberd",
-                    ability => new Targetable(ability, AbilityType.Counter, AbilityFlags.TargetEnemy)
-                },
-                { "bane_enfeeble", ability => new Targetable(ability, AbilityType.Counter, AbilityFlags.TargetEnemy) },
-                {
-                    "shadow_demon_demonic_purge",
-                    ability => new Targetable(ability, AbilityType.Counter, AbilityFlags.TargetEnemy)
-                },
-
-                // cast on ally
-                {
-                    "lich_frost_armor",
-                    ability => new Targetable(ability, AbilityType.Counter, AbilityFlags.CanBeCastedOnAlly)
-                },
-                //todo: sub -0.1 cast point from nightmare
-                {
-                    "bane_nightmare",
-                    ability => new Targetable(ability, AbilityType.Counter, AbilityFlags.CanBeCastedOnAlly)
-                },
-                {
-                    "oracle_fates_edict",
-                    ability => new Targetable(ability, AbilityType.Counter, AbilityFlags.CanBeCastedOnAlly)
+                    ability =>
+                    new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 {
                     "pugna_decrepify",
-                    ability => new Targetable(ability, AbilityType.Counter, AbilityFlags.CanBeCastedOnAlly)
+                    ability =>
+                    new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
-                {
-                    "sven_warcry",
-                    ability => new NotTargetable(ability, AbilityType.Counter, AbilityFlags.CanBeCastedOnAlly)
-                },
-                {
-                    "treant_living_armor",
-                    ability => new Targetable(ability, AbilityType.Counter, AbilityFlags.CanBeCastedOnAlly)
-                },
-                {
-                    "tusk_frozen_sigil",
-                    ability => new NotTargetable(ability, AbilityType.Counter, AbilityFlags.CanBeCastedOnAlly)
-                },
-                {
-                    "item_buckler",
-                    ability => new NotTargetable(ability, AbilityType.Counter, AbilityFlags.CanBeCastedOnAlly)
-                },
-                {
-                    "item_pipe",
-                    ability => new NotTargetable(ability, AbilityType.Counter, AbilityFlags.CanBeCastedOnAlly)
-                },
-                {
-                    "item_crimson_guard",
-                    ability => new NotTargetable(ability, AbilityType.Counter, AbilityFlags.CanBeCastedOnAlly)
-                },
-                {
-                    "item_shivas_guard",
-                    ability => new NotTargetable(ability, AbilityType.Counter, AbilityFlags.CanBeCastedOnAlly)
-                },
-
-                // * strong dispels
                 {
                     "obsidian_destroyer_astral_imprisonment",
                     ability =>
-                    new Targetable(
-                        ability,
-                        AbilityType.Counter,
-                        AbilityFlags.CanBeCastedOnAlly | AbilityFlags.StrongDispel)
+                    new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 {
                     "shadow_demon_disruption",
                     ability =>
-                    new Targetable(
-                        ability,
-                        AbilityType.Counter,
-                        AbilityFlags.CanBeCastedOnAlly | AbilityFlags.StrongDispel)
+                    new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                },
+                //todo: sub -0.1 cast point from nightmare
+                {
+                    "bane_nightmare",
+                    ability =>
+                    new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                },
+                {
+                    "oracle_fates_edict",
+                    ability =>
+                    new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                },
+
+                // cast on enemy
+                {
+                    "brewmaster_drunken_haze",
+                    ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Enemy)
+                },
+                { "tinker_laser", ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Enemy) },
+                {
+                    "item_heavens_halberd",
+                    ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Enemy)
+                },
+                { "bane_enfeeble", ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Enemy) },
+                {
+                    "shadow_demon_demonic_purge",
+                    ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Enemy)
+                },
+
+                // cast on ally
+                {
+                    "naga_siren_song_of_the_siren",
+                    ability => new NotTargetable(ability, AbilityType.Counter, AbilityCastTarget.Ally)
+                },
+                {
+                    "oracle_false_promise",
+                    ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally)
+                },
+                { "lich_frost_armor", ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally) },
+                { "sven_warcry", ability => new NotTargetable(ability, AbilityType.Counter, AbilityCastTarget.Ally) },
+                {
+                    "treant_living_armor", ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally)
+                },
+                {
+                    "tusk_frozen_sigil",
+                    ability => new NotTargetable(ability, AbilityType.Counter, AbilityCastTarget.Ally)
+                },
+                { "item_buckler", ability => new NotTargetable(ability, AbilityType.Counter, AbilityCastTarget.Ally) },
+                { "item_pipe", ability => new NotTargetable(ability, AbilityType.Counter, AbilityCastTarget.Ally) },
+                {
+                    "item_crimson_guard",
+                    ability => new NotTargetable(ability, AbilityType.Counter, AbilityCastTarget.Ally)
+                },
+                {
+                    "item_shivas_guard",
+                    ability => new NotTargetable(ability, AbilityType.Counter, AbilityCastTarget.Ally)
                 },
                 {
                     "abaddon_aphotic_shield",
-                    ability =>
-                    new Targetable(
-                        ability,
-                        AbilityType.Counter,
-                        AbilityFlags.CanBeCastedOnAlly | AbilityFlags.StrongDispel)
+                    ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally)
                 },
                 {
                     "legion_commander_press_the_attack",
-                    ability =>
-                    new Targetable(
-                        ability,
-                        AbilityType.Counter,
-                        AbilityFlags.CanBeCastedOnAlly | AbilityFlags.StrongDispel)
+                    ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally)
                 },
+                { "omniknight_repel", ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally) },
                 {
-                    "omniknight_repel",
-                    ability =>
-                    new Targetable(
-                        ability,
-                        AbilityType.Counter,
-                        AbilityFlags.CanBeCastedOnAlly | AbilityFlags.StrongDispel)
+                    "omniknight_guardian_angel",
+                    ability => new NotTargetable(ability, AbilityType.Counter, AbilityCastTarget.Ally)
                 },
                 {
                     "winter_wyvern_cold_embrace",
-                    ability =>
-                    new Targetable(
-                        ability,
-                        AbilityType.Counter,
-                        AbilityFlags.CanBeCastedOnAlly | AbilityFlags.StrongDispel)
+                    ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally)
                 },
-                {
-                    "item_glimmer_cape",
-                    ability =>
-                    new Targetable(
-                        ability,
-                        AbilityType.Counter,
-                        AbilityFlags.CanBeCastedOnAlly | AbilityFlags.StrongDispel)
-                },
-
-                // * basic dispels
-                {
-                    "item_lotus_orb",
-                    ability =>
-                    new Targetable(
-                        ability,
-                        AbilityType.Counter,
-                        AbilityFlags.CanBeCastedOnAlly | AbilityFlags.BasicDispel)
-                },
+                { "item_glimmer_cape", ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally) },
+                { "item_lotus_orb", ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally) }
             };
 
         public static Dictionary<string, Func<Ability, UsableAbility>> EvadeDisableAbilities { get; } = new Dictionary
@@ -464,7 +521,6 @@
                 { "night_stalker_crippling_fear", ability => new Targetable(ability, AbilityType.Disable) },
                 { "nyx_assassin_impale", ability => new Targetable(ability, AbilityType.Disable) },
                 { "ogre_magi_fireblast", ability => new Targetable(ability, AbilityType.Disable) },
-                //todo: check ogr aghanim stun
                 { "ogre_magi_unrefined_fireblast", ability => new Targetable(ability, AbilityType.Disable) },
                 { "puck_dream_coil", ability => new Targetable(ability, AbilityType.Disable) },
                 { "pudge_dismember", ability => new Targetable(ability, AbilityType.Disable) },
@@ -494,7 +550,7 @@
                 { "axe_berserkers_call", ability => new NotTargetable(ability, AbilityType.Disable) },
                 { "centaur_hoof_stomp", ability => new NotTargetable(ability, AbilityType.Disable) },
                 { "puck_waning_rift", ability => new NotTargetable(ability, AbilityType.Disable) },
-                { "slardar_slithereen_crush", ability => new NotTargetable(ability, AbilityType.Disable) },
+                { "slardar_slithereen_crush", ability => new NotTargetable(ability, AbilityType.Disable) }
             };
 
         #endregion

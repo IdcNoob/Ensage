@@ -1,4 +1,4 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.Disruptor
 {
     using System.Linq;
 
@@ -10,11 +10,11 @@
 
     using UsableAbilities.Base;
 
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
-    using AbilityType = Core.AbilityType;
+    using AbilityType = Data.AbilityType;
 
-    internal class StaticStorm : AOE, IModifierThinker
+    internal class StaticStorm : AOE, IModifierObstacle
     {
         #region Fields
 
@@ -47,7 +47,7 @@
 
         #region Public Methods and Operators
 
-        public void AddModifierThinker(Modifier mod, Unit unit)
+        public void AddModifierObstacle(Modifier mod, Unit unit)
         {
             modifierThinker = mod;
             StartPosition = unit.Position;

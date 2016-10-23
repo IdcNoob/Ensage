@@ -1,10 +1,10 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.OutworldDevourer
 {
     using Base;
 
     using Ensage;
 
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
     internal class AstralImprisonment : LinearTarget
     {

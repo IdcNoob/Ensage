@@ -1,20 +1,20 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.Enigma
 {
     using Base;
     using Base.Interfaces;
+
+    using Common;
 
     using Ensage;
     using Ensage.Common.Extensions;
 
     using UsableAbilities.Base;
 
-    using Utils;
+    using static Data.AbilityNames;
 
-    using static Core.Abilities;
+    using AbilityType = Data.AbilityType;
 
-    using AbilityType = Core.AbilityType;
-
-    internal class BlackHole : LinearAOE, IModifierThinker
+    internal class BlackHole : LinearAOE, IModifierObstacle
     {
         #region Fields
 
@@ -51,7 +51,7 @@
 
         #region Public Methods and Operators
 
-        public void AddModifierThinker(Modifier modifier, Unit unit)
+        public void AddModifierObstacle(Modifier modifier, Unit unit)
         {
             var position = unit.Position;
             modifierAdded = true;

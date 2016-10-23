@@ -1,6 +1,8 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.Windranger
 {
     using Base.Interfaces;
+
+    using Common;
 
     using Ensage;
     using Ensage.Common.Extensions;
@@ -8,9 +10,7 @@
 
     using SharpDX;
 
-    using Utils;
-
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
     using LinearProjectile = Base.LinearProjectile;
 

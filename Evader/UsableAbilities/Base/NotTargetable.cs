@@ -1,19 +1,19 @@
 ﻿namespace Evader.UsableAbilities.Base
 {
-    using Core;
+    using Data;
 
     using Ensage;
 
     using EvadableAbilities.Base;
 
-    using AbilityType = Core.AbilityType;
+    using AbilityType = Data.AbilityType;
 
     internal class NotTargetable : UsableAbility
     {
         #region Constructors and Destructors
 
-        public NotTargetable(Ability ability, AbilityType type, AbilityFlags flags = AbilityFlags.None)
-            : base(ability, type, flags)
+        public NotTargetable(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
+            : base(ability, type, target)
         {
         }
 

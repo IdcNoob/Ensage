@@ -2,7 +2,7 @@
 {
     using Ensage;
 
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
     using Projectile = Base.Projectile;
 

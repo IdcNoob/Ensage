@@ -1,10 +1,10 @@
-﻿namespace Evader.EvadableAbilities.Units
+﻿namespace Evader.EvadableAbilities.Units.Familiar
 {
     using Base;
 
     using Ensage;
 
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
     internal class StoneForm : AOE
     {

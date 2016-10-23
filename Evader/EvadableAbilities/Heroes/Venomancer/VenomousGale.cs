@@ -1,11 +1,11 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.Venomancer
 {
     using Base.Interfaces;
 
     using Ensage;
     using Ensage.Common.Extensions;
 
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
     using LinearProjectile = Base.LinearProjectile;
 

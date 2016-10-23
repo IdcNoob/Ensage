@@ -2,17 +2,25 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
+
+    using Common;
+
+    using Data;
 
     using Ensage.Common.Menu;
+    using Ensage.Common.Menu.MenuItems;
 
     using EvadableAbilities.Base;
     using EvadableAbilities.Base.Interfaces;
 
-    using Utils;
+    using SharpDX;
 
     internal class MenuManager
     {
         #region Fields
+
+        private readonly Dictionary<string, bool> allyToggler = new Dictionary<string, bool>();
 
         private readonly Dictionary<string, bool> blinkAbilities = new Dictionary<string, bool>();
 
@@ -46,13 +54,21 @@
 
         private readonly MenuItem enabledPathfinder;
 
+        //private readonly MenuItem mouseEmulation;
+
+        private readonly Menu enemySettings;
+
         private readonly MenuItem helpAllies;
 
         private readonly Menu menu;
 
-        //private readonly MenuItem mouseEmulation;
+        private readonly MenuItem modifierAllyCounter;
 
-        private readonly Menu settingsMenu;
+        private readonly MenuItem modifierEnemyCounter;
+
+        private readonly MenuItem multiIntersection;
+
+        private readonly MenuItem pathfinderEffect;
 
         private readonly Dictionary<string, Menu> unitMenus = new Dictionary<string, Menu>();
 
@@ -62,6 +78,12 @@
 
         private readonly MenuItem usableDiasbleAbilities;
 
+        private AbilityToggler blinkAbilityToggler;
+
+        private AbilityToggler counterAbilityToggler;
+
+        private AbilityToggler disableAbilityToggler;
+
         #endregion
 
         #region Constructors and Destructors
@@ -69,6 +91,7 @@
         public MenuManager()
         {
             menu = new Menu("Evader", "evader", true, "techies_minefield_sign", true);
+
             var hotkeys = new Menu("Hotkeys", "hotkeys");
 
             hotkeys.AddItem(
@@ -85,12 +108,36 @@
                 (sender, args) => { ForceBlink = args.GetNewValue<KeyBind>().Active; };
 
             var usableAbilitiesMenu = new Menu("Abilities", "usableAbilities");
-            usableAbilitiesMenu.AddItem(usableBlinkAbilities = new MenuItem("usableBlinkAbilities", "Blink:"));
-            usableAbilitiesMenu.AddItem(usableCounterAbilities = new MenuItem("usableCounterAbilities", "Counter:"));
-            usableAbilitiesMenu.AddItem(usableDiasbleAbilities = new MenuItem("usableDiasbleAbilities", "Disable:"));
+            usableAbilitiesMenu.AddItem(
+                usableBlinkAbilities =
+                new MenuItem("usableBlinkAbilities", "Blink:").SetValue(
+                    blinkAbilityToggler = new AbilityToggler(blinkAbilities)));
+            usableAbilitiesMenu.AddItem(
+                usableCounterAbilities =
+                new MenuItem("usableCounterAbilities", "Counter:").SetValue(
+                    counterAbilityToggler = new AbilityToggler(counterAbilities)));
+            usableAbilitiesMenu.AddItem(
+                usableDiasbleAbilities =
+                new MenuItem("usableDiasbleAbilities", "Disable:").SetValue(
+                    disableAbilityToggler = new AbilityToggler(disableAbilities)));
+
+            var alliesSettings = new Menu("Allies settings", "alliesSettings");
+
+            alliesSettings.AddItem(helpAllies = new MenuItem("helpAllies", "Help allies").SetValue(false)).ValueChanged
+                += (sender, args) => { HelpAllies = args.GetNewValue<bool>(); };
+            alliesSettings.AddItem(
+                multiIntersection =
+                new MenuItem("multiIntersectionDisable", "Multi intersection disable").SetValue(false)
+                    .SetTooltip(
+                        "Will disable enemy who's using AOE disable which will hit multiple allies (priority settings will be ignored)"))
+                .ValueChanged += (sender, args) => { MultiIntersectionEnemyDisable = args.GetNewValue<bool>(); };
+
+            alliesSettings.AddItem(new AllyHeroesToggler("enabledAllies", "Allies", allyToggler));
+
+            var settings = new Menu("Settings", "settings");
 
             // temp =>
-            menu.AddItem(
+            settings.AddItem(
                 defaultPriority =
                 new MenuItem("defaultPriorityFix", "Default priority").SetValue(
                     new PriorityChanger(
@@ -144,7 +191,7 @@
                     Debugger.WriteLine();
                 };
 
-            menu.AddItem(
+            settings.AddItem(
                 defaultToggler =
                 new MenuItem("defaultTogglerFix", "Enabled priority").SetValue(
                     new AbilityToggler(
@@ -258,13 +305,29 @@
             //                Debugger.WriteLine();
             //            };
 
-            menu.AddItem(helpAllies = new MenuItem("helpAllies", "Help allies").SetValue(false)).ValueChanged +=
-                (sender, args) => { HelpAllies = args.GetNewValue<bool>(); };
-            menu.AddItem(
+            settings.AddItem(
+                modifierAllyCounter =
+                new MenuItem("modifierAllyCounter", "Modifier ally counter").SetValue(true)
+                    .SetTooltip("Will use abilities (shields, heals...) on allies")).ValueChanged +=
+                (sender, args) => { ModifierAllyCounter = args.GetNewValue<bool>(); };
+
+            settings.AddItem(
+                modifierEnemyCounter =
+                new MenuItem("modifierEnemyCounter", "Modifier enemy counter").SetValue(true)
+                    .SetTooltip("Will use abilities (euls, purges, stuns...) on enemies")).ValueChanged +=
+                (sender, args) => { ModifierEnemyCounter = args.GetNewValue<bool>(); };
+
+            settings.AddItem(
                 blockPlayerMovement =
                 new MenuItem("blockPlayerMovement", "Block player movement").SetValue(true)
                     .SetTooltip("Player movement will be blocked while avoiding ability")).ValueChanged +=
                 (sender, args) => { BlockPlayerMovement = args.GetNewValue<bool>(); };
+
+            settings.AddItem(
+                pathfinderEffect =
+                new MenuItem("pathfinderEffect", "Pathfinder effect").SetValue(true)
+                    .SetTooltip("Show particle effect when your hero is controlled by pathfinder")).ValueChanged +=
+                (sender, args) => { PathfinderEffect = args.GetNewValue<bool>(); };
 
             //todo add ?
             //menu.AddItem(mouseEmulation = new MenuItem("mouseEmulation", "Mouse emulation").SetValue(false))
@@ -273,9 +336,9 @@
             //            MouseEmulation = args.GetNewValue<bool>();
             //        };
 
-            settingsMenu = new Menu("Enemy settings", "settings");
+            enemySettings = new Menu("Enemy settings", "enemySettings");
 
-            var debugMenu = new Menu("Debug", "debug");
+            var debugMenu = new Menu("Debug", "debug").SetFontColor(Color.PaleVioletRed);
             debugMenu.AddItem(debugAbilities = new MenuItem("debugAbilities", "Draw abilities").SetValue(false))
                 .ValueChanged += (sender, args) => { DebugAbilities = args.GetNewValue<bool>(); };
             debugMenu.AddItem(debugMap = new MenuItem("debugMap", "Draw map").SetValue(false)).ValueChanged +=
@@ -298,9 +361,11 @@
             debugMenu.AddItem(debugConsoleUnits = new MenuItem("debugConsoleUnits", "Console units").SetValue(false))
                 .ValueChanged += (sender, args) => { DebugConsoleUnits = args.GetNewValue<bool>(); };
 
-            menu.AddSubMenu(settingsMenu);
+            menu.AddSubMenu(enemySettings);
+            menu.AddSubMenu(alliesSettings);
             menu.AddSubMenu(usableAbilitiesMenu);
             menu.AddSubMenu(hotkeys);
+            menu.AddSubMenu(settings);
             menu.AddSubMenu(debugMenu);
             menu.AddToMainMenu();
 
@@ -339,13 +404,21 @@
 
         public bool HelpAllies { get; private set; }
 
+        public bool ModifierAllyCounter { get; private set; }
+
+        public bool ModifierEnemyCounter { get; private set; }
+
         public bool MouseEmulation { get; private set; }
+
+        public bool MultiIntersectionEnemyDisable { get; private set; }
+
+        public bool PathfinderEffect { get; private set; }
 
         #endregion
 
         #region Public Methods and Operators
 
-        public void AddEvadableAbility(EvadableAbility ability)
+        public async Task AddEvadableAbility(EvadableAbility ability)
         {
             Menu heroMenu;
             var ownerName = ability.AbilityOwner.Name;
@@ -353,15 +426,20 @@
 
             if (!unitMenus.TryGetValue(ownerName, out heroMenu))
             {
-                heroMenu = new Menu(string.Empty, ownerName, textureName: ownerName);
-                settingsMenu.AddSubMenu(heroMenu);
+                heroMenu = new Menu(ability.AbilityOwner.GetName(), ownerName, false, ownerName, true);
+                enemySettings.AddSubMenu(heroMenu);
                 unitMenus.Add(ownerName, heroMenu);
             }
 
             var abilityMenu = new Menu(string.Empty, ownerName + abilityName, false, abilityName, true);
+            await Task.Delay(100);
+
             var abilityEnabled = new MenuItem(ownerName + abilityName + "enabled", "Enabled").SetValue(true);
+            await Task.Delay(100);
+
             var customPriority =
                 new MenuItem(ownerName + abilityName + "customPriority", "Use custom priority").SetValue(false);
+            await Task.Delay(100);
 
             abilityEnabled.ValueChanged += (sender, args) => { ability.Enabled = args.GetNewValue<bool>(); };
             customPriority.ValueChanged += (sender, args) => { ability.UseCustomPriority = args.GetNewValue<bool>(); };
@@ -378,6 +456,7 @@
                                 "centaur_stampede"
                             },
                         ownerName + abilityName + "changerFix"));
+            await Task.Delay(100);
 
             var abilityToggler =
                 new MenuItem(ownerName + abilityName + "togglerFix", "Custom enabled priority").SetValue(
@@ -389,6 +468,7 @@
                                 { "item_blink", true },
                                 { "centaur_stampede", true }
                             }));
+            await Task.Delay(100);
 
             abilityPriority.ValueChanged += (sender, args) =>
                 {
@@ -473,6 +553,34 @@
                 };
             // <= temp
 
+            var abilityLevelIgnore =
+                new MenuItem(ownerName + abilityName + "levelIgnore", "Ignore if ability level is equal or lower than")
+                    .SetValue(new Slider(0, 0, 3));
+            await Task.Delay(100);
+
+            abilityLevelIgnore.ValueChanged +=
+                (sender, args) => { ability.AbilityLevelIgnore = args.GetNewValue<Slider>().Value; };
+
+            //var hpIgnore =
+            //    new MenuItem(ownerName + abilityName + "hpIgnore", "Ignore if ally has more hp than").SetValue(
+            //        new Slider(0, 0, 1000)).SetTooltip("If value is 0 check will be ignored");
+            //await Task.Delay(100);
+
+            //hpIgnore.ValueChanged += (sender, args) =>
+            //{
+            //    ability.AllyHpIgnore = args.GetNewValue<Slider>().Value;
+            //};
+
+            //var mpIgnore =
+            //    new MenuItem(ownerName + abilityName + "mpIgnore", "Ignore if your hero has less mp than").SetValue(
+            //        new Slider(0, 0, 1000)).SetTooltip("If value is 0 check will be ignored");
+            //await Task.Delay(100);
+
+            //mpIgnore.ValueChanged += (sender, args) =>
+            //{
+            //    ability.HeroMpIgnore = args.GetNewValue<Slider>().Value;
+            //};
+
             //var abilityPriority =
             //    new MenuItem(ownerName + abilityName + "priority", "Custom priority").SetValue(
             //        new PriorityChanger(
@@ -534,6 +642,9 @@
 
             ability.Enabled = abilityEnabled.IsActive();
             ability.UseCustomPriority = customPriority.GetValue<bool>();
+            ability.AbilityLevelIgnore = abilityLevelIgnore.GetValue<Slider>().Value;
+            //ability.AllyHpIgnore = hpIgnore.GetValue<Slider>().Value;
+            //ability.HeroMpIgnore = mpIgnore.GetValue<Slider>().Value;
 
             var abilityChanger = abilityPriority.GetValue<PriorityChanger>();
 
@@ -585,17 +696,19 @@
 
             abilityMenu.AddItem(abilityEnabled);
 
-            ////////if (ability is IModifier)
-            ////////{
-            ////////    var modiferCounter = new MenuItem(ownerName + abilityName + "modifier", "Modifer counter").SetValue(
-            ////////        true);
-            ////////    modiferCounter.ValueChanged +=
-            ////////        (sender, args) => { ability.ModifierCounterEnabled = args.GetNewValue<bool>(); };
-            ////////    abilityMenu.AddItem(modiferCounter);
-            ////////    ability.ModifierCounterEnabled = modiferCounter.IsActive();
+            if (ability is IModifier)
+            {
+                var modiferCounter = new MenuItem(ownerName + abilityName + "modifier", "Modifer counter").SetValue(
+                    true);
+                await Task.Delay(100);
 
-            ////////    abilityMenu.DisplayName = "  *";
-            ////////}
+                modiferCounter.ValueChanged +=
+                    (sender, args) => { ability.ModifierCounterEnabled = args.GetNewValue<bool>(); };
+                abilityMenu.AddItem(modiferCounter);
+                ability.ModifierCounterEnabled = modiferCounter.IsActive();
+
+                abilityMenu.DisplayName = "  *";
+            }
 
             abilityMenu.AddItem(customPriority);
             abilityMenu.AddItem(abilityPriority);
@@ -603,6 +716,10 @@
             // temp =>
             abilityMenu.AddItem(abilityToggler);
             // <= temp
+
+            abilityMenu.AddItem(abilityLevelIgnore);
+            //abilityMenu.AddItem(hpIgnore);
+            //abilityMenu.AddItem(mpIgnore);
 
             heroMenu.AddSubMenu(abilityMenu);
         }
@@ -614,8 +731,8 @@
                 return;
             }
 
-            blinkAbilities.Add(abilityName, true);
-            usableBlinkAbilities.SetValue(new AbilityToggler(blinkAbilities));
+            blinkAbilityToggler.Add(abilityName);
+            usableBlinkAbilities.SetValue(blinkAbilityToggler);
         }
 
         public void AddUsableCounterAbility(string abilityName)
@@ -625,8 +742,8 @@
                 return;
             }
 
-            counterAbilities.Add(abilityName, true);
-            usableCounterAbilities.SetValue(new AbilityToggler(counterAbilities));
+            counterAbilityToggler.Add(abilityName);
+            usableCounterAbilities.SetValue(counterAbilityToggler);
         }
 
         public void AddUsableDisableAbility(string abilityName)
@@ -636,8 +753,16 @@
                 return;
             }
 
-            disableAbilities.Add(abilityName, true);
-            usableDiasbleAbilities.SetValue(new AbilityToggler(disableAbilities));
+            disableAbilityToggler.Add(abilityName);
+            usableDiasbleAbilities.SetValue(disableAbilityToggler);
+        }
+
+        public bool AllyEnabled(string name)
+        {
+            bool isEnabled;
+            allyToggler.TryGetValue(name, out isEnabled);
+
+            return isEnabled;
         }
 
         public void Close()
@@ -673,8 +798,12 @@
         {
             Enabled = enabled.IsActive();
             EnabledPathfinder = enabledPathfinder.IsActive();
+            PathfinderEffect = pathfinderEffect.IsActive();
             HelpAllies = helpAllies.IsActive();
             BlockPlayerMovement = blockPlayerMovement.IsActive();
+            ModifierAllyCounter = modifierAllyCounter.IsActive();
+            ModifierEnemyCounter = modifierEnemyCounter.IsActive();
+            MultiIntersectionEnemyDisable = multiIntersection.IsActive();
             DebugMap = debugMap.IsActive();
             DebugAbilities = debugAbilities.IsActive();
             DebugConsoleIntersection = debugConsoleIntersection.IsActive();

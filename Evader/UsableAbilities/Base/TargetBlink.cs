@@ -2,14 +2,14 @@
 {
     using System.Linq;
 
-    using Core;
+    using Data;
 
     using Ensage;
     using Ensage.Common.Extensions;
 
     using EvadableAbilities.Base;
 
-    using AbilityType = Core.AbilityType;
+    using AbilityType = Data.AbilityType;
 
     internal class TargetBlink : UsableAbility
     {
@@ -21,8 +21,8 @@
 
         #region Constructors and Destructors
 
-        public TargetBlink(Ability ability, AbilityType type, AbilityFlags flags = AbilityFlags.None)
-            : base(ability, type, flags)
+        public TargetBlink(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
+            : base(ability, type, target)
         {
         }
 

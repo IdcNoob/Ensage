@@ -4,14 +4,14 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using Common;
+
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Extensions.SharpDX;
     using Ensage.Common.Objects.UtilityObjects;
 
     using SharpDX;
-
-    using Utils;
 
     internal class Pathfinder
     {
@@ -203,7 +203,7 @@
                     ObjectManager.GetEntitiesParallel<Unit>()
                         .Where(
                             x =>
-                            x.IsValid && !units.ContainsKey(x) && (x is Creep || x is Hero || x is Building)
+                            x.IsValid && !units.ContainsKey(x) /*&& (x is Creep || x is Hero || x is Building)*/
                             && x.IsSpawned && x.IsAlive && !x.Equals(Hero)))
                 {
                     var obstacle = AddObstacle(unit.NetworkPosition, unit.HullRadius);

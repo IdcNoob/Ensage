@@ -1,6 +1,10 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.Pudge
 {
+    using System.Linq;
+
     using Base.Interfaces;
+
+    using Common;
 
     using Ensage;
     using Ensage.Common.Extensions;
@@ -8,15 +12,17 @@
 
     using SharpDX;
 
-    using Utils;
-
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
     using LinearProjectile = Base.LinearProjectile;
 
-    internal class MeatHook : LinearProjectile, IParticle
+    internal class MeatHook : LinearProjectile, IParticle, IModifier
     {
         #region Fields
+
+        private Modifier abilityModifier;
+
+        private Hero modifierSource;
 
         private bool particleAdded;
 
@@ -35,17 +41,46 @@
             CounterAbilities.Add(Eul);
             CounterAbilities.Add(TricksOfTheTrade);
             CounterAbilities.AddRange(VsDamage);
+            CounterAbilities.AddRange(Invul);
             CounterAbilities.Add(SnowBall);
             CounterAbilities.AddRange(Invis);
+
+            ModifierAllyCounter.AddRange(AllyShields);
+            ModifierAllyCounter.AddRange(Invul);
+            ModifierAllyCounter.Add(Lotus);
+            ModifierAllyCounter.AddRange(VsMagic);
         }
+
+        #endregion
+
+        #region Public Properties
+
+        public uint ModifierHandle { get; private set; }
 
         #endregion
 
         #region Public Methods and Operators
 
+        public void AddModifer(Modifier modifier, Hero hero)
+        {
+            if (hero.Team != HeroTeam)
+            {
+                return;
+            }
+
+            abilityModifier = modifier;
+            modifierSource = hero;
+            ModifierHandle = modifier.Handle;
+        }
+
         public void AddParticle(ParticleEffect particle)
         {
             particleEffect = particle;
+        }
+
+        public bool CanBeCountered()
+        {
+            return abilityModifier != null && abilityModifier.IsValid;
         }
 
         public override void Check()
@@ -93,6 +128,16 @@
             particleAdded = false;
         }
 
+        public float GetModiferRemainingTime()
+        {
+            return AbilityOwner.Distance2D(modifierSource) / GetProjectileSpeed();
+        }
+
+        public Hero GetModifierHero(ParallelQuery<Hero> allies)
+        {
+            return allies.FirstOrDefault(x => x.Equals(modifierSource));
+        }
+
         public override float GetRemainingTime(Hero hero = null)
         {
             if (hero == null)
@@ -120,6 +165,12 @@
         public override bool IsStopped()
         {
             return !particleAdded && base.IsStopped();
+        }
+
+        public void RemoveModifier(Modifier modifier)
+        {
+            abilityModifier = null;
+            modifierSource = null;
         }
 
         #endregion

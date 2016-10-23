@@ -53,10 +53,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bootstrap.cs" />
-    <Compile Include="Core\Abilities.cs" />
-    <Compile Include="Core\Data.cs" />
-    <Compile Include="Core\Enums.cs" />
+    <Compile Include="Core\Bootstrap.cs" />
+    <Compile Include="Data\AbilityNames.cs" />
+    <Compile Include="Common\AbilityUpdater.cs" />
+    <Compile Include="Data\Abilities.cs" />
+    <Compile Include="Data\Enums.cs" />
     <Compile Include="Core\Evader.cs" />
     <Compile Include="Core\MenuManager.cs" />
     <Compile Include="Core\Pathfinder.cs" />
@@ -64,7 +65,9 @@
     <Compile Include="EvadableAbilities\Base\AOE.cs" />
     <Compile Include="EvadableAbilities\Base\EvadableAbility.cs" />
     <Compile Include="EvadableAbilities\Base\Interfaces\IModifier.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Abaddon\BorrowedTime.cs" />
     <Compile Include="EvadableAbilities\Heroes\Abaddon\MistCoil.cs" />
+    <Compile Include="EvadableAbilities\Heroes\AncientApparition\IceBlast.cs" />
     <Compile Include="EvadableAbilities\Heroes\ArcWarden\Flux.cs" />
     <Compile Include="EvadableAbilities\Heroes\Bane\BrainSap.cs" />
     <Compile Include="EvadableAbilities\Heroes\Bane\FiendsGrip.cs" />
@@ -112,6 +115,7 @@
     <Compile Include="EvadableAbilities\Heroes\Lina\LightStrikeArray.cs" />
     <Compile Include="EvadableAbilities\Heroes\Lion\EarthSpike.cs" />
     <Compile Include="EvadableAbilities\Heroes\Lion\FingerOfDeath.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Lion\LionHex.cs" />
     <Compile Include="EvadableAbilities\Heroes\Luna\Eclipse.cs" />
     <Compile Include="EvadableAbilities\Heroes\Luna\LucentBeam.cs" />
     <Compile Include="EvadableAbilities\Heroes\Magnus\ReversePolarity.cs" />
@@ -135,8 +139,10 @@
     <Compile Include="EvadableAbilities\Heroes\Oracle\FortunesEnd.cs" />
     <Compile Include="EvadableAbilities\Heroes\OutworldDevourer\AstralImprisonment.cs" />
     <Compile Include="EvadableAbilities\Heroes\OutworldDevourer\SanitysEclipse.cs" />
+    <Compile Include="EvadableAbilities\Heroes\PhantomAssassin\PhantomStrike.cs" />
     <Compile Include="EvadableAbilities\Heroes\PhantomAssassin\StiflingDagger.cs" />
     <Compile Include="EvadableAbilities\Heroes\Puck\IllusoryOrb.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Puck\WaningRift.cs" />
     <Compile Include="EvadableAbilities\Heroes\Pudge\Dismember.cs" />
     <Compile Include="EvadableAbilities\Heroes\QueenOfPain\ScreamOfPain.cs" />
     <Compile Include="EvadableAbilities\Heroes\QueenOfPain\ShadowStrike.cs" />
@@ -145,7 +151,10 @@
     <Compile Include="EvadableAbilities\Heroes\ShadowFiend\Shadowraze.cs" />
     <Compile Include="EvadableAbilities\Heroes\ShadowShaman\EtherShock.cs" />
     <Compile Include="EvadableAbilities\Heroes\ShadowShaman\Shackles.cs" />
+    <Compile Include="EvadableAbilities\Heroes\ShadowShaman\ShamanHex.cs" />
     <Compile Include="EvadableAbilities\Heroes\Silencer\ArcaneCurse.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Silencer\GlobalSilence.cs" />
+    <Compile Include="EvadableAbilities\Heroes\SkywrathMage\AncientSeal.cs" />
     <Compile Include="EvadableAbilities\Heroes\SkywrathMage\ArcaneBolt.cs" />
     <Compile Include="EvadableAbilities\Heroes\SkywrathMage\ConcussiveShot.cs" />
     <Compile Include="EvadableAbilities\Heroes\Slardar\SlithereenCrush.cs" />
@@ -182,7 +191,7 @@
     <Compile Include="EvadableAbilities\Heroes\Windranger\Powershot.cs" />
     <Compile Include="EvadableAbilities\Heroes\Windranger\Shackleshot.cs" />
     <Compile Include="EvadableAbilities\Heroes\WitchDoctor\Maledict.cs" />
-    <Compile Include="EvadableAbilities\Base\Interfaces\IModifierThinker.cs" />
+    <Compile Include="EvadableAbilities\Base\Interfaces\IModifierObstacle.cs" />
     <Compile Include="EvadableAbilities\Base\Interfaces\IParticle.cs" />
     <Compile Include="EvadableAbilities\Base\LinearAOE.cs" />
     <Compile Include="EvadableAbilities\Base\LinearProjectile.cs" />
@@ -206,7 +215,9 @@
     <Compile Include="EvadableAbilities\Heroes\WitchDoctor\ParalyzingCask.cs" />
     <Compile Include="EvadableAbilities\Heroes\WraithKing\WraithfireBlast.cs" />
     <Compile Include="EvadableAbilities\Heroes\Zeus\LightningBolt.cs" />
+    <Compile Include="EvadableAbilities\Items\Bloodthorn.cs" />
     <Compile Include="EvadableAbilities\Items\EtherealBlade.cs" />
+    <Compile Include="EvadableAbilities\Items\OrchidMalevolence.cs" />
     <Compile Include="EvadableAbilities\Units\CentaurConqueror\WarStomp.cs" />
     <Compile Include="EvadableAbilities\Units\Familiar\StoneForm.cs" />
     <Compile Include="UsableAbilities\Abilities\BallLightning.cs" />
@@ -230,12 +241,12 @@
     <Compile Include="UsableAbilities\Base\UsableAbility.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utils\Debugger.cs" />
-    <Compile Include="Utils\AbilityDrawer.cs" />
-    <Compile Include="Utils\MapDrawer.cs" />
-    <Compile Include="Utils\MouseEmulation.cs" />
-    <Compile Include="Utils\StatusDrawer.cs" />
-    <Compile Include="Utils\Utils.cs" />
+    <Compile Include="Common\Debugger.cs" />
+    <Compile Include="Common\AbilityDrawer.cs" />
+    <Compile Include="Common\MapDrawer.cs" />
+    <Compile Include="Common\MouseEmulation.cs" />
+    <Compile Include="Common\StatusDrawer.cs" />
+    <Compile Include="Common\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

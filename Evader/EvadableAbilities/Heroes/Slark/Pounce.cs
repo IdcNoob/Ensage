@@ -1,11 +1,11 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.Slark
 {
     using Base.Interfaces;
 
     using Ensage;
     using Ensage.Common.Extensions;
 
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
     using LinearProjectile = Base.LinearProjectile;
 
@@ -16,8 +16,6 @@
         public Pounce(Ability ability)
             : base(ability)
         {
-            ModifierName = "modifier_slark_pounce_leash";
-
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(BallLightning);
             CounterAbilities.Add(Eul);

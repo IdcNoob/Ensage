@@ -1,8 +1,25 @@
-﻿namespace Evader.Core
+﻿namespace Evader.Data
 {
-    internal static class Abilities
+    internal static class AbilityNames
     {
         #region Public Properties
+
+        public static string[] AllyPurges { get; } = {
+            "legion_commander_press_the_attack",
+            "abaddon_aphotic_shield",
+            "omniknight_repel",
+            "oracle_fortunes_end",
+        };
+
+        public static string[] AllyShields { get; } = {
+            "legion_commander_press_the_attack",
+            "abaddon_aphotic_shield",
+            "omniknight_repel",
+            "item_glimmer_cape",
+            "treant_living_armor",
+        };
+
+        public static string AstralImprisonment { get; } = "obsidian_destroyer_astral_imprisonment";
 
         public static string BallLightning { get; } = "storm_spirit_ball_lightning";
 
@@ -28,7 +45,11 @@
             "item_hurricane_pike"
         };
 
+        public static string ColdEmbrace { get; } = "winter_wyvern_cold_embrace";
+
         public static string DarkRift { get; } = "abyssal_underlord_dark_rift";
+
+        public static string Decrepify { get; } = "pugna_decrepify";
 
         public static string DemonicPurge { get; } = "shadow_demon_demonic_purge";
 
@@ -93,7 +114,17 @@
             "item_cyclone"
         };
 
+        public static string Disruption { get; } = "shadow_demon_disruption";
+
+        public static string Doppelganger { get; } = "phantom_lancer_doppelwalk";
+
         public static string Eul { get; } = "item_cyclone";
+
+        public static string FalsePromise { get; } = "oracle_false_promise";
+
+        public static string FatesEdict { get; } = "oracle_fates_edict";
+
+        public static string FortunesEnd { get; } = "oracle_fortunes_end";
 
         public static string Greaves { get; } = "item_guardian_greaves";
 
@@ -114,7 +145,7 @@
         public static string[] Invul { get; } = {
             "shadow_demon_disruption",
             "obsidian_destroyer_astral_imprisonment",
-            "bane_nightmare"
+            "bane_nightmare",
         };
 
         public static string LinkensSphere { get; } = "item_sphere";
@@ -137,6 +168,8 @@
             "medusa_stone_gaze",
             "phoenix_supernova",
             "abyssal_underlord_dark_rift",
+            "naga_siren_song_of_the_siren",
+            "omniknight_guardian_angel",
         };
 
         public static string Supernova { get; } = "phoenix_supernova";
@@ -202,22 +235,21 @@
             "pugna_decrepify",
             "windrunner_windrun",
             "sven_warcry",
-            "winter_wyvern_cold_embrace",
-            "lich_frost_armor",
-            "bane_enfeeble",
+            "razor_static_link",
+            "tinker_laser",
             "item_ethereal_blade",
             "item_crimson_guard",
             "item_shivas_guard",
             "item_buckler",
+            "invoker_deafening_blast",
             "item_heavens_halberd",
-            "item_rod_of_atos",
             "keeper_of_the_light_blinding_light",
-            "razor_static_link",
             "brewmaster_drunken_haze",
+            "item_rod_of_atos",
             "tusk_frozen_sigil",
-            "tinker_laser",
             //"oracle_fates_edict",
-            "invoker_deafening_blast"
+            "lich_frost_armor",
+            "bane_enfeeble",
         };
 
         #endregion

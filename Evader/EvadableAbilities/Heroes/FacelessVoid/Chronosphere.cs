@@ -1,20 +1,20 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.FacelessVoid
 {
     using System.Linq;
 
     using Base;
     using Base.Interfaces;
 
+    using Common;
+
     using Core;
 
     using Ensage;
     using Ensage.Common.Extensions;
 
-    using Utils;
+    using static Data.AbilityNames;
 
-    using static Core.Abilities;
-
-    internal class Chronosphere : LinearAOE, IModifierThinker
+    internal class Chronosphere : LinearAOE, IModifierObstacle
     {
         #region Fields
 
@@ -63,7 +63,7 @@
 
         #region Public Methods and Operators
 
-        public void AddModifierThinker(Modifier mod, Unit unit)
+        public void AddModifierObstacle(Modifier mod, Unit unit)
         {
             var position = unit.Position;
             modifierAdded = true;

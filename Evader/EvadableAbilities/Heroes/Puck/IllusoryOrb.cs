@@ -1,8 +1,8 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.Puck
 {
     using Ensage;
 
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
     using LinearProjectile = Base.LinearProjectile;
 

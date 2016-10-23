@@ -1,18 +1,20 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.CrystalMaiden
 {
+    using System.Linq;
+
     using Base;
 
     using Ensage;
 
     using UsableAbilities.Base;
 
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
     internal class FreezingField : AOE
     {
         #region Fields
 
-        private readonly float channelTime;
+        private readonly float duration;
 
         #endregion
 
@@ -29,7 +31,7 @@
             CounterAbilities.AddRange(VsMagic);
 
             IgnorePathfinder = true;
-            channelTime = ability.GetChannelTime(0);
+            duration = ability.AbilitySpecialData.First(x => x.Name == "duration_tooltip").Value;
         }
 
         #endregion
@@ -53,7 +55,7 @@
 
         public override float GetRemainingTime(Hero hero = null)
         {
-            return EndCast + channelTime - Game.RawGameTime;
+            return EndCast + duration - Game.RawGameTime;
         }
 
         public override bool IgnoreRemainingTime(UsableAbility ability, float remainingTime = 0)

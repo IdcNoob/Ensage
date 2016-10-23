@@ -1,21 +1,24 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.Jakiro
 {
     using System.Linq;
 
     using Base;
+    using Base.Interfaces;
+
+    using Common;
 
     using Ensage;
     using Ensage.Common.Extensions;
 
-    using Utils;
+    using static Data.AbilityNames;
 
-    using static Core.Abilities;
-
-    internal class IcePath : LinearAOE
+    internal class IcePath : LinearAOE, IModifier
     {
         #region Fields
 
         private readonly float[] duration = new float[4];
+
+        private Modifier abilityModifier;
 
         #endregion
 
@@ -29,8 +32,12 @@
             CounterAbilities.Add(Eul);
             CounterAbilities.AddRange(VsDisable);
             CounterAbilities.Add(SnowBall);
-
             CounterAbilities.Remove("bane_nightmare");
+            CounterAbilities.Remove("abaddon_aphotic_shield");
+
+            ModifierAllyCounter.AddRange(AllyShields);
+            ModifierAllyCounter.AddRange(Invul);
+            ModifierAllyCounter.AddRange(VsMagic);
 
             AdditionalDelay = ability.AbilitySpecialData.First(x => x.Name == "path_delay").Value;
 
@@ -44,7 +51,29 @@
 
         #endregion
 
+        #region Public Properties
+
+        public uint ModifierHandle { get; private set; }
+
+        #endregion
+
         #region Public Methods and Operators
+
+        public void AddModifer(Modifier modifier, Hero hero)
+        {
+            if (hero.Team != HeroTeam)
+            {
+                return;
+            }
+
+            abilityModifier = modifier;
+            ModifierHandle = modifier.Handle;
+        }
+
+        public bool CanBeCountered()
+        {
+            return abilityModifier != null && abilityModifier.IsValid;
+        }
 
         public override void Check()
         {
@@ -63,6 +92,22 @@
             {
                 End();
             }
+        }
+
+        public float GetModiferRemainingTime()
+        {
+            return GetDuration() - abilityModifier.ElapsedTime;
+        }
+
+        public Hero GetModifierHero(ParallelQuery<Hero> allies)
+        {
+            return
+                allies.Where(x => x.HasModifier(abilityModifier.Name)).OrderByDescending(x => x.Health).FirstOrDefault();
+        }
+
+        public void RemoveModifier(Modifier modifier)
+        {
+            abilityModifier = null;
         }
 
         #endregion

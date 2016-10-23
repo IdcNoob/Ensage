@@ -1,8 +1,8 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.VengefulSpirit
 {
     using Ensage;
 
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
     using LinearProjectile = Base.LinearProjectile;
 
@@ -13,8 +13,6 @@
         public WaveOfTerror(Ability ability)
             : base(ability)
         {
-            ModifierName = "modifier_vengefulspirit_wave_of_terror";
-
             CounterAbilities.Add(PhaseShift);
         }
 

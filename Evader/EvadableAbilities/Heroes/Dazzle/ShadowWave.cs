@@ -1,10 +1,10 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.Dazzle
 {
     using Base;
 
     using Ensage;
 
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
     internal class ShadowWave : LinearAOE
     {
@@ -13,11 +13,8 @@
         public ShadowWave(Ability ability)
             : base(ability)
         {
-            //todo check radius
-
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(BallLightning);
-            //todo check fist vs wave
             CounterAbilities.Add(SleightOfFist);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.Add("item_ghost");

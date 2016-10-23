@@ -1,9 +1,9 @@
 ﻿namespace Evader.EvadableAbilities.Base
 {
+    using Common;
+
     using Ensage;
     using Ensage.Common.Extensions;
-
-    using Utils;
 
     internal abstract class LinearTarget : LinearAOE
     {
@@ -43,6 +43,17 @@
             {
                 End();
             }
+        }
+
+        public override void Draw()
+        {
+            if (Obstacle == null)
+            {
+                return;
+            }
+
+            AbilityDrawer.DrawTime(GetRemainingTime(), AbilityOwner.Position);
+            AbilityDrawer.DrawRectangle(StartPosition, EndPosition, GetRadius());
         }
 
         #endregion

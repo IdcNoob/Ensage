@@ -2,14 +2,14 @@
 {
     using System.Linq;
 
+    using Common;
+
     using Ensage;
     using Ensage.Common.AbilityInfo;
     using Ensage.Common.Extensions;
     using Ensage.Common.Extensions.SharpDX;
 
     using SharpDX;
-
-    using Utils;
 
     internal abstract class LinearProjectile : LinearAOE
     {

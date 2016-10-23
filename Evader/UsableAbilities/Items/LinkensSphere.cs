@@ -4,16 +4,18 @@
 
     using Core;
 
+    using Data;
+
     using Ensage;
 
-    using AbilityType = Core.AbilityType;
+    using AbilityType = Data.AbilityType;
 
     internal class LinkensSphere : Targetable
     {
         #region Constructors and Destructors
 
-        public LinkensSphere(Ability ability, AbilityType type, AbilityFlags flags)
-            : base(ability, type, flags)
+        public LinkensSphere(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
+            : base(ability, type, target)
         {
         }
 

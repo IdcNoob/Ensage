@@ -4,19 +4,19 @@
 
     using Base;
 
-    using Core;
+    using Data;
 
     using Ensage;
     using Ensage.Common.Extensions;
 
-    using AbilityType = Core.AbilityType;
+    using AbilityType = Data.AbilityType;
 
     internal class SearingChains : NotTargetable
     {
         #region Constructors and Destructors
 
-        public SearingChains(Ability ability, AbilityType type, AbilityFlags flags = AbilityFlags.None)
-            : base(ability, type, flags)
+        public SearingChains(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
+            : base(ability, type, target)
         {
         }
 

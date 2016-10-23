@@ -1,4 +1,4 @@
-﻿namespace Evader.Utils
+﻿namespace Evader.Common
 {
     using Core;
 

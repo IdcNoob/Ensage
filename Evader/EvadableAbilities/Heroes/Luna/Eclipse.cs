@@ -1,4 +1,4 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.Luna
 {
     using System.Linq;
 
@@ -9,9 +9,9 @@
 
     using UsableAbilities.Base;
 
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
-    using AbilityType = Core.AbilityType;
+    using AbilityType = Data.AbilityType;
 
     internal class Eclipse : AOE
     {

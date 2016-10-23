@@ -1,10 +1,10 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.TreantProtector
 {
     using Base;
 
     using Ensage;
 
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
     internal class LeechSeed : LinearTarget
     {
@@ -13,8 +13,6 @@
         public LeechSeed(Ability ability)
             : base(ability)
         {
-            ModifierName = "modifier_treant_leech_seed";
-
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);

@@ -1,4 +1,4 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.Lina
 {
     using System.Linq;
 
@@ -6,7 +6,7 @@
 
     using Ensage;
 
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
     internal class LagunaBlade : LinearTarget
     {

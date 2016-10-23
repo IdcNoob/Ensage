@@ -1,10 +1,10 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.NightStalker
 {
     using Base;
 
     using Ensage;
 
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
     internal class Void : LinearTarget
     {
@@ -13,8 +13,6 @@
         public Void(Ability ability)
             : base(ability)
         {
-            ModifierName = "modifier_night_stalker_void";
-
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);

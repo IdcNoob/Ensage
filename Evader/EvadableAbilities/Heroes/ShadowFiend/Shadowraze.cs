@@ -1,11 +1,11 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.ShadowFiend
 {
     using Base;
 
     using Ensage;
     using Ensage.Common.Extensions;
 
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
     internal class Shadowraze : AOE
     {

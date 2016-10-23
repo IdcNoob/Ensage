@@ -1,4 +1,4 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.Kunkka
 {
     using System.Linq;
 
@@ -7,9 +7,9 @@
 
     using Ensage;
 
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
-    internal class Torrent : AOE, IModifierThinker
+    internal class Torrent : AOE, IModifierObstacle
     {
         #region Fields
 
@@ -40,7 +40,7 @@
 
         #region Public Methods and Operators
 
-        public void AddModifierThinker(Modifier mod, Unit unit)
+        public void AddModifierObstacle(Modifier mod, Unit unit)
         {
             modifierThinker = mod;
             StartPosition = unit.Position;

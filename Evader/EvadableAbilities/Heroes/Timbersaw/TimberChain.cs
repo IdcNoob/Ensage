@@ -1,12 +1,12 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.Timbersaw
 {
     using Ensage;
 
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
     using LinearProjectile = Base.LinearProjectile;
 
-    internal sealed class TimberChain : LinearProjectile
+    internal class TimberChain : LinearProjectile
     {
         #region Constructors and Destructors
 

@@ -2,14 +2,16 @@
 {
     using System.Collections.Generic;
 
+    using Common;
+
     using Core;
+
+    using Data;
 
     using Ensage;
     using Ensage.Common.Extensions;
 
     using UsableAbilities.Base;
-
-    using Utils;
 
     internal abstract class EvadableAbility
     {
@@ -28,8 +30,8 @@
             PiercesMagicImmunity = ability.PiercesMagicImmunity();
             if (IsDisable)
             {
-                DisableAbilities.AddRange(Abilities.DisableAbilityNames);
-                BlinkAbilities.AddRange(Abilities.BlinkAbilityNames);
+                DisableAbilities.AddRange(AbilityNames.DisableAbilityNames);
+                BlinkAbilities.AddRange(AbilityNames.BlinkAbilityNames);
             }
             Debugger.WriteLine("///////// " + GetType().Name + " (" + Name + ")");
             Debugger.WriteLine("// Cast point: " + CastPoint);
@@ -41,6 +43,8 @@
         #endregion
 
         #region Public Properties
+
+        public int AbilityLevelIgnore { get; set; }
 
         public Unit AbilityOwner { get; }
 
@@ -62,13 +66,16 @@
 
         public bool IsInPhase => Ability.IsInAbilityPhase;
 
+        public uint Level => Ability.Level;
+
         public List<string> ModifierAllyCounter { get; } = new List<string>();
 
         public bool ModifierCounterEnabled { get; set; }
 
-        public List<string> ModifierEnemyCounter { get; } = new List<string>();
+        //public int AllyHpIgnore { get; set; }
+        //public int HeroMpIgnore { get; set; }
 
-        public string ModifierName { get; protected set; }
+        public List<string> ModifierEnemyCounter { get; } = new List<string>();
 
         public string Name { get; }
 
@@ -101,6 +108,8 @@
         protected float CastPoint { get; set; }
 
         protected Hero Hero => Variables.Hero;
+
+        protected Team HeroTeam => Variables.HeroTeam;
 
         protected Pathfinder Pathfinder => Variables.Pathfinder;
 
@@ -156,6 +165,17 @@
         public virtual float ObstacleRemainingTime()
         {
             return EndCast - Game.RawGameTime;
+        }
+
+        public float TimeSinceCast()
+        {
+            if (Ability.Level <= 0 || !AbilityOwner.IsVisible)
+            {
+                return float.MaxValue;
+            }
+
+            var cooldownLength = Ability.CooldownLength;
+            return cooldownLength <= 0 ? float.MaxValue : cooldownLength - Ability.Cooldown;
         }
 
         #endregion

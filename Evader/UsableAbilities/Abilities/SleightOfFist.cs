@@ -2,22 +2,22 @@
 {
     using Base;
 
-    using Core;
+    using Data;
 
     using Ensage;
     using Ensage.Common.Extensions;
 
     using EvadableAbilities.Base;
 
-    using AbilityType = Core.AbilityType;
+    using AbilityType = Data.AbilityType;
 
     internal class SleightOfFist : UsableAbility
     {
         #region Constructors and Destructors
 
         //todo: improve
-        public SleightOfFist(Ability ability, AbilityType type, AbilityFlags flags = AbilityFlags.None)
-            : base(ability, type, flags)
+        public SleightOfFist(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
+            : base(ability, type, target)
         {
         }
 
@@ -27,7 +27,7 @@
 
         public override float GetRequiredTime(EvadableAbility ability, Unit unit)
         {
-            return (float)Hero.GetTurnTime(unit);
+            return (float)Hero.GetTurnTime(unit) * 1.35f;
         }
 
         public override void Use(EvadableAbility ability, Unit target)

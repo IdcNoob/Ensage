@@ -1,22 +1,30 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.Mirana
 {
+    using System.Linq;
+
+    using Base.Interfaces;
+
+    using Common;
+
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Extensions.SharpDX;
 
-    using Utils;
-
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
     using LinearProjectile = Base.LinearProjectile;
 
-    internal class SacredArrow : LinearProjectile
+    internal class SacredArrow : LinearProjectile, IModifier
     {
         #region Fields
+
+        private Modifier abilityModifier;
 
         private Unit arrow;
 
         private bool fowCast;
+
+        private Hero modifierSource;
 
         #endregion
 
@@ -34,11 +42,34 @@
             CounterAbilities.AddRange(VsMagic);
             CounterAbilities.Add(SnowBall);
             CounterAbilities.AddRange(Invis);
+            CounterAbilities.Remove("abaddon_aphotic_shield");
+
+            ModifierAllyCounter.AddRange(AllyShields);
+            ModifierAllyCounter.AddRange(Invul);
+            ModifierAllyCounter.AddRange(VsMagic);
         }
 
         #endregion
 
+        #region Public Properties
+
+        public uint ModifierHandle { get; private set; }
+
+        #endregion
+
         #region Public Methods and Operators
+
+        public void AddModifer(Modifier modifier, Hero hero)
+        {
+            if (hero.Team != HeroTeam)
+            {
+                return;
+            }
+
+            abilityModifier = modifier;
+            modifierSource = hero;
+            ModifierHandle = modifier.Handle;
+        }
 
         public void AddUnit(Unit unit)
         {
@@ -52,6 +83,11 @@
             EndCast = Game.RawGameTime + GetCastRange() / GetProjectileSpeed();
             StartPosition = unit.Position.SetZ(AbilityOwner.Position.Z);
             fowCast = true;
+        }
+
+        public bool CanBeCountered()
+        {
+            return abilityModifier != null && abilityModifier.IsValid;
         }
 
         public override bool CanBeStopped()
@@ -124,6 +160,16 @@
             fowCast = false;
         }
 
+        public float GetModiferRemainingTime()
+        {
+            return abilityModifier.RemainingTime;
+        }
+
+        public Hero GetModifierHero(ParallelQuery<Hero> allies)
+        {
+            return allies.FirstOrDefault(x => x.Equals(modifierSource));
+        }
+
         public override float GetRemainingTime(Hero hero = null)
         {
             if (hero == null)
@@ -159,6 +205,12 @@
             }
 
             return check;
+        }
+
+        public void RemoveModifier(Modifier modifier)
+        {
+            abilityModifier = null;
+            modifierSource = null;
         }
 
         #endregion

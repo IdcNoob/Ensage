@@ -1,8 +1,6 @@
-﻿namespace Evader
+﻿namespace Evader.Core
 {
     using System;
-
-    using Core;
 
     using Ensage;
     using Ensage.Common;
@@ -51,18 +49,12 @@
             evader.OnAddTrackingProjectile(args);
         }
 
-        private void ObjectManagerOnRemoveEntity(EntityEventArgs args)
-        {
-            evader.OnRemoveEntity(args.Entity);
-        }
-
         private void OnClose(object sender, EventArgs e)
         {
             Events.OnClose -= OnClose;
             Game.OnUpdate -= Game_OnUpdate;
             Player.OnExecuteOrder -= Player_OnExecuteAction;
             Drawing.OnDraw -= Drawing_OnDraw;
-            ObjectManager.OnRemoveEntity -= ObjectManagerOnRemoveEntity;
             ObjectManager.OnAddEntity -= ObjectManager_OnAddEntity;
             Unit.OnModifierAdded -= Unit_OnModifierAdded;
             Unit.OnModifierRemoved -= Unit_OnModifierRemoved;
@@ -78,7 +70,6 @@
             Game.OnUpdate += Game_OnUpdate;
             Player.OnExecuteOrder += Player_OnExecuteAction;
             Drawing.OnDraw += Drawing_OnDraw;
-            ObjectManager.OnRemoveEntity += ObjectManagerOnRemoveEntity;
             ObjectManager.OnAddEntity += ObjectManager_OnAddEntity;
             Unit.OnModifierAdded += Unit_OnModifierAdded;
             Unit.OnModifierRemoved += Unit_OnModifierRemoved;

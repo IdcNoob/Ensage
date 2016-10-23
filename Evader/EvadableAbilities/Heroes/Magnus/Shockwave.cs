@@ -1,8 +1,8 @@
-﻿namespace Evader.EvadableAbilities.Heroes
+﻿namespace Evader.EvadableAbilities.Heroes.Magnus
 {
     using Ensage;
 
-    using static Core.Abilities;
+    using static Data.AbilityNames;
 
     using LinearProjectile = Base.LinearProjectile;
 
@@ -22,6 +22,11 @@
         #endregion
 
         #region Methods
+
+        protected override float GetEndRadius()
+        {
+            return base.GetRadius() + 60;
+        }
 
         protected override float GetRadius()
         {
