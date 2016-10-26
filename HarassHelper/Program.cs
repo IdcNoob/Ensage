@@ -15,6 +15,10 @@
     {
         #region Static Fields
 
+        private static MenuItem aggro;
+
+        private static MenuItem aggroMove;
+
         private static MenuItem enabled;
 
         private static Hero hero;
@@ -34,6 +38,10 @@
         private static MenuItem textX;
 
         private static MenuItem textY;
+
+        private static MenuItem unaggro;
+
+        private static MenuItem unaggroMove;
 
         #endregion
 
@@ -64,7 +72,58 @@
 
             sleeper.Sleep(100);
 
-            if (!enabled.IsActive() || target == null || !target.IsAlive || Game.IsPaused || !hero.IsAlive)
+            if (Game.IsPaused || !hero.IsAlive)
+            {
+                return;
+            }
+
+            if (aggro.IsActive())
+            {
+                var enemy =
+                    ObjectManager.GetEntitiesParallel<Hero>()
+                        .Where(x => x.IsValid && x.IsAlive && !x.IsInvul() && x.Team != heroTeam)
+                        .OrderBy(x => hero.FindRelativeAngle(x.Position))
+                        .FirstOrDefault();
+
+                if (enemy != null)
+                {
+                    hero.Attack(enemy);
+                    if (aggroMove.IsActive())
+                    {
+                        hero.Move(Game.MousePosition);
+                    }
+                    else
+                    {
+                        hero.Stop();
+                    }
+                    return;
+                }
+            }
+
+            if (unaggro.IsActive())
+            {
+                var ally =
+                    ObjectManager.GetEntitiesParallel<Creep>()
+                        .Where(x => x.IsValid && x.IsAlive && x.IsSpawned && x.Team == heroTeam)
+                        .OrderBy(x => hero.FindRelativeAngle(x.Position))
+                        .FirstOrDefault();
+
+                if (ally != null)
+                {
+                    hero.Attack(ally);
+                    if (unaggroMove.IsActive())
+                    {
+                        hero.Move(Game.MousePosition);
+                    }
+                    else
+                    {
+                        hero.Stop();
+                    }
+                    return;
+                }
+            }
+
+            if (!enabled.IsActive() || target == null || !target.IsAlive)
             {
                 return;
             }
@@ -91,6 +150,18 @@
                 textY =
                 new MenuItem("textY", "Text position Y").SetValue(
                     new Slider((int)(HUDInfo.ScreenSizeY() * 0.70), 0, (int)HUDInfo.ScreenSizeY())));
+
+            menu.AddItem(aggro = new MenuItem("aggro", "Aggro key").SetValue(new KeyBind(107, KeyBindType.Press)));
+            menu.AddItem(unaggro = new MenuItem("unaggro", "Unaggro key").SetValue(new KeyBind(109, KeyBindType.Press)));
+
+            menu.AddItem(
+                aggroMove =
+                new MenuItem("aggroMove", "Aggro move").SetValue(false)
+                    .SetTooltip("Move to mouse position when using aggro"));
+            menu.AddItem(
+                unaggroMove =
+                new MenuItem("unaggroMove", "Unaggro move").SetValue(false)
+                    .SetTooltip("Move to mouse position when using unaggro"));
 
             menu.AddToMainMenu();
 
@@ -132,7 +203,6 @@
                 {
                     return;
                 }
-
                 if (target.Team == heroTeam)
                 {
                     target = null;
