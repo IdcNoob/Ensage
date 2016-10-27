@@ -73,6 +73,12 @@
 
                 switch (itemID)
                 {
+                    case 40: // dust
+                        if (GetItemCount(itemID) >= 2)
+                        {
+                            continue;
+                        }
+                        break;
                     case 42: // observer
                     case 43: // sentry
                         if (GetWardsCount(itemID) >= 2)
@@ -142,7 +148,8 @@
 
             var distance = Menu.NearDeathEnemyDistance;
 
-            return Hero.Health <= Menu.NearDeathHpThreshold
+            return (Hero.Health <= Menu.NearDeathHpThreshold
+                    || (float)Hero.Health / Hero.MaximumHealth * 100 <= Menu.NearDeathHpPercentageThreshold)
                    && (distance <= 0
                        || Heroes.GetByTeam(enemyTeam)
                               .Any(x => x.IsValid && !x.IsIllusion && x.IsAlive && x.Distance2D(Hero) <= distance));

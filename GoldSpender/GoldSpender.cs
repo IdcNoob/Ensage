@@ -6,7 +6,7 @@
     using Ensage;
     using Ensage.Common.Objects.UtilityObjects;
 
-    using global::GoldSpender.Modules;
+    using Modules;
 
     internal class GoldSpender
     {

@@ -18,6 +18,8 @@
 
         private readonly MenuItem nearDeathHp;
 
+        private readonly MenuItem nearDeathHpPercentage;
+
         private readonly MenuItem nearDeathItems;
 
         private readonly MenuItem nearDeathSaveBuyback;
@@ -33,7 +35,12 @@
             var nearDeathMenu = new Menu("Near death", "nearDeath");
             nearDeathMenu.AddItem(nearDeath = new MenuItem("nearDeathEnabled", "Enabled").SetValue(true));
             nearDeathMenu.AddItem(
-                nearDeathHp = new MenuItem("nearDeathHp", "HP threshold").SetValue(new Slider(250, 1, 500)));
+                nearDeathHp = new MenuItem("nearDeathHp", "HP threshold").SetValue(new Slider(150, 1, 500)))
+                .SetTooltip("Buy items if you have less HP");
+            nearDeathMenu.AddItem(
+                nearDeathHpPercentage =
+                new MenuItem("nearDeathHpPercent", "HP threshold %").SetValue(new Slider(20, 1, 99)))
+                .SetTooltip("Buy items if you have less HP in %");
             nearDeathMenu.AddItem(
                 nearDeathEnemyDistance =
                 new MenuItem("nearDeathEnemyDistance", "Enemy distance").SetValue(new Slider(600, 0, 2000)));
@@ -71,6 +78,8 @@
         public bool NearDeathEnabled => nearDeath.IsActive();
 
         public int NearDeathEnemyDistance => nearDeathEnemyDistance.GetValue<Slider>().Value;
+
+        public int NearDeathHpPercentageThreshold => nearDeathHpPercentage.GetValue<Slider>().Value;
 
         public int NearDeathHpThreshold => nearDeathHp.GetValue<Slider>().Value;
 

@@ -16,6 +16,7 @@
         public static Dictionary<string, uint> ItemsToBuyNearDeath = new Dictionary<string, uint>
             {
                 { "item_smoke_of_deceit", 188 },
+                { "item_dust", 40 },
                 { "item_ward_sentry", 43 },
                 { "item_tome_of_knowledge", 257 },
                 { "item_ward_observer", 42 },

@@ -6,7 +6,7 @@
     using Ensage;
     using Ensage.Common.Extensions;
 
-    using global::GoldSpender.Utils;
+    using Utils;
 
     internal class AutoPurchase : GoldManager
     {
