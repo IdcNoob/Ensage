@@ -34,6 +34,8 @@
 
         private readonly MenuItem items;
 
+        private readonly MenuItem itemStatusCheck;
+
         private readonly MenuItem roshanKillTime;
 
         private readonly MenuItem runeAutoDisable;
@@ -90,6 +92,8 @@
                         })));
             itemMenu.AddItem(itemEnemyCheck = new MenuItem("itemEnemyCheck", "Check for enemies").SetValue(false))
                 .SetTooltip("If there is any enemy hero/creep near you it wont ping, unless it's pinged enemy");
+            itemMenu.AddItem(itemStatusCheck = new MenuItem("itemStatusCheck", "Check enemy status").SetValue(true))
+                .SetTooltip("Delay ping if enemy is died or gone invisible");
 
             var abilityMenu = new Menu("Enemy abilities", "abilities");
             abilityMenu.AddItem(abilities = new MenuItem("abilitiesEnabled", "Enabled").SetValue(true));
@@ -155,6 +159,8 @@
         public float ItemCostGoldThreshold => itemCostGoldThreshold.GetValue<Slider>().Value;
 
         public bool ItemEnemyCheckEnabled => itemEnemyCheck.IsActive();
+
+        public bool ItemEnemyStatusEnabled => itemStatusCheck.IsActive();
 
         public bool ItemPingEnabled => items.IsActive();
 

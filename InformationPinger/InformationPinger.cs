@@ -117,7 +117,11 @@
                 var itemEnemyCheck = menu.ItemEnemyCheckEnabled;
                 var cost = menu.ItemCostGoldThreshold;
                 var forceItems = menu.ForcePingItems();
-                if (heroesPinger.Any(x => x.ShouldPing && x.ItemPinger(doublePing, itemEnemyCheck, cost, forceItems)))
+                var statusCheck = menu.ItemEnemyStatusEnabled;
+                if (
+                    heroesPinger.Any(
+                        x =>
+                        (!statusCheck || x.ShouldPing) && x.ItemPinger(doublePing, itemEnemyCheck, cost, forceItems)))
                 {
                     return;
                 }
