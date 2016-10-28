@@ -21,9 +21,24 @@
 
         private readonly Dictionary<Hero, List<AbilityDraw>> drawedAbilities = new Dictionary<Hero, List<AbilityDraw>>();
 
+        private bool delay;
+
         private MenuManager menu;
 
         private Sleeper sleeper;
+
+        #endregion
+
+        #region Enums
+
+        public enum CustomRange
+        {
+            None,
+
+            Expiriece,
+
+            Attack
+        }
 
         #endregion
 
@@ -36,6 +51,7 @@
             drawedAbilities.SelectMany(x => x.Value).ForEach(x => x.ParticleEffect?.Dispose());
             addedHeroes.Clear();
             drawedAbilities.Clear();
+            addedItems.Clear();
         }
 
         public void OnDraw()
@@ -47,7 +63,7 @@
                     drawedAbility.ParticleEffect?.SetControlPoint(
                         0,
                         unit.Position
-                        + (Vector3)(VectorExtensions.FromPolarAngle(unit.RotationRad) * drawedAbility.CastRange));
+                        + (Vector3)(VectorExtensions.FromPolarAngle(unit.RotationRad) * drawedAbility.Range));
                 }
         }
 
@@ -57,82 +73,97 @@
             sleeper = new Sleeper();
 
             menu.OnChange += OnChange;
-            sleeper.Sleep(2000);
+            sleeper.Sleep(1000);
         }
 
-        public void OnUpdate()
+        public async void OnUpdate()
         {
-            if (sleeper.Sleeping)
+            if (sleeper.Sleeping || delay)
             {
                 return;
             }
 
-            sleeper.Sleep(3000);
+            delay = true;
 
-            var allHeroes = Heroes.All.Where(x => x.IsValid && !x.IsIllusion);
-
-            foreach (var hero in allHeroes)
+            try
             {
-                if (!addedHeroes.Contains(hero.Handle))
-                {
-                    menu.AddHeroMenu(hero);
-                    addedHeroes.Add(hero.Handle);
-                    return;
-                }
+                var allHeroes = Heroes.All.Where(x => x.IsValid && !x.IsIllusion);
 
-                foreach (var item in hero.Inventory.Items)
+                foreach (var hero in allHeroes)
                 {
-                    var itemName = item.GetDefaultName();
-
-                    if (string.IsNullOrEmpty(itemName) || addedItems.ContainsKey(hero.StoredName() + itemName))
+                    if (!addedHeroes.Contains(hero.Handle))
                     {
-                        continue;
+                        await menu.AddHeroMenu(hero);
+                        addedHeroes.Add(hero.Handle);
                     }
 
-                    if (item.GetRealCastRange() > 200)
+                    foreach (var item in hero.Inventory.Items)
                     {
-                        menu.AddMenuItem(hero, item);
-                    }
+                        var itemName = item.GetDefaultName();
 
-                    addedItems.Add(hero.StoredName() + itemName, item);
-                }
-
-                foreach (var drawedAbility in
-                    drawedAbilities.Where(x => x.Key.Equals(hero))
-                        .SelectMany(x => x.Value)
-                        .Where(x => (x.ParticleEffect != null || !x.IsValid) && !x.Disabled))
-                {
-                    if (drawedAbility.IsValid && drawedAbility.Ability.ClassID == ClassID.CDOTA_Ability_AttributeBonus)
-                    {
-                        continue;
-                    }
-
-                    var newAbility = false;
-
-                    if (!drawedAbility.IsValid)
-                    {
-                        drawedAbility.FindAbility();
-
-                        if (drawedAbility.IsValid)
+                        if (string.IsNullOrEmpty(itemName) || addedItems.ContainsKey(hero.StoredName() + itemName))
                         {
-                            newAbility = true;
+                            continue;
+                        }
+
+                        addedItems.Add(hero.StoredName() + itemName, item);
+
+                        if (item.GetRealCastRange() > 500)
+                        {
+                            await menu.AddMenuItem(hero, item);
                         }
                     }
 
-                    if (drawedAbility.Ability == null && drawedAbility.ParticleEffect != null)
+                    foreach (var drawedAbility in
+                        drawedAbilities.Where(x => x.Key.Equals(hero))
+                            .SelectMany(x => x.Value)
+                            .Where(x => (x.ParticleEffect != null || !x.IsValid) && !x.Disabled && x.Level > 0))
                     {
-                        drawedAbility.ParticleEffect.Dispose();
-                        drawedAbility.ParticleEffect = null;
-                    }
-                    else if ((newAbility
-                              || (drawedAbility.ParticleEffect != null
-                                  && Math.Abs(drawedAbility.RealCastRange - drawedAbility.Ability.GetRealCastRange()) > 5))
-                             && !drawedAbility.Disabled)
-                    {
-                        Redraw(drawedAbility);
+                        switch (drawedAbility.CustomRange)
+                        {
+                            case CustomRange.Expiriece:
+                                continue;
+                            case CustomRange.Attack:
+                                if (Math.Abs(drawedAbility.Range - hero.GetAttackRange()) > 10)
+                                {
+                                    Redraw(drawedAbility);
+                                }
+                                continue;
+                        }
+
+                        var newAbility = false;
+
+                        if (!drawedAbility.IsValid)
+                        {
+                            drawedAbility.FindAbility();
+
+                            if (drawedAbility.IsValid)
+                            {
+                                newAbility = true;
+                            }
+                        }
+
+                        if (drawedAbility.Ability == null && drawedAbility.ParticleEffect != null)
+                        {
+                            drawedAbility.ParticleEffect.Dispose();
+                            drawedAbility.ParticleEffect = null;
+                        }
+                        else if ((newAbility
+                                  || (drawedAbility.ParticleEffect != null
+                                      && Math.Abs(drawedAbility.RealCastRange - drawedAbility.Ability.GetRealCastRange())
+                                      > 5)) && !drawedAbility.Disabled)
+                        {
+                            Redraw(drawedAbility);
+                        }
                     }
                 }
             }
+            catch (Exception)
+            {
+            }
+
+            delay = false;
+            sleeper.Sleep(3000);
         }
 
         #endregion
@@ -149,6 +180,10 @@
                                                          drawedAbility.Hero.Position)
                                                    : drawedAbility.Hero.AddParticleEffect(
                                                        @"particles\ui_mouseactions\drag_selected_ring.vpcf");
+                if (drawedAbility.Level < 1)
+                {
+                    return;
+                }
             }
 
             drawedAbility.UpdateCastRange();
@@ -156,11 +191,14 @@
 
             drawedAbility.ParticleEffect.SetControlPoint(
                 2,
-                new Vector3(drawedAbility.RadiusOnly ? drawedAbility.Radius : drawedAbility.RealCastRange, 255, 0));
+                new Vector3(
+                    (drawedAbility.RadiusOnly ? drawedAbility.Radius : drawedAbility.RealCastRange) * -1,
+                    255,
+                    0));
             drawedAbility.ParticleEffect.Restart();
         }
 
-        private void OnChange(object sender, AbilityArgs args)
+        private void OnChange(object sender, AbilityEventArgs args)
         {
             List<AbilityDraw> abilities;
 
@@ -192,7 +230,7 @@
                 {
                     drawedAbility.FindAbility();
 
-                    if (!drawedAbility.IsValid)
+                    if (!drawedAbility.IsValid && drawedAbility.CustomRange == CustomRange.None)
                     {
                         return;
                     }

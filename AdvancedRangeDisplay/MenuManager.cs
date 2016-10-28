@@ -20,6 +20,8 @@
 
         private readonly Menu menu;
 
+        private readonly Hero myHero;
+
         private readonly List<string> radiusOnlyAbilities = new List<string>
             {
                 "nevermore_shadowraze1",
@@ -33,6 +35,8 @@
 
         public MenuManager()
         {
+            myHero = ObjectManager.LocalHero;
+
             menu = new Menu("Advanced Ranges", "advancedRanges", true);
             menu.AddToMainMenu();
         }
@@ -41,30 +45,52 @@
 
         #region Public Events
 
-        public event EventHandler<AbilityArgs> OnChange;
+        public event EventHandler<AbilityEventArgs> OnChange;
 
         #endregion
 
         #region Public Methods and Operators
 
-        public async void AddHeroMenu(Hero hero)
+        public async Task AddHeroMenu(Hero hero)
         {
             var heroName = hero.StoredName();
             var heroMenu = new Menu(hero.GetRealName(), heroName, false, heroName, true);
+            menu.AddSubMenu(heroMenu);
             heroMenus.Add(hero, heroMenu);
 
-            foreach (var ability in hero.Spellbook.Spells.Where(x => !x.IsHidden))
-            {
-                AddMenuItem(hero, ability);
-                await Task.Delay(222);
-            }
+            await AddMenuItem(hero, null, Ranges.CustomRange.Attack);
+            await AddMenuItem(hero, null, Ranges.CustomRange.Expiriece);
 
-            menu.AddSubMenu(heroMenu);
+            foreach (var ability in
+                hero.Spellbook.Spells.Where(
+                    x => !x.IsHidden && x.ClassID != ClassID.CDOTA_Ability_AttributeBonus && !x.Name.Contains("empty")))
+            {
+                await AddMenuItem(hero, ability);
+            }
         }
 
-        public async void AddMenuItem(Hero hero, Ability ability)
+        public async Task AddMenuItem(
+            Hero hero,
+            Ability ability,
+            Ranges.CustomRange customRange = Ranges.CustomRange.None)
         {
-            var abilityName = ability is Item ? ability.GetDefaultName() : ability.StoredName();
+            var abilityName = ability is Item ? ability.GetDefaultName() : ability?.StoredName();
+            var texture = abilityName;
+            var menuName = string.Empty;
+
+            switch (customRange)
+            {
+                case Ranges.CustomRange.Attack:
+                    abilityName = "attackRange";
+                    menuName = "Attack range";
+                    texture = null;
+                    break;
+                case Ranges.CustomRange.Expiriece:
+                    abilityName = "expRange";
+                    menuName = "Exp range";
+                    texture = null;
+                    break;
+            }
 
             if (string.IsNullOrEmpty(abilityName))
             {
@@ -72,27 +98,38 @@
             }
 
             var key = hero.StoredName() + abilityName;
-            var abilityMenu = new Menu("  ", key, false, abilityName, true);
 
-            var enable = new MenuItem(key + "enabled", "Enabled").SetValue(false);
-
-            if (ability.ClassID == ClassID.CDOTA_Ability_AttributeBonus)
+            if (hero.Equals(myHero))
             {
-                enable.SetTooltip("Experience range");
+                key += "myHero";
             }
 
+            var abilityMenu = new Menu(texture == null ? menuName : " ", key, false, texture, true);
+
+            var enable = new MenuItem(key + "enabled", "Enabled").SetValue(false);
+            await Task.Delay(100);
+
             var radiusOnly = new MenuItem(key + "radius", "Damage radius only").SetValue(false);
+            await Task.Delay(100);
+
             var red = new MenuItem(key + "red", "Red").SetValue(new Slider(255, 0, 255));
+            await Task.Delay(100);
+
             var green = new MenuItem(key + "green", "Green").SetValue(new Slider(0, 0, 255));
+            await Task.Delay(100);
+
             var blue = new MenuItem(key + "blue", "Blue").SetValue(new Slider(0, 0, 255));
+            await Task.Delay(100);
 
             enable.ValueChanged += (sender, arg) =>
                 {
                     var enabled = arg.GetNewValue<bool>();
-                    abilityMenu.DisplayName = enabled ? " *" : "  ";
+                    abilityMenu.DisplayName = enabled
+                                                  ? abilityMenu.DisplayName + "*"
+                                                  : abilityMenu.DisplayName.Replace("*", "");
                     OnChange?.Invoke(
                         this,
-                        new AbilityArgs
+                        new AbilityEventArgs
                             {
                                 Hero = hero,
                                 Name = abilityName,
@@ -105,7 +142,7 @@
                 {
                     OnChange?.Invoke(
                         this,
-                        new AbilityArgs
+                        new AbilityEventArgs
                             {
                                 Hero = hero,
                                 Name = abilityName,
@@ -119,7 +156,7 @@
                 {
                     OnChange?.Invoke(
                         this,
-                        new AbilityArgs
+                        new AbilityEventArgs
                             {
                                 Hero = hero,
                                 Name = abilityName,
@@ -131,7 +168,7 @@
                 {
                     OnChange?.Invoke(
                         this,
-                        new AbilityArgs
+                        new AbilityEventArgs
                             {
                                 Hero = hero,
                                 Name = abilityName,
@@ -143,7 +180,7 @@
                 {
                     OnChange?.Invoke(
                         this,
-                        new AbilityArgs
+                        new AbilityEventArgs
                             {
                                 Hero = hero,
                                 Name = abilityName,
@@ -152,24 +189,23 @@
                 };
 
             abilityMenu.AddItem(enable);
-            await Task.Delay(222);
             if (radiusOnlyAbilities.Contains(abilityName))
             {
                 abilityMenu.AddItem(radiusOnly);
-                await Task.Delay(222);
+                await Task.Delay(50);
             }
             abilityMenu.AddItem(red.SetFontColor(Color.IndianRed));
-            await Task.Delay(222);
+            await Task.Delay(50);
             abilityMenu.AddItem(green.SetFontColor(Color.LightGreen));
-            await Task.Delay(222);
+            await Task.Delay(50);
             abilityMenu.AddItem(blue.SetFontColor(Color.LightBlue));
-            await Task.Delay(222);
+            await Task.Delay(50);
             heroMenus.First(x => x.Key.Equals(hero)).Value.AddSubMenu(abilityMenu);
-            await Task.Delay(222);
+            await Task.Delay(50);
 
             OnChange?.Invoke(
                 this,
-                new AbilityArgs
+                new AbilityEventArgs
                     {
                         Hero = hero,
                         Name = abilityName,
@@ -181,13 +217,14 @@
                         Redraw = true
                     });
 
-            abilityMenu.DisplayName = enable.IsActive() ? " *" : "  ";
+            abilityMenu.DisplayName = enable.IsActive()
+                                          ? abilityMenu.DisplayName + "  *"
+                                          : abilityMenu.DisplayName + "  ";
         }
 
         public void OnClose()
         {
             menu.RemoveFromMainMenu();
-            heroMenus.Clear();
         }
 
         #endregion

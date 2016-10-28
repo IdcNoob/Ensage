@@ -4,7 +4,7 @@ namespace AdvancedRangeDisplay
 
     using Ensage;
 
-    internal class AbilityArgs : EventArgs
+    internal class AbilityEventArgs : EventArgs
     {
         #region Public Properties
 

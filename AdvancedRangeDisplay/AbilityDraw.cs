@@ -17,6 +17,16 @@
             Hero = hero;
             Name = abilityName;
             FindAbility();
+
+            switch (Name)
+            {
+                case "attackRange":
+                    CustomRange = Ranges.CustomRange.Attack;
+                    break;
+                case "expRange":
+                    CustomRange = Ranges.CustomRange.Expiriece;
+                    break;
+            }
         }
 
         #endregion
@@ -27,7 +37,7 @@
 
         public int Blue { get; set; }
 
-        public float CastRange { get; set; }
+        public Ranges.CustomRange CustomRange { get; }
 
         public bool Disabled { get; set; }
 
@@ -37,6 +47,8 @@
 
         public bool IsValid => Ability != null && Ability.IsValid;
 
+        public uint Level => IsValid ? Ability.Level : 1;
+
         public string Name { get; }
 
         public ParticleEffect ParticleEffect { get; set; }
@@ -44,6 +56,8 @@
         public float Radius { get; set; }
 
         public bool RadiusOnly { get; set; }
+
+        public float Range { get; set; }
 
         public float RealCastRange { get; set; }
 
@@ -88,8 +102,21 @@
 
         public void UpdateCastRange(bool radiusOnly = false)
         {
-            RealCastRange = Ability.ClassID == ClassID.CDOTA_Ability_AttributeBonus ? 1450 : Ability.GetRealCastRange();
-            CastRange = Ability.GetCastRange();
+            switch (CustomRange)
+            {
+                case Ranges.CustomRange.Attack:
+                    var attackRange = Hero.GetAttackRange();
+                    RealCastRange = Hero.GetRealAttackRange();
+                    Range = attackRange;
+                    return;
+                case Ranges.CustomRange.Expiriece:
+                    RealCastRange = 1450;
+                    Range = 1450;
+                    return;
+            }
+
+            RealCastRange = Ability.GetRealCastRange();
+            Range = Ability.GetCastRange();
             Radius = Ability.GetRadius() + 25;
         }
 
