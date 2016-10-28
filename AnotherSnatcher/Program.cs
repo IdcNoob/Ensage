@@ -122,6 +122,8 @@
         private static void OnClose(object sender, EventArgs e)
         {
             Game.OnUpdate -= Game_OnUpdate;
+            Player.OnExecuteOrder -= PlayerOnExecuteOrder;
+
             DroppedItems.Clear();
         }
 
