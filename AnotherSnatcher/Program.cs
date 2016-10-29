@@ -16,11 +16,21 @@
 
         private static readonly List<uint> DroppedItems = new List<uint>();
 
+        private static float delay;
+
         private static Hero hero;
+
+        private static AbilityToggler holdAbilities;
+
+        private static bool holdKey;
 
         private static Menu menu;
 
         private static Sleeper sleeper;
+
+        private static AbilityToggler toggleAbilities;
+
+        private static bool toggleKey;
 
         #endregion
 
@@ -33,20 +43,19 @@
                 return;
             }
 
-            var holdKey = menu.Item("holdSnatchKey").GetValue<KeyBind>().Active;
-            var toggleKey = menu.Item("pressSnatchKey").GetValue<KeyBind>().Active;
-
             if (!hero.IsAlive || Game.IsPaused || (!holdKey && !toggleKey))
             {
-                sleeper.Sleep(menu.Item("sleep").GetValue<Slider>().Value);
+                sleeper.Sleep(delay);
                 return;
             }
 
-            if ((toggleKey && menu.Item("enabledStealToggle").GetValue<AbilityToggler>().IsEnabled("rune_doubledamage"))
-                || (holdKey && menu.Item("enabledStealHold").GetValue<AbilityToggler>().IsEnabled("rune_doubledamage")))
+            if ((toggleKey && toggleAbilities.IsEnabled("rune_doubledamage"))
+                || (holdKey && holdAbilities.IsEnabled("rune_doubledamage")))
             {
-                var rune = ObjectManager.GetEntities<Rune>()
-                    .FirstOrDefault(x => x.IsVisible && x.Distance2D(hero) < 400);
+                var rune =
+                    ObjectManager.GetEntitiesParallel<Rune>()
+                        .FirstOrDefault(x => x.IsVisible && x.Distance2D(hero) < 400);
+
                 if (rune != null)
                 {
                     hero.PickUpRune(rune);
@@ -57,26 +66,20 @@
 
             if (hero.Inventory.FreeSlots.Any())
             {
-                var aegis = (toggleKey
-                             && menu.Item("enabledStealToggle").GetValue<AbilityToggler>().IsEnabled("item_aegis"))
-                            || (holdKey
-                                && menu.Item("enabledStealHold").GetValue<AbilityToggler>().IsEnabled("item_aegis"));
+                var aegis = (toggleKey && toggleAbilities.IsEnabled("item_aegis"))
+                            || (holdKey && holdAbilities.IsEnabled("item_aegis"));
 
-                var cheese = (toggleKey
-                              && menu.Item("enabledStealToggle").GetValue<AbilityToggler>().IsEnabled("item_cheese"))
-                             || (holdKey
-                                 && menu.Item("enabledStealHold").GetValue<AbilityToggler>().IsEnabled("item_cheese"));
+                var cheese = (toggleKey && toggleAbilities.IsEnabled("item_cheese"))
+                             || (holdKey && holdAbilities.IsEnabled("item_cheese"));
 
-                var rapier = (toggleKey
-                              && menu.Item("enabledStealToggle").GetValue<AbilityToggler>().IsEnabled("item_rapier"))
-                             || (holdKey
-                                 && menu.Item("enabledStealHold").GetValue<AbilityToggler>().IsEnabled("item_rapier"));
+                var rapier = (toggleKey && toggleAbilities.IsEnabled("item_rapier"))
+                             || (holdKey && holdAbilities.IsEnabled("item_rapier"));
 
-                var gem = (toggleKey && menu.Item("enabledStealToggle").GetValue<AbilityToggler>().IsEnabled("item_gem"))
-                          || (holdKey && menu.Item("enabledStealHold").GetValue<AbilityToggler>().IsEnabled("item_gem"));
+                var gem = (toggleKey && toggleAbilities.IsEnabled("item_gem"))
+                          || (holdKey && holdAbilities.IsEnabled("item_gem"));
 
                 var item =
-                    ObjectManager.GetEntities<PhysicalItem>()
+                    ObjectManager.GetEntitiesParallel<PhysicalItem>()
                         .FirstOrDefault(
                             x =>
                             x.IsVisible && x.Distance2D(hero) < 400 && !DroppedItems.Contains(x.Item.Handle)
@@ -90,29 +93,39 @@
                     return;
                 }
             }
-            sleeper.Sleep(menu.Item("sleep").GetValue<Slider>().Value);
+
+            sleeper.Sleep(delay);
         }
 
         private static void Main()
         {
             menu = new Menu("Another Snatcher", "anotherSnatcher", true);
 
-            var itemsToggle = new Dictionary<string, bool>
+            var items = new List<string>
                 {
-                    { "item_gem", true },
-                    { "item_cheese", true },
-                    { "item_rapier", true },
-                    { "item_aegis", true },
-                    { "rune_doubledamage", true }
+                    "item_gem",
+                    "item_cheese",
+                    "item_rapier",
+                    "item_aegis",
+                    "rune_doubledamage"
                 };
-            var itemsHold = new Dictionary<string, bool>(itemsToggle);
 
-            menu.AddItem(new MenuItem("holdSnatchKey", "Hold key").SetValue(new KeyBind('O', KeyBindType.Press)));
-            menu.AddItem(new MenuItem("enabledStealHold", "Hold steal:").SetValue(new AbilityToggler(itemsToggle)));
-            menu.AddItem(new MenuItem("pressSnatchKey", "Toggle key").SetValue(new KeyBind('P', KeyBindType.Toggle)));
-            menu.AddItem(new MenuItem("enabledStealToggle", "Toggle steal:").SetValue(new AbilityToggler(itemsHold)));
-            menu.AddItem(new MenuItem("sleep", "Check delay").SetValue(new Slider(200, 0, 500)));
+            menu.AddItem(new MenuItem("holdSnatchKey", "Hold key").SetValue(new KeyBind('O', KeyBindType.Press)))
+                .ValueChanged += (sender, args) => holdKey = args.GetNewValue<KeyBind>().Active;
+            menu.AddItem(
+                new MenuItem("enabledStealHold", "Hold steal:").SetValue(
+                    holdAbilities = new AbilityToggler(items.ToDictionary(x => x, x => true))));
+            menu.AddItem(new MenuItem("pressSnatchKey", "Toggle key").SetValue(new KeyBind('P', KeyBindType.Toggle)))
+                .ValueChanged += (sender, args) => toggleKey = args.GetNewValue<KeyBind>().Active;
+            menu.AddItem(
+                new MenuItem("enabledStealToggle", "Toggle steal:").SetValue(
+                    toggleAbilities = new AbilityToggler(items.ToDictionary(x => x, x => true))));
+            menu.AddItem(new MenuItem("sleep", "Check delay").SetValue(new Slider(200, 0, 500))).ValueChanged +=
+                (sender, args) => delay = args.GetNewValue<Slider>().Value;
 
+            toggleKey = menu.Item("pressSnatchKey").GetValue<KeyBind>().Active;
+            delay = menu.Item("sleep").GetValue<Slider>().Value;
+            Console.WriteLine(delay);
             menu.AddToMainMenu();
 
             Events.OnLoad += OnLoad;
