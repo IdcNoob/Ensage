@@ -36,6 +36,8 @@
             CounterAbilities.AddRange(VsMagic);
             CounterAbilities.AddRange(Invul);
             CounterAbilities.Add(SnowBall);
+            CounterAbilities.AddRange(Invis);
+            CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Lotus);
 
             ModifierAllyCounter.AddRange(Invul);

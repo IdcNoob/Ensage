@@ -31,6 +31,8 @@
             CounterAbilities.Add(Lotus);
             CounterAbilities.Add(NetherWard);
             CounterAbilities.AddRange(Invis);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
 
             AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "damage_delay").Value;
         }

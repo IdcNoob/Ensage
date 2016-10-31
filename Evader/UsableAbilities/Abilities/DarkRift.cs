@@ -16,9 +16,7 @@
     {
         #region Fields
 
-        private readonly Unit fountain =
-            ObjectManager.GetEntitiesFast<Unit>()
-                .First(x => x.ClassID == ClassID.CDOTA_Unit_Fountain && x.Team == HeroTeam);
+        private readonly Unit fountain;
 
         #endregion
 
@@ -27,6 +25,9 @@
         public DarkRift(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
             : base(ability, type, target)
         {
+            fountain =
+                ObjectManager.GetEntities<Unit>()
+                    .First(x => x.ClassID == ClassID.CDOTA_Unit_Fountain && x.Team == HeroTeam);
         }
 
         #endregion

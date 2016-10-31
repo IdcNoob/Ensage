@@ -35,6 +35,8 @@
             CounterAbilities.AddRange(VsPhys);
             CounterAbilities.Add(SnowBall);
             CounterAbilities.Add(Lotus);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
             CounterAbilities.AddRange(Invis);
 
             ModifierAllyCounter.AddRange(AllyShields);

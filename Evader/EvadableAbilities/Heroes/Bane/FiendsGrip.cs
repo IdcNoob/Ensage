@@ -38,6 +38,9 @@
             CounterAbilities.AddRange(Invul);
             CounterAbilities.AddRange(Invis);
             CounterAbilities.Add(SnowBall);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Lotus);
+            CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(NetherWard);
 
             duration = Ability.AbilitySpecialData.First(x => x.Name == "fiend_grip_duration").Value;

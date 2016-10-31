@@ -42,6 +42,8 @@
             CounterAbilities.AddRange(VsMagic);
             CounterAbilities.AddRange(Invis);
             CounterAbilities.Add(SnowBall);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Manta);
 
             ObstacleStays = true;

@@ -33,9 +33,9 @@
                 DisableAbilities.AddRange(AbilityNames.DisableAbilityNames);
                 BlinkAbilities.AddRange(AbilityNames.BlinkAbilityNames);
             }
-            Debugger.WriteLine("///////// " + GetType().Name + " (" + Name + ")");
+            Debugger.WriteLine("///////// Evadable ability // " + GetType().Name + " (" + Name + ")");
             Debugger.WriteLine("// Cast point: " + CastPoint);
-            Debugger.WriteLine("// Owner: " + AbilityOwner.Name);
+            Debugger.WriteLine("// Owner: " + AbilityOwner.GetName());
             Debugger.WriteLine("// Is disable: " + IsDisable);
             Debugger.WriteLine("// Pierces Magic Immunity: " + PiercesMagicImmunity);
         }
@@ -44,9 +44,13 @@
 
         #region Public Properties
 
+        public Ability Ability { get; }
+
         public int AbilityLevelIgnore { get; set; }
 
         public Unit AbilityOwner { get; }
+
+        public int AllyHpIgnore { get; set; }
 
         public List<string> BlinkAbilities { get; } = new List<string>();
 
@@ -62,7 +66,7 @@
 
         public bool IgnorePathfinder { get; protected set; }
 
-        public bool IsDisable { get; }
+        public bool IsDisable { get; protected set; }
 
         public bool IsInPhase => Ability.IsInAbilityPhase;
 
@@ -72,7 +76,6 @@
 
         public bool ModifierCounterEnabled { get; set; }
 
-        //public int AllyHpIgnore { get; set; }
         //public int HeroMpIgnore { get; set; }
 
         public List<string> ModifierEnemyCounter { get; } = new List<string>();
@@ -98,8 +101,6 @@
         #endregion
 
         #region Properties
-
-        protected Ability Ability { get; }
 
         protected AbilityDrawer AbilityDrawer { get; set; } = new AbilityDrawer();
 
@@ -167,7 +168,7 @@
             return EndCast - Game.RawGameTime;
         }
 
-        public float TimeSinceCast()
+        public virtual float TimeSinceCast()
         {
             if (Ability.Level <= 0 || !AbilityOwner.IsVisible)
             {

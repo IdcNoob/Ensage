@@ -18,14 +18,6 @@
 
         private readonly float radius;
 
-        private bool fowCast;
-
-        private bool projectileAdded;
-
-        private Vector3 projectilePostion;
-
-        private Hero projectileTarget;
-
         #endregion
 
         #region Constructors and Destructors
@@ -46,6 +38,18 @@
 
         #endregion
 
+        #region Properties
+
+        protected bool FowCast { get; set; }
+
+        protected bool ProjectileAdded { get; set; }
+
+        protected Vector3 ProjectilePostion { get; set; }
+
+        protected Hero ProjectileTarget { get; set; }
+
+        #endregion
+
         #region Public Methods and Operators
 
         public override void Check()
@@ -58,13 +62,13 @@
                 EndPosition = AbilityOwner.InFront(GetCastRange());
                 Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
             }
-            else if (projectileTarget != null && Obstacle == null && !fowCast)
+            else if (ProjectileTarget != null && Obstacle == null && !FowCast)
             {
-                fowCast = true;
+                FowCast = true;
                 StartCast = Game.RawGameTime;
                 EndCast = StartCast + GetCastRange() / GetProjectileSpeed();
                 StartPosition = AbilityOwner.NetworkPosition;
-                EndPosition = StartPosition.Extend(projectileTarget.Position, GetCastRange());
+                EndPosition = StartPosition.Extend(ProjectileTarget.Position, GetCastRange());
                 Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
             }
             else if (StartCast > 0 && Game.RawGameTime > EndCast)
@@ -79,17 +83,17 @@
                     Pathfinder.UpdateObstacle(Obstacle.Value, StartPosition, EndPosition);
                     AbilityDrawer.UpdateRectaglePosition(StartPosition, EndPosition, GetRadius());
                 }
-                else if (projectileTarget != null)
+                else if (ProjectileTarget != null)
                 {
                     AbilityDrawer.Dispose(AbilityDrawer.Type.Rectangle);
                     //    EndCast = Game.RawGameTime + GetProjectilePosition(fowCast).Distance2D(projectileTarget) / GetProjectileSpeed();
                     EndPosition = StartPosition.Extend(
-                        projectileTarget.Position,
-                        projectileTarget.Distance2D(StartPosition) + GetRadius());
+                        ProjectileTarget.Position,
+                        ProjectileTarget.Distance2D(StartPosition) + GetRadius());
                     Pathfinder.UpdateObstacle(
                         Obstacle.Value,
-                        projectileTarget.NetworkPosition.Extend(StartPosition, GetRadius()),
-                        projectileTarget.NetworkPosition.Extend(EndPosition, GetRadius()));
+                        ProjectileTarget.NetworkPosition.Extend(StartPosition, GetRadius()),
+                        ProjectileTarget.NetworkPosition.Extend(EndPosition, GetRadius()));
                 }
             }
         }
@@ -121,15 +125,15 @@
 
             base.End();
 
-            projectileTarget = null;
-            projectilePostion = new Vector3();
-            fowCast = false;
-            projectileAdded = false;
+            ProjectileTarget = null;
+            ProjectilePostion = new Vector3();
+            FowCast = false;
+            ProjectileAdded = false;
         }
 
         public override float GetRemainingDisableTime()
         {
-            return fowCast ? 0 : base.GetRemainingDisableTime();
+            return FowCast ? 0 : base.GetRemainingDisableTime();
         }
 
         public override float GetRemainingTime(Hero hero = null)
@@ -139,15 +143,15 @@
                 hero = Hero;
             }
 
-            var position = projectileTarget?.NetworkPosition ?? hero.NetworkPosition;
+            var position = ProjectileTarget?.NetworkPosition ?? hero.NetworkPosition;
 
             if (position.Distance2D(AbilityOwner) < 250)
             {
                 return StartCast + CastPoint - Game.RawGameTime;
             }
 
-            return StartCast + (fowCast ? -0.1f : CastPoint)
-                   + Math.Max(position.Distance2D(GetProjectilePosition(fowCast)) - 100 - GetRadius(), 0)
+            return StartCast + (FowCast ? -0.1f : CastPoint)
+                   + Math.Max(position.Distance2D(GetProjectilePosition(FowCast)) - 100 - GetRadius(), 0)
                    / GetProjectileSpeed() - Game.RawGameTime;
         }
 
@@ -158,22 +162,22 @@
 
         public override bool IsStopped()
         {
-            return base.IsStopped() && !fowCast;
+            return base.IsStopped() && !FowCast;
         }
 
         public bool ProjectileLaunched()
         {
-            return Game.RawGameTime >= StartCast + CastPoint - 0.06f || projectileAdded;
+            return Game.RawGameTime >= StartCast + CastPoint - 0.06f || ProjectileAdded;
         }
 
         public void SetProjectile(Vector3 position, Hero target)
         {
-            if (!projectileAdded)
+            if (!ProjectileAdded)
             {
-                projectileTarget = target;
-                projectileAdded = true;
+                ProjectileTarget = target;
+                ProjectileAdded = true;
             }
-            projectilePostion = position;
+            ProjectilePostion = position;
         }
 
         #endregion
@@ -187,7 +191,7 @@
 
         protected override Vector3 GetProjectilePosition(bool ignoreCastPoint = false)
         {
-            return projectileAdded ? projectilePostion : StartPosition;
+            return ProjectileAdded ? ProjectilePostion : StartPosition;
         }
 
         protected override float GetRadius()

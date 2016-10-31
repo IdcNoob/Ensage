@@ -27,6 +27,8 @@
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(Invul);
             CounterAbilities.Add(SnowBall);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
             CounterAbilities.AddRange(Invis);
 
             AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "crack_time").Value;

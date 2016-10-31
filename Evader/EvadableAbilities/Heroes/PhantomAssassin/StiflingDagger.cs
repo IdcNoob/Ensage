@@ -20,6 +20,8 @@
             CounterAbilities.Add(BallLightning);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsPhys);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Lotus);
 
             CounterAbilities.Remove(BladeMail);

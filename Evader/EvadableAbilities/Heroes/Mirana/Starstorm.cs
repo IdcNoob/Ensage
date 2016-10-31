@@ -13,13 +13,13 @@
         public Starstorm(Ability ability)
             : base(ability)
         {
-            //todo add aghs ?
-
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(SleightOfFist);
             CounterAbilities.Add(BallLightning);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
         }
 
         #endregion

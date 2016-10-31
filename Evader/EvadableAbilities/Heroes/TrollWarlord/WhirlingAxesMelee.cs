@@ -40,6 +40,8 @@
             CounterAbilities.Add(Eul);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsPhys);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
 
             ModifierAllyCounter.Add(Lotus);
             ModifierAllyCounter.Add(Manta);

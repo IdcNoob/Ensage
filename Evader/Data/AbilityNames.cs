@@ -19,6 +19,8 @@
             "treant_living_armor",
         };
 
+        public static string Armlet { get; } = "item_armlet";
+
         public static string AstralImprisonment { get; } = "obsidian_destroyer_astral_imprisonment";
 
         public static string BallLightning { get; } = "storm_spirit_ball_lightning";
@@ -44,6 +46,8 @@
             "item_force_staff",
             "item_hurricane_pike"
         };
+
+        public static string Bloodstone { get; } = "item_bloodstone";
 
         public static string ColdEmbrace { get; } = "winter_wyvern_cold_embrace";
 

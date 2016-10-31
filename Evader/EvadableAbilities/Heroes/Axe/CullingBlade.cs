@@ -22,6 +22,8 @@
             CounterAbilities.Add(Manta);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.Add(SnowBall);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Lotus);
         }
 

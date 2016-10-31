@@ -39,6 +39,8 @@
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsPhys);
             CounterAbilities.Add(SnowBall);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
 
             CounterAbilities.Remove("slark_dark_pact");
             BlinkAbilities.Remove("slark_pounce");

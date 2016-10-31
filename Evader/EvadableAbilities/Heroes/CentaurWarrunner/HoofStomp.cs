@@ -33,7 +33,10 @@
             CounterAbilities.AddRange(VsDisable);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsPhys);
+            CounterAbilities.AddRange(Invis);
             CounterAbilities.Add(SnowBall);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
 
             ModifierAllyCounter.AddRange(AllyShields);
             ModifierAllyCounter.AddRange(Invul);

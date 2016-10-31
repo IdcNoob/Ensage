@@ -24,7 +24,7 @@
 
         #region Public Methods and Operators
 
-        public override bool CanBeCasted(Unit unit)
+        public override bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
             return !Sleeper.Sleeping && Hero.HasModifier("modifier_morphling_replicate_timer") && Ability.CanBeCasted();
         }

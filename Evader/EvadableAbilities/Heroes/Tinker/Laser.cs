@@ -30,6 +30,8 @@
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsLowPureMagic);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Lotus);
 
             ModifierAllyCounter.Add(Lotus);

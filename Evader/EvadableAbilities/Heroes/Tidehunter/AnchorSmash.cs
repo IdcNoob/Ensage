@@ -19,6 +19,8 @@
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.Add("item_ghost");
             CounterAbilities.Add("item_buckler");
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
         }
 
         #endregion

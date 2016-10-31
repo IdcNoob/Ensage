@@ -5,6 +5,8 @@
     using Ensage;
     using Ensage.Common.Extensions;
 
+    using SharpDX;
+
     using static Data.AbilityNames;
 
     using LinearProjectile = Base.LinearProjectile;
@@ -22,6 +24,8 @@
             CounterAbilities.AddRange(VsDisable);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsPhys);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
         }
 
         #endregion
@@ -37,7 +41,8 @@
 
             StartCast = Game.RawGameTime;
             StartPosition = AbilityOwner.NetworkPosition;
-            EndPosition = AbilityOwner.InFront(GetCastRange());
+            EndPosition = StartPosition
+                          + (Vector3)(VectorExtensions.FromPolarAngle(AbilityOwner.RotationRad) * GetCastRange());
             EndCast = StartCast + GetCastRange() / GetProjectileSpeed();
             Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
         }

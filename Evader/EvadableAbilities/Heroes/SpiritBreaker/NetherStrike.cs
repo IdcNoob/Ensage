@@ -21,6 +21,8 @@
             CounterAbilities.Add(TricksOfTheTrade);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Lotus);
             CounterAbilities.AddRange(Invis);
         }

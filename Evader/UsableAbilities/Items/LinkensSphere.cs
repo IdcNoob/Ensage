@@ -8,6 +8,8 @@
 
     using Ensage;
 
+    using EvadableAbilities.Base;
+
     using AbilityType = Data.AbilityType;
 
     internal class LinkensSphere : Targetable
@@ -23,14 +25,14 @@
 
         #region Public Methods and Operators
 
-        public override bool CanBeCasted(Unit unit)
+        public override bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
             if (Variables.Hero.Equals(unit))
             {
                 return false;
             }
 
-            return base.CanBeCasted(unit);
+            return base.CanBeCasted(ability, unit);
         }
 
         #endregion

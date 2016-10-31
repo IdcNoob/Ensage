@@ -23,6 +23,8 @@
             CounterAbilities.Add(Eul);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsPhys);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
 
             speed = 800;
         }

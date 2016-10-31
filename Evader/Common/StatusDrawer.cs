@@ -1,6 +1,7 @@
 ﻿namespace Evader.Common
 {
     using Core;
+    using Core.Menus;
 
     using Ensage;
     using Ensage.Common;
@@ -60,14 +61,14 @@
 
         public void Draw()
         {
-            if (!Menu.Enabled)
+            if (!Menu.Hotkeys.EnabledEvader)
             {
                 return;
             }
 
             Drawing.DrawText(EvaderText, Font, evaderTextPosition, textSize, textColor, FontFlags.None);
 
-            if (Menu.EnabledPathfinder)
+            if (Menu.Hotkeys.EnabledPathfinder)
             {
                 Drawing.DrawText(PathfinderText, Font, pathfinderTextPosition, textSize, textColor, FontFlags.None);
             }

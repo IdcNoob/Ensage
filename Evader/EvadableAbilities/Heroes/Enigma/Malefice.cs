@@ -3,12 +3,13 @@
     using System.Linq;
 
     using Base;
+    using Base.Interfaces;
 
     using Ensage;
 
     using static Data.AbilityNames;
 
-    internal class Malefice : LinearTarget
+    internal class Malefice : LinearTarget, IModifier
     {
         #region Fields
 
@@ -31,7 +32,6 @@
             CounterAbilities.AddRange(VsMagic);
             CounterAbilities.AddRange(Invis);
             CounterAbilities.Add(SnowBall);
-            CounterAbilities.Add(Lotus);
             CounterAbilities.Remove("abaddon_aphotic_shield");
 
             ModifierAllyCounter.Add(Lotus);
@@ -47,6 +47,12 @@
 
         #endregion
 
+        #region Public Properties
+
+        public uint ModifierHandle { get; private set; }
+
+        #endregion
+
         #region Public Methods and Operators
 
         public void AddModifer(Modifier modifier, Hero hero)
@@ -58,6 +64,7 @@
 
             abilityModifier = modifier;
             modifierSource = hero;
+            ModifierHandle = modifier.Handle;
         }
 
         public bool CanBeCountered()

@@ -23,7 +23,7 @@
 
         #region Public Methods and Operators
 
-        public override bool CanBeCasted(Unit unit)
+        public override bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
             return !Sleeper.Sleeping && Ability.CanBeCasted();
         }

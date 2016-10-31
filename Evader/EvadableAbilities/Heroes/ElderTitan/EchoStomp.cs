@@ -39,6 +39,7 @@
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);
             CounterAbilities.Add(SnowBall);
+            CounterAbilities.Add(Bloodstone);
             CounterAbilities.Remove("abaddon_aphotic_shield");
 
             ModifierAllyCounter.AddRange(AllyShields);

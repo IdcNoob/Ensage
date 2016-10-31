@@ -2,6 +2,8 @@
 {
     using Ensage;
 
+    using Menus;
+
     internal static class Variables
     {
         #region Public Properties

@@ -9,6 +9,8 @@
     using Ensage;
     using Ensage.Common.Extensions;
 
+    using EvadableAbilities.Base;
+
     using AbilityType = Data.AbilityType;
 
     internal class SearingChains : NotTargetable
@@ -24,7 +26,7 @@
 
         #region Public Methods and Operators
 
-        public override bool CanBeCasted(Unit unit)
+        public override bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
             // todo: fix ally check
 

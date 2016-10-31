@@ -24,6 +24,7 @@
             CounterAbilities.AddRange(VsPhys);
             CounterAbilities.AddRange(Invis);
             CounterAbilities.Add(Lotus);
+            CounterAbilities.Add(Armlet);
         }
 
         #endregion

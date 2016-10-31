@@ -4,7 +4,11 @@
 
     using Base.Interfaces;
 
+    using Common;
+
     using Ensage;
+    using Ensage.Common.Extensions;
+    using Ensage.Common.Extensions.SharpDX;
 
     using static Data.AbilityNames;
 
@@ -14,9 +18,15 @@
     {
         #region Fields
 
+        private readonly float stunRadius;
+
+        private readonly Ability unstableConcoction;
+
         private Modifier abilityModifier;
 
         private Hero modifierSource;
+
+        private bool obstacleToAOE;
 
         #endregion
 
@@ -33,14 +43,18 @@
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsPhys);
             CounterAbilities.Add(SnowBall);
-            CounterAbilities.Add(Lotus);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
             CounterAbilities.AddRange(Invis);
+            CounterAbilities.Add(Lotus);
 
             ModifierAllyCounter.AddRange(AllyShields);
             ModifierAllyCounter.AddRange(Invul);
             ModifierAllyCounter.AddRange(VsPhys);
 
             IsDisjointable = false;
+            stunRadius = Ability.AbilitySpecialData.First(x => x.Name == "midair_explosion_radius").Value + 100;
+            unstableConcoction = AbilityOwner.FindSpell("alchemist_unstable_concoction");
         }
 
         #endregion
@@ -75,6 +89,69 @@
             return !Ability.IsHidden && base.CanBeStopped();
         }
 
+        public override void Check()
+        {
+            if (StartCast <= 0 && IsInPhase && AbilityOwner.IsVisible)
+            {
+                StartCast = Game.RawGameTime;
+                EndCast = StartCast + CastPoint + GetCastRange() / GetProjectileSpeed();
+                StartPosition = AbilityOwner.NetworkPosition;
+                EndPosition = AbilityOwner.InFront(GetCastRange());
+                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
+            }
+            else if (ProjectileTarget != null && Obstacle == null && !FowCast)
+            {
+                FowCast = true;
+                StartCast = Game.RawGameTime;
+                EndCast = StartCast + GetCastRange() / GetProjectileSpeed();
+                StartPosition = AbilityOwner.NetworkPosition;
+                EndPosition = StartPosition.Extend(ProjectileTarget.Position, GetCastRange());
+                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
+            }
+            else if (StartCast > 0 && Game.RawGameTime > EndCast)
+            {
+                End();
+            }
+            else if (Obstacle != null)
+            {
+                if (!ProjectileLaunched())
+                {
+                    EndPosition = AbilityOwner.InFront(GetCastRange());
+                    Pathfinder.UpdateObstacle(Obstacle.Value, StartPosition, EndPosition);
+                    AbilityDrawer.UpdateRectaglePosition(StartPosition, EndPosition, GetRadius());
+                }
+                else if (ProjectileTarget != null)
+                {
+                    AbilityDrawer.Dispose(AbilityDrawer.Type.Rectangle);
+                    EndCast = Game.RawGameTime
+                              + (ProjectileTarget.Distance2D(GetProjectilePosition(FowCast)) - 50)
+                              / GetProjectileSpeed();
+
+                    if (!obstacleToAOE)
+                    {
+                        Obstacle = Pathfinder.AddObstacle(ProjectileTarget.Position, stunRadius, Obstacle);
+                        obstacleToAOE = true;
+                    }
+                    else
+                    {
+                        Pathfinder.UpdateObstacle(Obstacle.Value, ProjectileTarget.Position, stunRadius);
+                    }
+                }
+            }
+        }
+
+        public override void End()
+        {
+            if (Obstacle == null)
+            {
+                return;
+            }
+
+            base.End();
+
+            obstacleToAOE = false;
+        }
+
         public float GetModiferRemainingTime()
         {
             return abilityModifier.RemainingTime;
@@ -85,10 +162,38 @@
             return allies.FirstOrDefault(x => x.Equals(modifierSource));
         }
 
+        public override float GetRemainingTime(Hero hero = null)
+        {
+            if (hero == null)
+            {
+                hero = Hero;
+            }
+
+            var position = ProjectileTarget?.NetworkPosition ?? hero.NetworkPosition;
+
+            if (position.Distance2D(AbilityOwner) < 150)
+            {
+                return StartCast + CastPoint - Game.RawGameTime;
+            }
+
+            return EndCast - Game.RawGameTime;
+        }
+
         public void RemoveModifier(Modifier modifier)
         {
             abilityModifier = null;
             modifierSource = null;
+        }
+
+        public override float TimeSinceCast()
+        {
+            if (unstableConcoction.Level <= 0 || !AbilityOwner.IsVisible)
+            {
+                return float.MaxValue;
+            }
+
+            var cooldownLength = unstableConcoction.CooldownLength;
+            return cooldownLength <= 0 ? float.MaxValue : cooldownLength - unstableConcoction.Cooldown - 5;
         }
 
         #endregion

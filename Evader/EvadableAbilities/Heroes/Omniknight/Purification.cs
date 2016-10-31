@@ -22,6 +22,8 @@
             CounterAbilities.AddRange(VsLowPureMagic);
             CounterAbilities.AddRange(Invul);
             CounterAbilities.Add(SnowBall);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
         }
 
         #endregion

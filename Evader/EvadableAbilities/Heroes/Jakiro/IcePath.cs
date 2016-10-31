@@ -32,6 +32,8 @@
             CounterAbilities.Add(Eul);
             CounterAbilities.AddRange(VsDisable);
             CounterAbilities.Add(SnowBall);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
             CounterAbilities.Remove("bane_nightmare");
             CounterAbilities.Remove("abaddon_aphotic_shield");
 

@@ -41,6 +41,8 @@
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);
             CounterAbilities.Add(SnowBall);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
             CounterAbilities.AddRange(Invis);
             CounterAbilities.Remove("abaddon_aphotic_shield");
 

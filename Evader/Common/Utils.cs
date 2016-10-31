@@ -39,9 +39,12 @@
             {
                 case "npc_dota_neutral_centaur_khan":
                     return "Centaur Conqueror";
+                case "npc_dota_neutral_satyr_hellcaller":
+                    return "Satyr Tormenter";
             }
 
-            return null;
+            Debugger.WriteLine("Real name not found for: " + unit.Name);
+            return string.Empty;
         }
 
         public static float GetRealCastRange(this Ability ability)

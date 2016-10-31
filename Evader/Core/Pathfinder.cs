@@ -13,7 +13,7 @@
 
     using SharpDX;
 
-    internal class Pathfinder
+    internal class Pathfinder : IDisposable
     {
         #region Fields
 
@@ -28,7 +28,7 @@
         public Pathfinder()
         {
             Pathfinding = new NavMeshPathfinding();
-            Game.OnUpdate += PositionUpdater;
+            Game.OnUpdate += OnUpdate;
         }
 
         #endregion
@@ -142,10 +142,9 @@
                 out success);
         }
 
-        public void Close()
+        public void Dispose()
         {
-            Game.OnUpdate -= PositionUpdater;
-            units.Clear();
+            Game.OnUpdate -= OnUpdate;
         }
 
         public IEnumerable<uint> GetIntersectingObstacles(Hero hero)
@@ -195,16 +194,13 @@
 
         #region Methods
 
-        private void PositionUpdater(EventArgs args)
+        private void OnUpdate(EventArgs args)
         {
             if (!sleeper.Sleeping(units))
             {
                 foreach (var unit in
                     ObjectManager.GetEntitiesParallel<Unit>()
-                        .Where(
-                            x =>
-                            x.IsValid && !units.ContainsKey(x) /*&& (x is Creep || x is Hero || x is Building)*/
-                            && x.IsSpawned && x.IsAlive && !x.Equals(Hero)))
+                        .Where(x => x.IsValid && !units.ContainsKey(x) && x.IsSpawned && x.IsAlive && !x.Equals(Hero)))
                 {
                     var obstacle = AddObstacle(unit.NetworkPosition, unit.HullRadius);
                     if (obstacle != null)

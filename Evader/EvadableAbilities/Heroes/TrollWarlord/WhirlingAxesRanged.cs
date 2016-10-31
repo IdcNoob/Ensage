@@ -17,6 +17,9 @@
 
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.AddRange(VsDamage);
+            CounterAbilities.AddRange(VsPhys);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
         }
 
         #endregion

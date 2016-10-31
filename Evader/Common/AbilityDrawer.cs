@@ -107,7 +107,7 @@
 
         public void DrawCircle(Vector3 position, float radius)
         {
-            if (!Variables.Menu.DebugAbilities || circle != null)
+            if (!Variables.Menu.Debug.DrawAbilities || circle != null)
             {
                 return;
             }

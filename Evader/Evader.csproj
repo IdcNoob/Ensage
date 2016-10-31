@@ -54,14 +54,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Bootstrap.cs" />
+    <Compile Include="Core\Menus\AlliesSettingsMenu.cs" />
+    <Compile Include="Core\Menus\DebugMenu.cs" />
+    <Compile Include="Core\Menus\EnemiesSettingsMenu.cs" />
+    <Compile Include="Core\Menus\HotkeysMenu.cs" />
+    <Compile Include="Core\Menus\RandomiserMenu.cs" />
+    <Compile Include="Core\Menus\SettingsMenu.cs" />
+    <Compile Include="Core\Menus\UsableAbilitiesMenu.cs" />
     <Compile Include="Data\AbilityNames.cs" />
     <Compile Include="Common\AbilityUpdater.cs" />
-    <Compile Include="Data\Abilities.cs" />
+    <Compile Include="Data\EnemyAbilities.cs" />
+    <Compile Include="Data\AdditionalAbilityData.cs" />
     <Compile Include="Data\Enums.cs" />
     <Compile Include="Core\Evader.cs" />
-    <Compile Include="Core\MenuManager.cs" />
+    <Compile Include="Core\Menus\MenuManager.cs" />
     <Compile Include="Core\Pathfinder.cs" />
     <Compile Include="Core\Variables.cs" />
+    <Compile Include="Data\AllyAbilities.cs" />
     <Compile Include="EvadableAbilities\Base\AOE.cs" />
     <Compile Include="EvadableAbilities\Base\EvadableAbility.cs" />
     <Compile Include="EvadableAbilities\Base\Interfaces\IModifier.cs" />
@@ -110,6 +119,7 @@
     <Compile Include="EvadableAbilities\Heroes\Kunkka\Torrent.cs" />
     <Compile Include="EvadableAbilities\Heroes\LegionCommander\Duel.cs" />
     <Compile Include="EvadableAbilities\Heroes\LegionCommander\OverwhelmingOdds.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Lich\ChainFrost.cs" />
     <Compile Include="EvadableAbilities\Heroes\Lich\FrostBlast.cs" />
     <Compile Include="EvadableAbilities\Heroes\Lina\LagunaBlade.cs" />
     <Compile Include="EvadableAbilities\Heroes\Lina\LightStrikeArray.cs" />
@@ -218,9 +228,13 @@
     <Compile Include="EvadableAbilities\Items\Bloodthorn.cs" />
     <Compile Include="EvadableAbilities\Items\EtherealBlade.cs" />
     <Compile Include="EvadableAbilities\Items\OrchidMalevolence.cs" />
+    <Compile Include="EvadableAbilities\Items\ScytheOfVyse.cs" />
     <Compile Include="EvadableAbilities\Units\CentaurConqueror\WarStomp.cs" />
     <Compile Include="EvadableAbilities\Units\Familiar\StoneForm.cs" />
+    <Compile Include="EvadableAbilities\Units\SatyrTormenter\Hadouken.cs" />
     <Compile Include="UsableAbilities\Abilities\BallLightning.cs" />
+    <Compile Include="UsableAbilities\Items\ArmletOfMordiggian.cs" />
+    <Compile Include="UsableAbilities\Items\Bloodstone.cs" />
     <Compile Include="UsableAbilities\Abilities\DarkRift.cs" />
     <Compile Include="UsableAbilities\Abilities\EchoSlam.cs" />
     <Compile Include="UsableAbilities\Abilities\FireRemnant.cs" />

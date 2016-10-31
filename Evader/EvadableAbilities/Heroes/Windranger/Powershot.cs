@@ -38,8 +38,12 @@
             channelTime = ability.GetChannelTime(0);
 
             CounterAbilities.Add(PhaseShift);
+            CounterAbilities.Add(Eul);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);
+            CounterAbilities.AddRange(VsPhys);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
         }
 
         #endregion

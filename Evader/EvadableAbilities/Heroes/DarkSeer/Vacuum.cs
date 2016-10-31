@@ -19,6 +19,7 @@
             CounterAbilities.Add(Manta);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);
+            CounterAbilities.Add(Armlet);
         }
 
         #endregion

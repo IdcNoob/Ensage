@@ -22,6 +22,7 @@
             CounterAbilities.Add(SleightOfFist);
             CounterAbilities.Add(TricksOfTheTrade);
             CounterAbilities.AddRange(Invis);
+            CounterAbilities.Add(Armlet);
         }
 
         #endregion

@@ -17,6 +17,7 @@
             CounterAbilities.Add(BallLightning);
             CounterAbilities.Add(Manta);
             CounterAbilities.Add(SleightOfFist);
+            CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Lotus);
         }
 

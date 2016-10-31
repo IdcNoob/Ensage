@@ -35,6 +35,8 @@
             CounterAbilities.AddRange(VsPhys);
             CounterAbilities.AddRange(Invis);
             CounterAbilities.Add(SnowBall);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
             CounterAbilities.Remove("item_glimmer_cape");
 
             ModifierAllyCounter.AddRange(AllyShields);

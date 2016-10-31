@@ -22,6 +22,7 @@
             CounterAbilities.AddRange(VsMagic);
             CounterAbilities.AddRange(Invul);
             CounterAbilities.Add(SnowBall);
+            CounterAbilities.Add(Lotus);
             CounterAbilities.Add(NetherWard);
         }
 

@@ -5,6 +5,7 @@
     using System.Linq;
 
     using Core;
+    using Core.Menus;
 
     using Data;
 
@@ -16,18 +17,19 @@
 
     using UsableAbilities.Base;
 
-    internal class AbilityUpdater
+    using AbilityType = Data.AbilityType;
+
+    internal class AbilityUpdater : IDisposable
     {
         #region Fields
 
         private readonly List<uint> addedAbilities = new List<uint>();
 
-        //todo: move lists from core
-        private readonly List<EvadableAbility> evadableAbilities;
+        private readonly AllyAbilities allyAbilitiesData;
+
+        private readonly EnemyAbilities enemyAbilitiesData;
 
         private readonly Sleeper sleeper;
-
-        private readonly List<UsableAbility> usableAbilities;
 
         private bool processing;
 
@@ -35,15 +37,23 @@
 
         #region Constructors and Destructors
 
-        public AbilityUpdater(List<UsableAbility> usable, List<EvadableAbility> evadable)
+        public AbilityUpdater()
         {
-            usableAbilities = usable;
-            evadableAbilities = evadable;
             sleeper = new Sleeper();
+            allyAbilitiesData = new AllyAbilities();
+            enemyAbilitiesData = new EnemyAbilities();
 
-            Game.OnUpdate += Update;
+            Game.OnUpdate += OnUpdate;
             ObjectManager.OnRemoveEntity += OnRemoveEntity;
         }
+
+        #endregion
+
+        #region Public Properties
+
+        public List<EvadableAbility> EvadableAbilities { get; } = new List<EvadableAbility>();
+
+        public List<UsableAbility> UsableAbilities { get; } = new List<UsableAbility>();
 
         #endregion
 
@@ -59,25 +69,29 @@
 
         #region Public Methods and Operators
 
-        public void Close()
+        public void Dispose()
         {
             ObjectManager.OnRemoveEntity -= OnRemoveEntity;
-            Game.OnUpdate -= Update;
+            Game.OnUpdate -= OnUpdate;
 
-            addedAbilities.Clear();
-            evadableAbilities.Clear();
-            usableAbilities.Clear();
+            foreach (var disposable in UsableAbilities.OfType<IDisposable>())
+            {
+                disposable.Dispose();
+            }
         }
 
         public void OnRemoveEntity(EntityEventArgs args)
         {
             var handle = args.Entity.Handle;
 
-            evadableAbilities.RemoveAll(x => x.Handle == handle || x.OwnerHandle == handle);
-            usableAbilities.RemoveAll(x => x.Handle == handle);
+            var disposable = UsableAbilities.FirstOrDefault(x => x.Handle == handle) as IDisposable;
+            disposable?.Dispose();
+
+            EvadableAbilities.RemoveAll(x => x.Handle == handle || x.OwnerHandle == handle);
+            UsableAbilities.RemoveAll(x => x.Handle == handle);
         }
 
-        public async void Update(EventArgs args)
+        public async void OnUpdate(EventArgs args)
         {
             if (processing || sleeper.Sleeping || !Game.IsInGame)
             {
@@ -111,30 +125,30 @@
                         var abilityName = ability.Name;
 
                         Func<Ability, UsableAbility> func;
-                        if (Abilities.EvadeCounterAbilities.TryGetValue(abilityName, out func))
+                        if (allyAbilitiesData.CounterAbilities.TryGetValue(abilityName, out func))
                         {
-                            Menu.AddUsableCounterAbility(abilityName);
-                            usableAbilities.Add(func.Invoke(ability));
+                            Menu.UsableAbilities.AddAbility(abilityName, AbilityType.Counter);
+                            UsableAbilities.Add(func.Invoke(ability));
                         }
-                        if (Abilities.EvadeDisableAbilities.TryGetValue(abilityName, out func))
+                        if (allyAbilitiesData.DisableAbilities.TryGetValue(abilityName, out func))
                         {
-                            usableAbilities.Add(func.Invoke(ability));
-                            Menu.AddUsableDisableAbility(abilityName);
+                            Menu.UsableAbilities.AddAbility(abilityName, AbilityType.Disable);
+                            UsableAbilities.Add(func.Invoke(ability));
                         }
-                        if (Abilities.EvadeBlinkAbilities.TryGetValue(abilityName, out func))
+                        if (allyAbilitiesData.BlinkAbilities.TryGetValue(abilityName, out func))
                         {
-                            usableAbilities.Add(func.Invoke(ability));
-                            Menu.AddUsableBlinkAbility(abilityName);
+                            Menu.UsableAbilities.AddAbility(abilityName, AbilityType.Blink);
+                            UsableAbilities.Add(func.Invoke(ability));
                         }
                     }
                     else if (unit.Team != HeroTeam || ability.ClassID == ClassID.CDOTA_Ability_FacelessVoid_Chronosphere)
                     {
                         Func<Ability, EvadableAbility> func;
-                        if (Abilities.EvadableAbilities.TryGetValue(ability.Name, out func))
+                        if (enemyAbilitiesData.EvadableAbilities.TryGetValue(ability.Name, out func))
                         {
                             var evadableAbility = func.Invoke(ability);
-                            await Menu.AddEvadableAbility(evadableAbility);
-                            evadableAbilities.Add(evadableAbility);
+                            await Menu.EnemiesSettings.AddAbility(evadableAbility);
+                            EvadableAbilities.Add(evadableAbility);
                         }
                     }
 

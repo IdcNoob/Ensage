@@ -28,6 +28,8 @@
             CounterAbilities.Add(Manta);
             CounterAbilities.Add(Eul);
             CounterAbilities.AddRange(VsDamage);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
 
             AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "delay").Value;
         }

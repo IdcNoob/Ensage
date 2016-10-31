@@ -25,6 +25,8 @@
             CounterAbilities.AddRange(Invul);
             CounterAbilities.Add(SnowBall);
             CounterAbilities.Add(Lotus);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
             CounterAbilities.AddRange(Invis);
         }
 

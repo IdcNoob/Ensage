@@ -23,6 +23,8 @@
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(Invul);
             CounterAbilities.Add(SnowBall);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(NetherWard);
             CounterAbilities.AddRange(Invis);
         }

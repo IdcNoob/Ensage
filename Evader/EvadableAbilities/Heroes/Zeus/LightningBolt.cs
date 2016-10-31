@@ -13,6 +13,8 @@
         public LightningBolt(Ability ability)
             : base(ability)
         {
+            IsDisable = false;
+
             BlinkAbilities.Clear();
             DisableAbilities.Clear();
 
@@ -23,6 +25,8 @@
             CounterAbilities.Add(Manta);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Lotus);
             CounterAbilities.Add(NetherWard);
             CounterAbilities.AddRange(Invis);

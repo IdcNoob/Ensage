@@ -26,8 +26,8 @@
         {
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.AddRange(VsDamage);
-            CounterAbilities.Add(Lotus);
 
+            ModifierAllyCounter.Add(Lotus);
             ModifierAllyCounter.Add(Manta);
             ModifierAllyCounter.Add(Eul);
             ModifierAllyCounter.AddRange(AllyShields);

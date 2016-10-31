@@ -40,7 +40,7 @@
             CanBeUsedOnEnemy = target.HasFlag(AbilityCastTarget.Enemy) || type == AbilityType.Disable;
             CanBeUsedOnAlly = target.HasFlag(AbilityCastTarget.Ally);
 
-            Debugger.WriteLine("///////// " + Name);
+            Debugger.WriteLine("///////// UsableAbility // " + Name);
             Debugger.WriteLine("// Type: " + Type);
             Debugger.WriteLine("// Cast point: " + CastPoint);
             Debugger.WriteLine("// Cast range: " + Ability.GetRealCastRange());
@@ -88,7 +88,7 @@
 
         #region Public Methods and Operators
 
-        public virtual bool CanBeCasted(Unit unit)
+        public virtual bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
             return !Sleeper.Sleeping && Ability.CanBeCasted() && Hero.Distance2D(unit) <= GetCastRange()
                    && CheckEnemy(unit);

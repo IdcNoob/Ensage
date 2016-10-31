@@ -37,37 +37,37 @@
             switch (type)
             {
                 case Type.Random:
-                    if (!Variables.Menu.DebugConsoleRandom)
+                    if (!Variables.Menu.Debug.LogRandom)
                     {
                         return;
                     }
                     break;
                 case Type.Particles:
-                    if (!Variables.Menu.DebugConsoleParticles)
+                    if (!Variables.Menu.Debug.LogParticles)
                     {
                         return;
                     }
                     break;
                 case Type.Modifiers:
-                    if (!Variables.Menu.DebugConsoleModifiers)
+                    if (!Variables.Menu.Debug.LogModifiers)
                     {
                         return;
                     }
                     break;
                 case Type.Units:
-                    if (!Variables.Menu.DebugConsoleUnits)
+                    if (!Variables.Menu.Debug.LogUnits)
                     {
                         return;
                     }
                     break;
                 case Type.Projectiles:
-                    if (!Variables.Menu.DebugConsoleProjectiles)
+                    if (!Variables.Menu.Debug.LogProjectiles)
                     {
                         return;
                     }
                     break;
                 case Type.Intersectons:
-                    if (!Variables.Menu.DebugConsoleIntersection)
+                    if (!Variables.Menu.Debug.LogIntersection)
                     {
                         return;
                     }

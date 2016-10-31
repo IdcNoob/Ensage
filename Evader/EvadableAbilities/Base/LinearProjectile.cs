@@ -104,6 +104,21 @@
             AbilityDrawer.UpdateCirclePosition(GetProjectilePosition());
         }
 
+        public float GetProjectileRadius(Vector3 position = new Vector3())
+        {
+            if (GetRadius().Equals(GetEndRadius()))
+            {
+                return GetRadius();
+            }
+
+            if (position.IsZero)
+            {
+                position = GetProjectilePosition();
+            }
+
+            return (GetEndRadius() - GetRadius()) * (StartPosition.Distance2D(position) / GetCastRange()) + GetRadius();
+        }
+
         public virtual float GetProjectileSpeed()
         {
             return speed;
@@ -144,21 +159,6 @@
                        : StartPosition.Extend(
                            EndPosition,
                            (Game.RawGameTime - StartCast - (ignoreCastPoint ? 0 : CastPoint)) * GetProjectileSpeed());
-        }
-
-        protected float GetProjectileRadius(Vector3 position = new Vector3())
-        {
-            if (GetRadius().Equals(GetEndRadius()))
-            {
-                return GetRadius();
-            }
-
-            if (position.IsZero)
-            {
-                position = GetProjectilePosition();
-            }
-
-            return (GetEndRadius() - GetRadius()) * (StartPosition.Distance2D(position) / GetCastRange()) + GetRadius();
         }
 
         protected override float GetRadius()
