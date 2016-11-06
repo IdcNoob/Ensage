@@ -19,15 +19,25 @@
 
         private static MenuItem aggroMove;
 
-        private static MenuItem enabled;
+        private static MenuItem enabledHarras;
+
+        private static MenuItem enabledTowerUnnagro;
 
         private static Hero hero;
 
         private static Team heroTeam;
 
+        private static Vector3 lastAttackPosition;
+
+        private static Vector3 lastMovePosition;
+
+        private static Unit lastTarget;
+
         private static Menu menu;
 
         private static Orbwalker orbwalker;
+
+        private static bool restorePreviousAction;
 
         private static MenuItem showText;
 
@@ -39,6 +49,8 @@
 
         private static MenuItem textY;
 
+        private static MenuItem towerUnnagroHp;
+
         private static MenuItem unaggro;
 
         private static MenuItem unaggroMove;
@@ -47,20 +59,59 @@
 
         #region Methods
 
-        private static void DrawingOnDraw(EventArgs args)
+        private static void Aggro()
         {
-            if (!showText.IsActive() || !enabled.IsActive())
+            var enemy =
+                ObjectManager.GetEntitiesParallel<Hero>()
+                    .Where(x => x.IsValid && x.IsAlive && !x.IsInvul() && x.Team != heroTeam)
+                    .OrderBy(x => hero.FindRelativeAngle(x.Position))
+                    .FirstOrDefault();
+
+            if (enemy == null)
             {
                 return;
             }
 
-            Drawing.DrawText(
-                "Harass helper",
-                "Arial",
-                new Vector2(textX.GetValue<Slider>().Value, textY.GetValue<Slider>().Value),
-                new Vector2(21),
-                Color.White,
-                FontFlags.None);
+            hero.Attack(enemy);
+
+            if (aggroMove.IsActive())
+            {
+                hero.Move(Game.MousePosition);
+            }
+            else
+            {
+                hero.Stop();
+            }
+        }
+
+        private static void DrawingOnDraw(EventArgs args)
+        {
+            if (!showText.IsActive())
+            {
+                return;
+            }
+
+            if (enabledHarras.IsActive())
+            {
+                Drawing.DrawText(
+                    "Harass helper",
+                    "Arial",
+                    new Vector2(textX.GetValue<Slider>().Value, textY.GetValue<Slider>().Value),
+                    new Vector2(21),
+                    Color.White,
+                    FontFlags.None);
+            }
+
+            if (enabledTowerUnnagro.IsActive())
+            {
+                Drawing.DrawText(
+                    "Tower unnagro",
+                    "Arial",
+                    new Vector2(textX.GetValue<Slider>().Value, textY.GetValue<Slider>().Value + 21),
+                    new Vector2(21),
+                    Color.White,
+                    FontFlags.None);
+            }
         }
 
         private static void GameOnIngameUpdate(EventArgs args)
@@ -79,51 +130,68 @@
 
             if (aggro.IsActive())
             {
-                var enemy =
-                    ObjectManager.GetEntitiesParallel<Hero>()
-                        .Where(x => x.IsValid && x.IsAlive && !x.IsInvul() && x.Team != heroTeam)
-                        .OrderBy(x => hero.FindRelativeAngle(x.Position))
-                        .FirstOrDefault();
-
-                if (enemy != null)
-                {
-                    hero.Attack(enemy);
-                    if (aggroMove.IsActive())
-                    {
-                        hero.Move(Game.MousePosition);
-                    }
-                    else
-                    {
-                        hero.Stop();
-                    }
-                    return;
-                }
+                Aggro();
+                return;
             }
 
             if (unaggro.IsActive())
             {
-                var ally =
-                    ObjectManager.GetEntitiesParallel<Creep>()
-                        .Where(x => x.IsValid && x.IsAlive && x.IsSpawned && x.Team == heroTeam)
-                        .OrderBy(x => hero.FindRelativeAngle(x.Position))
-                        .FirstOrDefault();
+                UnAggro();
+                return;
+            }
 
-                if (ally != null)
+            if (enabledTowerUnnagro.IsActive() && hero.Health < towerUnnagroHp.GetValue<Slider>().Value)
+            {
+                var tower =
+                    ObjectManager.GetEntitiesParallel<Tower>()
+                        .FirstOrDefault(
+                            x =>
+                                x.IsValid && x.IsAlive && x.Team != heroTeam && x.AttackTarget is Hero
+                                && x.AttackTarget.Equals(hero));
+
+                if (tower != null && !(lastTarget is Hero))
                 {
-                    hero.Attack(ally);
-                    if (unaggroMove.IsActive())
+                    var otherUnits =
+                        ObjectManager.GetEntitiesParallel<Unit>()
+                            .Any(
+                                x =>
+                                    x.IsValid && !x.Equals(hero) && x.IsAlive && x.IsSpawned && x.Team == heroTeam
+                                    && x.ClassID != ClassID.CDOTA_BaseNPC_Creep_Siege
+                                    && x.Distance2D(tower) < tower.AttackRange);
+
+                    if (otherUnits)
                     {
-                        hero.Move(Game.MousePosition);
+                        UnAggro(true);
+                        restorePreviousAction = true;
+                        sleeper.Sleep(1000);
+                        return;
+                    }
+                }
+
+                if (tower == null && restorePreviousAction)
+                {
+                    restorePreviousAction = false;
+
+                    if (!lastMovePosition.IsZero)
+                    {
+                        hero.Move(lastMovePosition);
+                    }
+                    else if (!lastAttackPosition.IsZero)
+                    {
+                        hero.Attack(lastMovePosition);
+                    }
+                    else if (lastTarget != null && lastTarget.IsValid && lastTarget.IsVisible && lastTarget.IsAlive)
+                    {
+                        hero.Attack(lastTarget);
                     }
                     else
                     {
                         hero.Stop();
                     }
-                    return;
                 }
             }
 
-            if (!enabled.IsActive() || target == null || !target.IsAlive)
+            if (!enabledHarras.IsActive() || target == null || !target.IsAlive)
             {
                 return;
             }
@@ -142,26 +210,36 @@
         {
             menu = new Menu("Harass Helper", "harassHelper", true);
 
-            menu.AddItem(enabled = new MenuItem("enabled", "Enabled").SetValue(new KeyBind('Z', KeyBindType.Toggle)));
+            menu.AddItem(
+                enabledHarras = new MenuItem("enabled", "Enabled").SetValue(new KeyBind('Z', KeyBindType.Toggle)));
             menu.AddItem(showText = new MenuItem("showText", "Show active text").SetValue(true));
             menu.AddItem(
                 textX = new MenuItem("textX", "Text position X").SetValue(new Slider(10, 0, (int)HUDInfo.ScreenSizeX())));
             menu.AddItem(
                 textY =
-                new MenuItem("textY", "Text position Y").SetValue(
-                    new Slider((int)(HUDInfo.ScreenSizeY() * 0.70), 0, (int)HUDInfo.ScreenSizeY())));
+                    new MenuItem("textY", "Text position Y").SetValue(
+                        new Slider((int)(HUDInfo.ScreenSizeY() * 0.70), 0, (int)HUDInfo.ScreenSizeY())));
 
             menu.AddItem(aggro = new MenuItem("aggro", "Aggro key").SetValue(new KeyBind(107, KeyBindType.Press)));
             menu.AddItem(unaggro = new MenuItem("unaggro", "Unaggro key").SetValue(new KeyBind(109, KeyBindType.Press)));
 
             menu.AddItem(
                 aggroMove =
-                new MenuItem("aggroMove", "Aggro move").SetValue(false)
-                    .SetTooltip("Move to mouse position when using aggro"));
+                    new MenuItem("aggroMove", "Aggro move").SetValue(false)
+                        .SetTooltip("Move to mouse position when using aggro"));
             menu.AddItem(
                 unaggroMove =
-                new MenuItem("unaggroMove", "Unaggro move").SetValue(false)
-                    .SetTooltip("Move to mouse position when using unaggro"));
+                    new MenuItem("unaggroMove", "Unaggro move").SetValue(false)
+                        .SetTooltip("Move to mouse position when using unaggro"));
+
+            menu.AddItem(
+                enabledTowerUnnagro =
+                    new MenuItem("enabledTowerUnnagro", "Auto tower unnagro").SetValue(
+                        new KeyBind('X', KeyBindType.Toggle)));
+            menu.AddItem(
+                towerUnnagroHp =
+                    new MenuItem("towerUnnagro", "Auto tower unnagro when hp lower than").SetValue(
+                        new Slider(600, 0, 2000)));
 
             menu.AddToMainMenu();
 
@@ -190,34 +268,90 @@
 
         private static void PlayerOnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!enabled.IsActive() || !args.Entities.Contains(hero))
+            if (!args.Entities.Contains(hero))
             {
                 return;
             }
 
-            if (args.Order == Order.AttackTarget)
+            switch (args.Order)
             {
-                target = args.Target as Hero;
+                case Order.AttackTarget:
+                        lastAttackPosition = new Vector3();
+                        lastMovePosition = new Vector3();
+                        lastTarget = args.Target as Unit;
 
-                if (target == null)
-                {
-                    return;
-                }
-                if (target.Team == heroTeam)
-                {
+                    if (!enabledHarras.IsActive())
+                    {
+                        return;
+                    }
+
+                    target = args.Target as Hero;
+
+                    if (target == null)
+                    {
+                        return;
+                    }
+                    if (target.Team == heroTeam)
+                    {
+                        target = null;
+                        return;
+                    }
+
+                    if (hero.Distance2D(target) > hero.GetAttackRange())
+                    {
+                        args.Process = false;
+                        sleeper.Sleep(0);
+                    }
+                    break;
+                case Order.AttackLocation:
+                    lastMovePosition = new Vector3();
+                    lastTarget = null;
                     target = null;
-                    return;
-                }
+                    lastAttackPosition = args.TargetPosition;
+                    break;
+                case Order.MoveLocation:
+                    lastTarget = null;
+                    target = null;
+                    lastAttackPosition = new Vector3();
+                    lastMovePosition = args.TargetPosition;
+                    break;
+                default:
+                    target = null;
+                    lastTarget = null;
+                    lastAttackPosition = new Vector3();
+                    lastMovePosition = new Vector3();
+                    break;
+            }
+        }
 
-                if (hero.Distance2D(target) > hero.GetAttackRange())
-                {
-                    args.Process = false;
-                    sleeper.Sleep(0);
-                }
+        private static void UnAggro(bool towerUnnagro = false)
+        {
+            var ally =
+                ObjectManager.GetEntitiesParallel<Creep>()
+                    .Where(x => x.IsValid && x.IsAlive && x.IsSpawned && x.Team == heroTeam)
+                    .OrderBy(x => hero.FindRelativeAngle(x.Position))
+                    .FirstOrDefault();
+
+            if (ally == null)
+            {
+                return;
+            }
+
+            hero.Attack(ally);
+
+            if (towerUnnagro)
+            {
+                DelayAction.Add(200, () => hero.Stop());
+                return;
+            }
+
+            if (unaggroMove.IsActive())
+            {
+                hero.Move(Game.MousePosition);
             }
             else
             {
-                target = null;
+                hero.Stop();
             }
         }
 
