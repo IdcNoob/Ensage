@@ -19,6 +19,8 @@
 
         private static MenuItem aggroMove;
 
+        private static Hero currentTarget;
+
         private static MenuItem enabledHarras;
 
         private static MenuItem enabledTowerUnnagro;
@@ -42,8 +44,6 @@
         private static MenuItem showText;
 
         private static Sleeper sleeper;
-
-        private static Hero target;
 
         private static MenuItem textX;
 
@@ -191,18 +191,18 @@
                 }
             }
 
-            if (!enabledHarras.IsActive() || target == null || !target.IsAlive)
+            if (!enabledHarras.IsActive() || currentTarget == null || !currentTarget.IsAlive)
             {
                 return;
             }
 
-            if (hero.Distance2D(target) > hero.GetAttackRange() && !hero.IsAttacking())
+            if (hero.Distance2D(currentTarget) > hero.GetAttackRange() && !hero.IsAttacking())
             {
-                hero.Move(target.Position);
+                hero.Move(currentTarget.Position);
             }
             else
             {
-                orbwalker.OrbwalkOn(target);
+                orbwalker.OrbwalkOn(currentTarget);
             }
         }
 
@@ -273,53 +273,44 @@
                 return;
             }
 
+            currentTarget = null;
+            lastTarget = null;
+            lastAttackPosition = new Vector3();
+            lastMovePosition = new Vector3();
+
             switch (args.Order)
             {
                 case Order.AttackTarget:
-                        lastAttackPosition = new Vector3();
-                        lastMovePosition = new Vector3();
-                        lastTarget = args.Target as Unit;
+                    lastTarget = args.Target as Unit;
 
                     if (!enabledHarras.IsActive())
                     {
                         return;
                     }
 
-                    target = args.Target as Hero;
+                    currentTarget = args.Target as Hero;
 
-                    if (target == null)
+                    if (currentTarget == null)
                     {
                         return;
                     }
-                    if (target.Team == heroTeam)
+                    if (currentTarget.Team == heroTeam)
                     {
-                        target = null;
+                        currentTarget = null;
                         return;
                     }
 
-                    if (hero.Distance2D(target) > hero.GetAttackRange())
+                    if (hero.Distance2D(currentTarget) > hero.GetAttackRange())
                     {
                         args.Process = false;
                         sleeper.Sleep(0);
                     }
                     break;
                 case Order.AttackLocation:
-                    lastMovePosition = new Vector3();
-                    lastTarget = null;
-                    target = null;
                     lastAttackPosition = args.TargetPosition;
                     break;
                 case Order.MoveLocation:
-                    lastTarget = null;
-                    target = null;
-                    lastAttackPosition = new Vector3();
                     lastMovePosition = args.TargetPosition;
-                    break;
-                default:
-                    target = null;
-                    lastTarget = null;
-                    lastAttackPosition = new Vector3();
-                    lastMovePosition = new Vector3();
                     break;
             }
         }
