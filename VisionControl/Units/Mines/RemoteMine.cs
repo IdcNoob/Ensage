@@ -28,8 +28,8 @@
         {
             Duration = unit.FindModifier("modifier_techies_remote_mine")?.RemainingTime
                        ?? Ability.GetAbilityDataByName(AbilityName)
-                              .AbilitySpecialData.First(x => x.Name == "duration")
-                              .Value;
+                           .AbilitySpecialData.First(x => x.Name == "duration")
+                           .Value;
             if (Menu.RangeEnabled(AbilityName))
             {
                 ParticleEffect = new ParticleEffect("particles/ui_mouseactions/drag_selected_ring.vpcf", unit.Position);

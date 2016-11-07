@@ -80,6 +80,11 @@
             return Position.Distance2D(unit);
         }
 
+        public float Distance(Vector3 position)
+        {
+            return Unit?.Distance2D(position) ?? Position.Distance2D(position);
+        }
+
         public virtual void UpdateData(Unit unit)
         {
             Unit = unit;

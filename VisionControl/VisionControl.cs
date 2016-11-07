@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Permissions;
 
     using Ensage;
     using Ensage.Common;
@@ -45,46 +46,39 @@
 
         public void OnAddEntity(EntityEventArgs args)
         {
-            DelayAction.Add(
-                500f,
-                () =>
-                    {
-                        var unit = args.Entity as Unit;
+            var unit = args.Entity as Unit;
 
-                        if (unit == null || !unit.IsValid || !unit.IsAlive || unit.Team == heroTeam || !Game.IsInGame)
-                        {
-                            return;
-                        }
+            if (unit == null || !unit.IsValid || !unit.IsAlive || unit.Team == heroTeam || !Game.IsInGame)
+            {
+                return;
+            }
 
-                        string abilityName;
-                        if (!Variables.UnitAbilityNames.TryGetValue(unit.Name, out abilityName)
-                            || !Menu.IsEnabled(abilityName))
-                        {
-                            return;
-                        }
+            string abilityName;
+            if (!Variables.UnitAbilityNames.TryGetValue(unit.Name, out abilityName) || !Menu.IsEnabled(abilityName))
+            {
+                return;
+            }
 
-                        Func<Unit, IUnit> func;
-                        if (Variables.Units.TryGetValue(abilityName, out func))
-                        {
-                            if (unit.ClassID == ClassID.CDOTA_NPC_Observer_Ward && UpdateData<ObserverWard>(unit))
-                            {
-                                return;
-                            }
+            Func<Unit, IUnit> func;
+            if (Variables.Units.TryGetValue(abilityName, out func))
+            {
+                if (unit.ClassID == ClassID.CDOTA_NPC_Observer_Ward && UpdateData<ObserverWard>(unit))
+                {
+                    return;
+                }
 
-                            if (unit.ClassID == ClassID.CDOTA_NPC_Observer_Ward_TrueSight
-                                && UpdateData<SentryWard>(unit))
-                            {
-                                return;
-                            }
+                if (unit.ClassID == ClassID.CDOTA_NPC_Observer_Ward_TrueSight && UpdateData<SentryWard>(unit))
+                {
+                    return;
+                }
 
-                            if (unit.Name == "npc_dota_techies_remote_mine" && UpdateData<RemoteMine>(unit, 20))
-                            {
-                                return;
-                            }
+                if (unit.Name == "npc_dota_techies_remote_mine" && UpdateData<RemoteMine>(unit, 20))
+                {
+                    return;
+                }
 
-                            units.Add(func.Invoke(unit));
-                        }
-                    });
+                units.Add(func.Invoke(unit));
+            }
         }
 
         public void OnClose()
@@ -149,62 +143,45 @@
             enemyTeam = hero.GetEnemyTeam();
             heroTeam = hero.Team;
             sleeper = new MultiSleeper();
-
-            try
-            {
-                Drawing.GetTexture("materials/ensage_ui/other/plague_ward");
-            }
-            catch (DotaTextureNotFoundException)
-            {
-                Game.PrintMessage(
-                    "<font color='#ff5b2f'>[Vision Control]</font> Please update texture pack",
-                    MessageType.LogMessage);
-            }
         }
 
         public void OnParticleEffectAdded(Entity sender, ParticleEffectAddedEventArgs args)
         {
             DelayAction.Add(
-                1000f,
-                () =>
+                1000,
+                () => {
+                    if (args.Name.Contains("techies_remote_mine_plant"))
                     {
-                        if (args.Name == "particles/units/heroes/hero_techies/techies_remote_mine_plant.vpcf"
-                            || args.Name
-                            == "particles/econ/items/techies/techies_arcana/techies_remote_mine_plant_arcana.vpcf")
+                        if (!Menu.IsEnabled("techies_remote_mines") || sender.Team == heroTeam)
                         {
-                            if (!Menu.IsEnabled("techies_remote_mines") || sender.Team == heroTeam)
-                            {
-                                return;
-                            }
-
-                            var position = args.ParticleEffect.GetControlPoint(1);
-
-                            if (position.IsZero
-                                || units.Any(x => x is RemoteMine && x.Position.Distance2D(position) < 10))
-                            {
-                                return;
-                            }
-
-                            units.Add(new RemoteMine(position));
+                            return;
                         }
 
-                        if (args.Name == "particles/units/heroes/hero_techies/techies_remote_mines_detonate.vpcf"
-                            || args.Name
-                            == " particles/econ/items/techies/techies_arcana/techies_remote_mines_detonate_arcana.vpcf")
+                        var position = args.ParticleEffect.GetControlPoint(1);
+
+                        if (position.IsZero || units.Any(x => x is RemoteMine && x.Position.Distance2D(position) < 10))
                         {
-                            var remote =
-                                units.FirstOrDefault(
-                                    x =>
+                            return;
+                        }
+
+                        units.Add(new RemoteMine(position));
+                    }
+
+                    if (args.Name.Contains("techies_remote_mines_detonate"))
+                    {
+                        var remote =
+                            units.FirstOrDefault(
+                                x =>
                                     x is RemoteMine
                                     && x.Position.Distance2D(args.ParticleEffect.GetControlPoint(0)) < 10);
 
-                            if (remote != null)
-                            {
-                                remote.ParticleEffect?.Dispose();
-                                units.Remove(remote);
-                            }
+                        if (remote != null)
+                        {
+                            remote.ParticleEffect?.Dispose();
+                            units.Remove(remote);
                         }
-                    });
+                    }
+                });
         }
 
         public void OnRemoveUnit(Unit unit)
@@ -252,35 +229,14 @@
                     continue;
                 }
 
-                var newObservers = enemy.CountObservers();
-                var newSentries = enemy.CountSentries();
-
-                if (newObservers < enemy.ObserversCount)
+                if (PlacedWard(enemy, ClassID.CDOTA_Item_ObserverWard))
                 {
-                    if (Menu.IsEnabled("item_ward_observer") && !GaveWard(enemy)
-                        && !enemy.DroppedWard(ClassID.CDOTA_Item_ObserverWard))
-                    {
-                        units.Add(new ObserverWard(enemy.WardPosition()));
-                    }
-                    enemy.ObserversCount = newObservers;
-                }
-                else if (newObservers > enemy.ObserversCount && !TookWard(enemy))
-                {
-                    enemy.ObserversCount = newObservers;
+                    AddWard<ObserverWard>(enemy);
                 }
 
-                if (newSentries < enemy.SentryCount)
+                if (PlacedWard(enemy, ClassID.CDOTA_Item_SentryWard))
                 {
-                    if (Menu.IsEnabled("item_ward_sentry") && !GaveWard(enemy)
-                        && !enemy.DroppedWard(ClassID.CDOTA_Item_SentryWard))
-                    {
-                        units.Add(new SentryWard(enemy.WardPosition()));
-                    }
-                    enemy.SentryCount = newSentries;
-                }
-                else if (newSentries > enemy.SentryCount && !TookWard(enemy))
-                {
-                    enemy.SentryCount = newSentries;
+                    AddWard<SentryWard>(enemy);
                 }
             }
 
@@ -298,13 +254,56 @@
 
         #region Methods
 
+        [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
+        private void AddWard<T>(EnemyHero enemy) where T : Ward
+        {
+            var wardPosition = enemy.WardPosition();
+            var wardExists =
+                units.OfType<T>().Any(x => !x.RequiresUpdate && x.Distance(wardPosition) <= 400 && enemy.Angle(x) < 0.5);
+
+            if (wardExists)
+            {
+                return;
+            }
+
+            var shiftPosition = units.OfType<Ward>().Any(x => x.Distance(wardPosition) <= 50);
+
+            if (shiftPosition)
+            {
+                wardPosition += new Vector3(60, 0, 0);
+            }
+
+            units.Add((T)Activator.CreateInstance(typeof(T), wardPosition));
+        }
+
         private bool GaveWard(EnemyHero enemy)
         {
             return
                 enemyHeroes.Any(
                     x =>
-                    x.IsValid && !x.Equals(enemy) && x.IsAlive && x.Distance(enemy) <= 600
-                    && x.ObserversCount + x.SentryCount < x.CountObservers() + x.CountSentries());
+                        x.IsValid && !x.Equals(enemy) && x.IsAlive && x.Distance(enemy) <= 600
+                        && x.ObserversCount + x.SentryCount < x.CountObservers() + x.CountSentries());
+        }
+
+        private bool PlacedWard(EnemyHero enemy, ClassID id)
+        {
+            var count = enemy.CountWards(id);
+
+            if (count < enemy.GetWardsCount(id))
+            {
+                enemy.SetWardsCount(id, count);
+
+                if (Menu.IsEnabled(id) && !GaveWard(enemy) && !enemy.DroppedWard(id))
+                {
+                    return true;
+                }
+            }
+            else if (count > enemy.GetWardsCount(id) && !TookWard(enemy))
+            {
+                enemy.SetWardsCount(id, count);
+            }
+
+            return false;
         }
 
         private bool TookWard(EnemyHero enemy)
@@ -312,8 +311,8 @@
             return
                 enemyHeroes.Any(
                     x =>
-                    x.IsValid && !x.Equals(enemy) && x.IsAlive && x.Distance(enemy) <= 600
-                    && x.ObserversCount + x.SentryCount > x.CountObservers() + x.CountSentries());
+                        x.IsValid && !x.Equals(enemy) && x.IsAlive && x.Distance(enemy) <= 600
+                        && x.ObserversCount + x.SentryCount > x.CountObservers() + x.CountSentries());
         }
 
         private bool UpdateData<T>(Unit unit, float maxDistance = 400) where T : IUpdatable

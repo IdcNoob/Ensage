@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using Ensage;
     using Ensage.Common.Menu;
 
     internal class MenuManager
@@ -32,15 +33,15 @@
             var units = Variables.Units.ToDictionary(x => x.Key, x => true);
             var ranges = new Dictionary<string, bool>(units);
             var timers = new Dictionary<string, bool>
-                {
-                    { "techies_stasis_trap", true },
-                    { "techies_remote_mines", true },
-                    { "pugna_nether_ward", true },
-                    { "undying_tombstone", true },
-                    { "venomancer_plague_ward", true },
-                    { "item_ward_sentry", true },
-                    { "item_ward_observer", true }
-                };
+            {
+                { "techies_stasis_trap", true },
+                { "techies_remote_mines", true },
+                { "pugna_nether_ward", true },
+                { "undying_tombstone", true },
+                { "venomancer_plague_ward", true },
+                { "item_ward_sentry", true },
+                { "item_ward_observer", true }
+            };
 
             unitsMenu.AddItem(enabled = new MenuItem("enabled", "For:").SetValue(new AbilityToggler(units)));
 
@@ -63,6 +64,12 @@
         public bool IsEnabled(string name)
         {
             return enabled.GetValue<AbilityToggler>().IsEnabled(name);
+        }
+
+        public bool IsEnabled(ClassID id)
+        {
+            var name = id == ClassID.CDOTA_NPC_Observer_Ward ? "item_ward_observer" : "item_ward_sentry";
+            return IsEnabled(name);
         }
 
         public void OnClose()

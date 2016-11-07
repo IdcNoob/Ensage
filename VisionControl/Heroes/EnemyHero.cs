@@ -7,6 +7,8 @@
 
     using SharpDX;
 
+    using Units.Wards;
+
     internal class EnemyHero
     {
         #region Constants
@@ -57,6 +59,11 @@
 
         #region Public Methods and Operators
 
+        public double Angle(Ward ward)
+        {
+            return hero.FindRelativeAngle(ward.Position);
+        }
+
         public uint CountObservers()
         {
             return (hero.FindItem(ObserverName)?.CurrentCharges ?? 0)
@@ -69,6 +76,11 @@
                    + (hero.FindItem(DispenserName)?.SecondaryCharges ?? 0);
         }
 
+        public uint CountWards(ClassID id)
+        {
+            return id == ClassID.CDOTA_Item_ObserverWard ? CountObservers() : CountSentries();
+        }
+
         public float Distance(EnemyHero enemy)
         {
             return hero.Distance2D(enemy.Position);
@@ -77,6 +89,23 @@
         public bool DroppedWard(ClassID id)
         {
             return ObjectManager.GetEntities<PhysicalItem>().Any(x => x.Item.ClassID == id && x.Distance2D(hero) < 100);
+        }
+
+        public uint GetWardsCount(ClassID id)
+        {
+            return id == ClassID.CDOTA_Item_ObserverWard ? ObserversCount : SentryCount;
+        }
+
+        public void SetWardsCount(ClassID id, uint count)
+        {
+            if (id == ClassID.CDOTA_Item_ObserverWard)
+            {
+                ObserversCount = count;
+            }
+            else
+            {
+                SentryCount = count;
+            }
         }
 
         public Vector3 WardPosition()
