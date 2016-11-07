@@ -5,6 +5,7 @@
     using System.Linq;
 
     using Ensage;
+    using Ensage.Common;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects;
 
@@ -146,13 +147,18 @@
                 return false;
             }
 
+            if (!Utils.SleepCheck("GoldSpender.ForceSpend"))
+            {
+                return true;
+            }
+
             var distance = Menu.NearDeathEnemyDistance;
 
             return (Hero.Health <= Menu.NearDeathHpThreshold
                     || (float)Hero.Health / Hero.MaximumHealth * 100 <= Menu.NearDeathHpPercentageThreshold)
                    && (distance <= 0
                        || Heroes.GetByTeam(enemyTeam)
-                              .Any(x => x.IsValid && !x.IsIllusion && x.IsAlive && x.Distance2D(Hero) <= distance));
+                           .Any(x => x.IsValid && !x.IsIllusion && x.IsAlive && x.Distance2D(Hero) <= distance));
         }
 
         #endregion

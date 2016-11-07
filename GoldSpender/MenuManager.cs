@@ -35,32 +35,34 @@
             var nearDeathMenu = new Menu("Near death", "nearDeath");
             nearDeathMenu.AddItem(nearDeath = new MenuItem("nearDeathEnabled", "Enabled").SetValue(true));
             nearDeathMenu.AddItem(
-                nearDeathHp = new MenuItem("nearDeathHp", "HP threshold").SetValue(new Slider(150, 1, 500)))
+                    nearDeathHp = new MenuItem("nearDeathHp", "HP threshold").SetValue(new Slider(150, 1, 500)))
                 .SetTooltip("Buy items if you have less HP");
             nearDeathMenu.AddItem(
-                nearDeathHpPercentage =
-                new MenuItem("nearDeathHpPercent", "HP threshold %").SetValue(new Slider(20, 1, 99)))
+                    nearDeathHpPercentage =
+                        new MenuItem("nearDeathHpPercent", "HP threshold %").SetValue(new Slider(20, 1, 99)))
                 .SetTooltip("Buy items if you have less HP in %");
             nearDeathMenu.AddItem(
                 nearDeathEnemyDistance =
-                new MenuItem("nearDeathEnemyDistance", "Enemy distance").SetValue(new Slider(600, 0, 2000)));
+                    new MenuItem("nearDeathEnemyDistance", "Enemy distance").SetValue(new Slider(600, 0, 2000)));
             nearDeathMenu.AddItem(
                 nearDeathItems =
-                new MenuItem("priorityNearDeathItems", "Items to buy").SetValue(
-                    new PriorityChanger(
-                    Variables.ItemsToBuyNearDeath.Select(x => x.Key).ToList(),
-                    "priorityChangerNearDeathItems",
-                    true)));
+                    new MenuItem("priorityNearDeathItems", "Items to buy").SetValue(
+                        new PriorityChanger(
+                            Variables.ItemsToBuyNearDeath.Select(x => x.Key).ToList(),
+                            "priorityChangerNearDeathItems",
+                            true)));
             nearDeathMenu.AddItem(
                 nearDeathSaveBuyback =
-                new MenuItem("nearDeathSaveBuyback", "Save for buyback after (mins)").SetValue(new Slider(30, 0, 60)));
+                    new MenuItem("nearDeathSaveBuyback", "Save for buyback after (mins)").SetValue(
+                        new Slider(30, 0, 60)));
 
             var autoPurchaseMenu = new Menu("Auto purchase", "autoPurchase");
             autoPurchaseMenu.AddItem(autoPurchase = new MenuItem("autoPurchaseEnabled", "Enabled").SetValue(false))
                 .SetTooltip("Auto purchase items from quick buy when you are near shop");
             autoPurchaseMenu.AddItem(
                 autoPurchaseSaveBuyback =
-                new MenuItem("autoPurchaseSaveBuyback", "Save for buyback after (mins)").SetValue(new Slider(30, 0, 60)));
+                    new MenuItem("autoPurchaseSaveBuyback", "Save for buyback after (mins)").SetValue(
+                        new Slider(30, 0, 60)));
 
             menu.AddSubMenu(nearDeathMenu);
             menu.AddSubMenu(autoPurchaseMenu);
