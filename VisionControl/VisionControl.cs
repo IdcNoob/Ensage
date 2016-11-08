@@ -240,14 +240,18 @@
                 }
             }
 
-            var removeUnits = units.Where(x => x.Duration > 0 && x.EndTime <= Game.RawGameTime).ToList();
-            if (removeUnits.Any())
+            if (!sleeper.Sleeping(units))
             {
-                removeUnits.ForEach(x => x.ParticleEffect?.Dispose());
-                units.RemoveAll(x => removeUnits.Contains(x));
+                var removeUnits = units.Where(x => x.Duration > 0 && x.EndTime <= Game.RawGameTime).ToList();
+                if (removeUnits.Any())
+                {
+                    removeUnits.ForEach(x => x.ParticleEffect?.Dispose());
+                    units.RemoveAll(x => removeUnits.Contains(x));
+                }
+                sleeper.Sleep(1000, units);
             }
 
-            sleeper.Sleep(333, this);
+            sleeper.Sleep(100, this);
         }
 
         #endregion
