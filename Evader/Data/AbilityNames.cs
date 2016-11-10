@@ -130,6 +130,8 @@
 
         public static string FortunesEnd { get; } = "oracle_fortunes_end";
 
+        public static string GoldSpender { get; } = "alchemist_goblins_greed";
+
         public static string Greaves { get; } = "item_guardian_greaves";
 
         public static string[] Invis { get; } = {

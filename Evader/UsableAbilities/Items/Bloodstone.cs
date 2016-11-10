@@ -74,6 +74,12 @@
 
             var damage = (int)Math.Round(AbilityDamage.CalculateDamage(ability.Ability, damageSource, unit));
 
+            if (damage > 850)
+            {
+                Debugger.WriteLine("// * Damage calculations probably incorrect // " + damage);
+                damage = 850;
+            }
+
             Debugger.WriteLine("// * Incoming damage: " + damage + " from: " + ability.Name);
             Debugger.WriteLine("// * HP left: " + unit.Health);
 
@@ -96,6 +102,12 @@
             Sleep();
         }
 
+        public override bool UseCustomSleep(out float sleepTime)
+        {
+            sleepTime = 0;
+            return true;
+        }
+
         #endregion
 
         #region Methods
@@ -114,10 +126,10 @@
 
             if ((float)Hero.Health / Hero.MaximumHealth * 100 <= Menu.BloodstoneHpThreshold
                 && ObjectManager.GetEntitiesParallel<Hero>()
-                       .Any(
-                           x =>
-                           x.IsValid && x.IsAlive && !x.IsIllusion && x.Team != HeroTeam
-                           && x.Distance2D(Hero) < Menu.BloodstoneEnemyRange))
+                    .Any(
+                        x =>
+                            x.IsValid && x.IsAlive && !x.IsIllusion && x.Team != HeroTeam
+                            && x.Distance2D(Hero) < Menu.BloodstoneEnemyRange))
             {
                 Debugger.WriteLine("// * Bloodstone auto suicide");
                 Use(null, null);

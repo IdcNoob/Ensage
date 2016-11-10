@@ -25,6 +25,7 @@
 
     using AbilityType = Data.AbilityType;
     using Projectile = EvadableAbilities.Base.Projectile;
+    using Utils = Ensage.Common.Utils;
 
     internal class Evader
     {
@@ -180,7 +181,8 @@
                         bool success;
 
                         var pathFromObstalce =
-                            Pathfinder.CalculatePathFromObstacle(movePosition, 5, out success).ToList();
+                            Pathfinder.CalculatePathFromObstacle(Hero.NetworkPosition, movePosition, 5, out success)
+                                .ToList();
 
                         if (success)
                         {
@@ -217,14 +219,15 @@
 
         public void OnLoad()
         {
+            Variables.Hero = ObjectManager.LocalHero;
+            Variables.HeroTeam = Hero.Team;
+            Variables.Menu = new MenuManager();
+            Variables.Pathfinder = new Pathfinder();
+
             sleeper = new MultiSleeper();
             statusDrawer = new StatusDrawer();
             abilityUpdater = new AbilityUpdater();
             randomiser = new Random();
-            Variables.Hero = ObjectManager.LocalHero;
-            Variables.Menu = new MenuManager();
-            Variables.Pathfinder = new Pathfinder();
-            Variables.HeroTeam = Hero.Team;
             fountain =
                 ObjectManager.GetEntities<Unit>()
                     .First(x => x.ClassID == ClassID.CDOTA_Unit_Fountain && x.Team == HeroTeam);
@@ -249,7 +252,7 @@
             {
                 var ability =
                     abilityUpdater.EvadableAbilities.FirstOrDefault(x => x.Name == name && x.Enabled) as
-                    IModifierObstacle;
+                        IModifierObstacle;
                 ability?.AddModifierObstacle(modifier, sender);
                 return;
             }
@@ -392,9 +395,10 @@
                 ObjectManager.GetEntitiesParallel<Hero>()
                     .Where(
                         x =>
-                        x.Equals(Hero)
-                        || (Menu.AlliesSettings.HelpAllies && Menu.AlliesSettings.Enabled(x.StoredName()) && x.IsValid
-                            && x.Team == HeroTeam && x.IsAlive && !x.IsIllusion && x.Distance2D(Hero) < 3000));
+                            x.Equals(Hero)
+                            || (Menu.AlliesSettings.HelpAllies && Menu.AlliesSettings.Enabled(x.StoredName())
+                                && x.IsValid && x.Team == HeroTeam && x.IsAlive && !x.IsIllusion
+                                && x.Distance2D(Hero) < 3000));
 
             foreach (var ability in abilityUpdater.EvadableAbilities)
             {
@@ -415,14 +419,14 @@
 
                         var modifierEnemyCounterAbilities = from abilityName in enemyCounterList
                                                             join usableAbility in abilityUpdater.UsableAbilities on
-                                                                abilityName equals usableAbility.Name
+                                                            abilityName equals usableAbility.Name
                                                             where
-                                                                usableAbility.CanBeUsedOnEnemy
-                                                                && Menu.UsableAbilities.Enabled(
-                                                                    abilityName,
-                                                                    usableAbility.Type)
-                                                                && (usableAbility.IsItem && heroCanUseItems
-                                                                    || !usableAbility.IsItem && heroCanCast)
+                                                            usableAbility.CanBeUsedOnEnemy
+                                                            && Menu.UsableAbilities.Enabled(
+                                                                abilityName,
+                                                                usableAbility.Type)
+                                                            && (usableAbility.IsItem && heroCanUseItems
+                                                                || !usableAbility.IsItem && heroCanCast)
                                                             select usableAbility;
 
                         foreach (var modifierEnemyCounterAbility in modifierEnemyCounterAbilities)
@@ -463,13 +467,13 @@
 
                             var modifierAllyCounterAbilities = from abilityName in allyCounterList
                                                                join usableAbility in abilityUpdater.UsableAbilities on
-                                                                   abilityName equals usableAbility.Name
+                                                               abilityName equals usableAbility.Name
                                                                where
-                                                                   Menu.UsableAbilities.Enabled(
-                                                                       abilityName,
-                                                                       usableAbility.Type)
-                                                                   && (usableAbility.IsItem && heroCanUseItems
-                                                                       || !usableAbility.IsItem && heroCanCast)
+                                                               Menu.UsableAbilities.Enabled(
+                                                                   abilityName,
+                                                                   usableAbility.Type)
+                                                               && (usableAbility.IsItem && heroCanUseItems
+                                                                   || !usableAbility.IsItem && heroCanCast)
                                                                select usableAbility;
 
                             foreach (var modifierCounterAbility in modifierAllyCounterAbilities)
@@ -515,7 +519,7 @@
             {
                 var blinkDagger =
                     abilityUpdater.UsableAbilities.FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Item_BlinkDagger) as
-                    BlinkDagger;
+                        BlinkDagger;
 
                 if (blinkDagger != null && blinkDagger.CanBeCasted(null, null) && heroCanUseItems)
                 {
@@ -537,8 +541,8 @@
                         abilityUpdater.EvadableAbilities.OfType<Projectile>()
                             .Where(
                                 x =>
-                                (int)x.GetProjectileSpeed() == projectile.Speed
-                                && (x.TimeSinceCast() < 1.5 || !x.AbilityOwner.IsVisible))
+                                    (int)x.GetProjectileSpeed() == projectile.Speed
+                                    && (x.TimeSinceCast() < 1.5 || !x.AbilityOwner.IsVisible))
                             .ToList();
                     if (predictedAbilities.Count == 1)
                     {
@@ -560,8 +564,8 @@
                     abilityUpdater.EvadableAbilities.OfType<Projectile>()
                         .FirstOrDefault(
                             x =>
-                            x.OwnerClassID == source.ClassID && (int)x.GetProjectileSpeed() == projectile.Speed
-                            && x.TimeSinceCast() < 1.5);
+                                x.OwnerClassID == source.ClassID && (int)x.GetProjectileSpeed() == projectile.Speed
+                                && x.TimeSinceCast() < 1.5);
 
                 if (ability != null)
                 {
@@ -583,7 +587,7 @@
                 {
                     var ability =
                         abilityUpdater.EvadableAbilities.FirstOrDefault(x => x.Obstacle == obstacle && x.IsDisable) as
-                        AOE;
+                            AOE;
 
                     if (ability != null)
                     {
@@ -605,12 +609,12 @@
                         var abilityOwner = ability.AbilityOwner;
                         var disableAbilities = from abilityName in ability.DisableAbilities
                                                join usableAbility in abilityUpdater.UsableAbilities on abilityName
-                                                   equals usableAbility.Name
+                                               equals usableAbility.Name
                                                where
-                                                   usableAbility.Type == AbilityType.Disable
-                                                   && Menu.UsableAbilities.Enabled(abilityName, AbilityType.Disable)
-                                                   && (usableAbility.IsItem && heroCanUseItems
-                                                       || !usableAbility.IsItem && heroCanCast)
+                                               usableAbility.Type == AbilityType.Disable
+                                               && Menu.UsableAbilities.Enabled(abilityName, AbilityType.Disable)
+                                               && (usableAbility.IsItem && heroCanUseItems
+                                                   || !usableAbility.IsItem && heroCanCast)
                                                select usableAbility;
 
                         foreach (var disableAbility in disableAbilities)
@@ -666,11 +670,11 @@
 
                 foreach (var ability in
                     intersection.Value.Select(
-                        x =>
-                        abilityUpdater.EvadableAbilities.FirstOrDefault(
-                            z => z.Obstacle == x && (z.AllyHpIgnore <= 0 || allyHp < z.AllyHpIgnore)
-                                 //&& (z.HeroMpIgnore <= 0 || heroMp > z.HeroMpIgnore)
-                                 && (z.AbilityLevelIgnore <= 0 || z.Level > z.AbilityLevelIgnore)))
+                            x =>
+                                abilityUpdater.EvadableAbilities.FirstOrDefault(
+                                    z => z.Obstacle == x && (z.AllyHpIgnore <= 0 || allyHp < z.AllyHpIgnore)
+                                         //&& (z.HeroMpIgnore <= 0 || heroMp > z.HeroMpIgnore)
+                                         && (z.AbilityLevelIgnore <= 0 || z.Level > z.AbilityLevelIgnore)))
                         .Where(x => x != null)
                         .OrderByDescending(x => x.IsDisable))
                 {
@@ -734,6 +738,7 @@
 
                                                 var tempPath =
                                                     Pathfinder.CalculatePathFromObstacle(
+                                                        Hero.NetworkPosition,
                                                         movePosition,
                                                         remainingWalkTime,
                                                         out success).ToList();
@@ -804,9 +809,11 @@
                                                             / Hero.MovementSpeed;
                                                 }
 
-                                                //   sleeper.Sleep(ability.ObstacleRemainingTime() * 1000, "avoiding");
-                                                sleeper.Sleep(Math.Min(time, 1) * 1000, "avoiding");
-                                                sleeper.Sleep(Math.Min(time, 1) * 1000, ability);
+                                                var sleepTime = Math.Min(time, 1) * 1000;
+
+                                                Utils.Sleep(sleepTime, "Evader.Avoiding");
+                                                sleeper.Sleep(sleepTime, "avoiding");
+                                                sleeper.Sleep(sleepTime, ability);
                                                 sleeper.Sleep(1000, debugPath);
 
                                                 if (Menu.Settings.PathfinderEffect)
@@ -834,14 +841,12 @@
 
                                     var blinkAbilities = from abilityName in ability.BlinkAbilities
                                                          join usableAbility in abilityUpdater.UsableAbilities on
-                                                             abilityName equals usableAbility.Name
+                                                         abilityName equals usableAbility.Name
                                                          where
-                                                             usableAbility.Type == AbilityType.Blink
-                                                             && Menu.UsableAbilities.Enabled(
-                                                                 abilityName,
-                                                                 AbilityType.Blink)
-                                                             && (usableAbility.IsItem && heroCanUseItems
-                                                                 || !usableAbility.IsItem && heroCanCast)
+                                                         usableAbility.Type == AbilityType.Blink
+                                                         && Menu.UsableAbilities.Enabled(abilityName, AbilityType.Blink)
+                                                         && (usableAbility.IsItem && heroCanUseItems
+                                                             || !usableAbility.IsItem && heroCanCast)
                                                          select usableAbility;
 
                                     foreach (var blinkAbility in blinkAbilities)
@@ -893,14 +898,14 @@
                                 case Priority.Counter:
                                     var counterAbilities = from abilityName in ability.CounterAbilities
                                                            join usableAbility in abilityUpdater.UsableAbilities on
-                                                               abilityName equals usableAbility.Name
+                                                           abilityName equals usableAbility.Name
                                                            where
-                                                               usableAbility.Type == AbilityType.Counter
-                                                               && Menu.UsableAbilities.Enabled(
-                                                                   abilityName,
-                                                                   AbilityType.Counter)
-                                                               && (usableAbility.IsItem && heroCanUseItems
-                                                                   || !usableAbility.IsItem && heroCanCast)
+                                                           usableAbility.Type == AbilityType.Counter
+                                                           && Menu.UsableAbilities.Enabled(
+                                                               abilityName,
+                                                               AbilityType.Counter)
+                                                           && (usableAbility.IsItem && heroCanUseItems
+                                                               || !usableAbility.IsItem && heroCanCast)
                                                            select usableAbility;
 
                                     foreach (var counterAbility in counterAbilities)
@@ -916,8 +921,9 @@
                                         }
 
                                         var requiredTime = counterAbility.GetRequiredTime(
-                                            ability,
-                                            targetEnemy ? abilityOwner : ally) + Game.Ping / 1000 + 0.05f;
+                                                               ability,
+                                                               targetEnemy ? abilityOwner : ally) + Game.Ping / 1000
+                                                           + 0.05f;
 
                                         var ignoreRemainingTime = false;
 
@@ -956,7 +962,13 @@
                                                 Debugger.WriteLine("you got rekt by randomiser!");
                                             }
 
-                                            sleeper.Sleep(ability.GetSleepTime(), ability);
+                                            float customSleepTime;
+                                            sleeper.Sleep(
+                                                counterAbility.UseCustomSleep(out customSleepTime)
+                                                    ? customSleepTime
+                                                    : ability.GetSleepTime(),
+                                                ability);
+
                                             sleeper.Sleep(200, ability.Handle); // for modifier
 
                                             Debugger.WriteLine(
@@ -978,14 +990,14 @@
 
                                     var disableAbilities = from abilityName in ability.DisableAbilities
                                                            join usableAbility in abilityUpdater.UsableAbilities on
-                                                               abilityName equals usableAbility.Name
+                                                           abilityName equals usableAbility.Name
                                                            where
-                                                               usableAbility.Type == AbilityType.Disable
-                                                               && Menu.UsableAbilities.Enabled(
-                                                                   abilityName,
-                                                                   AbilityType.Disable)
-                                                               && (usableAbility.IsItem && heroCanUseItems
-                                                                   || !usableAbility.IsItem && heroCanCast)
+                                                           usableAbility.Type == AbilityType.Disable
+                                                           && Menu.UsableAbilities.Enabled(
+                                                               abilityName,
+                                                               AbilityType.Disable)
+                                                           && (usableAbility.IsItem && heroCanUseItems
+                                                               || !usableAbility.IsItem && heroCanCast)
                                                            select usableAbility;
 
                                     foreach (var disableAbility in disableAbilities)
@@ -1038,11 +1050,12 @@
                                     break;
                             }
                         }
-                    }
 
-                    if (allyIsMe)
-                    {
-                        return;
+                        if (allyIsMe && Menu.UsableAbilities.Enabled(AbilityNames.GoldSpender, AbilityType.Counter)
+                            && abilityUpdater.GoldSpender.CanBeCasted(ability, ally))
+                        {
+                            abilityUpdater.GoldSpender.Use(ability, ally);
+                        }
                     }
                 }
             }

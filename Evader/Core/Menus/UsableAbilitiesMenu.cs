@@ -39,16 +39,16 @@
             var menu = new Menu("Abilities", "usableAbilities");
             menu.AddItem(
                 usableBlinkAbilities =
-                new MenuItem("usableBlinkAbilities", "Blink:").SetValue(
-                    blinkAbilityToggler = new AbilityToggler(blinkAbilities)));
+                    new MenuItem("usableBlinkAbilities", "Blink:").SetValue(
+                        blinkAbilityToggler = new AbilityToggler(blinkAbilities)));
             menu.AddItem(
                 usableCounterAbilities =
-                new MenuItem("usableCounterAbilities", "Counter:").SetValue(
-                    counterAbilityToggler = new AbilityToggler(counterAbilities)));
+                    new MenuItem("usableCounterAbilities", "Counter:").SetValue(
+                        counterAbilityToggler = new AbilityToggler(counterAbilities)));
             menu.AddItem(
                 usableDiasbleAbilities =
-                new MenuItem("usableDiasbleAbilities", "Disable:").SetValue(
-                    disableAbilityToggler = new AbilityToggler(disableAbilities)));
+                    new MenuItem("usableDiasbleAbilities", "Disable:").SetValue(
+                        disableAbilityToggler = new AbilityToggler(disableAbilities)));
 
             specials = new Menu("Specials", "specials");
             menu.AddSubMenu(specials);

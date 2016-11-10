@@ -11,7 +11,7 @@
             var menu = new Menu("Randomiser", "randomiser");
 
             var enabled =
-                new MenuItem("enabled", "Randomiser").SetValue(false)
+                new MenuItem("enabled", "Enabled").SetValue(false)
                     .SetTooltip("Will intentionally fail to counter abilities");
             menu.AddItem(enabled);
             enabled.ValueChanged += (sender, args) => Enabled = args.GetNewValue<bool>();

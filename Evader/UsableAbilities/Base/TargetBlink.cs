@@ -36,8 +36,8 @@
                 ObjectManager.GetEntitiesFast<Unit>()
                     .FirstOrDefault(
                         x =>
-                        x.IsValid && x.IsAlive && (x is Creep || x is Hero) && !x.Equals(Hero) && x.Team == HeroTeam
-                        && x.Distance2D(Hero) < GetCastRange() && x.Distance2D(Hero) > 200);
+                            x.IsValid && x.IsAlive && (x is Creep || x is Hero) && !x.Equals(Hero)
+                            && x.Team == HeroTeam && x.Distance2D(Hero) < GetCastRange() && x.Distance2D(Hero) > 200);
             return !Sleeper.Sleeping && blinkUnit != null && Ability.CanBeCasted();
         }
 

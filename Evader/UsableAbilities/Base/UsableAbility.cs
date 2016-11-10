@@ -26,13 +26,20 @@
 
         protected UsableAbility(Ability ability, AbilityType type, AbilityCastTarget target)
         {
+            Sleeper = new Sleeper();
+            Type = type;
+
+            if (ability == null)
+            {
+                //Gold spender
+                return;
+            }
+
             Ability = ability;
             CastPoint = (float)ability.FindCastPoint();
             Name = ability.Name;
-            Sleeper = new Sleeper();
             Handle = ability.Handle;
             IsItem = ability is Item;
-            Type = type;
             ClassID = ability.ClassID;
             IgnoresLinkensSphere = ability.IsAbilityBehavior(AbilityBehavior.NoTarget)
                                    || ability.IsAbilityBehavior(AbilityBehavior.AreaOfEffect);
@@ -60,13 +67,13 @@
 
         public ClassID ClassID { get; }
 
-        public uint Handle { get; }
+        public uint Handle { get; protected set; }
 
-        public bool IgnoresLinkensSphere { get; set; }
+        public bool IgnoresLinkensSphere { get; protected set; }
 
-        public bool IsItem { get; }
+        public bool IsItem { get; protected set; }
 
-        public string Name { get; }
+        public string Name { get; protected set; }
 
         public AbilityType Type { get; protected set; }
 
@@ -97,6 +104,12 @@
         public abstract float GetRequiredTime(EvadableAbility ability, Unit unit);
 
         public abstract void Use(EvadableAbility ability, Unit target);
+
+        public virtual bool UseCustomSleep(out float sleepTime)
+        {
+            sleepTime = 0;
+            return false;
+        }
 
         #endregion
 

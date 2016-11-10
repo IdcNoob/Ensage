@@ -10,6 +10,8 @@
     using Ensage.Common.Extensions;
     using Ensage.Common.Extensions.SharpDX;
 
+    using SharpDX;
+
     using static Data.AbilityNames;
 
     using Projectile = Base.Projectile;
@@ -23,6 +25,8 @@
         private readonly Ability unstableConcoction;
 
         private Modifier abilityModifier;
+
+        private Vector3 lastProjectilePosition;
 
         private Hero modifierSource;
 
@@ -122,10 +126,19 @@
                 }
                 else if (ProjectileTarget != null)
                 {
+                    var projectilePosition = GetProjectilePosition(FowCast);
+
+                    if (projectilePosition == lastProjectilePosition)
+                    {
+                        End();
+                        return;
+                    }
+
+                    lastProjectilePosition = projectilePosition;
+
                     AbilityDrawer.Dispose(AbilityDrawer.Type.Rectangle);
                     EndCast = Game.RawGameTime
-                              + (ProjectileTarget.Distance2D(GetProjectilePosition(FowCast)) - 50)
-                              / GetProjectileSpeed();
+                              + (ProjectileTarget.Distance2D(projectilePosition) - 50) / GetProjectileSpeed();
 
                     if (!obstacleToAOE)
                     {

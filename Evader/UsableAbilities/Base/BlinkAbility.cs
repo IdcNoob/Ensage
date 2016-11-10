@@ -1,5 +1,9 @@
 ﻿namespace Evader.UsableAbilities.Base
 {
+    using System.Linq;
+
+    using Core;
+
     using Data;
 
     using Ensage;
@@ -21,6 +25,12 @@
 
         #endregion
 
+        #region Properties
+
+        protected Pathfinder Pathfinder => Variables.Pathfinder;
+
+        #endregion
+
         #region Public Methods and Operators
 
         public override bool CanBeCasted(EvadableAbility ability, Unit unit)
@@ -35,7 +45,30 @@
 
         public override void Use(EvadableAbility ability, Unit target)
         {
-            Ability.UseAbility(Hero.NetworkPosition.Extend(target.Position, GetCastRange() - 60));
+            var range = GetCastRange() - 60;
+            var blinkPosition = Hero.NetworkPosition.Extend(target.Position, range);
+            var obtsacles = Pathfinder.GetIntersectingObstacles(blinkPosition, Hero.HullRadius);
+
+            if (obtsacles.Any())
+            {
+                bool success;
+                blinkPosition =
+                    Pathfinder.CalculatePathFromObstacle(blinkPosition, blinkPosition, 5, out success).LastOrDefault();
+
+                if (!success)
+                {
+                    //gg
+                    return;
+                }
+
+                if (Hero.Distance2D(blinkPosition) > range)
+                {
+                    // probably gg
+                    blinkPosition = Hero.NetworkPosition.Extend(blinkPosition, range);
+                }
+            }
+
+            Ability.UseAbility(blinkPosition);
             Sleep();
         }
 

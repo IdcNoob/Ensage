@@ -233,7 +233,9 @@
     <Compile Include="EvadableAbilities\Units\Familiar\StoneForm.cs" />
     <Compile Include="EvadableAbilities\Units\SatyrTormenter\Hadouken.cs" />
     <Compile Include="UsableAbilities\Abilities\BallLightning.cs" />
+    <Compile Include="UsableAbilities\External\GoldSpender.cs" />
     <Compile Include="UsableAbilities\Items\ArmletOfMordiggian.cs" />
+    <Compile Include="UsableAbilities\Items\BladeMail.cs" />
     <Compile Include="UsableAbilities\Items\Bloodstone.cs" />
     <Compile Include="UsableAbilities\Abilities\DarkRift.cs" />
     <Compile Include="UsableAbilities\Abilities\EchoSlam.cs" />

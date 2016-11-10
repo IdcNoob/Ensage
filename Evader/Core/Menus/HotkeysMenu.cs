@@ -24,8 +24,8 @@
             EnabledPathfinder = enabledPathfinder.IsActive();
 
             menu.AddItem(
-                new MenuItem("forceBlink", "Force blink").SetValue(new KeyBind(46, KeyBindType.Press))
-                    .SetTooltip("Blink in front of your hero as soon as possible")).ValueChanged +=
+                    new MenuItem("forceBlink", "Force blink").SetValue(new KeyBind(46, KeyBindType.Press))
+                        .SetTooltip("Blink in front of your hero as soon as possible")).ValueChanged +=
                 (sender, args) => ForceBlink = args.GetNewValue<KeyBind>().Active;
 
             rootMenu.AddSubMenu(menu);

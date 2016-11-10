@@ -29,12 +29,12 @@
                 new MenuItem("defaultPriorityFix", "Default priority").SetValue(
                     new PriorityChanger(
                         new List<string>
-                            {
-                                "item_sheepstick",
-                                "item_cyclone",
-                                "item_blink",
-                                "centaur_stampede"
-                            },
+                        {
+                            "item_sheepstick",
+                            "item_cyclone",
+                            "item_blink",
+                            "centaur_stampede"
+                        },
                         "defaultPriorityChangerFix"));
             menu.AddItem(defaultPriority);
             defaultPriority.ValueChanged += DefaultPriorityOnValueChanged;
@@ -43,12 +43,12 @@
                 new MenuItem("defaultTogglerFix", "Enabled priority").SetValue(
                     new AbilityToggler(
                         new Dictionary<string, bool>
-                            {
-                                { "item_sheepstick", false },
-                                { "item_cyclone", true },
-                                { "item_blink", true },
-                                { "centaur_stampede", true }
-                            }));
+                        {
+                            { "item_sheepstick", false },
+                            { "item_cyclone", true },
+                            { "item_blink", true },
+                            { "centaur_stampede", true }
+                        }));
             menu.AddItem(defaultToggler);
             defaultToggler.ValueChanged += DefaultTogglerOnValueChanged;
 

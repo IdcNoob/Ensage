@@ -10,6 +10,8 @@
     using Ensage.Common.Extensions;
     using Ensage.Common.Extensions.SharpDX;
 
+    using SharpDX;
+
     using static Data.AbilityNames;
 
     using Projectile = Base.Projectile;
@@ -23,6 +25,8 @@
         private readonly float stunRadius;
 
         private Modifier abilityModifier;
+
+        private Vector3 lastProjectilePosition;
 
         private bool obstacleToAOE;
 
@@ -117,10 +121,19 @@
                 }
                 else if (ProjectileTarget != null)
                 {
+                    var projectilePosition = GetProjectilePosition(FowCast);
+
+                    if (projectilePosition == lastProjectilePosition)
+                    {
+                        End();
+                        return;
+                    }
+
+                    lastProjectilePosition = projectilePosition;
+
                     AbilityDrawer.Dispose(AbilityDrawer.Type.Rectangle);
                     EndCast = Game.RawGameTime
-                              + (ProjectileTarget.Distance2D(GetProjectilePosition(FowCast)) - 20)
-                              / GetProjectileSpeed();
+                              + (ProjectileTarget.Distance2D(projectilePosition) - 20) / GetProjectileSpeed();
 
                     if (!obstacleToAOE)
                     {

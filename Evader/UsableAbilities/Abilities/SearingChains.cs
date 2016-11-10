@@ -34,8 +34,8 @@
                 ObjectManager.GetEntitiesParallel<Unit>()
                     .Count(
                         x =>
-                        x.IsValid && x.Team != HeroTeam && x.IsAlive && !x.IsMagicImmune()
-                        && x.Distance2D(Hero) <= GetCastRange()) >= 3)
+                            x.IsValid && x.IsAlive && x.IsSpawned && x.Team != HeroTeam && !x.IsMagicImmune()
+                            && x.Distance2D(Hero) <= GetCastRange()) >= 3)
             {
                 // < 66%
                 return false;

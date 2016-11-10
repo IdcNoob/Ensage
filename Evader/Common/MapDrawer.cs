@@ -26,6 +26,7 @@
             var center = Game.MousePosition;
             const int CellCount = 40;
             for (var i = 0; i < CellCount; ++i)
+            {
                 for (var j = 0; j < CellCount; ++j)
                 {
                     Vector2 p;
@@ -58,6 +59,7 @@
 
                     Drawing.DrawRect(new Vector2(i * 10, 50 + (CellCount - j - 1) * 10), new Vector2(9), c, false);
                 }
+            }
 
             int heroCellX, heroCellY;
             Pathfinder.Pathfinding.GetCellPosition(center, out heroCellX, out heroCellY);

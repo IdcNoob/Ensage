@@ -5,6 +5,8 @@
 
     using Base;
 
+    using Common;
+
     using Core;
 
     using Data;
@@ -35,6 +37,7 @@
             : base(ability, type, target)
         {
             //todo improve
+            CastPoint += 0.1f;
         }
 
         #endregion
@@ -58,6 +61,8 @@
 
             if (projectile != null && !projectile.IsDisjointable)
             {
+                Debugger.DrawGreenCircle(ability.AbilityOwner.NetworkPosition);
+
                 return CastPoint + (float)Hero.GetTurnTime(ability.AbilityOwner);
             }
 
@@ -65,7 +70,7 @@
             if (linearProjectile != null)
             {
                 bool success;
-                var pathfinderPoint = Pathfinder.CalculatePathFromObstacle(123, out success).LastOrDefault();
+                var pathfinderPoint = Pathfinder.CalculatePathFromObstacle(5, out success).LastOrDefault();
 
                 var extendPoint = Hero.Position.Extend(
                     ability.AbilityOwner.Position,
@@ -80,11 +85,15 @@
                 {
                     if (Hero.Distance2D(pathfinderPoint) < Hero.Distance2D(extendPoint))
                     {
+                        Debugger.DrawGreenCircle(pathfinderPoint);
+
                         pointForLinearProjectile = pathfinderPoint;
                         return turnToPathfinder;
                     }
                     else
                     {
+                        Debugger.DrawGreenCircle(extendPoint);
+
                         pointForLinearProjectile = extendPoint;
                         return turnToExtend;
                     }
@@ -92,15 +101,21 @@
 
                 if (turnToPathfinder < turnToExtend)
                 {
+                    Debugger.DrawGreenCircle(pathfinderPoint);
+
                     pointForLinearProjectile = pathfinderPoint;
                     return turnToPathfinder;
                 }
                 else
                 {
+                    Debugger.DrawGreenCircle(extendPoint);
+
                     pointForLinearProjectile = extendPoint;
                     return turnToExtend;
                 }
             }
+
+            Debugger.DrawGreenCircle(Hero.NetworkPosition);
 
             return CastPoint;
         }
@@ -109,21 +124,30 @@
         {
             var projectile = ability as Projectile;
 
-            if (projectile != null && !projectile.IsDisjointable)
+            if (projectile != null)
             {
-                Ability.UseAbility(
-                    !projectile.IsDisjointable
-                        ? Hero.NetworkPosition.Extend(ability.AbilityOwner.Position, 250)
-                        : Hero.InFront(50));
+                var pos = !projectile.IsDisjointable
+                              ? Hero.NetworkPosition.Extend(ability.AbilityOwner.Position, 250)
+                              : Hero.InFront(50);
+
+                Debugger.DrawRedCircle(pos);
+
+                Ability.UseAbility(pos);
             }
             else if (!pointForLinearProjectile.IsZero && pointForLinearProjectile.Distance2D(Hero) < 500)
             {
+                Debugger.DrawRedCircle(pointForLinearProjectile);
+
                 Ability.UseAbility(pointForLinearProjectile);
                 pointForLinearProjectile = new Vector3();
             }
             else
             {
-                Ability.UseAbility(Hero.InFront(150 + 20 * Ability.Level));
+                var pos = Hero.InFront(150 + 20 * Ability.Level);
+
+                Debugger.DrawRedCircle(pos);
+
+                Ability.UseAbility(pos);
             }
 
             Sleep(CastPoint);

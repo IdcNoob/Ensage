@@ -12,10 +12,12 @@
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.Common.Threading;
 
     using EvadableAbilities.Base;
 
     using UsableAbilities.Base;
+    using UsableAbilities.External;
 
     using AbilityType = Data.AbilityType;
 
@@ -43,7 +45,12 @@
             allyAbilitiesData = new AllyAbilities();
             enemyAbilitiesData = new EnemyAbilities();
 
-            Game.OnUpdate += OnUpdate;
+            Menu.UsableAbilities.AddAbility(AbilityNames.GoldSpender, AbilityType.Counter);
+            GoldSpender = new GoldSpender(AbilityNames.GoldSpender);
+
+            sleeper.Sleep(2000);
+
+            GameDispatcher.OnUpdate += OnUpdate;
             ObjectManager.OnRemoveEntity += OnRemoveEntity;
         }
 
@@ -52,6 +59,8 @@
         #region Public Properties
 
         public List<EvadableAbility> EvadableAbilities { get; } = new List<EvadableAbility>();
+
+        public GoldSpender GoldSpender { get; }
 
         public List<UsableAbility> UsableAbilities { get; } = new List<UsableAbility>();
 
@@ -72,7 +81,7 @@
         public void Dispose()
         {
             ObjectManager.OnRemoveEntity -= OnRemoveEntity;
-            Game.OnUpdate -= OnUpdate;
+            GameDispatcher.OnUpdate -= OnUpdate;
 
             foreach (var disposable in UsableAbilities.OfType<IDisposable>())
             {
@@ -104,13 +113,25 @@
                 ObjectManager.GetEntitiesParallel<Unit>()
                     .Where(
                         x =>
-                        (x is Hero || x is Creep) && x.IsValid && x.IsAlive && x.IsSpawned
-                        && (!x.IsIllusion
-                            || x.HasModifiers(
-                                new[] { "modifier_arc_warden_tempest_double", "modifier_vengefulspirit_hybrid_special" },
-                                false))))
+                            (x is Hero || x is Creep) && x.IsValid && x.IsAlive && x.IsSpawned
+                            && (!x.IsIllusion
+                                || x.HasModifiers(
+                                    new[]
+                                    {
+                                        "modifier_arc_warden_tempest_double",
+                                        "modifier_vengefulspirit_hybrid_special"
+                                    },
+                                    false))))
             {
-                var abilities = unit.Spellbook.Spells.ToList();
+                var abilities = new List<Ability>();
+
+                try
+                {
+                    abilities.AddRange(unit.Spellbook.Spells.ToList());
+                }
+                catch (Exception)
+                {
+                }
 
                 if (unit.HasInventory)
                 {

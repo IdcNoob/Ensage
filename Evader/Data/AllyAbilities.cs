@@ -50,7 +50,10 @@ namespace Evader.Data
                 {
                     "oracle_fortunes_end",
                     ability =>
-                    new FortunesEnd(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                        new FortunesEnd(
+                            ability,
+                            AbilityType.Counter,
+                            AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 { "phoenix_supernova", ability => new Supernova(ability, AbilityType.Counter) },
                 { "tusk_snowball", ability => new Snowball(ability, AbilityType.Counter) },
@@ -87,7 +90,7 @@ namespace Evader.Data
                 { "item_invis_sword", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "item_silver_edge", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "item_hood_of_defiance", ability => new NotTargetable(ability, AbilityType.Counter) },
-                { "item_blade_mail", ability => new NotTargetable(ability, AbilityType.Counter) },
+                { "item_blade_mail", ability => new BladeMail(ability, AbilityType.Counter) },
                 // todo: check forms
                 { "lone_druid_true_form", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "lone_druid_true_form_druid", ability => new NotTargetable(ability, AbilityType.Counter) },
@@ -105,33 +108,51 @@ namespace Evader.Data
                 {
                     "item_ethereal_blade",
                     ability =>
-                    new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                        new Targetable(
+                            ability,
+                            AbilityType.Counter,
+                            AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 {
                     "pugna_decrepify",
                     ability =>
-                    new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                        new Targetable(
+                            ability,
+                            AbilityType.Counter,
+                            AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 {
                     "obsidian_destroyer_astral_imprisonment",
                     ability =>
-                    new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                        new Targetable(
+                            ability,
+                            AbilityType.Counter,
+                            AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 {
                     "shadow_demon_disruption",
                     ability =>
-                    new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                        new Targetable(
+                            ability,
+                            AbilityType.Counter,
+                            AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 //todo: sub -0.1 cast point from nightmare
                 {
                     "bane_nightmare",
                     ability =>
-                    new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                        new Targetable(
+                            ability,
+                            AbilityType.Counter,
+                            AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 {
                     "oracle_fates_edict",
                     ability =>
-                    new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                        new Targetable(
+                            ability,
+                            AbilityType.Counter,
+                            AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
 
                 // cast on enemy

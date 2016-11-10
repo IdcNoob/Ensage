@@ -128,12 +128,13 @@
 
         public IEnumerable<Vector3> CalculatePathFromObstacle(
             Vector3 startPosition,
+            Vector3 endPosition,
             float remainingTime,
             out bool success)
         {
             return Pathfinding.CalculatePathFromObstacle(
                 startPosition,
-                Hero.NetworkPosition,
+                endPosition,
                 Hero.RotationRad,
                 Hero.MovementSpeed,
                 (float)Hero.GetTurnRate(),

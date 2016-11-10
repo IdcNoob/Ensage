@@ -53,7 +53,7 @@
 
         #region Properties
 
-        private static MenuManager Menu => Variables.Menu;
+        private static HotkeysMenu Menu => Variables.Menu.Hotkeys;
 
         #endregion
 
@@ -61,14 +61,14 @@
 
         public void Draw()
         {
-            if (!Menu.Hotkeys.EnabledEvader)
+            if (!Menu.EnabledEvader)
             {
                 return;
             }
 
             Drawing.DrawText(EvaderText, Font, evaderTextPosition, textSize, textColor, FontFlags.None);
 
-            if (Menu.Hotkeys.EnabledPathfinder)
+            if (Menu.EnabledPathfinder)
             {
                 Drawing.DrawText(PathfinderText, Font, pathfinderTextPosition, textSize, textColor, FontFlags.None);
             }
