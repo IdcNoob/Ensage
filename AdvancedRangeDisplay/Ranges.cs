@@ -57,6 +57,7 @@
         public void OnDraw()
         {
             foreach (var drawedAbilityPair in drawedAbilities)
+            {
                 foreach (var drawedAbility in drawedAbilityPair.Value.Where(x => x.RadiusOnly))
                 {
                     var unit = drawedAbilityPair.Key;
@@ -65,6 +66,7 @@
                         unit.Position
                         + (Vector3)(VectorExtensions.FromPolarAngle(unit.RotationRad) * drawedAbility.Range));
                 }
+            }
         }
 
         public void OnLoad()
@@ -150,8 +152,8 @@
                         }
                         else if ((newAbility
                                   || (drawedAbility.ParticleEffect != null
-                                      && Math.Abs(drawedAbility.RealCastRange - drawedAbility.Ability.GetRealCastRange())
-                                      > 5)) && !drawedAbility.Disabled)
+                                      && Math.Abs(drawedAbility.RealCastRange - drawedAbility.Ability.GetRealCastRange()) > 5))
+                                 && !drawedAbility.Disabled)
                         {
                             Redraw(drawedAbility);
                         }
@@ -176,8 +178,8 @@
             {
                 drawedAbility.ParticleEffect = drawedAbility.RadiusOnly
                                                    ? new ParticleEffect(
-                                                         @"particles\ui_mouseactions\drag_selected_ring.vpcf",
-                                                         drawedAbility.Hero.Position)
+                                                       @"particles\ui_mouseactions\drag_selected_ring.vpcf",
+                                                       drawedAbility.Hero.Position)
                                                    : drawedAbility.Hero.AddParticleEffect(
                                                        @"particles\ui_mouseactions\drag_selected_ring.vpcf");
                 if (drawedAbility.Level < 1)

@@ -23,11 +23,11 @@
         private readonly Hero myHero;
 
         private readonly List<string> radiusOnlyAbilities = new List<string>
-            {
-                "nevermore_shadowraze1",
-                "nevermore_shadowraze2",
-                "nevermore_shadowraze3"
-            };
+        {
+            "nevermore_shadowraze1",
+            "nevermore_shadowraze2",
+            "nevermore_shadowraze3"
+        };
 
         #endregion
 
@@ -121,72 +121,67 @@
             var blue = new MenuItem(key + "blue", "Blue").SetValue(new Slider(0, 0, 255));
             await Task.Delay(100);
 
-            enable.ValueChanged += (sender, arg) =>
-                {
-                    var enabled = arg.GetNewValue<bool>();
-                    abilityMenu.DisplayName = enabled
-                                                  ? abilityMenu.DisplayName + "*"
-                                                  : abilityMenu.DisplayName.Replace("*", "");
-                    OnChange?.Invoke(
-                        this,
-                        new AbilityEventArgs
-                            {
-                                Hero = hero,
-                                Name = abilityName,
-                                Enabled = enabled,
-                                Redraw = true
-                            });
-                };
+            enable.ValueChanged += (sender, arg) => {
+                var enabled = arg.GetNewValue<bool>();
+                abilityMenu.DisplayName = enabled
+                                              ? abilityMenu.DisplayName + "*"
+                                              : abilityMenu.DisplayName.Replace("*", "");
+                OnChange?.Invoke(
+                    this,
+                    new AbilityEventArgs
+                    {
+                        Hero = hero,
+                        Name = abilityName,
+                        Enabled = enabled,
+                        Redraw = true
+                    });
+            };
 
-            radiusOnly.ValueChanged += (sender, args) =>
-                {
-                    OnChange?.Invoke(
-                        this,
-                        new AbilityEventArgs
-                            {
-                                Hero = hero,
-                                Name = abilityName,
-                                Enabled = enable.IsActive(),
-                                RadiusOnly = args.GetNewValue<bool>(),
-                                Redraw = true
-                            });
-                };
+            radiusOnly.ValueChanged += (sender, args) => {
+                OnChange?.Invoke(
+                    this,
+                    new AbilityEventArgs
+                    {
+                        Hero = hero,
+                        Name = abilityName,
+                        Enabled = enable.IsActive(),
+                        RadiusOnly = args.GetNewValue<bool>(),
+                        Redraw = true
+                    });
+            };
 
-            red.ValueChanged += (sender, arg) =>
-                {
-                    OnChange?.Invoke(
-                        this,
-                        new AbilityEventArgs
-                            {
-                                Hero = hero,
-                                Name = abilityName,
-                                Red = arg.GetNewValue<Slider>().Value
-                            });
-                };
+            red.ValueChanged += (sender, arg) => {
+                OnChange?.Invoke(
+                    this,
+                    new AbilityEventArgs
+                    {
+                        Hero = hero,
+                        Name = abilityName,
+                        Red = arg.GetNewValue<Slider>().Value
+                    });
+            };
 
-            green.ValueChanged += (sender, arg) =>
-                {
-                    OnChange?.Invoke(
-                        this,
-                        new AbilityEventArgs
-                            {
-                                Hero = hero,
-                                Name = abilityName,
-                                Green = arg.GetNewValue<Slider>().Value
-                            });
-                };
+            green.ValueChanged += (sender, arg) => {
+                OnChange?.Invoke(
+                    this,
+                    new AbilityEventArgs
+                    {
+                        Hero = hero,
+                        Name = abilityName,
+                        Green = arg.GetNewValue<Slider>().Value
+                    });
+            };
 
-            blue.ValueChanged += (sender, arg) =>
-                {
-                    OnChange?.Invoke(
-                        this,
-                        new AbilityEventArgs
-                            {
-                                Hero = hero,
-                                Name = abilityName,
-                                Blue = arg.GetNewValue<Slider>().Value
-                            });
-                };
+            blue.ValueChanged += (sender, arg) => {
+                OnChange?.Invoke(
+                    this,
+                    new AbilityEventArgs
+                    {
+                        Hero = hero,
+                        Name = abilityName,
+                        Blue = arg.GetNewValue<Slider>().Value
+                    });
+            };
 
             abilityMenu.AddItem(enable);
             if (radiusOnlyAbilities.Contains(abilityName))
@@ -206,16 +201,16 @@
             OnChange?.Invoke(
                 this,
                 new AbilityEventArgs
-                    {
-                        Hero = hero,
-                        Name = abilityName,
-                        Enabled = enable.IsActive(),
-                        RadiusOnly = radiusOnly.IsActive(),
-                        Red = red.GetValue<Slider>().Value,
-                        Green = green.GetValue<Slider>().Value,
-                        Blue = blue.GetValue<Slider>().Value,
-                        Redraw = true
-                    });
+                {
+                    Hero = hero,
+                    Name = abilityName,
+                    Enabled = enable.IsActive(),
+                    RadiusOnly = radiusOnly.IsActive(),
+                    Red = red.GetValue<Slider>().Value,
+                    Green = green.GetValue<Slider>().Value,
+                    Blue = blue.GetValue<Slider>().Value,
+                    Redraw = true
+                });
 
             abilityMenu.DisplayName = enable.IsActive()
                                           ? abilityMenu.DisplayName + "  *"
