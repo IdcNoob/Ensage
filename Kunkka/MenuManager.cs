@@ -29,8 +29,8 @@
                 .SetTooltip("X Mark => Torrent => Return")
                 .ValueChanged += (sender, arg) => { ComboEnabled = arg.GetNewValue<KeyBind>().Active; };
             menu.AddItem(new MenuItem("fullCombo", "Full combo").SetValue(new KeyBind('F', KeyBindType.Press)))
-                .SetTooltip("X Mark => Ghost Ship => Torrent => Return")
-                .ValueChanged +=
+                    .SetTooltip("X Mark => Ghost Ship => Torrent => Return")
+                    .ValueChanged +=
                 (sender, arg) => { ComboEnabled = FullComboEnabled = arg.GetNewValue<KeyBind>().Active; };
             menu.AddItem(new MenuItem("tpHome", "X home").SetValue(new KeyBind('G', KeyBindType.Press)))
                 .SetTooltip("X Mark on self => Teleport to base")
@@ -38,9 +38,10 @@
             menu.AddItem(new MenuItem("hitRun", "Hit & run").SetValue(new KeyBind('H', KeyBindType.Press)))
                 .SetTooltip("X Mark on self => Dagger => Hit => Return")
                 .ValueChanged += (sender, arg) => { HitAndRunEnabled = arg.GetNewValue<KeyBind>().Active; };
-            menu.AddItem(new MenuItem("torrentRune", "Torrent on rune").SetValue(new KeyBind('J', KeyBindType.Press)))
-                .SetTooltip("Will cast torrent at rune's position, right before spawn")
-                .ValueChanged += (sender, arg) => { TorrentOnRuneEnabled = arg.GetNewValue<KeyBind>().Active; };
+            menu.AddItem(
+                    new MenuItem("torrentStatic", "Torrent on static objects").SetValue(new KeyBind('J', KeyBindType.Press)))
+                .SetTooltip("Will cast torrent on rune or aegis/wk reincarnation before spawn")
+                .ValueChanged += (sender, arg) => { TorrentOnStaticObjectsEnabled = arg.GetNewValue<KeyBind>().Active; };
             menu.AddItem(hitAndRunDamage = new MenuItem("hitAndRunDamage", "Hit & run AD").SetValue(true))
                 .SetTooltip("Use additional damage when using hit & run (shadow blade etc.)");
 
@@ -63,7 +64,7 @@
 
         public bool IsEnabled => enabled.GetValue<bool>();
 
-        public bool TorrentOnRuneEnabled { get; private set; }
+        public bool TorrentOnStaticObjectsEnabled { get; private set; }
 
         public bool TpHomeEanbled { get; private set; }
 

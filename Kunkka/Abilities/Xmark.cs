@@ -34,15 +34,13 @@
 
         public float CastPoint { get; }
 
-        public float CastRange => Ability.Level > 0 ? Ability.GetCastRange() + 100 : 0;
+        public float CastRange => Ability.Level > 0 ? Ability.GetCastRange() + 200 : 0;
 
         public float GetSleepTime => CastPoint * 1000 + Game.Ping;
 
         public bool IsInPhase => Ability.IsInAbilityPhase;
 
         public uint ManaCost => Ability.ManaCost;
-
-        public ParticleEffect ParticleEffect { get; set; }
 
         public bool PhaseStarted { get; set; }
 

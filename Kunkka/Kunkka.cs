@@ -22,10 +22,10 @@
         private readonly List<IAbility> allSpells = new List<IAbility>();
 
         private readonly List<Vector3> runePositions = new List<Vector3>
-            {
-                new Vector3(-2257, 1661, 128),
-                new Vector3(2798, -2232, 128),
-            };
+        {
+            new Vector3(-2257, 1661, 128),
+            new Vector3(2798, -2232, 128),
+        };
 
         private bool arrowCasted;
 
@@ -42,8 +42,6 @@
         private bool hookCasted;
 
         private double hookHitTime;
-
-        private Hero manualTarget;
 
         private MenuManager menuManager;
 
@@ -79,31 +77,9 @@
 
         public void OnDraw()
         {
-            if (!menuManager.IsEnabled)
+            if (!menuManager.IsEnabled || targetParticle == null || target == null)
             {
                 return;
-            }
-
-            if (!targetLocked)
-            {
-                target = TargetSelector.ClosestToMouse(hero, 600);
-            }
-
-            if (target == null || xMark.CastRange < hero.Distance2D(target) && !targetLocked || !hero.IsAlive
-                || target.IsLinkensProtected() || target.IsMagicImmune())
-            {
-                if (targetParticle != null)
-                {
-                    targetParticle.Dispose();
-                    targetParticle = null;
-                }
-                target = null;
-                return;
-            }
-
-            if (targetParticle == null)
-            {
-                targetParticle = new ParticleEffect(@"particles\ui_mouseactions\range_finder_tower_aoe.vpcf", target);
             }
 
             targetParticle.SetControlPoint(2, hero.Position);
@@ -113,30 +89,18 @@
 
         public void OnExecuteAbilitiy(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!sender.Equals(hero.Player) || !menuManager.IsEnabled)
+            if (!args.Entities.Contains(hero) || !menuManager.IsEnabled)
             {
                 return;
             }
 
-            manualTarget = null;
-
-            var order = args.Order;
             var ability = args.Ability;
-
             if (ability == null)
             {
                 return;
             }
 
-            if (ability.Equals(xMark.Ability) && order == Order.AbilityTarget)
-            {
-                var newTarget = (Hero)args.Target;
-                if (newTarget.Team != heroTeam)
-                {
-                    manualTarget = newTarget;
-                }
-            }
-            else if (ability.Equals(ghostShip.Ability) && order == Order.AbilityLocation)
+            if (ability.Equals(ghostShip.Ability) && args.Order == Order.AbilityLocation)
             {
                 ghostShip.Position = hero.Position.Extend(args.TargetPosition, ghostShip.CastRange);
             }
@@ -156,11 +120,42 @@
             allSpells.Add(ghostShip = new GhostShip(hero.Spellbook.SpellR));
         }
 
+        public void OnModifierAdded(Unit sender, ModifierChangedEventArgs args)
+        {
+            var modifierHero = sender as Hero;
+            if (modifierHero == null || modifierHero.Team == heroTeam || !xMark.Casted)
+            {
+                return;
+            }
+
+            if (args.Modifier.Name == "modifier_kunkka_x_marks_the_spot")
+            {
+                targetLocked = true;
+                target = modifierHero;
+            }
+        }
+
+        public void OnModifierRemoved(Unit sender, ModifierChangedEventArgs args)
+        {
+            var modifierHero = sender as Hero;
+            if (modifierHero == null || modifierHero.Team == heroTeam || !xReturn.Casted)
+            {
+                return;
+            }
+
+            if (args.Modifier.Name == "modifier_kunkka_x_marks_the_spot")
+            {
+                xMark.Position = new Vector3();
+                targetLocked = false;
+                target = null;
+            }
+        }
+
         public void OnParticleEffectAdded(Entity sender, ParticleEffectAddedEventArgs args)
         {
-            if (args.Name == "particles/units/heroes/hero_kunkka/kunkka_spell_x_spot.vpcf")
+            if (args.Name.Contains("x_spot"))
             {
-                xMark.ParticleEffect = args.ParticleEffect;
+                DelayAction.Add(10, () => xMark.Position = args.ParticleEffect.Position);
             }
         }
 
@@ -171,32 +166,37 @@
                 return;
             }
 
-            if (Game.IsPaused || !hero.IsAlive || !hero.CanCast() || hero.IsChanneling() || !menuManager.IsEnabled)
+            sleeper.Sleep(50);
+
+            if (!hero.IsAlive)
+            {
+                targetLocked = false;
+                target = null;
+                if (targetParticle != null)
+                {
+                    targetParticle.Dispose();
+                    targetParticle = null;
+                }
+                sleeper.Sleep(1000);
+                return;
+            }
+
+            if (Game.IsPaused || !hero.CanCast() || hero.IsChanneling() || !menuManager.IsEnabled)
             {
                 sleeper.Sleep(333);
                 return;
             }
 
-            if (xMark.ParticleEffect != null && xMark.Casted)
+            if (!Utils.SleepCheck("Evader.Avoiding"))
             {
-                xMark.Position = xMark.ParticleEffect.Position;
-                if (!xMark.Position.IsZero)
-                {
-                    xMark.ParticleEffect = null;
-                    xMark.TimeCasted = Game.RawGameTime;
-                    targetLocked = true;
-                    if (manualTarget != null)
-                    {
-                        target = manualTarget;
-                    }
-                }
+                return;
             }
 
             if (ghostShip.IsInPhase)
             {
                 ghostShip.HitTime = Game.RawGameTime
                                     + ghostShip.CastRange
-                                    / (hero.AghanimState() ? ghostShip.AghanimSpeed : ghostShip.Speed);
+                                    / (hero.AghanimState() ? ghostShip.AghanimSpeed : ghostShip.Speed) + 0.12;
             }
 
             if (menuManager.TpHomeEanbled)
@@ -206,18 +206,25 @@
 
                 if (teleport != null && teleport.CanBeCasted() && xMark.CanBeCasted)
                 {
+                    var manaRequired = teleport.ManaCost + xMark.ManaCost;
+                    if (hero.Mana < manaRequired)
+                    {
+                        return;
+                    }
+
                     var fountain =
-                        ObjectManager.GetEntities<Unit>()
+                        ObjectManager.GetEntitiesParallel<Unit>()
                             .FirstOrDefault(
                                 x =>
-                                x.Team == heroTeam && x.ClassID == ClassID.CDOTA_Unit_Fountain
-                                && x.Distance2D(hero) > 2000);
+                                    x.Team == heroTeam && x.ClassID == ClassID.CDOTA_Unit_Fountain
+                                    && x.Distance2D(hero) > 2000);
 
                     if (fountain == null)
                     {
                         return;
                     }
 
+                    hero.Move(hero.Position.Extend(fountain.Position, 50));
                     xMark.UseAbility(hero);
                     teleport.UseAbility(fountain, true);
                     sleeper.Sleep(1000);
@@ -241,13 +248,13 @@
                     Creeps.All.OrderBy(x => x.Distance2D(Game.MousePosition))
                         .FirstOrDefault(
                             x =>
-                            x.Team != heroTeam && x.IsSpawned && x.IsVisible && x.Distance2D(hero) < 2000
-                            && x.Distance2D(Game.MousePosition) < 250)
+                                x.Team != heroTeam && x.IsSpawned && x.IsVisible && x.Distance2D(hero) < 2000
+                                && x.Distance2D(Game.MousePosition) < 250)
                     ?? Heroes.All.OrderBy(x => x.Distance2D(Game.MousePosition))
-                           .FirstOrDefault(
-                               x =>
-                               x.Team != heroTeam && x.IsVisible && x.Distance2D(hero) < 2000
-                               && x.Distance2D(Game.MousePosition) < 250);
+                        .FirstOrDefault(
+                            x =>
+                                x.Team != heroTeam && x.IsVisible && x.Distance2D(hero) < 2000
+                                && x.Distance2D(Game.MousePosition) < 250);
 
                 if (xReturn.CanBeCasted && !blink.CanBeCasted()
                     && (hitTarget == null || !hitTarget.IsAlive || tideBringer.Casted))
@@ -302,12 +309,34 @@
                 }
             }
 
-            if (menuManager.TorrentOnRuneEnabled)
+            if (menuManager.TorrentOnStaticObjectsEnabled)
             {
+                if (!torrent.CanBeCasted)
+                {
+                    return;
+                }
+
+                var reincarnating =
+                    ObjectManager.GetEntitiesParallel<Hero>()
+                        .FirstOrDefault(
+                            x =>
+                                x.IsValid && !x.IsIllusion && x.IsReincarnating
+                                && x.Distance2D(hero) < torrent.CastRange);
+
+                if (reincarnating != null)
+                {
+                    if (reincarnating.RespawnTime - Game.RawGameTime < torrent.AdditionalDelay + Game.Ping / 1000 + 0.42)
+                    {
+                        torrent.UseAbility(reincarnating.Position);
+                        sleeper.Sleep(300);
+                    }
+
+                    return;
+                }
+
                 var gameTime = Game.GameTime;
 
-                if (gameTime % 120 < (gameTime > 0 ? 119.5 : -0.5) - torrent.AdditionalDelay - Game.Ping / 1000
-                    || !torrent.CanBeCasted)
+                if (gameTime % 120 < (gameTime > 0 ? 119.5 : -0.5) - torrent.AdditionalDelay - Game.Ping / 1000)
                 {
                     return;
                 }
@@ -324,19 +353,54 @@
                 return;
             }
 
-            if (menuManager.ComboEnabled)
+            if (!targetLocked && !xMark.IsInPhase)
+            {
+                var mouse = Game.MousePosition;
+                target =
+                    ObjectManager.GetEntitiesParallel<Hero>()
+                        .Where(
+                            x =>
+                                x.IsValid && x.IsAlive && x.IsVisible && !x.IsIllusion && x.Team != heroTeam
+                                && x.Distance2D(mouse) < 600)
+                        .OrderBy(x => x.Distance2D(mouse))
+                        .FirstOrDefault();
+            }
+
+            if (target == null || xMark.CastRange < hero.Distance2D(target) && !targetLocked)
+            {
+                if (targetParticle != null)
+                {
+                    targetParticle.Dispose();
+                    targetParticle = null;
+                }
+                target = null;
+            }
+            else if (target != null)
+            {
+                if (targetParticle == null)
+                {
+                    targetParticle = new ParticleEffect(@"materials\ensage_ui\particles\target.vpcf", target);
+                }
+
+                if (target.IsLinkensProtected() || target.IsMagicImmune())
+                {
+                    targetParticle?.SetControlPoint(5, new Vector3(0, 125, 0));
+                }
+                else
+                {
+                    targetParticle.SetControlPoint(5, new Vector3(255, 0, 0));
+                }
+            }
+
+            if (menuManager.ComboEnabled && target != null)
             {
                 var fullCombo = menuManager.FullComboEnabled;
 
                 if (!comboStarted)
                 {
-                    if (target == null)
-                    {
-                        return;
-                    }
-
                     if (!CheckCombo(fullCombo, targetLocked))
                     {
+                        targetParticle?.SetControlPoint(5, new Vector3(30, 144, 255));
                         return;
                     }
 
@@ -345,6 +409,7 @@
 
                     if (manaRequired > hero.Mana)
                     {
+                        targetParticle?.SetControlPoint(5, new Vector3(30, 144, 255));
                         return;
                     }
 
@@ -352,14 +417,16 @@
                     comboStarted = true;
                 }
 
-                if (target == null || !target.IsValid || target.IsMagicImmune())
+                if (!target.IsValid || target.IsMagicImmune() || target.IsLinkensProtected())
                 {
+                    targetLocked = false;
                     return;
                 }
 
                 if (xMark.CanBeCasted)
                 {
                     xMark.UseAbility(target);
+                    sleeper.Sleep(570);
                     return;
                 }
 
@@ -370,9 +437,16 @@
 
                 if (ghostShip.CanBeCasted && fullCombo)
                 {
+                    if (hero.Distance2D(xMark.Position) < ghostShip.CastRange - ghostShip.Radius)
+                    {
+                        hero.Move(xMark.Position.Extend(hero.Position, ghostShip.CastRange));
+                        sleeper.Sleep(100);
+                        return;
+                    }
+
                     if (!hero.AghanimState() && torrent.CanBeCasted)
                     {
-                        ghostShip.UseAbility(xMark.Position);
+                        ghostShip.UseAbility(xMark.Position.Extend(hero.Position, ghostShip.Radius / 2));
                         sleeper.Sleep(ghostShip.GetSleepTime);
                         return;
                     }
@@ -522,14 +596,6 @@
                     hookCasted = false;
                 }
             }
-
-            if (targetLocked && xMark.Casted && xReturn.Casted)
-            {
-                targetLocked = false;
-                xMark.Position = new Vector3();
-            }
-
-            sleeper.Sleep(50);
         }
 
         #endregion
@@ -576,11 +642,11 @@
         private Unit GetTorrentThinker()
         {
             return
-                ObjectManager.GetEntities<Unit>()
+                ObjectManager.GetEntitiesParallel<Unit>()
                     .FirstOrDefault(
                         x =>
-                        x.ClassID == ClassID.CDOTA_BaseNPC
-                        && x.Modifiers.Any(z => z.Name == "modifier_kunkka_torrent_thinker") && x.Team == heroTeam);
+                            x.ClassID == ClassID.CDOTA_BaseNPC
+                            && x.Modifiers.Any(z => z.Name == "modifier_kunkka_torrent_thinker") && x.Team == heroTeam);
         }
 
         #endregion
