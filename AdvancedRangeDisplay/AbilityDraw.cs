@@ -116,8 +116,15 @@
             }
 
             RealCastRange = Ability.GetRealCastRange();
-            Range = Ability.GetCastRange();
-            Radius = Ability.GetRadius() + 25;
+            if (Ability.Name == "kunkka_tidebringer")
+            {
+                Radius = Range = Ability.GetRadius() + 35;
+            }
+            else
+            {
+                Range = Ability.GetCastRange();
+                Radius = Ability.GetRadius() + 25;
+            }
         }
 
         #endregion

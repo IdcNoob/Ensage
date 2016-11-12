@@ -26,7 +26,8 @@
         {
             "nevermore_shadowraze1",
             "nevermore_shadowraze2",
-            "nevermore_shadowraze3"
+            "nevermore_shadowraze3",
+            "kunkka_tidebringer",
         };
 
         #endregion

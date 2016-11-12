@@ -152,7 +152,10 @@
                         }
                         else if ((newAbility
                                   || (drawedAbility.ParticleEffect != null
-                                      && Math.Abs(drawedAbility.RealCastRange - drawedAbility.Ability.GetRealCastRange()) > 5))
+                                      && (Math.Abs(drawedAbility.RealCastRange - drawedAbility.Ability.GetRealCastRange())
+                                          > 5
+                                          || drawedAbility.RadiusOnly
+                                          && Math.Abs(drawedAbility.Radius - drawedAbility.Ability.GetRadius() - 35) > 5)))
                                  && !drawedAbility.Disabled)
                         {
                             Redraw(drawedAbility);
