@@ -150,22 +150,17 @@
 
         public bool Enabled(string abilityName, AbilityType abilityType)
         {
-            var enabled = false;
-
             switch (abilityType)
             {
                 case AbilityType.Counter:
-                    counterAbilities.TryGetValue(abilityName, out enabled);
-                    break;
+                    return counterAbilityToggler.IsEnabled(abilityName);
                 case AbilityType.Blink:
-                    blinkAbilities.TryGetValue(abilityName, out enabled);
-                    break;
+                    return blinkAbilityToggler.IsEnabled(abilityName);
                 case AbilityType.Disable:
-                    disableAbilities.TryGetValue(abilityName, out enabled);
-                    break;
+                    return disableAbilityToggler.IsEnabled(abilityName);
             }
 
-            return enabled;
+            return false;
         }
 
         #endregion
