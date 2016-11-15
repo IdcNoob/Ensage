@@ -20,7 +20,9 @@
 
         private readonly MenuItem nearDeathHpPercentage;
 
-        private readonly MenuItem nearDeathItems;
+        private readonly MenuItem nearDeathItemsPriority;
+
+        private readonly MenuItem nearDeathItemsToggler;
 
         private readonly MenuItem nearDeathSaveBuyback;
 
@@ -44,13 +46,19 @@
             nearDeathMenu.AddItem(
                 nearDeathEnemyDistance =
                     new MenuItem("nearDeathEnemyDistance", "Enemy distance").SetValue(new Slider(600, 0, 2000)));
+
             nearDeathMenu.AddItem(
-                nearDeathItems =
-                    new MenuItem("priorityNearDeathItems", "Items to buy").SetValue(
+                nearDeathItemsToggler =
+                    new MenuItem("priorityNearDeathItemsToggler", "Enabled items").SetValue(
+                        new AbilityToggler(Variables.ItemsToBuyNearDeath.ToDictionary(x => x.Key, x => true))));
+
+            nearDeathMenu.AddItem(
+                nearDeathItemsPriority =
+                    new MenuItem("priorityNearDeathItemsPriority", "Items priority").SetValue(
                         new PriorityChanger(
                             Variables.ItemsToBuyNearDeath.Select(x => x.Key).ToList(),
-                            "priorityChangerNearDeathItems",
-                            true)));
+                            "priorityChangerNearDeathItems")));
+
             nearDeathMenu.AddItem(
                 nearDeathSaveBuyback =
                     new MenuItem("nearDeathSaveBuyback", "Save for buyback after (mins)").SetValue(
@@ -93,12 +101,12 @@
 
         public uint GetNearDeathItemPriority(string itemName)
         {
-            return nearDeathItems.GetValue<PriorityChanger>().GetPriority(itemName);
+            return nearDeathItemsPriority.GetValue<PriorityChanger>().GetPriority(itemName);
         }
 
         public bool IsNearDeathItemActive(string itemName)
         {
-            return nearDeathItems.GetValue<PriorityChanger>().AbilityToggler.IsEnabled(itemName);
+            return nearDeathItemsToggler.GetValue<AbilityToggler>().IsEnabled(itemName);
         }
 
         #endregion

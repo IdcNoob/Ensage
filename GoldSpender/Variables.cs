@@ -17,8 +17,8 @@
         {
             { "item_smoke_of_deceit", 188 },
             { "item_dust", 40 },
-            { "item_ward_sentry", 43 },
             { "item_tome_of_knowledge", 257 },
+            { "item_ward_sentry", 43 },
             { "item_ward_observer", 42 },
             { "attribute_bonus", 0 },
             { "item_tpscroll", 46 }
