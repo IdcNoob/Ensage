@@ -1,10 +1,10 @@
 ﻿namespace Evader.EvadableAbilities.Heroes.Huskar
 {
-    using System.Linq;
-
     using Base.Interfaces;
 
     using Ensage;
+
+    using Modifiers;
 
     using static Data.AbilityNames;
 
@@ -12,21 +12,13 @@
 
     internal class LifeBreak : Projectile, IModifier
     {
-        #region Fields
-
-        private readonly float[] modifierDuration = new float[4];
-
-        private Modifier abilityModifier;
-
-        private Hero modifierSource;
-
-        #endregion
-
         #region Constructors and Destructors
 
         public LifeBreak(Ability ability)
             : base(ability)
         {
+            Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.LowestHealth);
+
             IsDisjointable = false;
 
             BlinkAbilities.AddRange(BlinkAbilityNames);
@@ -43,63 +35,20 @@
             CounterAbilities.Add(Lotus);
             CounterAbilities.Remove("abaddon_aphotic_shield");
 
-            ModifierAllyCounter.Add(Lotus);
-            ModifierAllyCounter.Add(FortunesEnd);
-            ModifierAllyCounter.Add(Eul);
-            ModifierAllyCounter.Add(Manta);
-            ModifierAllyCounter.AddRange(AllyShields);
-            ModifierAllyCounter.AddRange(Invul);
-            ModifierAllyCounter.AddRange(VsMagic);
-
-            for (var i = 0u; i < 4; i++)
-            {
-                modifierDuration[i] = Ability.AbilitySpecialData.First(x => x.Name == "slow_durtion_tooltip")
-                    .GetValue(i);
-            }
+            Modifier.AllyCounterAbilities.Add(Lotus);
+            Modifier.AllyCounterAbilities.Add(FortunesEnd);
+            Modifier.AllyCounterAbilities.Add(Eul);
+            Modifier.AllyCounterAbilities.Add(Manta);
+            Modifier.AllyCounterAbilities.AddRange(AllyShields);
+            Modifier.AllyCounterAbilities.AddRange(Invul);
+            Modifier.AllyCounterAbilities.AddRange(VsPhys);
         }
 
         #endregion
 
         #region Public Properties
 
-        public uint ModifierHandle { get; private set; }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        public void AddModifer(Modifier modifier, Hero hero)
-        {
-            if (hero.Team != HeroTeam)
-            {
-                return;
-            }
-
-            abilityModifier = modifier;
-            modifierSource = hero;
-            ModifierHandle = modifier.Handle;
-        }
-
-        public bool CanBeCountered()
-        {
-            return abilityModifier != null && abilityModifier.IsValid;
-        }
-
-        public float GetModiferRemainingTime()
-        {
-            return modifierDuration[Ability.Level - 1] - abilityModifier.ElapsedTime;
-        }
-
-        public Hero GetModifierHero(ParallelQuery<Hero> allies)
-        {
-            return allies.FirstOrDefault(x => x.Equals(modifierSource));
-        }
-
-        public void RemoveModifier(Modifier modifier)
-        {
-            abilityModifier = null;
-            modifierSource = null;
-        }
+        public EvadableModifier Modifier { get; }
 
         #endregion
     }

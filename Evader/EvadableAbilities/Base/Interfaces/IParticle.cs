@@ -6,7 +6,7 @@
     {
         #region Public Methods and Operators
 
-        void AddParticle(ParticleEffect particle);
+        void AddParticle(ParticleEffectAddedEventArgs particleArgs);
 
         #endregion
     }

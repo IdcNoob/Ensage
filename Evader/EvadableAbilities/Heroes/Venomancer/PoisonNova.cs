@@ -8,9 +8,11 @@
     using Ensage;
     using Ensage.Common.Extensions;
 
+    using Modifiers;
+
     using static Data.AbilityNames;
 
-    internal sealed class PoisonNova : AOE, IParticle
+    internal sealed class PoisonNova : AOE, IParticle, IModifier
     {
         #region Fields
 
@@ -27,9 +29,10 @@
         public PoisonNova(Ability ability)
             : base(ability)
         {
-            speed = ability.GetProjectileSpeed();
-            tavelTime = GetRadius() / speed;
-            projectileSize = Ability.AbilitySpecialData.First(x => x.Name == "start_radius").Value + 60;
+            Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.LowestHealth);
+
+            Modifier.AllyCounterAbilities.AddRange(AllyShields);
+            Modifier.AllyCounterAbilities.AddRange(VsMagic);
 
             BlinkAbilities.AddRange(BlinkAbilityNames);
 
@@ -39,13 +42,23 @@
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);
             CounterAbilities.Add(SnowBall);
+
+            speed = ability.GetProjectileSpeed();
+            tavelTime = GetRadius() / speed;
+            projectileSize = Ability.AbilitySpecialData.First(x => x.Name == "start_radius").Value + 60;
         }
+
+        #endregion
+
+        #region Public Properties
+
+        public EvadableModifier Modifier { get; }
 
         #endregion
 
         #region Public Methods and Operators
 
-        public void AddParticle(ParticleEffect particle)
+        public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
             if (Obstacle != null || !AbilityOwner.IsVisible)
             {

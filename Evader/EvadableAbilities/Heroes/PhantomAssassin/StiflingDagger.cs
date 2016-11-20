@@ -1,18 +1,24 @@
 ﻿namespace Evader.EvadableAbilities.Heroes.PhantomAssassin
 {
+    using Base.Interfaces;
+
     using Ensage;
+
+    using Modifiers;
 
     using static Data.AbilityNames;
 
     using Projectile = Base.Projectile;
 
-    internal class StiflingDagger : Projectile
+    internal class StiflingDagger : Projectile, IModifier
     {
         #region Constructors and Destructors
 
         public StiflingDagger(Ability ability)
             : base(ability)
         {
+            Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.ModifierSource);
+
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(Eul);
             CounterAbilities.Add(SleightOfFist);
@@ -25,7 +31,15 @@
             CounterAbilities.Add(Lotus);
 
             CounterAbilities.Remove(BladeMail);
+
+            Modifier.AllyCounterAbilities.Add(Lotus);
         }
+
+        #endregion
+
+        #region Public Properties
+
+        public EvadableModifier Modifier { get; }
 
         #endregion
     }

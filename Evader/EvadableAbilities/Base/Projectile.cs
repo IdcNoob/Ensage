@@ -27,7 +27,7 @@
         {
             IsDisjointable = true;
             radius = 75;
-            IgnorePathfinder = true;
+            DisablePathfinder = true;
         }
 
         #endregion
@@ -41,6 +41,8 @@
         #region Properties
 
         protected bool FowCast { get; set; }
+
+        protected Vector3 LastProjectilePosition { get; set; }
 
         protected bool ProjectileAdded { get; set; }
 
@@ -85,6 +87,16 @@
                 }
                 else if (ProjectileTarget != null)
                 {
+                    var projectilePosition = GetProjectilePosition(FowCast);
+
+                    if (projectilePosition == LastProjectilePosition)
+                    {
+                        End();
+                        return;
+                    }
+
+                    LastProjectilePosition = projectilePosition;
+
                     AbilityDrawer.Dispose(AbilityDrawer.Type.Rectangle);
                     //    EndCast = Game.RawGameTime + GetProjectilePosition(fowCast).Distance2D(projectileTarget) / GetProjectileSpeed();
                     EndPosition = StartPosition.Extend(

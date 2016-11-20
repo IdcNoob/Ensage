@@ -33,8 +33,6 @@
         public Powershot(Ability ability)
             : base(ability)
         {
-            //todo add fow cast ?
-
             channelTime = ability.GetChannelTime(0);
 
             CounterAbilities.Add(PhaseShift);
@@ -50,7 +48,7 @@
 
         #region Public Methods and Operators
 
-        public void AddParticle(ParticleEffect particle)
+        public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
             if (Obstacle != null || !AbilityOwner.IsVisible)
             {

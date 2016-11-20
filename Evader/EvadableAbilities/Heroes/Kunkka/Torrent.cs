@@ -6,22 +6,21 @@
     using Base.Interfaces;
 
     using Ensage;
+    using Ensage.Common;
+
+    using Modifiers;
 
     using static Data.AbilityNames;
 
-    internal class Torrent : AOE, IModifierObstacle
+    internal class Torrent : AOE, IModifierObstacle, IModifier
     {
-        #region Fields
-
-        private Modifier modifierThinker;
-
-        #endregion
-
         #region Constructors and Destructors
 
         public Torrent(Ability ability)
             : base(ability)
         {
+            Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.LowestHealth);
+
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(BallLightning);
             CounterAbilities.Add(SleightOfFist);
@@ -35,8 +34,18 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
 
+            Modifier.AllyCounterAbilities.AddRange(AllyShields);
+            Modifier.AllyCounterAbilities.AddRange(Invul);
+            Modifier.AllyCounterAbilities.AddRange(VsMagic);
+
             AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "delay").Value;
         }
+
+        #endregion
+
+        #region Public Properties
+
+        public EvadableModifier Modifier { get; }
 
         #endregion
 
@@ -44,9 +53,15 @@
 
         public void AddModifierObstacle(Modifier mod, Unit unit)
         {
-            modifierThinker = mod;
-            StartPosition = unit.Position;
             StartCast = Game.RawGameTime;
+
+            DelayAction.Add(
+                1,
+                () => {
+                    StartPosition = unit.Position;
+                    EndCast = StartCast + AdditionalDelay;
+                    Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
+                });
         }
 
         public override bool CanBeStopped()
@@ -56,33 +71,10 @@
 
         public override void Check()
         {
-            if (modifierThinker == null)
+            if (StartCast > 0 && Obstacle != null && Game.RawGameTime > EndCast)
             {
-                return;
+                End();
             }
-
-            if (Obstacle != null)
-            {
-                if (GetRemainingTime() <= 0)
-                {
-                    End();
-                }
-                return;
-            }
-
-            EndCast = Game.RawGameTime + (AdditionalDelay - modifierThinker.ElapsedTime);
-            Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
-        }
-
-        public override void End()
-        {
-            if (Obstacle == null)
-            {
-                return;
-            }
-
-            base.End();
-            modifierThinker = null;
         }
 
         public override float GetRemainingTime(Hero hero = null)

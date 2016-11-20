@@ -19,6 +19,8 @@
             "treant_living_armor",
         };
 
+        public static string AphoticShield { get; } = "abaddon_aphotic_shield";
+
         public static string Armlet { get; } = "item_armlet";
 
         public static string AstralImprisonment { get; } = "obsidian_destroyer_astral_imprisonment";
@@ -50,6 +52,8 @@
         public static string Bloodstone { get; } = "item_bloodstone";
 
         public static string ColdEmbrace { get; } = "winter_wyvern_cold_embrace";
+
+        public static string DarkPact { get; } = "slark_dark_pact";
 
         public static string DarkRift { get; } = "abyssal_underlord_dark_rift";
 

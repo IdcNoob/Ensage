@@ -97,16 +97,16 @@
                 switch (priority)
                 {
                     case "item_sheepstick":
-                        DefaultPriority.Add(Priority.Disable);
+                        DefaultPriority.Add(EvadePriority.Disable);
                         break;
                     case "item_cyclone":
-                        DefaultPriority.Add(Priority.Counter);
+                        DefaultPriority.Add(EvadePriority.Counter);
                         break;
                     case "item_blink":
-                        DefaultPriority.Add(Priority.Blink);
+                        DefaultPriority.Add(EvadePriority.Blink);
                         break;
                     case "centaur_stampede":
-                        DefaultPriority.Add(Priority.Walk);
+                        DefaultPriority.Add(EvadePriority.Walk);
                         break;
                 }
             }
@@ -127,7 +127,7 @@
 
         public bool BlockPlayerMovement { get; private set; }
 
-        public List<Priority> DefaultPriority { get; } = new List<Priority>();
+        public List<EvadePriority> DefaultPriority { get; } = new List<EvadePriority>();
 
         //public bool MouseEmulation { get; private set; }
 
@@ -156,16 +156,16 @@
                 switch (item)
                 {
                     case "item_sheepstick":
-                        DefaultPriority.Add(Priority.Disable);
+                        DefaultPriority.Add(EvadePriority.Disable);
                         break;
                     case "item_cyclone":
-                        DefaultPriority.Add(Priority.Counter);
+                        DefaultPriority.Add(EvadePriority.Counter);
                         break;
                     case "item_blink":
-                        DefaultPriority.Add(Priority.Blink);
+                        DefaultPriority.Add(EvadePriority.Blink);
                         break;
                     case "centaur_stampede":
-                        DefaultPriority.Add(Priority.Walk);
+                        DefaultPriority.Add(EvadePriority.Walk);
                         break;
                 }
             }
@@ -173,15 +173,15 @@
             Debugger.Write("Priority changed: ");
             for (var i = 0; i < DefaultPriority.Count; i++)
             {
-                Debugger.Write(DefaultPriority.ElementAt(i).ToString());
+                Debugger.Write(DefaultPriority.ElementAt(i).ToString(), showType: false);
 
                 if (DefaultPriority.Count - 1 > i)
                 {
-                    Debugger.Write(" => ");
+                    Debugger.Write(" => ", showType: false);
                 }
             }
 
-            Debugger.WriteLine();
+            Debugger.WriteLine(showType: false);
         }
 
         private void DefaultTogglerOnValueChanged(object sender, OnValueChangeEventArgs args)
@@ -197,16 +197,16 @@
                 switch (item)
                 {
                     case "item_sheepstick":
-                        DefaultPriority.Add(Priority.Disable);
+                        DefaultPriority.Add(EvadePriority.Disable);
                         break;
                     case "item_cyclone":
-                        DefaultPriority.Add(Priority.Counter);
+                        DefaultPriority.Add(EvadePriority.Counter);
                         break;
                     case "item_blink":
-                        DefaultPriority.Add(Priority.Blink);
+                        DefaultPriority.Add(EvadePriority.Blink);
                         break;
                     case "centaur_stampede":
-                        DefaultPriority.Add(Priority.Walk);
+                        DefaultPriority.Add(EvadePriority.Walk);
                         break;
                 }
             }
@@ -214,15 +214,15 @@
             Debugger.Write("Priority changed: ");
             for (var i = 0; i < DefaultPriority.Count; i++)
             {
-                Debugger.Write(DefaultPriority.ElementAt(i).ToString());
+                Debugger.Write(DefaultPriority.ElementAt(i).ToString(), showType: false);
 
                 if (DefaultPriority.Count - 1 > i)
                 {
-                    Debugger.Write(" => ");
+                    Debugger.Write(" => ", showType: false);
                 }
             }
 
-            Debugger.WriteLine();
+            Debugger.WriteLine(showType: false);
         }
 
         #endregion

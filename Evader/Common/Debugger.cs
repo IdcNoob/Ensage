@@ -23,7 +23,9 @@
 
         public enum Type
         {
-            Random,
+            Information,
+
+            AbilityUsage,
 
             Particles,
 
@@ -40,7 +42,7 @@
 
         #region Properties
 
-        private static DebugMenu menu => Variables.Menu.Debug;
+        private static DebugMenu Menu => Variables.Menu.Debug;
 
         #endregion
 
@@ -48,7 +50,7 @@
 
         public static void DrawGreenCircle(Vector3 position)
         {
-            if (!menu.DrawMap)
+            if (!Menu.DrawMap)
             {
                 return;
             }
@@ -67,7 +69,7 @@
 
         public static void DrawRedCircle(Vector3 position)
         {
-            if (!menu.DrawMap)
+            if (!Menu.DrawMap)
             {
                 return;
             }
@@ -84,49 +86,87 @@
             redCirclePartcile.SetControlPoint(0, position);
         }
 
-        public static void Write(string text = "", Type type = Type.Random)
+        public static void Write(string text = "", Type type = Type.Information, bool showType = true)
         {
-            WriteLine(text, type, false);
+            WriteLine(text, type, false, showType);
         }
 
-        public static void WriteLine(string text = "", Type type = Type.Random, bool newLine = true)
+        public static void WriteLine(
+            string text = "",
+            Type type = Type.Information,
+            bool newLine = true,
+            bool showType = true)
         {
             switch (type)
             {
-                case Type.Random:
-                    if (!menu.LogRandom)
+                case Type.Information:
+                    if (!Menu.LogInformation)
                     {
                         return;
+                    }
+                    if (showType)
+                    {
+                        text = "[Evader][Info] " + text;
+                    }
+                    break;
+                case Type.AbilityUsage:
+                    if (!Menu.LogAbilityUsage)
+                    {
+                        return;
+                    }
+                    if (showType)
+                    {
+                        text = "[Evader][Abilities] " + text;
                     }
                     break;
                 case Type.Particles:
-                    if (!menu.LogParticles)
+                    if (!Menu.LogParticles)
                     {
                         return;
+                    }
+                    if (showType)
+                    {
+                        text = "[Evader][Particles] " + text;
                     }
                     break;
                 case Type.Modifiers:
-                    if (!menu.LogModifiers)
+                    if (!Menu.LogModifiers)
                     {
                         return;
+                    }
+                    if (showType)
+                    {
+                        text = "[Evader][Modifiers] " + text;
                     }
                     break;
                 case Type.Units:
-                    if (!menu.LogUnits)
+                    if (!Menu.LogUnits)
                     {
                         return;
+                    }
+                    if (showType)
+                    {
+                        text = "[Evader][Units] " + text;
                     }
                     break;
                 case Type.Projectiles:
-                    if (!menu.LogProjectiles)
+                    if (!Menu.LogProjectiles)
                     {
                         return;
                     }
+                    if (showType)
+                    {
+                        text = "[Evader][Projectiles] " + text;
+                    }
                     break;
                 case Type.Intersectons:
-                    if (!menu.LogIntersection)
+                    if (!Menu.LogIntersection)
                     {
                         return;
+                    }
+                    if (showType)
+                    {
+                        text = "[Evader][Intersectons] " + text;
                     }
                     break;
             }

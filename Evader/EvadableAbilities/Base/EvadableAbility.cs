@@ -1,5 +1,6 @@
 ﻿namespace Evader.EvadableAbilities.Base
 {
+    using System;
     using System.Collections.Generic;
 
     using Common;
@@ -12,6 +13,8 @@
     using Ensage.Common.Extensions;
 
     using UsableAbilities.Base;
+
+    using static Data.AbilityNames;
 
     internal abstract class EvadableAbility
     {
@@ -28,10 +31,12 @@
             OwnerClassID = AbilityOwner.ClassID;
             IsDisable = ability.IsDisable() || ability.IsSilence();
             PiercesMagicImmunity = ability.PiercesMagicImmunity();
+            CreateTime = Game.RawGameTime;
+
             if (IsDisable)
             {
-                DisableAbilities.AddRange(AbilityNames.DisableAbilityNames);
-                BlinkAbilities.AddRange(AbilityNames.BlinkAbilityNames);
+                DisableAbilities.AddRange(DisableAbilityNames);
+                BlinkAbilities.AddRange(BlinkAbilityNames);
             }
             Debugger.WriteLine("///////// Evadable ability // " + GetType().Name + " (" + Name + ")");
             Debugger.WriteLine("// Cast point: " + CastPoint);
@@ -50,13 +55,21 @@
 
         public Unit AbilityOwner { get; }
 
+        public float AdditionalDelay { get; protected set; }
+
         public int AllyHpIgnore { get; set; }
 
         public List<string> BlinkAbilities { get; } = new List<string>();
 
         public List<string> CounterAbilities { get; } = new List<string>();
 
+        public float CreateTime { get; }
+
         public List<string> DisableAbilities { get; } = new List<string>();
+
+        public bool DisablePathfinder { get; protected set; }
+
+        public bool DisableTimeSinceCastCheck { get; protected set; }
 
         public bool Enabled { get; set; }
 
@@ -64,23 +77,17 @@
 
         public uint Handle { get; }
 
-        public bool IgnorePathfinder { get; protected set; }
-
         public bool IsDisable { get; protected set; }
 
         public bool IsInPhase => Ability.IsInAbilityPhase;
 
         public uint Level => Ability.Level;
 
-        public List<string> ModifierAllyCounter { get; } = new List<string>();
-
         public bool ModifierCounterEnabled { get; set; }
 
         //public int HeroMpIgnore { get; set; }
 
-        public List<string> ModifierEnemyCounter { get; } = new List<string>();
-
-        public string Name { get; }
+        public string Name { get; protected set; }
 
         public uint? Obstacle { get; set; }
 
@@ -92,7 +99,7 @@
 
         public bool PiercesMagicImmunity { get; protected set; }
 
-        public List<Priority> Priority { get; } = new List<Priority>();
+        public List<EvadePriority> Priority { get; } = new List<EvadePriority>();
 
         public float StartCast { get; protected set; }
 
@@ -104,9 +111,9 @@
 
         protected AbilityDrawer AbilityDrawer { get; set; } = new AbilityDrawer();
 
-        protected float AdditionalDelay { get; set; }
-
         protected float CastPoint { get; set; }
+
+        protected Team EnemyTeam => Variables.EnemyTeam;
 
         protected Hero Hero => Variables.Hero;
 
@@ -150,7 +157,7 @@
 
         public float GetSleepTime()
         {
-            return (EndCast - Game.RawGameTime) * 1000;
+            return Math.Max((EndCast - Game.RawGameTime) * 1000, 300);
         }
 
         public virtual bool IgnoreRemainingTime(UsableAbility ability, float remainingTime = 0)

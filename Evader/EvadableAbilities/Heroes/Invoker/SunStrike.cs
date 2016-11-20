@@ -6,17 +6,12 @@
     using Base.Interfaces;
 
     using Ensage;
+    using Ensage.Common;
 
     using static Data.AbilityNames;
 
     internal class SunStrike : AOE, IModifierObstacle
     {
-        #region Fields
-
-        private Modifier modifierThinker;
-
-        #endregion
-
         #region Constructors and Destructors
 
         public SunStrike(Ability ability)
@@ -40,9 +35,15 @@
 
         public void AddModifierObstacle(Modifier mod, Unit unit)
         {
-            modifierThinker = mod;
-            StartPosition = unit.Position;
             StartCast = Game.RawGameTime;
+
+            DelayAction.Add(
+                1,
+                () => {
+                    StartPosition = unit.Position;
+                    EndCast = StartCast + AdditionalDelay;
+                    Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
+                });
         }
 
         public override bool CanBeStopped()
@@ -52,33 +53,10 @@
 
         public override void Check()
         {
-            if (modifierThinker == null)
+            if (StartCast > 0 && Obstacle != null && Game.RawGameTime > EndCast)
             {
-                return;
+                End();
             }
-
-            if (Obstacle != null)
-            {
-                if (GetRemainingTime() <= 0)
-                {
-                    End();
-                }
-                return;
-            }
-
-            EndCast = Game.RawGameTime + (AdditionalDelay - modifierThinker.ElapsedTime);
-            Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
-        }
-
-        public override void End()
-        {
-            if (Obstacle == null)
-            {
-                return;
-            }
-
-            base.End();
-            modifierThinker = null;
         }
 
         public override float GetRemainingTime(Hero hero = null)

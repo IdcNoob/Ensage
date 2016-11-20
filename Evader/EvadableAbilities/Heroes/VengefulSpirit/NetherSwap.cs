@@ -20,7 +20,6 @@
             CounterAbilities.Add(Manta);
             CounterAbilities.AddRange(VsDisable);
             CounterAbilities.Add(SleightOfFist);
-            CounterAbilities.Add(TricksOfTheTrade);
             CounterAbilities.AddRange(Invis);
             CounterAbilities.Add(Armlet);
         }

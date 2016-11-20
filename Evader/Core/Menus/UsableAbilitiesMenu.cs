@@ -64,11 +64,17 @@
 
         public bool ArmletAutoToggle { get; private set; }
 
+        public bool ArmletEnemiesCheck { get; private set; }
+
         public bool BloodstoneAutoSuicide { get; private set; }
 
         public int BloodstoneEnemyRange { get; private set; }
 
         public int BloodstoneHpThreshold { get; private set; }
+
+        public bool PhaseShiftBlock { get; private set; }
+
+        public int PhaseShiftBlockTime { get; private set; }
 
         #endregion
 
@@ -143,7 +149,32 @@
                         (sender, args) => ArmetHpThreshold = args.GetNewValue<Slider>().Value;
                     ArmetHpThreshold = armetHpThreshold.GetValue<Slider>().Value;
 
+                    var enemyNearOnly = new MenuItem("armletOnlyNearEnemies", "Only near enemies").SetValue(true);
+                    enemyNearOnly.SetTooltip("If enabled, will toggle only when enemies are near");
+                    armletMenu.AddItem(enemyNearOnly);
+                    enemyNearOnly.ValueChanged += (sender, args) => ArmletEnemiesCheck = args.GetNewValue<bool>();
+                    ArmletEnemiesCheck = enemyNearOnly.IsActive();
+
                     specials.AddSubMenu(armletMenu);
+                    break;
+                case "puck_phase_shift":
+                    var phaseShiftMenu = new Menu(string.Empty, "phaseShiftMenu", textureName: abilityName);
+
+                    var phaseShiftBlock = new MenuItem("phaseShiftBlock", "Action block").SetValue(true);
+                    phaseShiftBlock.SetTooltip("Block player movement/attack actions when evader used phase shift");
+                    phaseShiftMenu.AddItem(phaseShiftBlock);
+                    phaseShiftBlock.ValueChanged += (sender, args) => PhaseShiftBlock = args.GetNewValue<bool>();
+                    PhaseShiftBlock = phaseShiftBlock.IsActive();
+
+                    var phaseShiftBlockTime =
+                        new MenuItem("phaseShiftBlockTime", "Block for (ms)").SetValue(new Slider(500, 100, 3000));
+                    phaseShiftBlockTime.SetTooltip("Action won't be blocked longer than phase shift duration");
+                    phaseShiftMenu.AddItem(phaseShiftBlockTime);
+                    phaseShiftBlockTime.ValueChanged +=
+                        (sender, args) => PhaseShiftBlockTime = args.GetNewValue<Slider>().Value;
+                    PhaseShiftBlockTime = phaseShiftBlockTime.GetValue<Slider>().Value;
+
+                    specials.AddSubMenu(phaseShiftMenu);
                     break;
             }
         }

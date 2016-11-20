@@ -6,7 +6,8 @@
     using Base.Interfaces;
 
     using Ensage;
-    using Ensage.Common.Extensions;
+
+    using Modifiers;
 
     using UsableAbilities.Base;
 
@@ -18,11 +19,7 @@
 
         private readonly float duration;
 
-        private readonly float[] modifierDuration = new float[4];
-
         private readonly float radius;
-
-        private Modifier abilityModifier;
 
         #endregion
 
@@ -31,10 +28,12 @@
         public WhirlingAxesMelee(Ability ability)
             : base(ability)
         {
-            radius = Ability.AbilitySpecialData.First(x => x.Name == "max_range").Value + 60;
+            Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.LowestHealth);
+
+            radius = Ability.AbilitySpecialData.First(x => x.Name == "max_range").Value - 75;
             duration = Ability.AbilitySpecialData.First(x => x.Name == "whirl_duration").Value;
 
-            IgnorePathfinder = true;
+            DisablePathfinder = true;
 
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(Eul);
@@ -43,39 +42,23 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
 
-            ModifierAllyCounter.Add(Lotus);
-            ModifierAllyCounter.Add(Manta);
-            ModifierAllyCounter.AddRange(AllyPurges);
-            ModifierAllyCounter.AddRange(AllyShields);
-
-            for (var i = 0u; i < 4; i++)
-            {
-                modifierDuration[i] = Ability.AbilitySpecialData.First(x => x.Name == "blind_duration").GetValue(i);
-            }
+            Modifier.AllyCounterAbilities.Add(Lotus);
+            Modifier.AllyCounterAbilities.Add(Manta);
+            Modifier.AllyCounterAbilities.AddRange(AllyPurges);
+            Modifier.AllyCounterAbilities.AddRange(AllyShields);
         }
 
         #endregion
 
         #region Public Properties
 
-        public uint ModifierHandle { get; private set; }
+        public EvadableModifier Modifier { get; }
 
         #endregion
 
         #region Public Methods and Operators
 
-        public void AddModifer(Modifier modifier, Hero hero)
-        {
-            if (hero.Team != HeroTeam)
-            {
-                return;
-            }
-
-            abilityModifier = modifier;
-            ModifierHandle = modifier.Handle;
-        }
-
-        public void AddParticle(ParticleEffect particle)
+        public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
             if (Obstacle != null || !AbilityOwner.IsVisible)
             {
@@ -86,11 +69,6 @@
             StartPosition = AbilityOwner.NetworkPosition;
             EndCast = StartCast + duration;
             Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
-        }
-
-        public bool CanBeCountered()
-        {
-            return abilityModifier != null && abilityModifier.IsValid;
         }
 
         public override bool CanBeStopped()
@@ -121,28 +99,9 @@
             AbilityDrawer.UpdateCirclePosition(AbilityOwner.NetworkPosition);
         }
 
-        public float GetModiferRemainingTime()
-        {
-            return modifierDuration[Ability.Level - 1] - abilityModifier.ElapsedTime;
-        }
-
-        public Hero GetModifierHero(ParallelQuery<Hero> allies)
-        {
-            return
-                allies.Where(x => x.HasModifier(abilityModifier.Name))
-                    .OrderByDescending(x => x.Equals(Hero))
-                    .ThenBy(x => x.Health)
-                    .FirstOrDefault();
-        }
-
         public override bool IgnoreRemainingTime(UsableAbility ability, float remainingTime = 0)
         {
             return Obstacle != null;
-        }
-
-        public void RemoveModifier(Modifier modifier)
-        {
-            abilityModifier = null;
         }
 
         #endregion

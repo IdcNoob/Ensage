@@ -10,15 +10,13 @@
     using Ensage;
     using Ensage.Common.Extensions;
 
+    using Modifiers;
+
     using static Data.AbilityNames;
 
     internal class SplitEarth : LinearAOE, IModifierObstacle, IModifier
     {
         #region Fields
-
-        private readonly float modifierDuration;
-
-        private Modifier abilityModifier;
 
         private bool fowCast;
 
@@ -31,6 +29,8 @@
         public SplitEarth(Ability ability)
             : base(ability)
         {
+            Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.LowestHealth);
+
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(BallLightning);
             CounterAbilities.Add(SleightOfFist);
@@ -45,11 +45,10 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Remove("abaddon_aphotic_shield");
 
-            ModifierAllyCounter.AddRange(AllyShields);
-            ModifierAllyCounter.AddRange(Invul);
-            ModifierAllyCounter.AddRange(VsMagic);
+            Modifier.AllyCounterAbilities.AddRange(AllyShields);
+            Modifier.AllyCounterAbilities.AddRange(Invul);
+            Modifier.AllyCounterAbilities.AddRange(VsMagic);
 
-            modifierDuration = Ability.AbilitySpecialData.First(x => x.Name == "duration").Value;
             AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "delay").Value;
         }
 
@@ -57,22 +56,11 @@
 
         #region Public Properties
 
-        public uint ModifierHandle { get; private set; }
+        public EvadableModifier Modifier { get; }
 
         #endregion
 
         #region Public Methods and Operators
-
-        public void AddModifer(Modifier modifier, Hero hero)
-        {
-            if (hero.Team != HeroTeam)
-            {
-                return;
-            }
-
-            abilityModifier = modifier;
-            ModifierHandle = modifier.Handle;
-        }
 
         public void AddModifierObstacle(Modifier mod, Unit unit)
         {
@@ -90,11 +78,6 @@
             }
 
             Obstacle = Pathfinder.AddObstacle(position, GetRadius(), Obstacle);
-        }
-
-        public bool CanBeCountered()
-        {
-            return abilityModifier != null && abilityModifier.IsValid;
         }
 
         public override bool CanBeStopped()
@@ -129,25 +112,9 @@
             fowCast = false;
         }
 
-        public float GetModiferRemainingTime()
-        {
-            return modifierDuration - abilityModifier.ElapsedTime;
-        }
-
-        public Hero GetModifierHero(ParallelQuery<Hero> allies)
-        {
-            return
-                allies.Where(x => x.HasModifier(abilityModifier.Name)).OrderByDescending(x => x.Health).FirstOrDefault();
-        }
-
         public override float GetRemainingTime(Hero hero = null)
         {
             return StartCast + (fowCast ? 0 : CastPoint) + AdditionalDelay - Game.RawGameTime;
-        }
-
-        public void RemoveModifier(Modifier modifier)
-        {
-            abilityModifier = null;
         }
 
         #endregion

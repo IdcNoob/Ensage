@@ -1,7 +1,5 @@
 ﻿namespace Evader.EvadableAbilities.Heroes.Pudge
 {
-    using System.Linq;
-
     using Base.Interfaces;
 
     using Common;
@@ -9,6 +7,8 @@
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Extensions.SharpDX;
+
+    using Modifiers;
 
     using SharpDX;
 
@@ -19,10 +19,6 @@
     internal class MeatHook : LinearProjectile, IParticle, IModifier
     {
         #region Fields
-
-        private Modifier abilityModifier;
-
-        private Hero modifierSource;
 
         private bool particleAdded;
 
@@ -35,6 +31,11 @@
         public MeatHook(Ability ability)
             : base(ability)
         {
+            Modifier = new EvadableModifier(
+                HeroTeam,
+                EvadableModifier.GetHeroType.ModifierSource,
+                ignoreRemainingTime: true);
+
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(BallLightning);
             CounterAbilities.Add(Manta);
@@ -47,42 +48,25 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.AddRange(Invis);
 
-            ModifierAllyCounter.AddRange(AllyShields);
-            ModifierAllyCounter.AddRange(Invul);
-            ModifierAllyCounter.Add(Lotus);
-            ModifierAllyCounter.AddRange(VsMagic);
+            Modifier.AllyCounterAbilities.AddRange(AllyShields);
+            Modifier.AllyCounterAbilities.AddRange(Invul);
+            Modifier.AllyCounterAbilities.Add(Lotus);
+            Modifier.AllyCounterAbilities.AddRange(VsMagic);
         }
 
         #endregion
 
         #region Public Properties
 
-        public uint ModifierHandle { get; private set; }
+        public EvadableModifier Modifier { get; }
 
         #endregion
 
         #region Public Methods and Operators
 
-        public void AddModifer(Modifier modifier, Hero hero)
+        public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
-            if (hero.Team != HeroTeam)
-            {
-                return;
-            }
-
-            abilityModifier = modifier;
-            modifierSource = hero;
-            ModifierHandle = modifier.Handle;
-        }
-
-        public void AddParticle(ParticleEffect particle)
-        {
-            particleEffect = particle;
-        }
-
-        public bool CanBeCountered()
-        {
-            return abilityModifier != null && abilityModifier.IsValid;
+            particleEffect = particleArgs.ParticleEffect;
         }
 
         public override void Check()
@@ -107,7 +91,7 @@
                 EndCast = StartCast + GetCastRange() / GetProjectileSpeed();
                 Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
             }
-            else if (StartCast > 0 && Game.RawGameTime > EndCast)
+            else if (StartCast > 0 && (Game.RawGameTime > EndCast || Modifier.IsValid()))
             {
                 End();
             }
@@ -128,16 +112,6 @@
 
             particleEffect = null;
             particleAdded = false;
-        }
-
-        public float GetModiferRemainingTime()
-        {
-            return AbilityOwner.Distance2D(modifierSource) / GetProjectileSpeed();
-        }
-
-        public Hero GetModifierHero(ParallelQuery<Hero> allies)
-        {
-            return allies.FirstOrDefault(x => x.Equals(modifierSource));
         }
 
         public override float GetRemainingTime(Hero hero = null)
@@ -167,12 +141,6 @@
         public override bool IsStopped()
         {
             return !particleAdded && base.IsStopped();
-        }
-
-        public void RemoveModifier(Modifier modifier)
-        {
-            abilityModifier = null;
-            modifierSource = null;
         }
 
         #endregion

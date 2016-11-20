@@ -5,19 +5,23 @@
     using Ensage;
     using Ensage.Common.Extensions;
 
+    using Modifiers;
+
     using SharpDX;
 
     using static Data.AbilityNames;
 
     using LinearProjectile = Base.LinearProjectile;
 
-    internal class Pounce : LinearProjectile, IParticle
+    internal class Pounce : LinearProjectile, IParticle, IModifier
     {
         #region Constructors and Destructors
 
         public Pounce(Ability ability)
             : base(ability)
         {
+            Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.LowestHealth);
+
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(BallLightning);
             CounterAbilities.Add(Eul);
@@ -26,13 +30,21 @@
             CounterAbilities.AddRange(VsPhys);
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
+
+            Modifier.AllyCounterAbilities.AddRange(AllyShields);
         }
+
+        #endregion
+
+        #region Public Properties
+
+        public EvadableModifier Modifier { get; }
 
         #endregion
 
         #region Public Methods and Operators
 
-        public void AddParticle(ParticleEffect particle)
+        public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
             if (Obstacle != null || !AbilityOwner.IsVisible)
             {

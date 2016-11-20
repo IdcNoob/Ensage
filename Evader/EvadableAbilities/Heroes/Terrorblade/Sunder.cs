@@ -23,9 +23,7 @@
             CounterAbilities.Add(Manta);
             CounterAbilities.Add(SleightOfFist);
             CounterAbilities.Add(TricksOfTheTrade);
-            CounterAbilities.Add("phantom_lancer_doppelwalk");
-            CounterAbilities.Add("shadow_demon_disruption");
-            CounterAbilities.Add("obsidian_destroyer_astral_imprisonment");
+            CounterAbilities.AddRange(Invul);
         }
 
         #endregion

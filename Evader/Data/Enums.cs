@@ -21,7 +21,7 @@
         Disable
     }
 
-    public enum Priority
+    public enum EvadePriority
     {
         Walk,
 

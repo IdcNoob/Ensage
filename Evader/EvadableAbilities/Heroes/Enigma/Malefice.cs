@@ -1,31 +1,23 @@
 ﻿namespace Evader.EvadableAbilities.Heroes.Enigma
 {
-    using System.Linq;
-
     using Base;
     using Base.Interfaces;
 
     using Ensage;
 
+    using Modifiers;
+
     using static Data.AbilityNames;
 
     internal class Malefice : LinearTarget, IModifier
     {
-        #region Fields
-
-        private readonly float modifierDuration;
-
-        private Modifier abilityModifier;
-
-        private Hero modifierSource;
-
-        #endregion
-
         #region Constructors and Destructors
 
         public Malefice(Ability ability)
             : base(ability)
         {
+            Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.ModifierSource);
+
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.AddRange(VsDisable);
             CounterAbilities.AddRange(VsDamage);
@@ -34,59 +26,18 @@
             CounterAbilities.Add(SnowBall);
             CounterAbilities.Remove("abaddon_aphotic_shield");
 
-            ModifierAllyCounter.Add(Lotus);
-            ModifierAllyCounter.Add(FortunesEnd);
-            ModifierAllyCounter.Add(Eul);
-            ModifierAllyCounter.Add(Manta);
-            ModifierAllyCounter.AddRange(AllyShields);
-            ModifierAllyCounter.AddRange(Invul);
-            ModifierAllyCounter.AddRange(VsMagic);
-
-            modifierDuration = Ability.AbilitySpecialData.First(x => x.Name == "duration").Value;
+            Modifier.AllyCounterAbilities.Add(Lotus);
+            Modifier.AllyCounterAbilities.Add(FortunesEnd);
+            Modifier.AllyCounterAbilities.Add(Eul);
+            Modifier.AllyCounterAbilities.Add(Manta);
+            Modifier.AllyCounterAbilities.AddRange(AllyShields);
         }
 
         #endregion
 
         #region Public Properties
 
-        public uint ModifierHandle { get; private set; }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        public void AddModifer(Modifier modifier, Hero hero)
-        {
-            if (hero.Team != HeroTeam)
-            {
-                return;
-            }
-
-            abilityModifier = modifier;
-            modifierSource = hero;
-            ModifierHandle = modifier.Handle;
-        }
-
-        public bool CanBeCountered()
-        {
-            return abilityModifier != null && abilityModifier.IsValid;
-        }
-
-        public float GetModiferRemainingTime()
-        {
-            return modifierDuration - abilityModifier.ElapsedTime;
-        }
-
-        public Hero GetModifierHero(ParallelQuery<Hero> allies)
-        {
-            return modifierSource;
-        }
-
-        public void RemoveModifier(Modifier modifier)
-        {
-            abilityModifier = null;
-            modifierSource = null;
-        }
+        public EvadableModifier Modifier { get; }
 
         #endregion
     }

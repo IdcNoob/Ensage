@@ -23,6 +23,8 @@
         public FreezingField(Ability ability)
             : base(ability)
         {
+            DisablePathfinder = true;
+
             BlinkAbilities.AddRange(BlinkAbilityNames);
             DisableAbilities.AddRange(DisableAbilityNames);
 
@@ -30,7 +32,6 @@
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);
 
-            IgnorePathfinder = true;
             duration = ability.AbilitySpecialData.First(x => x.Name == "duration_tooltip").Value;
         }
 
@@ -51,6 +52,11 @@
             {
                 End();
             }
+        }
+
+        public override float GetRemainingDisableTime()
+        {
+            return 0;
         }
 
         public override float GetRemainingTime(Hero hero = null)

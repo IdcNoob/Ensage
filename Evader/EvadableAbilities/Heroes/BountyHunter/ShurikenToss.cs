@@ -13,8 +13,6 @@
         public ShurikenToss(Ability ability)
             : base(ability)
         {
-            //todo: track check
-
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(BallLightning);
             CounterAbilities.Add(SleightOfFist);

@@ -13,7 +13,6 @@
         public SongOfTheSiren(Ability ability)
             : base(ability)
         {
-            //todo ignore remaining time ?
             BlinkAbilities.AddRange(BlinkAbilityNames);
             DisableAbilities.AddRange(DisableAbilityNames);
         }

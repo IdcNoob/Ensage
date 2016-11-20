@@ -127,7 +127,7 @@
             if (projectile != null)
             {
                 var pos = !projectile.IsDisjointable
-                              ? Hero.NetworkPosition.Extend(ability.AbilityOwner.Position, 250)
+                              ? Hero.NetworkPosition.Extend(projectile.StartPosition, 250)
                               : Hero.InFront(50);
 
                 Debugger.DrawRedCircle(pos);

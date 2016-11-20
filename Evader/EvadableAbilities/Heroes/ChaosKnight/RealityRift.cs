@@ -13,6 +13,9 @@
         public RealityRift(Ability ability)
             : base(ability)
         {
+            DisableAbilities.AddRange(DisableAbilityNames);
+            BlinkAbilities.AddRange(BlinkAbilityNames);
+
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(BallLightning);
             CounterAbilities.Add(SleightOfFist);

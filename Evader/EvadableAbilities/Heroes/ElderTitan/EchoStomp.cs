@@ -1,12 +1,11 @@
 ﻿namespace Evader.EvadableAbilities.Heroes.ElderTitan
 {
-    using System.Linq;
-
     using Base;
     using Base.Interfaces;
 
     using Ensage;
-    using Ensage.Common.Extensions;
+
+    using Modifiers;
 
     using static Data.AbilityNames;
 
@@ -16,10 +15,6 @@
 
         private readonly float channelTime;
 
-        private readonly float[] modifierDuration = new float[4];
-
-        private Modifier abilityModifier;
-
         #endregion
 
         #region Constructors and Destructors
@@ -27,6 +22,8 @@
         public EchoStomp(Ability ability)
             : base(ability)
         {
+            Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.LowestHealth);
+
             //todo add astral spirit
             channelTime = ability.GetChannelTime(0);
 
@@ -42,41 +39,20 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Remove("abaddon_aphotic_shield");
 
-            ModifierAllyCounter.AddRange(AllyShields);
-            ModifierAllyCounter.AddRange(Invul);
-            ModifierAllyCounter.AddRange(VsMagic);
-
-            for (var i = 0u; i < 4; i++)
-            {
-                modifierDuration[i] = Ability.AbilitySpecialData.First(x => x.Name == "sleep_duration").GetValue(i);
-            }
+            Modifier.AllyCounterAbilities.AddRange(AllyShields);
+            Modifier.AllyCounterAbilities.AddRange(Invul);
+            Modifier.AllyCounterAbilities.AddRange(VsMagic);
         }
 
         #endregion
 
         #region Public Properties
 
-        public uint ModifierHandle { get; private set; }
+        public EvadableModifier Modifier { get; }
 
         #endregion
 
         #region Public Methods and Operators
-
-        public void AddModifer(Modifier modifier, Hero hero)
-        {
-            if (hero.Team != HeroTeam)
-            {
-                return;
-            }
-
-            abilityModifier = modifier;
-            ModifierHandle = modifier.Handle;
-        }
-
-        public bool CanBeCountered()
-        {
-            return abilityModifier != null && abilityModifier.IsValid;
-        }
 
         public override void Check()
         {
@@ -93,30 +69,14 @@
             }
         }
 
-        public float GetModiferRemainingTime()
-        {
-            return modifierDuration[Ability.Level - 1] - abilityModifier.ElapsedTime;
-        }
-
-        public Hero GetModifierHero(ParallelQuery<Hero> allies)
-        {
-            return
-                allies.Where(x => x.HasModifier(abilityModifier.Name)).OrderByDescending(x => x.Health).FirstOrDefault();
-        }
-
         public override float GetRemainingDisableTime()
         {
-            return GetRemainingTime() - 0.05f;
+            return GetRemainingTime() - 0.1f;
         }
 
         public override float GetRemainingTime(Hero hero = null)
         {
             return EndCast + channelTime - Game.RawGameTime;
-        }
-
-        public void RemoveModifier(Modifier modifier)
-        {
-            abilityModifier = null;
         }
 
         #endregion

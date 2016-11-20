@@ -3,18 +3,23 @@
     using System.Linq;
 
     using Base;
+    using Base.Interfaces;
 
     using Ensage;
 
+    using Modifiers;
+
     using static Data.AbilityNames;
 
-    internal class EarthSplitter : LinearAOE
+    internal class EarthSplitter : LinearAOE, IModifier
     {
         #region Constructors and Destructors
 
         public EarthSplitter(Ability ability)
             : base(ability)
         {
+            Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.LowestHealth);
+
             BlinkAbilities.AddRange(BlinkAbilityNames);
             DisableAbilities.AddRange(DisableAbilityNames);
 
@@ -31,8 +36,18 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.AddRange(Invis);
 
+            Modifier.AllyCounterAbilities.Add(Lotus);
+            Modifier.AllyCounterAbilities.Add(AphoticShield);
+            Modifier.AllyCounterAbilities.Add(FortunesEnd);
+
             AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "crack_time").Value;
         }
+
+        #endregion
+
+        #region Public Properties
+
+        public EvadableModifier Modifier { get; }
 
         #endregion
     }

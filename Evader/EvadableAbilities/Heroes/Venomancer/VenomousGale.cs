@@ -5,17 +5,24 @@
     using Ensage;
     using Ensage.Common.Extensions;
 
+    using Modifiers;
+
     using static Data.AbilityNames;
 
     using LinearProjectile = Base.LinearProjectile;
 
-    internal class VenomousGale : LinearProjectile, IParticle
+    internal class VenomousGale : LinearProjectile, IParticle, IModifier
     {
         #region Constructors and Destructors
 
         public VenomousGale(Ability ability)
             : base(ability)
         {
+            Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.LowestHealth);
+
+            Modifier.AllyCounterAbilities.AddRange(AllyShields);
+            Modifier.AllyCounterAbilities.AddRange(VsMagic);
+
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(Eul);
             CounterAbilities.AddRange(VsDamage);
@@ -24,9 +31,15 @@
 
         #endregion
 
+        #region Public Properties
+
+        public EvadableModifier Modifier { get; }
+
+        #endregion
+
         #region Public Methods and Operators
 
-        public void AddParticle(ParticleEffect particle)
+        public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
             if (Obstacle != null || !AbilityOwner.IsVisible)
             {

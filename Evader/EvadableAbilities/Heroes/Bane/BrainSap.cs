@@ -17,11 +17,9 @@
             CounterAbilities.Add(Manta);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsLowPureMagic);
-            CounterAbilities.AddRange(Invul);
             CounterAbilities.Add(SnowBall);
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
-            CounterAbilities.Add(Lotus);
             CounterAbilities.Add(NetherWard);
         }
 

@@ -18,7 +18,7 @@
         protected LinearTarget(Ability ability)
             : base(ability)
         {
-            IgnorePathfinder = true;
+            DisablePathfinder = true;
             radius = 75;
         }
 

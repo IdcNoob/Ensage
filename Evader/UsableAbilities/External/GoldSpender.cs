@@ -2,73 +2,77 @@
 {
     using System;
 
-    using Base;
-
     using Common;
 
-    using Data;
+    using Core;
 
     using Ensage;
     using Ensage.Common.AbilityInfo;
+    using Ensage.Common.Objects.UtilityObjects;
 
     using EvadableAbilities.Base;
 
-    using AbilityType = Data.AbilityType;
     using Utils = Ensage.Common.Utils;
 
-    internal class GoldSpender : UsableAbility
+    internal class GoldSpender
     {
+        #region Fields
+
+        private readonly Sleeper sleeper;
+
+        #endregion
+
         #region Constructors and Destructors
 
-        public GoldSpender(string name)
-            : base(null, AbilityType.Counter, AbilityCastTarget.Self)
+        public GoldSpender()
         {
-            Name = name;
-            IsItem = true;
-            Handle = Hero.Handle;
-            IgnoresLinkensSphere = true;
-            PiercesMagicImmunity = true;
-            CastPoint = 0.2f;
-
-            Debugger.WriteLine("///////// UsableAbility // Gold Spender");
-            Debugger.WriteLine("// Type: " + Type);
+            sleeper = new Sleeper();
         }
+
+        #endregion
+
+        #region Properties
+
+        private static Hero Hero => Variables.Hero;
 
         #endregion
 
         #region Public Methods and Operators
 
-        public override bool CanBeCasted(EvadableAbility ability, Unit unit)
+        public bool ShouldSpendGold(EvadableAbility ability)
         {
-            if (Sleeper.Sleeping)
+            if (sleeper.Sleeping)
             {
                 return false;
             }
 
-            var damage = (int)Math.Round(AbilityDamage.CalculateDamage(ability.Ability, ability.AbilityOwner, unit));
-            return unit.Health <= damage;
-        }
+            float damage;
 
-        public override float GetRequiredTime(EvadableAbility ability, Unit unit)
-        {
-            return CastPoint;
-        }
-
-        public override void Use(EvadableAbility ability, Unit target)
-        {
-            var damage = (int)Math.Round(AbilityDamage.CalculateDamage(ability.Ability, ability.AbilityOwner, target));
+            try
+            {
+                damage = (int)Math.Round(AbilityDamage.CalculateDamage(ability.Ability, ability.AbilityOwner, Hero));
+            }
+            catch (Exception)
+            {
+                return false;
+            }
 
             if (damage > 850)
             {
-                Debugger.WriteLine("// * Damage calculations probably incorrect // " + damage);
-                damage = 850;
+                Debugger.WriteLine("// * Damage calculations probably incorrect // " + damage + " // " + ability.Name);
+                damage = 350;
             }
 
-            Debugger.WriteLine("// * Incoming damage: " + damage + " from: " + ability.Name);
-            Debugger.WriteLine("// * HP left: " + target.Health + " (" + target.GetName() + ")");
+            //  Debugger.WriteLine("// * Incoming damage: " + damage + " from: " + ability.Name);
+            //  Debugger.WriteLine("// * HP left: " + Hero.Health);
 
+            return Hero.Health <= damage;
+        }
+
+        public void Spend()
+        {
             Utils.Sleep(1000, "GoldSpender.ForceSpend");
-            Sleep();
+            sleeper.Sleep(1000);
         }
 
         #endregion

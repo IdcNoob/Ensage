@@ -61,6 +61,8 @@
 
         private readonly Sleeper delay;
 
+        private bool manualDisable;
+
         #endregion
 
         #region Constructors and Destructors
@@ -157,6 +159,7 @@
             }
             Ability.ToggleAbility();
 
+            manualDisable = false;
             Sleep(800);
         }
 
@@ -191,9 +194,20 @@
                 return;
             }
 
-            if (args.Ability?.ClassID == ClassID.CDOTA_Item_Armlet)
+            if (args.Ability?.ClassID != ClassID.CDOTA_Item_Armlet)
             {
+                return;
+            }
+
+            if (Hero.Modifiers.Any(x => x.Name == ArmletModifierName))
+            {
+                manualDisable = true;
                 Sleep(100 + Game.Ping);
+            }
+            else
+            {
+                manualDisable = false;
+                Sleep(FullEnableTime * 1000);
             }
         }
 
@@ -274,7 +288,7 @@
             }
 
             if (Hero.Health < Menu.ArmetHpThreshold && ((noProjectiles && noAutoAttacks) || !armletEnabled)
-                && (nearEnemies.Any() || heroProjectiles.Any()))
+                && (nearEnemies.Any() || heroProjectiles.Any() || !Menu.ArmletEnemiesCheck && !manualDisable))
             {
                 Use(null, null);
             }

@@ -10,6 +10,8 @@
     using Ensage.Common.Extensions;
     using Ensage.Common.Extensions.SharpDX;
 
+    using Modifiers;
+
     using SharpDX;
 
     using static Data.AbilityNames;
@@ -20,11 +22,7 @@
     {
         #region Fields
 
-        private readonly float modifierDuration;
-
         private readonly float stunRadius;
-
-        private Modifier abilityModifier;
 
         private Vector3 lastProjectilePosition;
 
@@ -37,7 +35,7 @@
         public StormHammer(Ability ability)
             : base(ability)
         {
-            //todo add projectile aoe stun
+            Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.LowestHealth);
 
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(BallLightning);
@@ -54,11 +52,10 @@
             CounterAbilities.Add(Lotus);
             CounterAbilities.Remove("abaddon_aphotic_shield");
 
-            ModifierAllyCounter.AddRange(AllyShields);
-            ModifierAllyCounter.AddRange(Invul);
-            ModifierAllyCounter.AddRange(VsMagic);
+            Modifier.AllyCounterAbilities.AddRange(AllyShields);
+            Modifier.AllyCounterAbilities.AddRange(Invul);
+            Modifier.AllyCounterAbilities.AddRange(VsMagic);
 
-            modifierDuration = Ability.AbilitySpecialData.First(x => x.Name == "bolt_stun_duration").Value;
             stunRadius = Ability.AbilitySpecialData.First(x => x.Name == "bolt_aoe").Value + 100;
         }
 
@@ -66,27 +63,11 @@
 
         #region Public Properties
 
-        public uint ModifierHandle { get; private set; }
+        public EvadableModifier Modifier { get; }
 
         #endregion
 
         #region Public Methods and Operators
-
-        public void AddModifer(Modifier modifier, Hero hero)
-        {
-            if (hero.Team != HeroTeam)
-            {
-                return;
-            }
-
-            abilityModifier = modifier;
-            ModifierHandle = modifier.Handle;
-        }
-
-        public bool CanBeCountered()
-        {
-            return abilityModifier != null && abilityModifier.IsValid;
-        }
 
         public override void Check()
         {
@@ -122,7 +103,6 @@
                 else if (ProjectileTarget != null)
                 {
                     var projectilePosition = GetProjectilePosition(FowCast);
-
                     if (projectilePosition == lastProjectilePosition)
                     {
                         End();
@@ -158,39 +138,6 @@
             base.End();
 
             obstacleToAOE = false;
-        }
-
-        public float GetModiferRemainingTime()
-        {
-            return modifierDuration - abilityModifier.ElapsedTime;
-        }
-
-        public Hero GetModifierHero(ParallelQuery<Hero> allies)
-        {
-            return
-                allies.Where(x => x.HasModifier(abilityModifier.Name)).OrderByDescending(x => x.Health).FirstOrDefault();
-        }
-
-        public override float GetRemainingTime(Hero hero = null)
-        {
-            if (hero == null)
-            {
-                hero = Hero;
-            }
-
-            var position = ProjectileTarget?.NetworkPosition ?? hero.NetworkPosition;
-
-            if (position.Distance2D(AbilityOwner) < 250)
-            {
-                return StartCast + CastPoint - Game.RawGameTime;
-            }
-
-            return EndCast - Game.RawGameTime;
-        }
-
-        public void RemoveModifier(Modifier modifier)
-        {
-            abilityModifier = null;
         }
 
         #endregion

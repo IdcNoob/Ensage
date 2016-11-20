@@ -1,33 +1,24 @@
 ﻿namespace Evader.EvadableAbilities.Heroes.Bane
 {
-    using System.Linq;
-
     using Base;
-
-    using Common;
+    using Base.Interfaces;
 
     using Ensage;
-    using Ensage.Common.Extensions;
 
-    using UsableAbilities.Base;
+    using Modifiers;
 
     using static Data.AbilityNames;
 
-    internal class FiendsGrip : LinearTarget
+    internal class FiendsGrip : LinearTarget, IModifier
     {
-        #region Fields
-
-        private readonly float aghanimDuration;
-
-        private readonly float duration;
-
-        #endregion
-
         #region Constructors and Destructors
 
         public FiendsGrip(Ability ability)
             : base(ability)
         {
+            Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.ModifierSource);
+
+            CounterAbilities.Add(Lotus);
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(Manta);
             CounterAbilities.Add(Eul);
@@ -39,55 +30,19 @@
             CounterAbilities.AddRange(Invis);
             CounterAbilities.Add(SnowBall);
             CounterAbilities.Add(Armlet);
-            CounterAbilities.Add(Lotus);
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(NetherWard);
 
-            duration = Ability.AbilitySpecialData.First(x => x.Name == "fiend_grip_duration").Value;
-            aghanimDuration = Ability.AbilitySpecialData.First(x => x.Name == "fiend_grip_duration_scepter").Value;
+            Modifier.AllyCounterAbilities.AddRange(AllyShields);
+            Modifier.AllyCounterAbilities.AddRange(Invul);
+            Modifier.AllyCounterAbilities.AddRange(VsMagic);
         }
 
         #endregion
 
-        #region Public Methods and Operators
+        #region Public Properties
 
-        public override void Check()
-        {
-            if (StartCast <= 0 && IsInPhase && AbilityOwner.IsVisible)
-            {
-                StartCast = Game.RawGameTime;
-                EndCast = StartCast + CastPoint + GetDuration();
-            }
-            else if (StartCast > 0 && Obstacle == null && CanBeStopped() && !AbilityOwner.IsTurning())
-            {
-                StartPosition = AbilityOwner.NetworkPosition;
-                EndPosition = AbilityOwner.InFront(GetCastRange() + 150);
-                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
-            }
-            else if (StartCast > 0 && Game.RawGameTime > EndCast && !IgnoreRemainingTime(null))
-            {
-                End();
-            }
-        }
-
-        public override float GetRemainingTime(Hero hero = null)
-        {
-            return EndCast + GetDuration() - Game.RawGameTime;
-        }
-
-        public override bool IgnoreRemainingTime(UsableAbility ability, float remainingTime = 0)
-        {
-            return Ability.IsChanneling;
-        }
-
-        #endregion
-
-        #region Methods
-
-        private float GetDuration()
-        {
-            return AbilityOwner.AghanimState() ? aghanimDuration : duration;
-        }
+        public EvadableModifier Modifier { get; }
 
         #endregion
     }

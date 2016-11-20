@@ -66,7 +66,7 @@ namespace Evader.Data
                 { "item_armlet", ability => new ArmletOfMordiggian(ability, AbilityType.Counter) },
 
                 //// default
-                { "puck_phase_shift", ability => new NotTargetable(ability, AbilityType.Counter) },
+                { "puck_phase_shift", ability => new PhaseShift(ability, AbilityType.Counter) },
                 { "alchemist_chemical_rage", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "riki_tricks_of_the_trade", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "item_cyclone", ability => new Targetable(ability, AbilityType.Counter) },
@@ -148,6 +148,22 @@ namespace Evader.Data
                 },
                 {
                     "oracle_fates_edict",
+                    ability =>
+                        new Targetable(
+                            ability,
+                            AbilityType.Counter,
+                            AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                },
+                {
+                    "item_diffusal_blade",
+                    ability =>
+                        new Targetable(
+                            ability,
+                            AbilityType.Counter,
+                            AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                },
+                {
+                    "item_diffusal_blade_2",
                     ability =>
                         new Targetable(
                             ability,

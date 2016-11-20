@@ -28,6 +28,8 @@
         public Eclipse(Ability ability)
             : base(ability)
         {
+            DisablePathfinder = true;
+
             BlinkAbilities.AddRange(BlinkAbilityNames);
             DisableAbilities.AddRange(DisableAbilityNames);
 
@@ -41,8 +43,6 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.AddRange(Invis);
-
-            IgnorePathfinder = true;
 
             for (var i = 0u; i < duration.Length; i++)
             {

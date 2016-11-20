@@ -61,8 +61,14 @@
                 {
                     if (totalMana >= spell.ManaCost)
                     {
-                        totalDamage += (int)Math.Round(AbilityDamage.CalculateDamage(spell, damageSource, unit));
-                        totalMana -= spell.ManaCost;
+                        try
+                        {
+                            totalDamage += (int)Math.Round(AbilityDamage.CalculateDamage(spell, damageSource, unit));
+                            totalMana -= spell.ManaCost;
+                        }
+                        catch (Exception)
+                        {
+                        }
                     }
                 }
 
@@ -72,12 +78,21 @@
                 return unit.Health <= totalDamage;
             }
 
-            var damage = (int)Math.Round(AbilityDamage.CalculateDamage(ability.Ability, damageSource, unit));
+            float damage;
+
+            try
+            {
+                damage = (int)Math.Round(AbilityDamage.CalculateDamage(ability.Ability, ability.AbilityOwner, Hero));
+            }
+            catch (Exception)
+            {
+                return false;
+            }
 
             if (damage > 850)
             {
-                Debugger.WriteLine("// * Damage calculations probably incorrect // " + damage);
-                damage = 850;
+                Debugger.WriteLine("// * Damage calculations probably incorrect // " + damage + " // " + ability.Name);
+                damage = 350;
             }
 
             Debugger.WriteLine("// * Incoming damage: " + damage + " from: " + ability.Name);

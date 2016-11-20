@@ -13,7 +13,7 @@
         public WhirlingAxesRanged(Ability ability)
             : base(ability)
         {
-            IgnorePathfinder = true;
+            DisablePathfinder = true;
 
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.AddRange(VsDamage);

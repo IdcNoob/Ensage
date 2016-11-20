@@ -2,6 +2,8 @@
 {
     using System.Linq;
 
+    using Common;
+
     using Core;
 
     using Data;
@@ -35,12 +37,12 @@
 
         public override bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
-            return !Sleeper.Sleeping && Ability.CanBeCasted();
+            return !Sleeper.Sleeping && Ability.CanBeCasted() && !Hero.IsRuptured();
         }
 
         public override float GetRequiredTime(EvadableAbility ability, Unit unit)
         {
-            return CastPoint + (float)Hero.GetTurnTime(unit) * 1.35f;
+            return CastPoint + (float)Hero.GetTurnTime(unit) * 1.25f;
         }
 
         public override void Use(EvadableAbility ability, Unit target)

@@ -1,69 +1,45 @@
 ﻿namespace Evader.EvadableAbilities.Heroes.PhantomAssassin
 {
-    using System.Linq;
-
     using Base;
     using Base.Interfaces;
 
     using Ensage;
-    using Ensage.Common.Extensions;
+
+    using Modifiers;
 
     using static Data.AbilityNames;
 
     internal class PhantomStrike : EvadableAbility, IModifier
     {
-        #region Fields
-
-        private readonly float modifierRadius;
-
-        private Modifier abilityModifier;
-
-        private Hero modifierSource;
-
-        #endregion
-
         #region Constructors and Destructors
 
         public PhantomStrike(Ability ability)
             : base(ability)
         {
-            ModifierAllyCounter.AddRange(VsDamage);
-            ModifierAllyCounter.AddRange(VsPhys);
-            ModifierAllyCounter.AddRange(AllyShields);
+            Modifier = new EvadableModifier(
+                EnemyTeam,
+                EvadableModifier.GetHeroType.ClosestToSource,
+                maxDistanceToSource: AbilityOwner.AttackRange + 150);
 
-            ModifierEnemyCounter.Add(FortunesEnd);
-            ModifierEnemyCounter.Add(Decrepify);
-            ModifierEnemyCounter.Add(Eul);
+            Modifier.AllyCounterAbilities.AddRange(VsDamage);
+            Modifier.AllyCounterAbilities.AddRange(VsPhys);
+            Modifier.AllyCounterAbilities.AddRange(AllyShields);
 
-            modifierRadius = 200;
+            Modifier.EnemyCounterAbilities.Add(Decrepify);
+            Modifier.EnemyCounterAbilities.Add(Eul);
+            Modifier.EnemyCounterAbilities.AddRange(VsPhys);
+            Modifier.EnemyCounterAbilities.Add(FortunesEnd);
         }
 
         #endregion
 
         #region Public Properties
 
-        public uint ModifierHandle { get; private set; }
+        public EvadableModifier Modifier { get; }
 
         #endregion
 
         #region Public Methods and Operators
-
-        public void AddModifer(Modifier modifier, Hero hero)
-        {
-            if (hero.Team == HeroTeam)
-            {
-                return;
-            }
-
-            abilityModifier = modifier;
-            modifierSource = hero;
-            ModifierHandle = modifier.Handle;
-        }
-
-        public bool CanBeCountered()
-        {
-            return abilityModifier != null && abilityModifier.IsValid;
-        }
 
         public override void Check()
         {
@@ -73,28 +49,9 @@
         {
         }
 
-        public float GetModiferRemainingTime()
-        {
-            return abilityModifier.RemainingTime;
-        }
-
-        public Hero GetModifierHero(ParallelQuery<Hero> allies)
-        {
-            return
-                allies.Where(x => x.Distance2D(modifierSource) <= modifierRadius)
-                    .OrderBy(x => AbilityOwner.FindRelativeAngle(x.Position))
-                    .FirstOrDefault();
-        }
-
         public override float GetRemainingTime(Hero hero = null)
         {
             return 0;
-        }
-
-        public void RemoveModifier(Modifier modifier)
-        {
-            abilityModifier = null;
-            modifierSource = null;
         }
 
         #endregion

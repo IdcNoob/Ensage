@@ -2,6 +2,8 @@
 {
     using System.Linq;
 
+    using Common;
+
     using Data;
 
     using Ensage;
@@ -32,12 +34,18 @@
 
         public override bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
+            if (Hero.IsRuptured())
+            {
+                return false;
+            }
+
             blinkUnit =
                 ObjectManager.GetEntitiesFast<Unit>()
                     .FirstOrDefault(
                         x =>
                             x.IsValid && x.IsAlive && (x is Creep || x is Hero) && !x.Equals(Hero)
                             && x.Team == HeroTeam && x.Distance2D(Hero) < GetCastRange() && x.Distance2D(Hero) > 200);
+
             return !Sleeper.Sleeping && blinkUnit != null && Ability.CanBeCasted();
         }
 

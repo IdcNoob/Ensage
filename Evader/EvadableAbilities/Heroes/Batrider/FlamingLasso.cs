@@ -1,32 +1,23 @@
 ﻿namespace Evader.EvadableAbilities.Heroes.Batrider
 {
-    using System.Linq;
-
     using Base;
     using Base.Interfaces;
 
     using Ensage;
-    using Ensage.Common.Extensions;
+
+    using Modifiers;
 
     using static Data.AbilityNames;
 
     internal class FlamingLasso : LinearTarget, IModifier
     {
-        #region Fields
-
-        private readonly float[] modifierDuration = new float[3];
-
-        private readonly string modifierName;
-
-        private Modifier abilityModifier;
-
-        #endregion
-
         #region Constructors and Destructors
 
         public FlamingLasso(Ability ability)
             : base(ability)
         {
+            Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.LowestHealth);
+
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(Manta);
             CounterAbilities.Add(Eul);
@@ -40,62 +31,20 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Lotus);
 
-            ModifierAllyCounter.AddRange(Invul);
-            ModifierAllyCounter.Add(FalsePromise);
-            ModifierAllyCounter.AddRange(AllyShields);
-            ModifierAllyCounter.AddRange(VsMagic);
+            Modifier.AllyCounterAbilities.AddRange(Invul);
+            Modifier.AllyCounterAbilities.Add(FalsePromise);
+            Modifier.AllyCounterAbilities.AddRange(AllyShields);
+            Modifier.AllyCounterAbilities.AddRange(VsMagic);
 
-            CounterAbilities.Add(Eul);
-            CounterAbilities.AddRange(Invul);
-
-            for (var i = 0u; i < 3; i++)
-            {
-                modifierDuration[i] = Ability.AbilitySpecialData.First(x => x.Name == "duration").GetValue(i);
-            }
-
-            modifierName = "modifier_batrider_flaming_lasso";
+            Modifier.EnemyCounterAbilities.Add(Eul);
+            Modifier.EnemyCounterAbilities.AddRange(Invul);
         }
 
         #endregion
 
         #region Public Properties
 
-        public uint ModifierHandle { get; private set; }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        public void AddModifer(Modifier modifier, Hero hero)
-        {
-            if (hero.Team == HeroTeam)
-            {
-                return;
-            }
-
-            abilityModifier = modifier;
-            ModifierHandle = modifier.Handle;
-        }
-
-        public bool CanBeCountered()
-        {
-            return abilityModifier != null && abilityModifier.IsValid;
-        }
-
-        public float GetModiferRemainingTime()
-        {
-            return modifierDuration[Ability.Level - 1] - abilityModifier.ElapsedTime;
-        }
-
-        public Hero GetModifierHero(ParallelQuery<Hero> allies)
-        {
-            return allies.OrderBy(x => x.Health).FirstOrDefault(x => x.HasModifier(modifierName));
-        }
-
-        public void RemoveModifier(Modifier modifier)
-        {
-            abilityModifier = null;
-        }
+        public EvadableModifier Modifier { get; }
 
         #endregion
     }

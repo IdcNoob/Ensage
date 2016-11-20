@@ -47,7 +47,7 @@
 
         #region Public Methods and Operators
 
-        public uint? AddObstacle(Vector3 position, float radius, uint? obstacle = null)
+        public uint? AddObstacle(Vector3 position, float radius, uint? obstacle = null, int forceZ = 600)
         {
             if (obstacle != null)
             {
@@ -55,10 +55,15 @@
             }
 
             //todo delete setz after intersection fix
-            return Pathfinding.AddObstacle(position.SetZ(600), radius);
+            return Pathfinding.AddObstacle(position.SetZ(forceZ), radius);
         }
 
-        public uint? AddObstacle(Vector3 startPosition, Vector3 endPosition, float width, uint? obstacle = null)
+        public uint? AddObstacle(
+            Vector3 startPosition,
+            Vector3 endPosition,
+            float width,
+            uint? obstacle = null,
+            int forceZ = 600)
         {
             if (obstacle != null)
             {
@@ -66,7 +71,7 @@
             }
 
             //todo delete setz after intersection fix
-            return Pathfinding.AddObstacle(startPosition.SetZ(600), endPosition.SetZ(600), width);
+            return Pathfinding.AddObstacle(startPosition.SetZ(forceZ), endPosition.SetZ(forceZ), width);
         }
 
         public uint? AddObstacle(
@@ -74,7 +79,8 @@
             Vector3 endPosition,
             float startWidth,
             float endWidth,
-            uint? obstacle = null)
+            uint? obstacle = null,
+            int forceZ = 600)
         {
             // todo: fix start => end widths
             // return Pathfinding.AddObstacle(startPosition, endPosition, startWidth, endWidth);
@@ -85,7 +91,7 @@
             }
 
             //todo delete setz after intersection fix
-            return Pathfinding.AddObstacle(startPosition.SetZ(600), endPosition.SetZ(600), endWidth);
+            return Pathfinding.AddObstacle(startPosition.SetZ(forceZ), endPosition.SetZ(600), endWidth);
         }
 
         public IEnumerable<Vector3> CalculateDebugPathFromObstacle(float remainingTime)
@@ -170,25 +176,25 @@
             Pathfinding.RemoveObstacle(id);
         }
 
-        public void UpdateObstacle(uint id, Vector3 position, float radius)
+        public void UpdateObstacle(uint id, Vector3 position, float radius, int forceZ = 600)
         {
             //todo delete setz after intersection fix
-            Pathfinding.UpdateObstacle(id, position.SetZ(600), radius);
+            Pathfinding.UpdateObstacle(id, position.SetZ(forceZ), radius);
         }
 
-        public void UpdateObstacle(uint id, Vector3 position, float startWidth, float endWidth)
+        public void UpdateObstacle(uint id, Vector3 position, float startWidth, float endWidth, int forceZ = 600)
         {
             // FAIL
             // Pathfinding.UpdateObstacle(id, position, startWidth, endWidth);
 
             //todo delete setz after intersection fix
-            Pathfinding.UpdateObstacle(id, position.SetZ(600), endWidth, endWidth);
+            Pathfinding.UpdateObstacle(id, position.SetZ(forceZ), endWidth, endWidth);
         }
 
-        public void UpdateObstacle(uint id, Vector3 startPosition, Vector3 endPosition)
+        public void UpdateObstacle(uint id, Vector3 startPosition, Vector3 endPosition, int forceZ = 600)
         {
             //todo delete setz after intersection fix
-            Pathfinding.UpdateObstacle(id, startPosition.SetZ(600), endPosition.SetZ(600));
+            Pathfinding.UpdateObstacle(id, startPosition.SetZ(forceZ), endPosition.SetZ(600));
         }
 
         #endregion

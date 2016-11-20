@@ -13,7 +13,7 @@
         public ManaVoid(Ability ability)
             : base(ability)
         {
-            IgnorePathfinder = true;
+            DisablePathfinder = true;
 
             BlinkAbilities.AddRange(BlinkAbilityNames);
             DisableAbilities.AddRange(DisableAbilityNames);

@@ -46,9 +46,15 @@
             enemyAbilitiesData = new EnemyAbilities();
 
             Menu.UsableAbilities.AddAbility(AbilityNames.GoldSpender, AbilityType.Counter);
-            GoldSpender = new GoldSpender(AbilityNames.GoldSpender);
+            GoldSpender = new GoldSpender();
 
-            sleeper.Sleep(2000);
+            Debugger.WriteLine("* Evader =>");
+            Debugger.WriteLine("* Total abilities countered: " + enemyAbilitiesData.EvadableAbilities.Count);
+            Debugger.WriteLine("* Total usable blink abilities: " + allyAbilitiesData.BlinkAbilities.Count);
+            Debugger.WriteLine("* Total usable counter abilities: " + allyAbilitiesData.CounterAbilities.Count);
+            Debugger.WriteLine("* Total usable disable abilities: " + allyAbilitiesData.DisableAbilities.Count);
+
+            sleeper.Sleep(1000);
 
             GameDispatcher.OnUpdate += OnUpdate;
             ObjectManager.OnRemoveEntity += OnRemoveEntity;
@@ -113,7 +119,7 @@
                 ObjectManager.GetEntitiesParallel<Unit>()
                     .Where(
                         x =>
-                            (x is Hero || x is Creep) && x.IsValid && x.IsAlive && x.IsSpawned
+                            !(x is Building) && x.IsValid && x.IsAlive && x.IsSpawned
                             && (!x.IsIllusion
                                 || x.HasModifiers(
                                     new[]
@@ -128,14 +134,14 @@
                 try
                 {
                     abilities.AddRange(unit.Spellbook.Spells.ToList());
+
+                    if (unit.HasInventory)
+                    {
+                        abilities.AddRange(unit.Inventory.Items);
+                    }
                 }
                 catch (Exception)
                 {
-                }
-
-                if (unit.HasInventory)
-                {
-                    abilities.AddRange(unit.Inventory.Items);
                 }
 
                 foreach (var ability in

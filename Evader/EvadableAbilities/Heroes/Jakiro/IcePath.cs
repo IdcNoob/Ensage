@@ -10,6 +10,8 @@
     using Ensage;
     using Ensage.Common.Extensions;
 
+    using Modifiers;
+
     using static Data.AbilityNames;
 
     internal class IcePath : LinearAOE, IModifier
@@ -18,8 +20,6 @@
 
         private readonly float[] duration = new float[4];
 
-        private Modifier abilityModifier;
-
         #endregion
 
         #region Constructors and Destructors
@@ -27,6 +27,8 @@
         public IcePath(Ability ability)
             : base(ability)
         {
+            Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.LowestHealth);
+
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(BallLightning);
             CounterAbilities.Add(Eul);
@@ -37,9 +39,9 @@
             CounterAbilities.Remove("bane_nightmare");
             CounterAbilities.Remove("abaddon_aphotic_shield");
 
-            ModifierAllyCounter.AddRange(AllyShields);
-            ModifierAllyCounter.AddRange(Invul);
-            ModifierAllyCounter.AddRange(VsMagic);
+            Modifier.AllyCounterAbilities.AddRange(AllyShields);
+            Modifier.AllyCounterAbilities.AddRange(Invul);
+            Modifier.AllyCounterAbilities.AddRange(VsMagic);
 
             AdditionalDelay = ability.AbilitySpecialData.First(x => x.Name == "path_delay").Value;
 
@@ -55,27 +57,11 @@
 
         #region Public Properties
 
-        public uint ModifierHandle { get; private set; }
+        public EvadableModifier Modifier { get; }
 
         #endregion
 
         #region Public Methods and Operators
-
-        public void AddModifer(Modifier modifier, Hero hero)
-        {
-            if (hero.Team != HeroTeam)
-            {
-                return;
-            }
-
-            abilityModifier = modifier;
-            ModifierHandle = modifier.Handle;
-        }
-
-        public bool CanBeCountered()
-        {
-            return abilityModifier != null && abilityModifier.IsValid;
-        }
 
         public override void Check()
         {
@@ -94,22 +80,6 @@
             {
                 End();
             }
-        }
-
-        public float GetModiferRemainingTime()
-        {
-            return GetDuration() - abilityModifier.ElapsedTime;
-        }
-
-        public Hero GetModifierHero(ParallelQuery<Hero> allies)
-        {
-            return
-                allies.Where(x => x.HasModifier(abilityModifier.Name)).OrderByDescending(x => x.Health).FirstOrDefault();
-        }
-
-        public void RemoveModifier(Modifier modifier)
-        {
-            abilityModifier = null;
         }
 
         #endregion

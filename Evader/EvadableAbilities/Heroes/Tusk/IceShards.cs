@@ -1,13 +1,24 @@
 ﻿namespace Evader.EvadableAbilities.Heroes.Tusk
 {
+    using Base.Interfaces;
+
+    using Common;
+
     using Ensage;
+    using Ensage.Common.Extensions;
 
     using static Data.AbilityNames;
 
     using LinearProjectile = Base.LinearProjectile;
 
-    internal class IceShards : LinearProjectile
+    internal class IceShards : LinearProjectile, IUnit
     {
+        #region Fields
+
+        private Unit abilityUnit;
+
+        #endregion
+
         #region Constructors and Destructors
 
         public IceShards(Ability ability)
@@ -21,6 +32,49 @@
             CounterAbilities.AddRange(VsMagic);
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
+        }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public void AddUnit(Unit unit)
+        {
+            abilityUnit = unit;
+        }
+
+        public override void Check()
+        {
+            if (StartCast <= 0 && IsInPhase && AbilityOwner.IsVisible)
+            {
+                StartCast = Game.RawGameTime;
+                EndCast = StartCast + CastPoint + AdditionalDelay + GetCastRange() / GetProjectileSpeed();
+            }
+            else if (StartCast > 0 && Obstacle == null && CanBeStopped() && !AbilityOwner.IsTurning())
+            {
+                StartPosition = AbilityOwner.NetworkPosition;
+                EndPosition = AbilityOwner.InFront(GetCastRange() + GetRadius() / 2);
+                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), GetEndRadius(), Obstacle);
+            }
+            else if (StartCast > 0
+                     && (Game.RawGameTime > EndCast
+                         || (Game.RawGameTime > StartCast + CastPoint + 0.2 && !IsAbilityUnitValid())))
+            {
+                End();
+            }
+            else if (Obstacle != null && !CanBeStopped())
+            {
+                Pathfinder.UpdateObstacle(Obstacle.Value, GetProjectilePosition(), GetRadius(), GetEndRadius());
+            }
+        }
+
+        #endregion
+
+        #region Methods
+
+        private bool IsAbilityUnitValid()
+        {
+            return abilityUnit != null && abilityUnit.IsValid;
         }
 
         #endregion

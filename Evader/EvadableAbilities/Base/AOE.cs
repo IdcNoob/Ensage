@@ -26,9 +26,9 @@
 
         #endregion
 
-        #region Properties
+        #region Public Properties
 
-        protected Vector3 StartPosition { get; set; }
+        public Vector3 StartPosition { get; protected set; }
 
         #endregion
 

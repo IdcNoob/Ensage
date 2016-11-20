@@ -1,31 +1,23 @@
 ﻿namespace Evader.EvadableAbilities.Heroes.Tinker
 {
-    using System.Linq;
-
     using Base;
     using Base.Interfaces;
 
     using Ensage;
     using Ensage.Common.Extensions;
 
+    using Modifiers;
+
     using static Data.AbilityNames;
 
     internal class Laser : LinearTarget, IModifier
     {
-        #region Fields
-
-        private readonly float[] modifierDuration = new float[4];
-
-        private Modifier abilityModifier;
-
-        #endregion
-
         #region Constructors and Destructors
 
         public Laser(Ability ability)
             : base(ability)
         {
-            //todo: tinker laser aghanim fix
+            Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.LowestHealth);
 
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.AddRange(VsDamage);
@@ -34,60 +26,30 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Lotus);
 
-            ModifierAllyCounter.Add(Lotus);
-            ModifierAllyCounter.Add(Manta);
-            ModifierAllyCounter.AddRange(AllyPurges);
-            ModifierAllyCounter.AddRange(AllyShields);
-
-            for (var i = 0u; i < 4; i++)
-            {
-                modifierDuration[i] = Ability.AbilitySpecialData.First(x => x.Name == "duration_hero").GetValue(i);
-            }
+            Modifier.AllyCounterAbilities.Add(Lotus);
+            Modifier.AllyCounterAbilities.Add(Manta);
+            Modifier.AllyCounterAbilities.AddRange(AllyPurges);
+            Modifier.AllyCounterAbilities.AddRange(AllyShields);
         }
 
         #endregion
 
         #region Public Properties
 
-        public uint ModifierHandle { get; private set; }
+        public EvadableModifier Modifier { get; }
 
         #endregion
 
-        #region Public Methods and Operators
+        #region Methods
 
-        public void AddModifer(Modifier modifier, Hero hero)
+        protected override float GetCastRange()
         {
-            if (hero.Team != HeroTeam)
-            {
-                return;
-            }
-
-            abilityModifier = modifier;
-            ModifierHandle = modifier.Handle;
+            return base.GetCastRange() + (AbilityOwner.AghanimState() ? GetRadius() : 0);
         }
 
-        public bool CanBeCountered()
+        protected override float GetRadius()
         {
-            return abilityModifier != null && abilityModifier.IsValid;
-        }
-
-        public float GetModiferRemainingTime()
-        {
-            return modifierDuration[Ability.Level - 1] - abilityModifier.ElapsedTime;
-        }
-
-        public Hero GetModifierHero(ParallelQuery<Hero> allies)
-        {
-            return
-                allies.Where(x => x.HasModifier(abilityModifier.Name))
-                    .OrderByDescending(x => x.Equals(Hero))
-                    .ThenBy(x => x.Health)
-                    .FirstOrDefault();
-        }
-
-        public void RemoveModifier(Modifier modifier)
-        {
-            abilityModifier = null;
+            return AbilityOwner.AghanimState() ? 400 : base.GetRadius();
         }
 
         #endregion

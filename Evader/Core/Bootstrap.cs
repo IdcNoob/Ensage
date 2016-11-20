@@ -66,6 +66,7 @@
         private void OnLoad(object sender, EventArgs e)
         {
             evader.OnLoad();
+
             Events.OnClose += OnClose;
             Game.OnUpdate += Game_OnUpdate;
             Player.OnExecuteOrder += Player_OnExecuteAction;

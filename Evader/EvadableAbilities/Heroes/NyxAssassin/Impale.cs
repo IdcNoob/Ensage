@@ -1,11 +1,13 @@
 ﻿namespace Evader.EvadableAbilities.Heroes.NyxAssassin
 {
-    using System.Linq;
-
     using Base.Interfaces;
+
+    using Common;
 
     using Ensage;
     using Ensage.Common.Extensions;
+
+    using Modifiers;
 
     using static Data.AbilityNames;
 
@@ -13,12 +15,6 @@
 
     internal class Impale : LinearProjectile, IModifier
     {
-        #region Fields
-
-        private Modifier abilityModifier;
-
-        #endregion
-
         #region Constructors and Destructors
 
         public Impale(Ability ability)
@@ -26,66 +22,58 @@
         {
             //todo fix aghanim
 
+            Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.LowestHealth);
+
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(BallLightning);
             CounterAbilities.Add(SleightOfFist);
-            CounterAbilities.Add(Manta);
             CounterAbilities.Add(Eul);
             CounterAbilities.AddRange(VsDisable);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);
-            CounterAbilities.Add(Lotus);
             CounterAbilities.AddRange(Invis);
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(SnowBall);
             CounterAbilities.Remove("abaddon_aphotic_shield");
 
-            ModifierAllyCounter.AddRange(AllyShields);
-            ModifierAllyCounter.AddRange(Invul);
-            ModifierAllyCounter.AddRange(VsMagic);
+            Modifier.AllyCounterAbilities.AddRange(AllyShields);
+            Modifier.AllyCounterAbilities.AddRange(Invul);
+            Modifier.AllyCounterAbilities.AddRange(VsMagic);
         }
 
         #endregion
 
         #region Public Properties
 
-        public uint ModifierHandle { get; private set; }
+        public EvadableModifier Modifier { get; }
 
         #endregion
 
         #region Public Methods and Operators
 
-        public void AddModifer(Modifier modifier, Hero hero)
+        public override void Check()
         {
-            if (hero.Team != HeroTeam)
+            if (StartCast <= 0 && IsInPhase && AbilityOwner.IsVisible
+                && !AbilityOwner.HasModifier("modifier_nyx_assassin_burrow"))
             {
-                return;
+                StartCast = Game.RawGameTime;
+                EndCast = StartCast + CastPoint + AdditionalDelay + GetCastRange() / GetProjectileSpeed();
             }
-
-            abilityModifier = modifier;
-            ModifierHandle = modifier.Handle;
-        }
-
-        public bool CanBeCountered()
-        {
-            return abilityModifier != null && abilityModifier.IsValid;
-        }
-
-        public float GetModiferRemainingTime()
-        {
-            return abilityModifier.RemainingTime;
-        }
-
-        public Hero GetModifierHero(ParallelQuery<Hero> allies)
-        {
-            return
-                allies.Where(x => x.HasModifier(abilityModifier.Name)).OrderByDescending(x => x.Health).FirstOrDefault();
-        }
-
-        public void RemoveModifier(Modifier modifier)
-        {
-            abilityModifier = null;
+            else if (StartCast > 0 && Obstacle == null && CanBeStopped() && !AbilityOwner.IsTurning())
+            {
+                StartPosition = AbilityOwner.NetworkPosition;
+                EndPosition = AbilityOwner.InFront(GetCastRange() + GetRadius() / 2);
+                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), GetEndRadius(), Obstacle);
+            }
+            else if (StartCast > 0 && Game.RawGameTime > EndCast)
+            {
+                End();
+            }
+            else if (Obstacle != null && !CanBeStopped())
+            {
+                Pathfinder.UpdateObstacle(Obstacle.Value, GetProjectilePosition(), GetRadius(), GetEndRadius());
+            }
         }
 
         #endregion

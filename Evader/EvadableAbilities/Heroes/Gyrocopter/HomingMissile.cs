@@ -1,0 +1,54 @@
+﻿namespace Evader.EvadableAbilities.Heroes.Gyrocopter
+{
+    using Base;
+    using Base.Interfaces;
+
+    using Ensage;
+
+    using Modifiers;
+
+    using static Data.AbilityNames;
+
+    internal class HomingMissile : EvadableAbility, IModifier
+    {
+        #region Constructors and Destructors
+
+        public HomingMissile(Ability ability)
+            : base(ability)
+        {
+            //todo improve ?
+
+            Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.ModifierSource);
+            DisableTimeSinceCastCheck = true;
+
+            Modifier.AllyCounterAbilities.AddRange(AllyShields);
+            Modifier.AllyCounterAbilities.AddRange(Invul);
+            Modifier.AllyCounterAbilities.AddRange(VsPhys);
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        public EvadableModifier Modifier { get; }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public override void Check()
+        {
+        }
+
+        public override void Draw()
+        {
+        }
+
+        public override float GetRemainingTime(Hero hero = null)
+        {
+            return 0;
+        }
+
+        #endregion
+    }
+}

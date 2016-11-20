@@ -9,24 +9,6 @@
     {
         #region Public Methods and Operators
 
-        public static string AbilityName(this Modifier modifier)
-        {
-            var modifierTextureName = modifier.TextureName;
-            var modifierName = modifier.Name;
-
-            if (modifierName == "modifier_stunned" && modifierTextureName == "earthshaker_aftershock")
-            {
-                return "earthshaker_enchant_totem";
-            }
-            if (modifierName == "modifier_skeleton_king_hellfire_blast")
-            {
-                // stun dot modifier
-                return null;
-            }
-
-            return modifierTextureName;
-        }
-
         public static string GetName(this Unit unit)
         {
             var hero = unit as Hero;
@@ -41,6 +23,19 @@
                     return "Centaur Conqueror";
                 case "npc_dota_neutral_satyr_hellcaller":
                     return "Satyr Tormenter";
+                case "npc_dota_brewmaster_earth_1":
+                case "npc_dota_brewmaster_earth_2":
+                case "npc_dota_brewmaster_earth_3":
+                    return "Earth Spirit";
+                case "npc_dota_brewmaster_storm_1":
+                case "npc_dota_brewmaster_storm_2":
+                case "npc_dota_brewmaster_storm_3":
+                    return "Storm Spirit";
+                case "npc_dota_lone_druid_bear1":
+                case "npc_dota_lone_druid_bear2":
+                case "npc_dota_lone_druid_bear3":
+                case "npc_dota_lone_druid_bear4":
+                    return "Spirit Bear";
             }
 
             Debugger.WriteLine("Real name not found for: " + unit.Name);
@@ -61,6 +56,11 @@
             }
 
             return castRange;
+        }
+
+        public static bool IsRuptured(this Unit unit)
+        {
+            return unit.HasModifier("modifier_bloodseeker_rupture");
         }
 
         public static bool IsTurning(this Unit unit)

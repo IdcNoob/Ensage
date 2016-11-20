@@ -29,7 +29,8 @@
         public StaticStorm(Ability ability)
             : base(ability)
         {
-            IgnorePathfinder = true;
+            DisablePathfinder = true;
+            ObstacleStays = true;
 
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(Eul);
@@ -39,8 +40,6 @@
 
             duration = Ability.AbilitySpecialData.First(x => x.Name == "duration").Value;
             durationAghanim = Ability.AbilitySpecialData.First(x => x.Name == "duration_scepter").Value;
-
-            ObstacleStays = true;
         }
 
         #endregion

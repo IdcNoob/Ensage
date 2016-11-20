@@ -1,7 +1,5 @@
 ﻿namespace Evader.EvadableAbilities.Heroes.Mirana
 {
-    using System.Linq;
-
     using Base.Interfaces;
 
     using Common;
@@ -10,21 +8,21 @@
     using Ensage.Common.Extensions;
     using Ensage.Common.Extensions.SharpDX;
 
+    using Modifiers;
+
+    using SharpDX;
+
     using static Data.AbilityNames;
 
     using LinearProjectile = Base.LinearProjectile;
 
-    internal class SacredArrow : LinearProjectile, IModifier
+    internal class SacredArrow : LinearProjectile, IModifier, IUnit
     {
         #region Fields
 
-        private Modifier abilityModifier;
-
-        private Unit arrow;
+        private Unit abilityUnit;
 
         private bool fowCast;
-
-        private Hero modifierSource;
 
         #endregion
 
@@ -33,6 +31,8 @@
         public SacredArrow(Ability ability)
             : base(ability)
         {
+            Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.ModifierSource);
+
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(BallLightning);
             CounterAbilities.Add(Manta);
@@ -46,104 +46,86 @@
             CounterAbilities.AddRange(Invis);
             CounterAbilities.Remove("abaddon_aphotic_shield");
 
-            ModifierAllyCounter.AddRange(AllyShields);
-            ModifierAllyCounter.AddRange(Invul);
-            ModifierAllyCounter.AddRange(VsMagic);
+            Modifier.AllyCounterAbilities.AddRange(AllyShields);
+            Modifier.AllyCounterAbilities.AddRange(Invul);
+            Modifier.AllyCounterAbilities.AddRange(VsMagic);
         }
 
         #endregion
 
         #region Public Properties
 
-        public uint ModifierHandle { get; private set; }
+        public EvadableModifier Modifier { get; }
 
         #endregion
 
         #region Public Methods and Operators
 
-        public void AddModifer(Modifier modifier, Hero hero)
-        {
-            if (hero.Team != HeroTeam)
-            {
-                return;
-            }
-
-            abilityModifier = modifier;
-            modifierSource = hero;
-            ModifierHandle = modifier.Handle;
-        }
-
         public void AddUnit(Unit unit)
         {
+            abilityUnit = unit;
+
             if (AbilityOwner.IsVisible)
             {
                 return;
             }
 
-            arrow = unit;
             StartCast = Game.RawGameTime;
-            EndCast = Game.RawGameTime + GetCastRange() / GetProjectileSpeed();
-            StartPosition = unit.Position.SetZ(AbilityOwner.Position.Z);
+            EndCast = StartCast + GetCastRange() / GetProjectileSpeed();
+            StartPosition = unit.Position.SetZ(350);
             fowCast = true;
-        }
-
-        public bool CanBeCountered()
-        {
-            return abilityModifier != null && abilityModifier.IsValid;
         }
 
         public override bool CanBeStopped()
         {
-            return !IsValidArrow() && base.CanBeStopped();
+            return !fowCast && base.CanBeStopped();
         }
 
         public override void Check()
         {
-            var time = Game.RawGameTime;
-            var phase = IsInPhase && AbilityOwner.IsVisible;
-
-            if (phase && StartCast + CastPoint <= time && time > EndCast)
+            if (fowCast && Obstacle == null)
             {
-                StartCast = time;
-                EndCast = StartCast + CastPoint + GetCastRange() / GetProjectileSpeed();
-            }
-            else if ((phase && Obstacle == null && !AbilityOwner.IsTurning()) || (fowCast && Obstacle == null))
-            {
-                if (fowCast && (!IsValidArrow() || !arrow.IsVisible))
+                if (!IsAbilityUnitValid() || !abilityUnit.IsVisible)
                 {
                     return;
                 }
 
-                if (fowCast)
-                {
-                    EndPosition = StartPosition.Extend(arrow.Position.SetZ(AbilityOwner.Position.Z), GetCastRange());
+                var position = StartPosition.Extend(abilityUnit.Position.SetZ(350), GetCastRange());
 
-                    if (EndPosition.Distance2D(StartPosition) < 10)
-                    {
-                        return;
-                    }
-                }
-                else
+                if (position.Distance2D(StartPosition) < 50)
                 {
-                    StartPosition = AbilityOwner.NetworkPosition;
-                    EndPosition = AbilityOwner.InFront(GetCastRange() + GetRadius() / 2);
+                    return;
                 }
 
-                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
+                EndPosition = position.SetZ(350);
+                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), GetEndRadius(), Obstacle);
             }
-            else if ((StartCast > 0 && time > EndCast) || (fowCast && !IsValidArrow()))
+            else if (StartCast <= 0 && IsInPhase && AbilityOwner.IsVisible)
+            {
+                StartCast = Game.RawGameTime;
+                EndCast = StartCast + CastPoint + GetCastRange() / GetProjectileSpeed();
+            }
+            else if (StartCast > 0 && Obstacle == null && CanBeStopped() && !AbilityOwner.IsTurning())
+            {
+                StartPosition = AbilityOwner.NetworkPosition;
+                EndPosition = AbilityOwner.InFront(GetCastRange() + GetRadius() / 2);
+                Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), GetEndRadius(), Obstacle);
+            }
+            else if (StartCast > 0
+                     && (Game.RawGameTime > EndCast
+                         || (Game.RawGameTime > StartCast + (fowCast ? 0 : CastPoint) + 0.1f && !IsAbilityUnitValid())))
             {
                 End();
             }
-            else if (Obstacle != null && !phase)
+            else if (Obstacle != null && !IsInPhase)
             {
-                Pathfinder.UpdateObstacle(Obstacle.Value, GetProjectilePosition(fowCast), GetRadius());
+                Pathfinder.UpdateObstacle(Obstacle.Value, GetProjectilePosition(), GetRadius(), GetEndRadius());
             }
         }
 
         public override void Draw()
         {
-            if (Obstacle == null || (!IsValidArrow() && fowCast))
+            if (Obstacle == null || (!IsAbilityUnitValid() && fowCast))
             {
                 return;
             }
@@ -162,16 +144,6 @@
             fowCast = false;
         }
 
-        public float GetModiferRemainingTime()
-        {
-            return abilityModifier.RemainingTime;
-        }
-
-        public Hero GetModifierHero(ParallelQuery<Hero> allies)
-        {
-            return allies.FirstOrDefault(x => x.Equals(modifierSource));
-        }
-
         public override float GetRemainingTime(Hero hero = null)
         {
             if (hero == null)
@@ -181,47 +153,32 @@
 
             var position = hero.NetworkPosition;
 
-            if (!IsValidArrow())
+            if (IsInPhase && AbilityOwner.IsVisible && position.Distance2D(StartPosition) < GetRadius())
             {
-                if (IsInPhase && position.Distance2D(StartPosition) < GetRadius())
-                {
-                    return StartCast + CastPoint - Game.RawGameTime;
-                }
-
-                return StartCast + CastPoint
-                       + (position.Distance2D(StartPosition) - GetRadius() * 2) / GetProjectileSpeed()
-                       - Game.RawGameTime;
+                return StartCast + CastPoint - Game.RawGameTime;
             }
 
-            return StartCast + (position.Distance2D(StartPosition) - GetRadius() * 2) / GetProjectileSpeed()
-                   - Game.RawGameTime;
+            return StartCast + (fowCast ? 0 : CastPoint)
+                   + (position.Distance2D(StartPosition) - GetRadius()) / GetProjectileSpeed() - Game.RawGameTime;
         }
 
         public override bool IsStopped()
         {
-            var check = !IsInPhase && CanBeStopped() && !fowCast;
-
-            if (check)
-            {
-                End();
-            }
-
-            return check;
-        }
-
-        public void RemoveModifier(Modifier modifier)
-        {
-            abilityModifier = null;
-            modifierSource = null;
+            return StartCast > 0 && !IsInPhase && CanBeStopped();
         }
 
         #endregion
 
         #region Methods
 
-        private bool IsValidArrow()
+        protected override Vector3 GetProjectilePosition(bool ignoreCastPoint = false)
         {
-            return arrow != null && arrow.IsValid;
+            return base.GetProjectilePosition(fowCast);
+        }
+
+        private bool IsAbilityUnitValid()
+        {
+            return abilityUnit != null && abilityUnit.IsValid;
         }
 
         #endregion
