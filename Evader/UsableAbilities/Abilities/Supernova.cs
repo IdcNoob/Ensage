@@ -24,7 +24,7 @@
 
         #region Public Methods and Operators
 
-        public override float GetRequiredTime(EvadableAbility ability, Unit unit)
+        public override float GetRequiredTime(EvadableAbility ability, Unit unit, float remainingTime)
         {
             return CastPoint;
         }

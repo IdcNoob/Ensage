@@ -55,7 +55,7 @@
             return !Sleeper.Sleeping && Ability.CanBeCasted();
         }
 
-        public override float GetRequiredTime(EvadableAbility ability, Unit unit)
+        public override float GetRequiredTime(EvadableAbility ability, Unit unit, float remainingTime)
         {
             var projectile = ability as Projectile;
 

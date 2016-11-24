@@ -5,9 +5,24 @@
     using Ensage;
     using Ensage.Common.Extensions;
 
+    using SharpDX;
+
     internal static class Utils
     {
         #region Public Methods and Operators
+
+        public static Vector3 GetBlinkPosition(this Unit unit, Vector3 direction, float remainingTime)
+        {
+            remainingTime = Math.Max(remainingTime, 0);
+
+            var turnRate = unit.GetTurnRate();
+            var angle = (float)(remainingTime * turnRate / 0.03);
+
+            var left = VectorExtensions.FromPolarCoordinates(1, unit.NetworkRotationRad + angle).ToVector3();
+            var right = VectorExtensions.FromPolarCoordinates(1, unit.NetworkRotationRad - angle).ToVector3();
+
+            return unit.Position + (left.Distance2D(direction) < right.Distance2D(direction) ? left : right) * 100;
+        }
 
         public static string GetName(this Unit unit)
         {

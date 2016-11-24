@@ -1,7 +1,5 @@
 ﻿namespace Evader.EvadableAbilities.Base
 {
-    using Common;
-
     using Ensage;
     using Ensage.Common.Extensions;
 
@@ -32,12 +30,15 @@
             {
                 StartCast = Game.RawGameTime;
                 EndCast = StartCast + CastPoint + AdditionalDelay;
-            }
-            else if (StartCast > 0 && Obstacle == null && CanBeStopped() && !AbilityOwner.IsTurning())
-            {
                 StartPosition = AbilityOwner.NetworkPosition;
                 EndPosition = AbilityOwner.InFront(GetCastRange() + 150);
                 Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
+            }
+            else if (StartCast > 0 && Obstacle != null && CanBeStopped())
+            {
+                EndPosition = AbilityOwner.InFront(GetCastRange());
+                Pathfinder.UpdateObstacle(Obstacle.Value, StartPosition, EndPosition);
+                AbilityDrawer.UpdateRectaglePosition(StartPosition, EndPosition, GetRadius());
             }
             else if (StartCast > 0 && Game.RawGameTime > EndCast)
             {

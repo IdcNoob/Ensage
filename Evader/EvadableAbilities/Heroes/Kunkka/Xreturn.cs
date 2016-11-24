@@ -65,7 +65,7 @@
                 StartCast = Game.RawGameTime;
                 EndCast = StartCast + CastPoint;
             }
-            else if (Obstacle != null && Game.RawGameTime > EndCast)
+            else if (Obstacle != null && (Game.RawGameTime > EndCast || !Modifier.IsValid()))
             {
                 EndXreturn();
             }
@@ -99,13 +99,13 @@
 
         public override float GetRemainingTime(Hero hero = null)
         {
-            var modRemainingTime = float.MaxValue;
+            var modRemainingTime = 4f;
             if (Modifier.IsValid())
             {
                 modRemainingTime = Modifier.GetRemainingTime();
             }
 
-            var phaseRemainingTime = float.MaxValue;
+            var phaseRemainingTime = 4f;
             if (StartCast > 0)
             {
                 phaseRemainingTime = EndCast - Game.RawGameTime + 0.05f;

@@ -496,8 +496,10 @@
                             continue;
                         }
 
-                        var requiredTime = modifierEnemyCounterAbility.GetRequiredTime(ability, enemy)
-                                           + Game.Ping / 1000;
+                        var requiredTime = modifierEnemyCounterAbility.GetRequiredTime(
+                                               ability,
+                                               enemy,
+                                               modifierRemainingTime) + Game.Ping / 1000;
                         if (requiredTime < 0.35 && modifierAbility.Modifier.GetElapsedTime() < 0.35)
                         {
                             return;
@@ -509,7 +511,7 @@
                             sleeper.Sleep(3000, ability.Handle);
 
                             Debugger.WriteLine(
-                                ">>>>>>>>>>>>>>>      " + TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss"),
+                                TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss") + " >>>>>>>>>>>>>>>",
                                 Debugger.Type.AbilityUsage);
                             Debugger.WriteLine(
                                 "modifier enemy counter: " + modifierEnemyCounterAbility.Name + " => " + ability.Name,
@@ -554,7 +556,8 @@
                             continue;
                         }
 
-                        var requiredTime = modifierCounterAbility.GetRequiredTime(ability, ally) + Game.Ping / 1000;
+                        var requiredTime = modifierCounterAbility.GetRequiredTime(ability, ally, modifierRemainingTime)
+                                           + Game.Ping / 1000;
                         if (requiredTime < 0.3 && modifierAbility.Modifier.GetElapsedTime() < 0.5)
                         {
                             return;
@@ -566,7 +569,7 @@
                             sleeper.Sleep(1000, ability.Handle);
 
                             Debugger.WriteLine(
-                                ">>>>>>>>>>>>>>>      " + TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss"),
+                                TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss") + " >>>>>>>>>>>>>>>",
                                 Debugger.Type.AbilityUsage);
                             Debugger.WriteLine(
                                 "modifier counter: " + modifierCounterAbility.Name + " => " + ability.Name,
@@ -711,8 +714,9 @@
                             continue;
                         }
 
-                        var requiredTime = disableAbility.GetRequiredTime(ability, abilityOwner) + Game.Ping / 1000;
                         var remainingDisableTime = ability.GetRemainingDisableTime();
+                        var requiredTime = disableAbility.GetRequiredTime(ability, abilityOwner, remainingDisableTime)
+                                           + Game.Ping / 1000;
                         var ignoreRemainingTime = ability.IgnoreRemainingTime(disableAbility, remainingDisableTime);
 
                         if (requiredTime > remainingDisableTime && !ignoreRemainingTime)
@@ -726,7 +730,7 @@
                             sleeper.Sleep(ability.GetSleepTime(), ability);
 
                             Debugger.WriteLine(
-                                ">>>>>>>>>>>>>>>      " + TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss"),
+                                TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss") + " >>>>>>>>>>>>>>>",
                                 Debugger.Type.AbilityUsage);
                             Debugger.WriteLine(
                                 "multi intersection disable: " + disableAbility.Name + " => " + ability.Name,
@@ -890,8 +894,7 @@
                                         }
 
                                         Debugger.WriteLine(
-                                            ">>>>>>>>>>>>>>>      "
-                                            + TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss"),
+                                            TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss") + " >>>>>>>>>>>>>>>",
                                             Debugger.Type.AbilityUsage);
                                         Debugger.WriteLine(
                                             "avoid while moving: " + ability.Name,
@@ -941,8 +944,7 @@
                                         }
 
                                         Debugger.WriteLine(
-                                            ">>>>>>>>>>>>>>>      "
-                                            + TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss"),
+                                            TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss") + " >>>>>>>>>>>>>>>",
                                             Debugger.Type.AbilityUsage);
                                         Debugger.WriteLine(
                                             "avoid while standing: " + ability.Name,
@@ -979,8 +981,7 @@
                                     continue;
                                 }
 
-                                var requiredTime = blinkAbility.GetRequiredTime(ability, fountain) + Game.Ping / 1000
-                                                   + 0.1f;
+                                var requiredTime = blinkAbility.GetRequiredTime(ability, fountain, remainingTime);
                                 var time = remainingTime - requiredTime;
                                 var ignoreRemainingTime = ability.IgnoreRemainingTime(blinkAbility, time);
 
@@ -992,8 +993,7 @@
                                 if (time <= 0.10 && time > 0 || ignoreRemainingTime)
                                 {
                                     Debugger.WriteLine(
-                                        ">>>>>>>>>>>>>>>      "
-                                        + TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss"),
+                                        TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss") + " >>>>>>>>>>>>>>>",
                                         Debugger.Type.AbilityUsage);
 
                                     if (!Menu.Randomiser.Enabled || (Menu.Randomiser.NukesOnly && ability.IsDisable)
@@ -1016,6 +1016,7 @@
                                     Debugger.WriteLine("required time: " + requiredTime, Debugger.Type.AbilityUsage);
                                     return true;
                                 }
+
                                 return false;
                             }
 
@@ -1044,7 +1045,8 @@
 
                                 var requiredTime = counterAbility.GetRequiredTime(
                                                        ability,
-                                                       targetEnemy ? abilityOwner : ally) + Game.Ping / 1000 + 0.05f;
+                                                       targetEnemy ? abilityOwner : ally,
+                                                       remainingTime) + Game.Ping / 1000 + 0.05f;
 
                                 var ignoreRemainingTime = false;
 
@@ -1071,8 +1073,7 @@
                                 if (time <= 0.10 && time > 0 || ignoreRemainingTime)
                                 {
                                     Debugger.WriteLine(
-                                        ">>>>>>>>>>>>>>>      "
-                                        + TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss"),
+                                        TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss") + " >>>>>>>>>>>>>>>",
                                         Debugger.Type.AbilityUsage);
 
                                     if (!Menu.Randomiser.Enabled || (Menu.Randomiser.NukesOnly && ability.IsDisable)
@@ -1130,10 +1131,11 @@
                                     continue;
                                 }
 
-                                var requiredTime = disableAbility.GetRequiredTime(ability, abilityOwner)
-                                                   + Game.Ping / 1000;
-
                                 var remainingDisableTime = ability.GetRemainingDisableTime();
+                                var requiredTime = disableAbility.GetRequiredTime(
+                                                       ability,
+                                                       abilityOwner,
+                                                       remainingDisableTime) + Game.Ping / 1000;
 
                                 var ignoreRemainingTime = ability.IgnoreRemainingTime(
                                     disableAbility,
@@ -1144,11 +1146,10 @@
                                     continue;
                                 }
 
-                                if (remainingDisableTime - requiredTime <= 0.1 || ignoreRemainingTime)
+                                if (remainingDisableTime - requiredTime <= 0.10 || ignoreRemainingTime)
                                 {
                                     Debugger.WriteLine(
-                                        ">>>>>>>>>>>>>>>      "
-                                        + TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss"),
+                                        TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss") + " >>>>>>>>>>>>>>>",
                                         Debugger.Type.AbilityUsage);
 
                                     if (!Menu.Randomiser.Enabled || (Menu.Randomiser.NukesOnly && ability.IsDisable)

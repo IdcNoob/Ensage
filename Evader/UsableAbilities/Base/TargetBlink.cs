@@ -49,7 +49,7 @@
             return !Sleeper.Sleeping && blinkUnit != null && Ability.CanBeCasted();
         }
 
-        public override float GetRequiredTime(EvadableAbility ability, Unit unit)
+        public override float GetRequiredTime(EvadableAbility ability, Unit unit, float remainingTime)
         {
             if (blinkUnit == null)
             {

@@ -22,7 +22,7 @@
 
         #region Public Methods and Operators
 
-        public override float GetRequiredTime(EvadableAbility ability, Unit unit)
+        public override float GetRequiredTime(EvadableAbility ability, Unit unit, float remainingTime)
         {
             return CastPoint + (unit.Equals(Hero) ? 0 : (float)Hero.GetTurnTime(unit) * 1.35f);
         }

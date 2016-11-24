@@ -29,7 +29,7 @@
             return !Sleeper.Sleeping && Hero.HasModifier("modifier_morphling_replicate_timer") && Ability.CanBeCasted();
         }
 
-        public override float GetRequiredTime(EvadableAbility ability, Unit unit)
+        public override float GetRequiredTime(EvadableAbility ability, Unit unit, float remainingTime)
         {
             return CastPoint;
         }

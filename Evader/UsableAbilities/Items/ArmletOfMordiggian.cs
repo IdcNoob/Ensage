@@ -61,6 +61,8 @@
 
         private readonly Sleeper delay;
 
+        private bool canToggle;
+
         private bool manualDisable;
 
         #endregion
@@ -115,7 +117,7 @@
             if (ability.IsDisable)
             {
                 var totalDamage = (damageSource.MinimumDamage + damageSource.BonusDamage)
-                                  * damageSource.SecondsPerAttack * 2;
+                                  * damageSource.AttacksPerSecond * 2;
                 var totalMana = damageSource.Mana;
 
                 foreach (var spell in damageSource.Spellbook.Spells.Where(x => x.Level > 0 && x.Cooldown <= 0))
@@ -146,7 +148,7 @@
             Player.OnExecuteOrder -= OnExecuteOrder;
         }
 
-        public override float GetRequiredTime(EvadableAbility ability, Unit unit)
+        public override float GetRequiredTime(EvadableAbility ability, Unit unit, float remainingTime)
         {
             return Math.Max(ability.GetRemainingTime(Hero) - 0.1f, 0);
         }
@@ -196,6 +198,12 @@
 
             if (args.Ability?.ClassID != ClassID.CDOTA_Item_Armlet)
             {
+                return;
+            }
+
+            if (Sleeper.Sleeping || !canToggle)
+            {
+                args.Process = false;
                 return;
             }
 
@@ -251,7 +259,7 @@
                     }
 
                     attacking.Sleep(sleep, enemy);
-                    attackStart.Sleep(enemy.AttacksPerSecond * 1000, enemy);
+                    attackStart.Sleep(enemy.SecondsPerAttack * 1000, enemy);
                 }
                 else if (attackStart.Sleeping(enemy) && !enemy.IsAttacking())
                 {
@@ -287,7 +295,9 @@
                 return;
             }
 
-            if (Hero.Health < Menu.ArmetHpThreshold && ((noProjectiles && noAutoAttacks) || !armletEnabled)
+            canToggle = noProjectiles && noAutoAttacks || !armletEnabled;
+
+            if (Hero.Health < Menu.ArmetHpThreshold && canToggle
                 && (nearEnemies.Any() || heroProjectiles.Any() || !Menu.ArmletEnemiesCheck && !manualDisable))
             {
                 Use(null, null);

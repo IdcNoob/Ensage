@@ -101,7 +101,7 @@
                    && CheckEnemy(unit);
         }
 
-        public abstract float GetRequiredTime(EvadableAbility ability, Unit unit);
+        public abstract float GetRequiredTime(EvadableAbility ability, Unit unit, float remainingTime);
 
         public abstract void Use(EvadableAbility ability, Unit target);
 

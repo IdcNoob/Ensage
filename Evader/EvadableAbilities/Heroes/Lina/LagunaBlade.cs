@@ -34,7 +34,16 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
 
-            AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "damage_delay").Value;
+            AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "damage_delay").Value + 0.05f;
+        }
+
+        #endregion
+
+        #region Methods
+
+        protected override float GetCastRange()
+        {
+            return base.GetCastRange() + 150;
         }
 
         #endregion

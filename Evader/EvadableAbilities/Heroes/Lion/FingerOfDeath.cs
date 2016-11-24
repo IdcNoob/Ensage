@@ -41,13 +41,18 @@
             CounterAbilities.Add(NetherWard);
             CounterAbilities.AddRange(Invis);
 
-            AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "damage_delay").Value;
+            AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "damage_delay").Value + 0.05f;
             aghanimRadius = Ability.AbilitySpecialData.First(x => x.Name == "splash_radius_scepter").Value + 60;
         }
 
         #endregion
 
         #region Methods
+
+        protected override float GetCastRange()
+        {
+            return base.GetCastRange() + 150;
+        }
 
         protected override float GetRadius()
         {

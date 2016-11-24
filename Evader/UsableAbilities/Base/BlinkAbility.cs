@@ -14,6 +14,8 @@
 
     using EvadableAbilities.Base;
 
+    using SharpDX;
+
     using AbilityType = Data.AbilityType;
 
     internal class BlinkAbility : UsableAbility
@@ -29,6 +31,8 @@
 
         #region Properties
 
+        protected Vector3 BlinkPosition { get; set; }
+
         protected Pathfinder Pathfinder => Variables.Pathfinder;
 
         #endregion
@@ -40,22 +44,39 @@
             return !Sleeper.Sleeping && Ability.CanBeCasted() && !Hero.IsRuptured();
         }
 
-        public override float GetRequiredTime(EvadableAbility ability, Unit unit)
+        public override float GetRequiredTime(EvadableAbility ability, Unit unit, float remainingTime)
         {
-            return CastPoint + (float)Hero.GetTurnTime(unit) * 1.25f;
+            var delay = CastPoint + Game.Ping / 1000;
+            var requiredTime = (float)Hero.GetTurnTime(unit.Position) * 1.35f + delay + 0.1f;
+
+            if (remainingTime - requiredTime > 0)
+            {
+                BlinkPosition = unit.Position;
+                return requiredTime;
+            }
+
+            var left = remainingTime - delay;
+            if (left < 0)
+            {
+                return 111;
+            }
+
+            BlinkPosition = Hero.GetBlinkPosition(unit.Position, left - 0.15f);
+
+            return (float)Hero.GetTurnTime(BlinkPosition) + delay + 0.1f;
         }
 
         public override void Use(EvadableAbility ability, Unit target)
         {
             var range = GetCastRange() - 60;
-            var blinkPosition = Hero.NetworkPosition.Extend(target.Position, range);
-            var obtsacles = Pathfinder.GetIntersectingObstacles(blinkPosition, Hero.HullRadius);
+            BlinkPosition = Hero.NetworkPosition.Extend(BlinkPosition, range);
+            var obtsacles = Pathfinder.GetIntersectingObstacles(BlinkPosition, Hero.HullRadius);
 
             if (obtsacles.Any())
             {
                 bool success;
-                blinkPosition =
-                    Pathfinder.CalculatePathFromObstacle(blinkPosition, blinkPosition, 5, out success).LastOrDefault();
+                BlinkPosition =
+                    Pathfinder.CalculatePathFromObstacle(BlinkPosition, BlinkPosition, 5, out success).LastOrDefault();
 
                 if (!success)
                 {
@@ -63,14 +84,14 @@
                     return;
                 }
 
-                if (Hero.Distance2D(blinkPosition) > range)
+                if (Hero.Distance2D(BlinkPosition) > range)
                 {
                     // probably gg
-                    blinkPosition = Hero.NetworkPosition.Extend(blinkPosition, range);
+                    BlinkPosition = Hero.NetworkPosition.Extend(BlinkPosition, range);
                 }
             }
 
-            Ability.UseAbility(blinkPosition);
+            Ability.UseAbility(BlinkPosition);
             Sleep();
         }
 
