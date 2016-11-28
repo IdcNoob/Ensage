@@ -48,7 +48,8 @@
             Modifier.AllyCounterAbilities.AddRange(Invul);
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
 
-            AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "light_strike_array_delay_time").Value;
+            AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "light_strike_array_delay_time").Value
+                              + 0.05f;
         }
 
         #endregion

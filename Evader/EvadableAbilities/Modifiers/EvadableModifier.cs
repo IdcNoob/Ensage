@@ -1,5 +1,6 @@
 ﻿namespace Evader.EvadableAbilities.Modifiers
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -98,17 +99,17 @@
 
         public virtual bool CanBeCountered()
         {
-            // try
-            // {
-            if (!IsValid())
+            try
+            {
+                if (!IsValid())
+                {
+                    return false;
+                }
+            }
+            catch (Exception)
             {
                 return false;
             }
-            //}
-            //catch (Exception)
-            //{
-            //    return false;
-            //}
 
             if (MaximumRemainingTime > 0)
             {

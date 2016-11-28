@@ -13,10 +13,7 @@
 
         public static Vector3 GetBlinkPosition(this Unit unit, Vector3 direction, float remainingTime)
         {
-            remainingTime = Math.Max(remainingTime, 0);
-
-            var turnRate = unit.GetTurnRate();
-            var angle = (float)(remainingTime * turnRate / 0.03);
+            var angle = (float)(Math.Max(remainingTime, 0) * unit.GetTurnRate() / 0.03);
 
             var left = VectorExtensions.FromPolarCoordinates(1, unit.NetworkRotationRad + angle).ToVector3();
             var right = VectorExtensions.FromPolarCoordinates(1, unit.NetworkRotationRad - angle).ToVector3();

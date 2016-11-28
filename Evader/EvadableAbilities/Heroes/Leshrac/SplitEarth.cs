@@ -49,7 +49,7 @@
             Modifier.AllyCounterAbilities.AddRange(Invul);
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
 
-            AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "delay").Value;
+            AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "delay").Value + 0.05f;
         }
 
         #endregion
