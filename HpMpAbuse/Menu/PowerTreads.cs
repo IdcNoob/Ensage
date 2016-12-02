@@ -11,13 +11,13 @@
         #region Fields
 
         public readonly Dictionary<string, Attribute> Attributes = new Dictionary<string, Attribute>
-            {
-                { "Don't switch", Attribute.Invalid },
-                { "Main attribute", Attribute.Invalid },
-                { "Strength", Attribute.Strength },
-                { "Intelligence", Attribute.Intelligence },
-                { "Agility", Attribute.Agility }
-            };
+        {
+            { "Don't switch", Attribute.Invalid },
+            { "Main attribute", Attribute.Invalid },
+            { "Strength", Attribute.Strength },
+            { "Intelligence", Attribute.Intelligence },
+            { "Agility", Attribute.Agility }
+        };
 
         private readonly Dictionary<string, bool> abilities = new Dictionary<string, bool>();
 
@@ -35,6 +35,8 @@
 
         private readonly MenuItem switchOnMove;
 
+        private AbilityToggler abilityToggler;
+
         #endregion
 
         #region Constructors and Destructors
@@ -42,27 +44,31 @@
         public PowerTreads(Menu mainMenu)
         {
             var menu = new Menu("Power Treads Switcher", "ptSwitcher", false, "item_power_treads", true);
-            menu.AddItem(enabled = new MenuItem("enabledPT", "Enabled").SetValue(true));
-            menu.AddItem(enabledAbilities = new MenuItem("enabledPTAbilities", "Enabled for"));
+            var heroName = Variables.Hero.Name;
 
+            menu.AddItem(enabled = new MenuItem(heroName + "enabledPT", "Enabled").SetValue(true));
+            menu.AddItem(enabledAbilities = new MenuItem(heroName + "enabledPTAbilities", "Enabled for"))
+                .SetValue(abilityToggler = new AbilityToggler(abilities));
             menu.AddItem(
-                switchOnMove =
-                new MenuItem("switchPTonMove", "Switch when moving").SetValue(new StringList(Attributes.Keys.ToArray())))
+                    switchOnMove =
+                        new MenuItem(heroName + "switchPTonMove", "Switch when moving").SetValue(
+                            new StringList(Attributes.Keys.ToArray())))
                 .SetTooltip("Switch PT to selected attribute when moving");
             menu.AddItem(
-                switchOnAttack =
-                new MenuItem("switchPTonAttack", "Swtich when attacking").SetValue(
-                    new StringList(Attributes.Keys.ToArray())))
+                    switchOnAttack =
+                        new MenuItem(heroName + "switchPTonAttack", "Swtich when attacking").SetValue(
+                            new StringList(Attributes.Keys.ToArray())))
                 .SetTooltip("Switch PT to selected attribute when attacking");
-            menu.AddItem(switchOnHeal = new MenuItem("switchPTHeal", "Swtich when healing").SetValue(true))
+            menu.AddItem(switchOnHeal = new MenuItem(heroName + "switchPTHeal", "Swtich when healing").SetValue(true))
                 .SetTooltip("Bottle, flask, tango and some hero spells");
             menu.AddItem(
                 manaThreshold =
-                new MenuItem("manaPTThreshold", "Mana cost threshold").SetValue(new Slider(15, 0, 50))
-                    .SetTooltip("Don't switch PT if spell/Item costs less mana"));
+                    new MenuItem("manaPTThreshold", "Mana cost threshold").SetValue(new Slider(15, 0, 50))
+                        .SetTooltip("Don't switch PT if spell/Item costs less mana"));
             menu.AddItem(
                 autoDisableTime =
-                new MenuItem("autoPTdisable", "Auto disable PT switcher after (mins)").SetValue(new Slider(0, 0, 60)));
+                    new MenuItem(heroName + "autoPTdisable", "Auto disable PT switcher after (mins)").SetValue(
+                        new Slider(0, 0, 60)));
 
             mainMenu.AddSubMenu(menu);
         }
@@ -89,17 +95,13 @@
 
         public bool AbilityEnabled(string name)
         {
-            return enabledAbilities.GetValue<AbilityToggler>().IsEnabled(name);
+            return abilityToggler.IsEnabled(name);
         }
 
         public void AddAbility(string name)
         {
-            abilities.Add(name, true);
-        }
-
-        public void ReloadAbilityMenu()
-        {
-            enabledAbilities.SetValue(new AbilityToggler(abilities));
+            abilityToggler.Add(name);
+            enabledAbilities.SetValue(abilityToggler);
         }
 
         #endregion

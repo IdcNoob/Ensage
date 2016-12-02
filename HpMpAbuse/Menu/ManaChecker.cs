@@ -25,6 +25,8 @@
 
         private readonly MenuItem yPos;
 
+        private AbilityToggler abilityToggler;
+
         #endregion
 
         #region Constructors and Destructors
@@ -32,23 +34,27 @@
         public ManaChecker(Menu mainMenu)
         {
             var menu = new Menu("Mana Combo Checker", "manaChecker", false, "item_energy_booster", true);
+            var heroName = Variables.Hero.Name;
 
-            menu.AddItem(enabled = new MenuItem("enabledMC", "Enabled").SetValue(false))
+            menu.AddItem(enabled = new MenuItem(heroName + "enabledMC", "Enabled").SetValue(false))
                 .SetTooltip("Don't forget to change text position");
-            menu.AddItem(enabledAbilities = new MenuItem("enabledMCAbilities", "Enabled for"));
+            menu.AddItem(enabledAbilities = new MenuItem(heroName + "enabledMCAbilities", "Enabled for"))
+                .SetValue(abilityToggler = new AbilityToggler(abilities));
             menu.AddItem(
                 manaInfo =
-                new MenuItem("mcManaInfo", "Show mana info").SetValue(true)
-                    .SetTooltip("Will show how much mana left/needed after/before casting combo"));
+                    new MenuItem("mcManaInfo", "Show mana info").SetValue(true)
+                        .SetTooltip("Will show how much mana left/needed after/before casting combo"));
             menu.AddItem(
                 ptMana =
-                new MenuItem("mcPTcalculations", "Include PT calculations").SetValue(true)
-                    .SetTooltip("Will include in calculations mana gained from Power Treads switching"));
+                    new MenuItem("mcPTcalculations", "Include PT calculations").SetValue(true)
+                        .SetTooltip("Will include in calculations mana gained from Power Treads switching"));
             menu.AddItem(textSize = new MenuItem("mcSize", "Text size").SetValue(new Slider(25, 20, 40)));
-            menu.AddItem(
-                xPos = new MenuItem("mcX", "Position X").SetValue(new Slider(0, 0, (int)HUDInfo.ScreenSizeX())));
-            menu.AddItem(
-                yPos = new MenuItem("mcY", "Position Y").SetValue(new Slider(0, 0, (int)HUDInfo.ScreenSizeY())));
+
+            var x = (int)HUDInfo.ScreenSizeX();
+            var y = (int)HUDInfo.ScreenSizeY();
+
+            menu.AddItem(xPos = new MenuItem("mcX", "Position X").SetValue(new Slider((int)(x * 0.65), 0, x)));
+            menu.AddItem(yPos = new MenuItem("mcY", "Position Y").SetValue(new Slider((int)(y * 0.8), 0, y)));
 
             mainMenu.AddSubMenu(menu);
         }
@@ -75,17 +81,13 @@
 
         public bool AbilityEnabled(string name)
         {
-            return enabledAbilities.GetValue<AbilityToggler>().IsEnabled(name);
+            return abilityToggler.IsEnabled(name);
         }
 
         public void AddAbility(string name)
         {
-            abilities.Add(name, false);
-        }
-
-        public void ReloadAbilityMenu()
-        {
-            enabledAbilities.SetValue(new AbilityToggler(abilities));
+            abilityToggler.Add(name, false);
+            enabledAbilities.SetValue(abilityToggler);
         }
 
         #endregion

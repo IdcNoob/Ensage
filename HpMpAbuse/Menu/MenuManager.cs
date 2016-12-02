@@ -55,13 +55,6 @@
             menu.RemoveFromMainMenu();
         }
 
-        public void ReloadAbilityMenu()
-        {
-            PowerTreads.ReloadAbilityMenu();
-            SoulRing.ReloadAbilityMenu();
-            ManaChecker.ReloadAbilityMenu();
-        }
-
         #endregion
     }
 }

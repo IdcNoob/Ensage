@@ -305,9 +305,9 @@
                         .OrderBy(x => x.FindModifier(Modifiers.BottleRegeneration)?.RemainingTime)
                         .FirstOrDefault(
                             x =>
-                            (!ignoreAllies || x.Equals(Hero)) && x.IsAlive && !x.IsInvul() && !x.IsIllusion
-                            && (x.Health < x.MaximumHealth || x.Mana < x.MaximumMana)
-                            && x.Distance2D(Hero) <= itemManager.Bottle.CastRange);
+                                (!ignoreAllies || x.Equals(Hero)) && x.IsAlive && !x.IsInvul() && !x.IsIllusion
+                                && (x.Health < x.MaximumHealth || x.Mana < x.MaximumMana)
+                                && x.Distance2D(Hero) <= itemManager.Bottle.CastRange);
 
                 if (bottleTarget != null)
                 {

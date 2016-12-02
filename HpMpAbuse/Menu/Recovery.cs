@@ -31,19 +31,19 @@
             var forcePickMenu = new Menu("Force Item picking", "forcePick");
             forcePickMenu.AddItem(
                 forcePickEnemyDistance =
-                new MenuItem("forcePickEnemyNearDistance", "When enemy in range").SetValue(new Slider(500, 0, 1000))
-                    .SetTooltip("If enemy is closer then pick items"));
+                    new MenuItem("forcePickEnemyNearDistance", "When enemy in range").SetValue(new Slider(500, 0, 1000))
+                        .SetTooltip("If enemy is closer then pick items"));
 
             var items = new Dictionary<string, bool>
-                {
-                    { "item_arcane_boots", true },
-                    { "item_bottle", true },
-                    { "item_guardian_greaves", true },
-                    { "item_magic_stick", true },
-                    { "item_mekansm", true },
-                    { "item_soul_ring", true },
-                    { "item_urn_of_shadows", true },
-                };
+            {
+                { "item_arcane_boots", true },
+                { "item_bottle", true },
+                { "item_guardian_greaves", true },
+                { "item_magic_stick", true },
+                { "item_mekansm", true },
+                { "item_soul_ring", true },
+                { "item_urn_of_shadows", true },
+            };
 
             var itemsMenu = new Menu("Items to use", "itemsToUse");
             itemsMenu.AddItem(
@@ -57,8 +57,8 @@
                 .SetTooltip(
                     "Will auto use bottle on you and your allies while under the effect of fountain regeneration");
             menu.AddItem(
-                bottleFountainIgnoreAllies =
-                new MenuItem("bottleFountainIgnoreAllies", "Auto bottle ignore allies").SetValue(false))
+                    bottleFountainIgnoreAllies =
+                        new MenuItem("bottleFountainIgnoreAllies", "Auto bottle ignore allies").SetValue(false))
                 .SetTooltip("If enabled auto bottle will be used only on yourself");
 
             menu.AddSubMenu(forcePickMenu);

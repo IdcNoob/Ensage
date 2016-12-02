@@ -18,6 +18,8 @@
 
         private readonly MenuItem manaThreshold;
 
+        private AbilityToggler abilityToggler;
+
         #endregion
 
         #region Constructors and Destructors
@@ -25,17 +27,19 @@
         public SoulRing(Menu mainMenu)
         {
             var menu = new Menu("Auto Soul Ring", "soulringAbuse", false, "item_soul_ring", true);
+            var heroName = Variables.Hero.Name;
 
-            menu.AddItem(enabled = new MenuItem("enabledSR", "Enabled").SetValue(true));
-            menu.AddItem(enabledAbilities = new MenuItem("enabledSRAbilities", "Enabled for"));
+            menu.AddItem(enabled = new MenuItem(heroName + "enabledSR", "Enabled").SetValue(true));
+            menu.AddItem(enabledAbilities = new MenuItem(heroName + "enabledSRAbilities", "Enabled for"))
+                .SetValue(abilityToggler = new AbilityToggler(abilities));
             menu.AddItem(
                 manaThreshold =
-                new MenuItem("soulringMPThreshold", "MP% threshold").SetValue(new Slider(90))
-                    .SetTooltip("Don't use soul ring if you have more MP%"));
+                    new MenuItem(heroName + "soulringMPThreshold", "MP% threshold").SetValue(new Slider(90))
+                        .SetTooltip("Don't use soul ring if you have more MP%"));
             menu.AddItem(
                 healthThreshold =
-                new MenuItem("soulringHPThreshold", "HP% threshold").SetValue(new Slider(30))
-                    .SetTooltip("Don't use soul ring if you have less HP%"));
+                    new MenuItem(heroName + "soulringHPThreshold", "HP% threshold").SetValue(new Slider(30))
+                        .SetTooltip("Don't use soul ring if you have less HP%"));
 
             mainMenu.AddSubMenu(menu);
         }
@@ -56,17 +60,13 @@
 
         public bool AbilityEnabled(string name)
         {
-            return enabledAbilities.GetValue<AbilityToggler>().IsEnabled(name);
+            return abilityToggler.IsEnabled(name);
         }
 
         public void AddAbility(string name)
         {
-            abilities.Add(name, true);
-        }
-
-        public void ReloadAbilityMenu()
-        {
-            enabledAbilities.SetValue(new AbilityToggler(abilities));
+            abilityToggler.Add(name);
+            enabledAbilities.SetValue(abilityToggler);
         }
 
         #endregion

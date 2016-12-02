@@ -93,7 +93,7 @@
             }
 
             Hero.Inventory.Items.Where(
-                x => !x.Equals(ignoredItem) && x.IsDroppable && itemsStats.GetStats(x).HasFlag(dropStats))
+                    x => !x.Equals(ignoredItem) && x.IsDroppable && itemsStats.GetStats(x).HasFlag(dropStats))
                 .ForEach(x => DropItem(x));
         }
 

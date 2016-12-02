@@ -15,11 +15,11 @@
         #region Fields
 
         public readonly List<string> IgnoredAbilities = new List<string>
-            {
-                "item_tpscroll",
-                "item_travel_boots",
-                "item_travel_boots_2"
-            };
+        {
+            "item_tpscroll",
+            "item_travel_boots",
+            "item_travel_boots_2"
+        };
 
         private readonly List<string> addedAbilities = new List<string>();
 
@@ -37,8 +37,6 @@
                 }
                 addedAbilities.Add(ability.StoredName());
             }
-
-            Menu.ReloadAbilityMenu();
 
             Sleeper.Sleep(5000, "AbilityUpdater");
             Game.OnIngameUpdate += OnUpdate;
@@ -76,21 +74,13 @@
 
             Sleeper.Sleep(3000, "AbilityUpdater");
 
-            var reload = false;
-
             foreach (var ability in Hero.Inventory.Items.Where(x => !addedAbilities.Contains(x.StoredName())))
             {
                 if (!IgnoredAbilities.Contains(ability.StoredName()) && ability.GetManaCost(1) > 0)
                 {
                     Menu.AddAbility(ability.StoredName());
-                    reload = true;
                 }
                 addedAbilities.Add(ability.StoredName());
-            }
-
-            if (reload)
-            {
-                Menu.ReloadAbilityMenu();
             }
         }
 
