@@ -121,7 +121,7 @@
                 }
             }
 
-            if (!itemsToBuy.Any() || unreliableGold >= GoldLossOnDeath || !Hero.IsAlive)
+            if (!itemsToBuy.Any() || unreliableGold > GoldLossOnDeath || !Hero.IsAlive)
             {
                 return;
             }
