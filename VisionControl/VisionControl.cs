@@ -48,7 +48,7 @@
         {
             var unit = args.Entity as Unit;
 
-            if (unit == null || !unit.IsValid || !unit.IsAlive || unit.Team == heroTeam || !Game.IsInGame)
+            if (unit == null || !unit.IsValid || !unit.IsAlive || unit.Team == heroTeam)
             {
                 return;
             }
