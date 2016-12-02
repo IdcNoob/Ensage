@@ -11,6 +11,10 @@
 
         private readonly Dictionary<string, MenuItem> abilityItems = new Dictionary<string, MenuItem>();
 
+        private readonly MenuItem abilityPriority;
+
+        private readonly MenuItem abilityToggler;
+
         private readonly MenuItem enabledAuto;
 
         private readonly MenuItem enabledManual;
@@ -18,8 +22,6 @@
         private readonly MenuItem heroLevel;
 
         private readonly Menu menu;
-
-        private readonly MenuItem priorityChanger;
 
         #endregion
 
@@ -65,39 +67,41 @@
 
             menu = new Menu("Ability Leveling", "simpleAbilityLeveling", true, "attribute_bonus", true);
             menu.AddItem(
-                enabledAuto =
-                new MenuItem("enabledAuto", "Enabled auto mode", true).SetValue(false)
-                    .SetTooltip(
-                        "Abilities will be leveled by biggest win rate build on dotabuff.com (all settings will be ignored)"))
-                .ValueChanged += (sender, args) =>
-                    {
-                        if (args.GetNewValue<bool>())
-                        {
-                            enabledManual.SetValue(false);
-                        }
-                    };
+                    enabledAuto =
+                        new MenuItem("enabledAuto", "Enabled auto mode", true).SetValue(false)
+                            .SetTooltip(
+                                "Abilities will be leveled by biggest win rate build on dotabuff.com (all settings will be ignored)"))
+                .ValueChanged += (sender, args) => {
+                if (args.GetNewValue<bool>())
+                {
+                    enabledManual.SetValue(false);
+                }
+            };
 
             menu.AddItem(
-                enabledManual =
-                new MenuItem("enabledManual", "Enabled manual mode", true).SetValue(false)
-                    .SetTooltip("Abilties will be leveled by selected order and settings")).ValueChanged +=
-                (sender, args) =>
+                    enabledManual =
+                        new MenuItem("enabledManual", "Enabled manual mode", true).SetValue(false)
+                            .SetTooltip("Abilties will be leveled by selected order and settings")).ValueChanged +=
+                (sender, args) => {
+                    if (args.GetNewValue<bool>())
                     {
-                        if (args.GetNewValue<bool>())
-                        {
-                            enabledAuto.SetValue(false);
-                        }
-                    };
+                        enabledAuto.SetValue(false);
+                    }
+                };
             menu.AddItem(
                 heroLevel =
-                new MenuItem("heroLevel", "Required hero level", true).SetValue(
-                    new StringList(levels.Skip(1).ToArray()))
-                    .SetTooltip("Will start leveling abilities only when your hero will reach selected level"));
+                    new MenuItem("heroLevel", "Required hero level", true).SetValue(
+                            new StringList(levels.Skip(1).ToArray()))
+                        .SetTooltip("Will start leveling abilities only when your hero will reach selected level"));
 
             menu.AddItem(
-                priorityChanger =
-                new MenuItem("prioritySimpleAbilityLeveling", "Priority", true).SetValue(
-                    new PriorityChanger(abilties, name + "priorityChangerSimpleAbilityLeveling", true)));
+                abilityToggler =
+                    new MenuItem(name + "togglerFix", "Enabled", true).SetValue(
+                        new AbilityToggler(abilties.ToDictionary(x => x, x => true))));
+
+            menu.AddItem(
+                abilityPriority =
+                    new MenuItem(name + "priorityFix", "Priority", true).SetValue(new PriorityChanger(abilties)));
 
             menu.AddSubMenu(advancedMenu);
             menu.AddToMainMenu();
@@ -119,7 +123,7 @@
 
         public bool AbilityActive(string abilityName)
         {
-            return priorityChanger.GetValue<PriorityChanger>().AbilityToggler.IsEnabled(abilityName);
+            return abilityToggler.GetValue<AbilityToggler>().IsEnabled(abilityName);
         }
 
         public bool AbilityFullyLocked(string abilityName)
@@ -146,7 +150,7 @@
 
         public uint GetAbilityPriority(string abilityName)
         {
-            return priorityChanger.GetValue<PriorityChanger>().GetPriority(abilityName);
+            return abilityPriority.GetValue<PriorityChanger>().GetPriority(abilityName);
         }
 
         public bool IsLevelIgnored(uint level)

@@ -151,9 +151,11 @@
                 await Task.Delay(1000);
 
                 using (var responseStream = webRequest.GetResponse().GetResponseStream())
-                using (var streamReader = new StreamReader(responseStream, Encoding.UTF8))
                 {
-                    html = streamReader.ReadToEnd();
+                    using (var streamReader = new StreamReader(responseStream, Encoding.UTF8))
+                    {
+                        html = streamReader.ReadToEnd();
+                    }
                 }
                 var abilityBuild = Regex.Match(html, @"<div class=""skill-build"">.+?</div></div></div></div>");
 

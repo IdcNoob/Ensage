@@ -290,10 +290,10 @@
             var otherNotLockedAbility =
                 learnableAbilities.Any(
                     x =>
-                    !x.Equals(ability) && x.AbilityType != AbilityType.Attribute
-                    && (menuManager.AbilityLockLevel(x.StoredName()) == 0
-                        || menuManager.AbilityLockLevel(x.StoredName()) > x.Level)
-                    && !menuManager.AbilityFullyLocked(x.StoredName()));
+                        !x.Equals(ability) && x.AbilityType != AbilityType.Attribute
+                        && (menuManager.AbilityLockLevel(x.StoredName()) == 0
+                            || menuManager.AbilityLockLevel(x.StoredName()) > x.Level)
+                        && !menuManager.AbilityFullyLocked(x.StoredName()));
 
             return abilityLevel >= lockLevel
                    && (otherNotLockedAbility || menuManager.AbilityFullyLocked(ability.StoredName()));
