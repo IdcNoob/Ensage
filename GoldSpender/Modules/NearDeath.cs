@@ -7,7 +7,6 @@
     using Ensage;
     using Ensage.Common;
     using Ensage.Common.Extensions;
-    using Ensage.Common.Objects;
 
     using Utils;
 
@@ -53,7 +52,7 @@
                 SaveBuyBackGold(out reliableGold, out unreliableGold);
             }
 
-            var courier = ObjectManager.GetEntities<Courier>().FirstOrDefault(x => x.Team != enemyTeam && x.IsAlive);
+            var courier = ObjectManager.GetEntitiesFast<Courier>().FirstOrDefault(x => x.Team != enemyTeam && x.IsAlive);
 
             foreach (var itemID in enabledItems)
             {
@@ -122,17 +121,13 @@
                 }
             }
 
-            if (!Hero.IsAlive)
+            if (!itemsToBuy.Any() || unreliableGold >= GoldLossOnDeath || !Hero.IsAlive)
             {
                 return;
             }
 
             itemsToBuy.ForEach(x => Player.BuyItem(x.Item1, x.Item2));
-
-            if (itemsToBuy.Any())
-            {
-                Sleeper.Sleep(20000);
-            }
+            Sleeper.Sleep(20000);
         }
 
         public override bool ShouldSpendGold()
@@ -157,8 +152,11 @@
             return (Hero.Health <= Menu.NearDeathHpThreshold
                     || (float)Hero.Health / Hero.MaximumHealth * 100 <= Menu.NearDeathHpPercentageThreshold)
                    && (distance <= 0
-                       || Heroes.GetByTeam(enemyTeam)
-                           .Any(x => x.IsValid && !x.IsIllusion && x.IsAlive && x.Distance2D(Hero) <= distance));
+                       || ObjectManager.GetEntitiesParallel<Hero>()
+                           .Any(
+                               x =>
+                                   x.IsValid && x.Team == enemyTeam && !x.IsIllusion && x.IsAlive
+                                   && x.Distance2D(Hero) <= distance));
         }
 
         #endregion
