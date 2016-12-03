@@ -35,7 +35,7 @@
 
         public void OnDraw()
         {
-            if (!menuManager.IsOpen)
+            if (!menuManager.IsOpen || !menuManager.ShowAutoBuild)
             {
                 return;
             }

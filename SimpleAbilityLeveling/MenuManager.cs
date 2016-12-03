@@ -23,6 +23,8 @@
 
         private readonly Menu menu;
 
+        private readonly MenuItem showAutoBuild;
+
         #endregion
 
         #region Constructors and Destructors
@@ -88,6 +90,9 @@
                         enabledAuto.SetValue(false);
                     }
                 };
+
+            menu.AddItem(showAutoBuild = new MenuItem("showAutoBuild", "Show auto build preview", true).SetValue(true));
+
             menu.AddItem(
                 heroLevel =
                     new MenuItem("heroLevel", "Required hero level", true).SetValue(
@@ -116,6 +121,8 @@
         public bool IsEnabledManual => enabledManual.IsActive();
 
         public bool IsOpen => menu.IsOpen;
+
+        public bool ShowAutoBuild => showAutoBuild.IsActive();
 
         #endregion
 
