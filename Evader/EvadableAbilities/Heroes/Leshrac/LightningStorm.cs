@@ -2,9 +2,9 @@
 {
     using Base;
 
-    using Data;
-
     using Ensage;
+
+    using static Data.AbilityNames;
 
     internal class LightningStorm : LinearAOE
     {
@@ -13,11 +13,11 @@
         public LightningStorm(Ability ability)
             : base(ability)
         {
-            CounterAbilities.Add(AbilityNames.PhaseShift);
-            CounterAbilities.AddRange(AbilityNames.VsDamage);
-            CounterAbilities.AddRange(AbilityNames.VsMagic);
-            CounterAbilities.Add(AbilityNames.Armlet);
-            CounterAbilities.Add(AbilityNames.Bloodstone);
+            CounterAbilities.Add(PhaseShift);
+            CounterAbilities.AddRange(VsDamage);
+            CounterAbilities.AddRange(VsMagic);
+            CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Bloodstone);
         }
 
         #endregion

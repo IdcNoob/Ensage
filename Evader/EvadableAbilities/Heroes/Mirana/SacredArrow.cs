@@ -35,7 +35,6 @@
 
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(BallLightning);
-            CounterAbilities.Add(Manta);
             CounterAbilities.Add(Eul);
             CounterAbilities.AddRange(VsDisable);
             CounterAbilities.AddRange(VsDamage);

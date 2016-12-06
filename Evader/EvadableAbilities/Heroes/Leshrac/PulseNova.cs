@@ -25,6 +25,10 @@
 
             Modifier.AllyCounterAbilities.AddRange(VsDamage);
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
+
+            Modifier.AllyCounterAbilities.Remove("phantom_lancer_doppelwalk");
+            Modifier.AllyCounterAbilities.Remove("life_stealer_rage");
+            Modifier.AllyCounterAbilities.Remove("juggernaut_blade_fury");
         }
 
         #endregion

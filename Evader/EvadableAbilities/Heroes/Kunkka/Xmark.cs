@@ -13,6 +13,11 @@
         public Xmark(Ability ability)
             : base(ability)
         {
+            IsDisable = false;
+
+            BlinkAbilities.Clear();
+            BlinkAbilities.Add("item_blink");
+
             CounterAbilities.AddRange(Invis);
             CounterAbilities.Add(Lotus);
         }

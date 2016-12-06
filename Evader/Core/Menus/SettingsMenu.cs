@@ -73,12 +73,12 @@
             pathfinderEffect.ValueChanged += (sender, args) => PathfinderEffect = args.GetNewValue<bool>();
             PathfinderEffect = pathfinderEffect.IsActive();
 
-            var blockPlayerMovement =
-                new MenuItem("blockPlayerMovement", "Block player movement").SetValue(true)
-                    .SetTooltip("Player movement will be blocked while avoiding ability");
-            menu.AddItem(blockPlayerMovement);
-            blockPlayerMovement.ValueChanged += (sender, args) => BlockPlayerMovement = args.GetNewValue<bool>();
-            BlockPlayerMovement = blockPlayerMovement.IsActive();
+            var blockAbilityUsage =
+                new MenuItem("blockPlayerAbilities", "Block ability usage").SetValue(true)
+                    .SetTooltip("Abilities will be blocked while evading");
+            menu.AddItem(blockAbilityUsage);
+            blockAbilityUsage.ValueChanged += (sender, args) => BlockAbilityUsage = args.GetNewValue<bool>();
+            BlockAbilityUsage = blockAbilityUsage.IsActive();
 
             var invisIgnore =
                 new MenuItem("invisIgnore", "Ignore counter if invisible").SetValue(false)
@@ -86,6 +86,13 @@
             menu.AddItem(invisIgnore);
             invisIgnore.ValueChanged += (sender, args) => InvisIgnore = args.GetNewValue<bool>();
             InvisIgnore = invisIgnore.IsActive();
+
+            var cancelAnimation =
+                new MenuItem("cancelAnimation", "Cancel animation").SetValue(true)
+                    .SetTooltip("Cancel cast animation to evade stun ability");
+            menu.AddItem(cancelAnimation);
+            cancelAnimation.ValueChanged += (sender, args) => CancelAnimation = args.GetNewValue<bool>();
+            CancelAnimation = cancelAnimation.IsActive();
 
             var changer = defaultPriority.GetValue<PriorityChanger>();
 
@@ -125,7 +132,9 @@
 
         #region Public Properties
 
-        public bool BlockPlayerMovement { get; private set; }
+        public bool BlockAbilityUsage { get; private set; }
+
+        public bool CancelAnimation { get; private set; }
 
         public List<EvadePriority> DefaultPriority { get; } = new List<EvadePriority>();
 

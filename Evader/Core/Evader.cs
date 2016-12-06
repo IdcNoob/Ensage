@@ -41,6 +41,8 @@
 
         private ParticleEffect heroPathfinderEffect;
 
+        private Vector3 movePathfinderPosition;
+
         private Vector3 movePosition;
 
         private Random randomiser;
@@ -231,6 +233,17 @@
                 case Order.AbilityTarget:
                 case Order.AbilityLocation:
                     movePosition = args.TargetPosition;
+                    if ((sleeper.Sleeping("block") || sleeper.Sleeping("avoiding")) && Menu.Settings.BlockAbilityUsage)
+                    {
+                        args.Process = false;
+                    }
+                    break;
+                case Order.Ability:
+                    movePosition = new Vector3();
+                    if ((sleeper.Sleeping("block") || sleeper.Sleeping("avoiding")) && Menu.Settings.BlockAbilityUsage)
+                    {
+                        args.Process = false;
+                    }
                     break;
                 default:
                     movePosition = new Vector3();
@@ -600,7 +613,7 @@
                 }
             }
 
-            if (Hero.IsChanneling())
+            if (!Menu.Settings.CancelAnimation && Hero.IsChanneling())
             {
                 return;
             }
@@ -850,7 +863,7 @@
 
                                         if (success)
                                         {
-                                            movePosition = tempPath.Last();
+                                            movePathfinderPosition = tempPath.Last();
                                         }
                                         else
                                         {
@@ -868,7 +881,7 @@
                                         }
                                     }
 
-                                    path = Pathfinder.CalculateLongPath(movePosition, out success).ToList();
+                                    path = Pathfinder.CalculateLongPath(movePathfinderPosition, out success).ToList();
 
                                     if (success)
                                     {
@@ -879,8 +892,19 @@
                                             time += Hero.NetworkPosition.Distance2D(path[i]) / Hero.MovementSpeed;
                                         }
 
+                                        var tempPath = Pathfinder.CalculateLongPath(
+                                            path.LastOrDefault(),
+                                            movePosition,
+                                            out success);
+
+                                        if (success)
+                                        {
+                                            Hero.Move(tempPath.Last(), true);
+                                        }
+
                                         //  sleeper.Sleep(ability.ObstacleRemainingTime() * 1000, "avoiding");
                                         sleeper.Sleep(200, "block");
+                                        Utils.Sleep(Math.Min(time, 1) * 1000, "Evader.Avoiding");
                                         sleeper.Sleep(Math.Min(time, 1) * 1000, ability);
                                         sleeper.Sleep(Math.Min(time, 1) * 1000, "avoiding");
                                         sleeper.Sleep(1000, debugPath);
@@ -921,6 +945,11 @@
                                         debugPath =
                                             Pathfinder.CalculateDebugPathFromObstacle(remainingWalkTime).ToList();
                                         var time = 0.1f;
+
+                                        if (Menu.Settings.CancelAnimation && ability.IsDisable)
+                                        {
+                                            Hero.Stop();
+                                        }
 
                                         for (var i = 0; i < path.Count; i++)
                                         {
@@ -999,6 +1028,11 @@
                                     if (!Menu.Randomiser.Enabled || (Menu.Randomiser.NukesOnly && ability.IsDisable)
                                         || (randomiser.Next(99) > Menu.Randomiser.FailChance))
                                     {
+                                        if (Menu.Settings.CancelAnimation && ability.IsDisable && allyIsMe)
+                                        {
+                                            Hero.Stop();
+                                        }
+
                                         blinkAbility.Use(ability, fountain);
                                     }
                                     else
@@ -1079,6 +1113,11 @@
                                     if (!Menu.Randomiser.Enabled || (Menu.Randomiser.NukesOnly && ability.IsDisable)
                                         || (randomiser.Next(99) > Menu.Randomiser.FailChance))
                                     {
+                                        if (Menu.Settings.CancelAnimation && ability.IsDisable && allyIsMe)
+                                        {
+                                            Hero.Stop();
+                                        }
+
                                         counterAbility.Use(ability, targetEnemy ? abilityOwner : ally);
                                     }
                                     else
@@ -1155,6 +1194,11 @@
                                     if (!Menu.Randomiser.Enabled || (Menu.Randomiser.NukesOnly && ability.IsDisable)
                                         || (randomiser.Next(99) > Menu.Randomiser.FailChance))
                                     {
+                                        if (Menu.Settings.CancelAnimation && ability.IsDisable && allyIsMe)
+                                        {
+                                            Hero.Stop();
+                                        }
+
                                         disableAbility.Use(ability, abilityOwner);
                                     }
                                     else

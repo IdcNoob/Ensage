@@ -16,11 +16,8 @@ namespace Evader.Data
         public Dictionary<string, Func<Ability, UsableAbility>> BlinkAbilities { get; } = new Dictionary
             <string, Func<Ability, UsableAbility>>
             {
-                // custom
                 { "ember_spirit_activate_fire_remnant", ability => new FireRemnant(ability, AbilityType.Blink) },
                 { "morphling_morph_replicate", ability => new Replicate(ability, AbilityType.Blink) },
-
-                // default
                 { "item_blink", ability => new BlinkDagger(ability, AbilityType.Blink) },
                 { "antimage_blink", ability => new BlinkAbility(ability, AbilityType.Blink) },
                 { "queenofpain_blink", ability => new BlinkAbility(ability, AbilityType.Blink) },
@@ -41,7 +38,6 @@ namespace Evader.Data
         public Dictionary<string, Func<Ability, UsableAbility>> CounterAbilities { get; } = new Dictionary
             <string, Func<Ability, UsableAbility>>
             {
-                //// custom
                 { "storm_spirit_ball_lightning", ability => new BallLightning(ability, AbilityType.Counter) },
                 {
                     "ember_spirit_sleight_of_fist",
@@ -56,7 +52,7 @@ namespace Evader.Data
                             AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 { "phoenix_supernova", ability => new Supernova(ability, AbilityType.Counter) },
-                { "tusk_snowball", ability => new Snowball(ability, AbilityType.Counter) },
+                { "tusk_snowball", ability => new Snowball(ability, AbilityType.Counter, AbilityCastTarget.Ally) },
                 {
                     "abyssal_underlord_dark_rift",
                     ability => new DarkRift(ability, AbilityType.Counter, AbilityCastTarget.Ally)
@@ -64,8 +60,6 @@ namespace Evader.Data
                 { "item_sphere", ability => new LinkensSphere(ability, AbilityType.Counter, AbilityCastTarget.Ally) },
                 { "item_bloodstone", ability => new Bloodstone(ability, AbilityType.Counter) },
                 { "item_armlet", ability => new ArmletOfMordiggian(ability, AbilityType.Counter) },
-
-                //// default
                 { "puck_phase_shift", ability => new PhaseShift(ability, AbilityType.Counter) },
                 { "alchemist_chemical_rage", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "riki_tricks_of_the_trade", ability => new NotTargetable(ability, AbilityType.Counter) },
@@ -103,8 +97,6 @@ namespace Evader.Data
                 { "phantom_lancer_doppelwalk", ability => new Targetable(ability, AbilityType.Counter) },
                 { "pugna_nether_ward", ability => new Targetable(ability, AbilityType.Counter) },
                 { "razor_static_link", ability => new Targetable(ability, AbilityType.Counter) },
-
-                // cast on all
                 {
                     "item_ethereal_blade",
                     ability =>
@@ -170,8 +162,6 @@ namespace Evader.Data
                             AbilityType.Counter,
                             AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
-
-                // cast on enemy
                 {
                     "brewmaster_drunken_haze",
                     ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Enemy)
@@ -186,8 +176,6 @@ namespace Evader.Data
                     "shadow_demon_demonic_purge",
                     ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Enemy)
                 },
-
-                // cast on ally
                 {
                     "naga_siren_song_of_the_siren",
                     ability => new NotTargetable(ability, AbilityType.Counter, AbilityCastTarget.Ally)
@@ -239,11 +227,8 @@ namespace Evader.Data
         public Dictionary<string, Func<Ability, UsableAbility>> DisableAbilities { get; } = new Dictionary
             <string, Func<Ability, UsableAbility>>
             {
-                // custom
                 { "earthshaker_echo_slam", ability => new EchoSlam(ability, AbilityType.Disable) },
                 { "ember_spirit_searing_chains", ability => new SearingChains(ability, AbilityType.Disable) },
-
-                // default
                 { "item_orchid", ability => new Targetable(ability, AbilityType.Disable) },
                 { "item_cyclone", ability => new Targetable(ability, AbilityType.Disable) },
                 { "obsidian_destroyer_astral_imprisonment", ability => new Targetable(ability, AbilityType.Disable) },

@@ -119,6 +119,11 @@
             return Pathfinding.CalculateLongPath(Hero.Position, endPosition, 5000, true, out success);
         }
 
+        public IEnumerable<Vector3> CalculateLongPath(Vector3 startPosition, Vector3 endPosition, out bool success)
+        {
+            return Pathfinding.CalculateLongPath(startPosition, endPosition, 5000, true, out success);
+        }
+
         public IEnumerable<Vector3> CalculatePathFromObstacle(float remainingTime, out bool success)
         {
             return Pathfinding.CalculatePathFromObstacle(
