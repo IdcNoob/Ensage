@@ -82,9 +82,9 @@
                     ObjectManager.GetEntitiesParallel<PhysicalItem>()
                         .FirstOrDefault(
                             x =>
-                            x.IsVisible && x.Distance2D(hero) < 400 && !DroppedItems.Contains(x.Item.Handle)
-                            && ((aegis && x.Item.Name == "item_aegis") || (rapier && x.Item.Name == "item_rapier")
-                                || (cheese && x.Item.Name == "item_cheese") || (gem && x.Item.Name == "item_gem")));
+                                x.IsVisible && x.Distance2D(hero) < 400 && !DroppedItems.Contains(x.Item.Handle)
+                                && ((aegis && x.Item.Name == "item_aegis") || (rapier && x.Item.Name == "item_rapier")
+                                    || (cheese && x.Item.Name == "item_cheese") || (gem && x.Item.Name == "item_gem")));
 
                 if (item != null)
                 {
@@ -99,16 +99,16 @@
 
         private static void Main()
         {
-            menu = new Menu("Another Snatcher", "anotherSnatcher", true);
+            menu = new Menu("Another Snatcher", "anotherSnatcher", true, "rune_doubledamage", true);
 
             var items = new List<string>
-                {
-                    "item_gem",
-                    "item_cheese",
-                    "item_rapier",
-                    "item_aegis",
-                    "rune_doubledamage"
-                };
+            {
+                "item_gem",
+                "item_cheese",
+                "item_rapier",
+                "item_aegis",
+                "rune_doubledamage"
+            };
 
             menu.AddItem(new MenuItem("holdSnatchKey", "Hold key").SetValue(new KeyBind('O', KeyBindType.Press)))
                 .ValueChanged += (sender, args) => holdKey = args.GetNewValue<KeyBind>().Active;
@@ -125,7 +125,7 @@
 
             toggleKey = menu.Item("pressSnatchKey").GetValue<KeyBind>().Active;
             delay = menu.Item("sleep").GetValue<Slider>().Value;
-            Console.WriteLine(delay);
+
             menu.AddToMainMenu();
 
             Events.OnLoad += OnLoad;
