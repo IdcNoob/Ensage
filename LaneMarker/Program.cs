@@ -27,56 +27,77 @@
         #region Static Fields
 
         private static readonly float[][] CoordinateMultiplayers =
-            {
-                new[] { 0.19f, 0.96f }, // radiant safe
-                new[] { 0.14f, 0.87f }, // radiant mid
-                new[] { 0.09f, 0.82f }, // radiant hard
-                new[] { 0.16f, 0.94f }, // radiant jungle
-                new[] { 0.11f, 0.79f }, //dire safe
-                new[] { 0.14f, 0.87f }, //dire mid
-                new[] { 0.19f, 0.90f }, //dire hard
-                new[] { 0.13f, 0.81f } //dire jungle
-            };
+        {
+            new[] { 0.19f, 0.96f }, // radiant safe
+            new[] { 0.13f, 0.90f }, // radiant mid
+            new[] { 0.09f, 0.86f }, // radiant hard
+            new[] { 0.16f, 0.94f }, // radiant jungle
+            new[] { 0.11f, 0.81f }, // dire safe
+            new[] { 0.16f, 0.87f }, // dire mid
+            new[] { 0.21f, 0.90f }, // dire hard
+            new[] { 0.13f, 0.83f } // dire jungle
+        };
 
         private static readonly string[] LaneList = { "None", "Safe", "Mid", "Hard", "Jungle" };
 
         private static readonly Menu Menu = new Menu("Lane Marker", "laneMarker", true);
 
         private static readonly string[][] SayText =
+        {
+            new[]
             {
-                new[]
-                    {
-                        // safe 
-                        "None", "carry", "carry pls", "farm", "farm pls",
-                        "safe lane", "safe lane farm pls", "pick support boys",
-                        "afk farm", "playing carry since 1972"
-                    },
-                new[]
-                    {
-                        // mid
-                        "None", "mid", "mid pls", "pro mid here", "mid or feed",
-                        "mid or mid", "mid or techies", "mid or double mid",
-                        "dont even think to take my mid", "we lost"
-                    },
-                new[]
-                    {
-                        // hard
-                        "None", "hard", "hard lane", "solo hard",
-                        "solo hard pls", "off lane", "solo off pls",
-                        "i got this"
-                    },
-                new[]
-                    {
-                        // jungle
-                        "None", "jungle", "woods"
-                    }
-            };
+                // safe 
+                "None",
+                "carry",
+                "carry pls",
+                "farm",
+                "farm pls",
+                "safe lane",
+                "safe lane farm pls",
+                "pick support boys",
+                "afk farm",
+                "playing carry since 1972"
+            },
+            new[]
+            {
+                // mid
+                "None",
+                "mid",
+                "mid pls",
+                "pro mid here",
+                "mid or feed",
+                "mid or mid",
+                "mid or techies",
+                "mid or double mid",
+                "dont even think to take my mid",
+                "we lost"
+            },
+            new[]
+            {
+                // hard
+                "None",
+                "hard",
+                "hard lane",
+                "solo hard",
+                "solo hard pls",
+                "off lane",
+                "solo off pls",
+                "i got this"
+            },
+            new[]
+            {
+                // jungle
+                "None",
+                "jungle",
+                "woods"
+            }
+        };
+
+        private static bool connected;
 
         private static KeyValuePair<string, string> currentPair = new KeyValuePair<string, string>("None", "none");
 
         private static bool displayTempName;
-
-        private static bool inGame;
 
         private static bool locked;
 
@@ -92,7 +113,7 @@
 
         private static void Drawing_OnEndScene(EventArgs args)
         {
-            if (inGame || Drawing.Direct3DDevice9 == null)
+            if (Drawing.Direct3DDevice9 == null)
             {
                 return;
             }
@@ -144,14 +165,18 @@
             textFont.OnLostDevice();
         }
 
-        private static void FindHero()
-        {
-        }
-
         [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
         private static void Game_OnFireEvent(FireEventEventArgs args)
         {
-            if (inGame || args.GameEvent.Name != "hero_picker_shown")
+            var eventName = args.GameEvent.Name;
+
+            if (eventName == "player_connect_full")
+            {
+                connected = true;
+                return;
+            }
+
+            if (!connected || eventName != "game_rules_state_change")
             {
                 return;
             }
@@ -177,12 +202,13 @@
                 Game.ExecuteCommand("dota_select_hero " + currentPair.Value);
             }
 
-            inGame = true;
+            connected = false;
+            Unsub();
         }
 
         private static void Game_OnUpdate(EventArgs args)
         {
-            if (inGame || !Utils.SleepCheck("laneMarker.Name"))
+            if (!Utils.SleepCheck("laneMarker.Name"))
             {
                 return;
             }
@@ -193,7 +219,7 @@
 
         private static void Game_OnWndProc(WndEventArgs args)
         {
-            if (inGame || args.Msg != (uint)Utils.WindowsMessages.WM_KEYUP)
+            if (args.Msg != (uint)Utils.WindowsMessages.WM_KEYUP)
             {
                 return;
             }
@@ -270,15 +296,32 @@
             textFont = new Font(
                 Drawing.Direct3DDevice9,
                 new FontDescription
-                    {
-                        FaceName = "Tahoma", Height = 30, OutputPrecision = FontPrecision.Raster,
-                        Quality = FontQuality.ClearTypeNatural, CharacterSet = FontCharacterSet.Hangul, MipLevels = 3,
-                        PitchAndFamily = FontPitchAndFamily.Modern, Weight = FontWeight.Heavy, Width = 12
-                    });
+                {
+                    FaceName = "Tahoma",
+                    Height = 30,
+                    OutputPrecision = FontPrecision.Raster,
+                    Quality = FontQuality.ClearTypeNatural,
+                    CharacterSet = FontCharacterSet.Hangul,
+                    MipLevels = 3,
+                    PitchAndFamily = FontPitchAndFamily.Modern,
+                    Weight = FontWeight.Heavy,
+                    Width = 12
+                });
 
-            Events.OnClose += (sender, args) => { inGame = false; };
-            Events.OnLoad += (sender, args) => { inGame = true; };
+            Events.OnClose += (sender, args) => { Sub(); };
+            Events.OnLoad += (sender, args) => { Unsub(); };
 
+            Sub();
+        }
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+        private static extern void mouse_event(int dwFlags, int dx, int dy, int dwData, int dwExtraInfo);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern bool SetCursorPos(int x, int y);
+
+        private static void Sub()
+        {
             Game.OnWndProc += Game_OnWndProc;
             Game.OnFireEvent += Game_OnFireEvent;
             Game.OnUpdate += Game_OnUpdate;
@@ -288,11 +331,16 @@
             Drawing.OnEndScene += Drawing_OnEndScene;
         }
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-        private static extern void mouse_event(int dwFlags, int dx, int dy, int dwData, int dwExtraInfo);
+        private static void Unsub()
+        {
+            Game.OnWndProc -= Game_OnWndProc;
+            Game.OnFireEvent -= Game_OnFireEvent;
+            Game.OnUpdate -= Game_OnUpdate;
 
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern bool SetCursorPos(int x, int y);
+            Drawing.OnPreReset -= Drawing_OnPreReset;
+            Drawing.OnPostReset -= Drawing_OnPostReset;
+            Drawing.OnEndScene -= Drawing_OnEndScene;
+        }
 
         #endregion
     }
