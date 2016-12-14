@@ -1,6 +1,7 @@
 ﻿namespace GoldSpender.Modules
 {
     using System;
+    using System.Linq;
 
     using Ensage;
     using Ensage.Common.Objects.UtilityObjects;
@@ -13,11 +14,21 @@
 
         #endregion
 
+        #region Public Properties
+
+        public int GoldLossOnDeath
+            =>
+            100
+            + (ReliableGold + UnreliableGold
+               + ObjectManager.GetEntitiesParallel<Item>()
+                   .Where(x => x != null && x.IsValid && x.Owner != null && x.Owner.IsValid && x.Owner.Equals(Hero))
+                   .Sum(x => (int)x.Cost)) / 50;
+
+        #endregion
+
         #region Properties
 
         protected int BuybackCost => (int)(100 + Math.Pow(Hero.Level, 2) * 1.5 + Game.GameTime / 60 * 15);
-
-        protected int GoldLossOnDeath => (int)Math.Min(Hero.Level * 30, UnreliableGold);
 
         protected Hero Hero => Variables.Hero;
 
