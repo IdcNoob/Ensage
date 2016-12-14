@@ -20,8 +20,7 @@
             : base(unit, AbilityName)
         {
             PositionCorrection = new Vector2(25);
-            Radius =
-                Ability.GetAbilityDataByName(AbilityName).AbilitySpecialData.First(x => x.Name == "small_radius").Value;
+            Radius = Ability.GetAbilityDataByName(AbilityName).AbilitySpecialData.First(x => x.Name == "radius").Value;
 
             if (ParticleEffect != null)
             {

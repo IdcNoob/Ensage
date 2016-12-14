@@ -31,10 +31,10 @@
                 Ability.GetAbilityDataByName(AbilityName)
                     .AbilitySpecialData.First(x => x.Name == "activation_radius")
                     .Value;
-            Duration = unit.FindModifier("modifier_techies_stasis_trap")?.RemainingTime
-                       ?? Ability.GetAbilityDataByName(AbilityName)
-                           .AbilitySpecialData.First(x => x.Name == "duration")
-                           .Value;
+            Duration = unit.FindModifier("modifier_techies_stasis_trap")?.RemainingTime ?? 600;
+            //Ability.GetAbilityDataByName(AbilityName)
+            //    .AbilitySpecialData.First(x => x.Name == "duration")
+            //    .Value;
             EndTime = Game.RawGameTime + Duration;
             showTimer = Menu.TimerEnabled(AbilityName);
             if (ParticleEffect != null)

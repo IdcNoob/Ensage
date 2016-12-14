@@ -16,10 +16,6 @@
 
         #region Fields
 
-        private readonly int[] duration = { 15, 20, 25, 30 };
-
-        private readonly int[] radius = { 600, 800, 1000, 1200 };
-
         private readonly Unit unit;
 
         #endregion
@@ -30,11 +26,15 @@
         {
             this.unit = unit;
             PositionCorrection = new Vector2(25);
-            var level = (int)char.GetNumericValue(unit.Name.Last());
-            Radius = radius[level - 1];
-            Duration = duration[level - 1];
-            // Radius = Ability.GetAbilityDataByName(AbilityName).AbilitySpecialData.First(x => x.Name == "radius").Value;
-            // Duration = Ability.GetAbilityDataByName(AbilityName).AbilitySpecialData.First(x => x.Name == "duration").Value;
+            var level = (uint)char.GetNumericValue(unit.Name.Last());
+            Radius =
+                Ability.GetAbilityDataByName(AbilityName)
+                    .AbilitySpecialData.First(x => x.Name == "radius")
+                    .GetValue(level - 1);
+            Duration =
+                Ability.GetAbilityDataByName(AbilityName)
+                    .AbilitySpecialData.First(x => x.Name == "duration")
+                    .GetValue(level - 1);
             Position = unit.Position;
             Texture = Drawing.GetTexture("materials/ensage_ui/other/tombstone");
             Handle = unit.Handle;
