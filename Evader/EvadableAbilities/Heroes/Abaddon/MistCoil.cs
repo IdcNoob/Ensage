@@ -1,12 +1,12 @@
 ﻿namespace Evader.EvadableAbilities.Heroes.Abaddon
 {
-    using Base;
-
     using Ensage;
 
     using static Data.AbilityNames;
 
-    internal class MistCoil : LinearTarget
+    using Projectile = Base.Projectile;
+
+    internal class MistCoil : Projectile
     {
         #region Constructors and Destructors
 
@@ -14,6 +14,8 @@
             : base(ability)
         {
             CounterAbilities.Add(PhaseShift);
+            CounterAbilities.Add(Eul);
+            CounterAbilities.Add(SleightOfFist);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);
             CounterAbilities.Add(Armlet);

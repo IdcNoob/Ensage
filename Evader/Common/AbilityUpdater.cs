@@ -125,7 +125,8 @@
                                     new[]
                                     {
                                         "modifier_arc_warden_tempest_double",
-                                        "modifier_vengefulspirit_hybrid_special"
+                                        "modifier_vengefulspirit_hybrid_special",
+                                        "modifier_morph_hybrid_special"
                                     },
                                     false))))
             {

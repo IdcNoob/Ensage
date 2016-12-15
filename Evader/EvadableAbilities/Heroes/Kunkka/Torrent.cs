@@ -7,6 +7,7 @@
 
     using Ensage;
     using Ensage.Common;
+    using Ensage.Common.Extensions;
 
     using Modifiers;
 
@@ -14,6 +15,14 @@
 
     internal class Torrent : AOE, IModifierObstacle, IModifier
     {
+        #region Fields
+
+        private readonly float bonusRadius;
+
+        private readonly Ability talent;
+
+        #endregion
+
         #region Constructors and Destructors
 
         public Torrent(Ability ability)
@@ -39,6 +48,13 @@
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
 
             AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "delay").Value;
+
+            talent = AbilityOwner.FindSpell("special_bonus_unique_kunkka");
+
+            if (talent != null)
+            {
+                bonusRadius = talent.AbilitySpecialData.First(x => x.Name == "value").Value;
+            }
         }
 
         #endregion
@@ -80,6 +96,15 @@
         public override float GetRemainingTime(Hero hero = null)
         {
             return EndCast - Game.RawGameTime;
+        }
+
+        #endregion
+
+        #region Methods
+
+        protected override float GetRadius()
+        {
+            return base.GetRadius() + (talent?.Level > 0 ? bonusRadius : 0);
         }
 
         #endregion

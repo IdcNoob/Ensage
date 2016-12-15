@@ -85,9 +85,6 @@ namespace Evader.Data
                 { "item_silver_edge", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "item_hood_of_defiance", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "item_blade_mail", ability => new BladeMail(ability, AbilityType.Counter) },
-                // todo: check forms
-                { "lone_druid_true_form", ability => new NotTargetable(ability, AbilityType.Counter) },
-                { "lone_druid_true_form_druid", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "item_black_king_bar", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "item_manta", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "invoker_deafening_blast", ability => new Targetable(ability, AbilityType.Counter) },
@@ -148,19 +145,11 @@ namespace Evader.Data
                 },
                 {
                     "item_diffusal_blade",
-                    ability =>
-                        new Targetable(
-                            ability,
-                            AbilityType.Counter,
-                            AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                    ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Enemy)
                 },
                 {
                     "item_diffusal_blade_2",
-                    ability =>
-                        new Targetable(
-                            ability,
-                            AbilityType.Counter,
-                            AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                    ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Enemy)
                 },
                 {
                     "brewmaster_drunken_haze",

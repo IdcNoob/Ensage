@@ -1,4 +1,4 @@
-﻿namespace Evader.EvadableAbilities.Heroes.Axe
+﻿namespace Evader.EvadableAbilities.Heroes.MonkeyKing
 {
     using Base;
     using Base.Interfaces;
@@ -9,11 +9,11 @@
 
     using static Data.AbilityNames;
 
-    internal class BerserkersCall : AOE, IModifier
+    internal class BoundlessStrike : LinearAOE, IModifier
     {
         #region Constructors and Destructors
 
-        public BerserkersCall(Ability ability)
+        public BoundlessStrike(Ability ability)
             : base(ability)
         {
             Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.LowestHealth);
@@ -29,11 +29,11 @@
             CounterAbilities.Add(SnowBall);
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
+            CounterAbilities.Remove("abaddon_aphotic_shield");
 
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
             Modifier.AllyCounterAbilities.AddRange(Invul);
             Modifier.AllyCounterAbilities.AddRange(VsPhys);
-            Modifier.AllyCounterAbilities.Remove("item_glimmer_cape");
         }
 
         #endregion

@@ -13,14 +13,14 @@
         public SoulAssumption(Ability ability)
             : base(ability)
         {
-            IsDisjointable = false;
-
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(BallLightning);
             CounterAbilities.Add(SleightOfFist);
             CounterAbilities.Add(Eul);
+            CounterAbilities.Add(Manta);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);
+            CounterAbilities.Add(SnowBall);
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Lotus);

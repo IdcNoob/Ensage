@@ -13,6 +13,7 @@
         private readonly Dictionary<string, string> fixedAbilityModifiers = new Dictionary<string, string>
         {
             { "modifier_phantom_assassin_stiflingdagger", "phantom_assassin_stifling_dagger" },
+            { "modifier_monkey_king_quadruple_tap_bonuses", "monkey_king_jingu_mastery" },
             { "modifier_windrunner_shackle_shot", "windrunner_shackleshot" },
             { "modifier_juggernaut_omnislash", "juggernaut_omni_slash" },
             { "modifier_kunkka_x_marks_the_spot", "kunkka_return" },
@@ -59,6 +60,7 @@
 
             switch (modifierName)
             {
+                case "modifier_bashed":
                 case "modifier_stunned":
                 case "modifier_silence":
                     abilityName = modifierTextureName.Split('/').LastOrDefault();

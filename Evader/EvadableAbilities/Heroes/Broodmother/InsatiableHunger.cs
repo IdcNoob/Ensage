@@ -24,8 +24,6 @@
             Modifier.AllyCounterAbilities.AddRange(VsDamage);
             Modifier.AllyCounterAbilities.AddRange(VsPhys);
 
-            Modifier.EnemyCounterAbilities.Add(Eul);
-            Modifier.EnemyCounterAbilities.Add(FortunesEnd);
             Modifier.EnemyCounterAbilities.Add(Decrepify);
             Modifier.EnemyCounterAbilities.AddRange(Invul);
         }

@@ -23,10 +23,12 @@
                 maxDistanceToSource: Ability.GetCastRange());
 
             Modifier.AllyCounterAbilities.Add(Manta);
-            Modifier.AllyCounterAbilities.Add(Eul);
             Modifier.AllyCounterAbilities.Add(PhaseShift);
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
+
+            Modifier.EnemyCounterAbilities.Add(FortunesEnd);
+            Modifier.EnemyCounterAbilities.Add(Eul);
         }
 
         #endregion

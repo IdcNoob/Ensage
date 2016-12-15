@@ -26,7 +26,7 @@
             CounterAbilities.Add(Eul);
             CounterAbilities.AddRange(VsDisable);
             CounterAbilities.AddRange(VsDamage);
-            CounterAbilities.AddRange(VsLowPureMagic);
+            CounterAbilities.AddRange(VsMagic);
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
 

@@ -35,8 +35,6 @@
 
         private AbilityUpdater abilityUpdater;
 
-        private List<Vector3> debugPath = new List<Vector3>();
-
         private Unit fountain;
 
         private ParticleEffect heroPathfinderEffect;
@@ -109,15 +107,14 @@
             {
                 Debugger.Write("  = >   Unit (" + unit.Name + ") with vision: " + dayVision + " // ");
                 var closestHero =
-                    ObjectManager.GetEntities<Hero>()
+                    ObjectManager.GetEntitiesParallel<Hero>()
                         .Where(x => x.IsValid && x.IsAlive)
                         .OrderBy(x => x.Distance2D(unit))
                         .FirstOrDefault();
                 Debugger.WriteLine(closestHero.GetName() + " (" + closestHero.Distance2D(unit) + ")", showType: false);
             }
 
-            var abilityNames =
-                AdditionalAbilityData.UnitVision.Where(x => x.Value == dayVision).Select(x => x.Key).ToList();
+            var abilityNames = AdditionalAbilityData.Vision.Where(x => x.Value == dayVision).Select(x => x.Key).ToList();
 
             if (!abilityNames.Any())
             {
@@ -205,7 +202,7 @@
 
             if (Menu.Debug.DrawMap)
             {
-                MapDrawer.Draw(debugPath);
+                MapDrawer.Draw();
             }
         }
 
@@ -224,22 +221,21 @@
                 case Order.Hold:
                 case Order.MoveTarget:
                 case Order.MoveLocation:
-                    movePosition = args.TargetPosition;
+                case Order.ConsumeRune:
+                case Order.Continue:
+                case Order.Patrol:
+                    movePosition = args.Target?.Position ?? args.TargetPosition;
                     if (sleeper.Sleeping("block") || sleeper.Sleeping("avoiding"))
                     {
                         args.Process = false;
                     }
                     break;
+                case Order.Ability:
                 case Order.AbilityTarget:
                 case Order.AbilityLocation:
+                case Order.AbilityTargetTree:
+                case Order.AbilityTargetRune:
                     movePosition = args.TargetPosition;
-                    if ((sleeper.Sleeping("block") || sleeper.Sleeping("avoiding")) && Menu.Settings.BlockAbilityUsage)
-                    {
-                        args.Process = false;
-                    }
-                    break;
-                case Order.Ability:
-                    movePosition = new Vector3();
                     if ((sleeper.Sleeping("block") || sleeper.Sleeping("avoiding")) && Menu.Settings.BlockAbilityUsage)
                     {
                         args.Process = false;
@@ -287,7 +283,7 @@
                     Debugger.WriteLine("remaining time: " + modifier.RemainingTime, Debugger.Type.Modifiers);
 
                     string name;
-                    if (AdditionalAbilityData.ModifierThinkers.TryGetValue(modifier.Name, out name))
+                    if (AdditionalAbilityData.Modifiers.TryGetValue(modifier.Name, out name))
                     {
                         foreach (var ability in
                             abilityUpdater.EvadableAbilities.Where(x => x.Name == name && x.Enabled)
@@ -392,11 +388,6 @@
             if (!Game.IsInGame || Game.IsPaused || !Menu.Hotkeys.EnabledEvader)
             {
                 return;
-            }
-
-            if (Menu.Debug.DrawMap && debugPath.Any() && !sleeper.Sleeping(debugPath))
-            {
-                debugPath.Clear();
             }
 
             if (Menu.Settings.PathfinderEffect && heroPathfinderEffect != null && !sleeper.Sleeping("avoiding"))
@@ -858,9 +849,6 @@
                                                 remainingWalkTime,
                                                 out success).ToList();
 
-                                        debugPath =
-                                            Pathfinder.CalculateDebugPathFromObstacle(remainingWalkTime).ToList();
-
                                         if (success)
                                         {
                                             movePathfinderPosition = tempPath.Last();
@@ -907,7 +895,6 @@
                                         Utils.Sleep(Math.Min(time, 1) * 1000, "Evader.Avoiding");
                                         sleeper.Sleep(Math.Min(time, 1) * 1000, ability);
                                         sleeper.Sleep(Math.Min(time, 1) * 1000, "avoiding");
-                                        sleeper.Sleep(1000, debugPath);
 
                                         if (Menu.Settings.PathfinderEffect)
                                         {
@@ -942,8 +929,6 @@
 
                                     if (success)
                                     {
-                                        debugPath =
-                                            Pathfinder.CalculateDebugPathFromObstacle(remainingWalkTime).ToList();
                                         var time = 0.1f;
 
                                         if (Menu.Settings.CancelAnimation && ability.IsDisable)
@@ -962,7 +947,6 @@
                                         Utils.Sleep(sleepTime, "Evader.Avoiding");
                                         sleeper.Sleep(sleepTime, "avoiding");
                                         sleeper.Sleep(sleepTime, ability);
-                                        sleeper.Sleep(1000, debugPath);
 
                                         if (Menu.Settings.PathfinderEffect)
                                         {

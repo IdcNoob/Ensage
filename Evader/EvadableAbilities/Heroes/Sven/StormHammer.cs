@@ -1,7 +1,5 @@
 ﻿namespace Evader.EvadableAbilities.Heroes.Sven
 {
-    using System.Linq;
-
     using Base.Interfaces;
 
     using Common;
@@ -56,7 +54,7 @@
             Modifier.AllyCounterAbilities.AddRange(Invul);
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
 
-            stunRadius = Ability.AbilitySpecialData.First(x => x.Name == "bolt_aoe").Value + 100;
+            stunRadius = Ability.GetRadius() + 100;
         }
 
         #endregion

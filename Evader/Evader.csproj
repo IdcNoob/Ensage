@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Bootstrap.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Brewmaster\DrunkenHaze.cs" />
     <Compile Include="EvadableAbilities\Heroes\Gyrocopter\HomingMissile.cs" />
     <Compile Include="EvadableAbilities\Heroes\Leshrac\LightningStorm.cs" />
     <Compile Include="Core\Menus\AlliesSettingsMenu.cs" />
@@ -198,6 +199,9 @@
     <Compile Include="EvadableAbilities\Heroes\Meepo\Poof.cs" />
     <Compile Include="EvadableAbilities\Heroes\Mirana\MoonlightShadow.cs" />
     <Compile Include="EvadableAbilities\Heroes\Mirana\Starstorm.cs" />
+    <Compile Include="EvadableAbilities\Heroes\MonkeyKing\BoundlessStrike.cs" />
+    <Compile Include="EvadableAbilities\Heroes\MonkeyKing\JinguMastery.cs" />
+    <Compile Include="EvadableAbilities\Heroes\MonkeyKing\PrimalSpring.cs" />
     <Compile Include="EvadableAbilities\Heroes\Morphling\AdaptiveStrike.cs" />
     <Compile Include="EvadableAbilities\Heroes\Morphling\ReplicateTeleport.cs" />
     <Compile Include="EvadableAbilities\Heroes\Morphling\Waveform.cs" />
@@ -250,6 +254,7 @@
     <Compile Include="EvadableAbilities\Heroes\ShadowDemon\DemonicPurge.cs" />
     <Compile Include="EvadableAbilities\Heroes\ShadowDemon\Disruption.cs" />
     <Compile Include="EvadableAbilities\Heroes\ShadowDemon\ShadowPoison.cs" />
+    <Compile Include="EvadableAbilities\Heroes\ShadowDemon\SoulCatcher.cs" />
     <Compile Include="EvadableAbilities\Heroes\ShadowFiend\RequiemOfSouls.cs" />
     <Compile Include="EvadableAbilities\Heroes\ShadowFiend\Shadowraze.cs" />
     <Compile Include="EvadableAbilities\Heroes\ShadowShaman\EtherShock.cs" />
@@ -275,6 +280,7 @@
     <Compile Include="EvadableAbilities\Heroes\StormSpirit\Vortex.cs" />
     <Compile Include="EvadableAbilities\Heroes\Sven\GodsStrength.cs" />
     <Compile Include="EvadableAbilities\Heroes\Sven\Warcry.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Techies\BlastOff.cs" />
     <Compile Include="EvadableAbilities\Heroes\TemplarAssassin\Meld.cs" />
     <Compile Include="EvadableAbilities\Heroes\TemplarAssassin\PsionicTrap.cs" />
     <Compile Include="EvadableAbilities\Heroes\Terrorblade\Metamorphosis.cs" />
@@ -290,6 +296,7 @@
     <Compile Include="EvadableAbilities\Heroes\Tiny\Avalanche.cs" />
     <Compile Include="EvadableAbilities\Heroes\TreantProtector\LeechSeed.cs" />
     <Compile Include="EvadableAbilities\Heroes\TreantProtector\LivingArmor.cs" />
+    <Compile Include="EvadableAbilities\Heroes\TreantProtector\NaturesGuise.cs" />
     <Compile Include="EvadableAbilities\Heroes\TreantProtector\Overgrowth.cs" />
     <Compile Include="EvadableAbilities\Heroes\TrollWarlord\BattleTrance.cs" />
     <Compile Include="EvadableAbilities\Heroes\TrollWarlord\WhirlingAxesMelee.cs" />
@@ -353,6 +360,7 @@
     <Compile Include="EvadableAbilities\Heroes\WraithKing\WraithfireBlast.cs" />
     <Compile Include="EvadableAbilities\Heroes\Zeus\ArcLightning.cs" />
     <Compile Include="EvadableAbilities\Heroes\Zeus\LightningBolt.cs" />
+    <Compile Include="EvadableAbilities\Heroes\Zeus\Nimbus.cs" />
     <Compile Include="EvadableAbilities\Heroes\Zeus\ThundergodsWrath.cs" />
     <Compile Include="EvadableAbilities\Items\AbyssalBlade.cs" />
     <Compile Include="EvadableAbilities\Items\Bloodthorn.cs" />
@@ -363,6 +371,7 @@
     <Compile Include="EvadableAbilities\Items\MedallionOfCourage.cs" />
     <Compile Include="EvadableAbilities\Items\Mjollnir.cs" />
     <Compile Include="EvadableAbilities\Items\OrchidMalevolence.cs" />
+    <Compile Include="EvadableAbilities\Items\RodOfAtos.cs" />
     <Compile Include="EvadableAbilities\Items\Satanic.cs" />
     <Compile Include="EvadableAbilities\Items\ScytheOfVyse.cs" />
     <Compile Include="EvadableAbilities\Items\SolarCrest.cs" />

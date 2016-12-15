@@ -1,5 +1,7 @@
-﻿namespace Evader.EvadableAbilities.Heroes.Axe
+﻿namespace Evader.EvadableAbilities.Heroes.Techies
 {
+    using System.Linq;
+
     using Base;
     using Base.Interfaces;
 
@@ -9,11 +11,11 @@
 
     using static Data.AbilityNames;
 
-    internal class BerserkersCall : AOE, IModifier
+    internal class BlastOff : LinearAOE, IModifier
     {
         #region Constructors and Destructors
 
-        public BerserkersCall(Ability ability)
+        public BlastOff(Ability ability)
             : base(ability)
         {
             Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.LowestHealth);
@@ -21,19 +23,21 @@
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(BallLightning);
             CounterAbilities.Add(SleightOfFist);
-            CounterAbilities.Add(Eul);
             CounterAbilities.Add(Manta);
-            CounterAbilities.AddRange(VsDisable);
+            CounterAbilities.Add(Eul);
             CounterAbilities.AddRange(VsDamage);
-            CounterAbilities.AddRange(VsPhys);
-            CounterAbilities.Add(SnowBall);
+            CounterAbilities.AddRange(VsMagic);
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
 
+            Modifier.AllyCounterAbilities.Add(Lotus);
+            Modifier.AllyCounterAbilities.Add(Eul);
+            Modifier.AllyCounterAbilities.Add(Manta);
+            Modifier.AllyCounterAbilities.Add(FortunesEnd);
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
             Modifier.AllyCounterAbilities.AddRange(Invul);
-            Modifier.AllyCounterAbilities.AddRange(VsPhys);
-            Modifier.AllyCounterAbilities.Remove("item_glimmer_cape");
+
+            AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "duration").Value;
         }
 
         #endregion

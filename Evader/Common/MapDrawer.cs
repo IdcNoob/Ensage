@@ -1,7 +1,5 @@
 ﻿namespace Evader.Common
 {
-    using System.Collections.Generic;
-
     using Core;
 
     using Ensage;
@@ -21,7 +19,7 @@
 
         #region Public Methods and Operators
 
-        public static void Draw(List<Vector3> debugPath)
+        public static void Draw()
         {
             var center = Game.MousePosition;
             const int CellCount = 40;
@@ -63,18 +61,6 @@
 
             int heroCellX, heroCellY;
             Pathfinder.Pathfinding.GetCellPosition(center, out heroCellX, out heroCellY);
-            foreach (var p in debugPath)
-            {
-                int tx, ty;
-                Pathfinder.Pathfinding.GetCellPosition(p - center, out tx, out ty);
-                tx += CellCount / 2;
-                ty += CellCount / 2;
-                Drawing.DrawRect(
-                    new Vector2(tx * 10, 50 + (CellCount - ty - 1) * 10),
-                    new Vector2(9),
-                    Color.Yellow,
-                    false);
-            }
 
             int x, y;
             //Pathfinder.Pathfinding.GetCellPosition(Hero.InFront(150) - center, out x, out y);

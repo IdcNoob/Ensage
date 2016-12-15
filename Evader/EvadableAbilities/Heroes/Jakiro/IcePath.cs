@@ -18,7 +18,11 @@
     {
         #region Fields
 
+        private readonly float bonusDuration;
+
         private readonly float[] duration = new float[4];
+
+        private readonly Ability talent;
 
         #endregion
 
@@ -48,6 +52,13 @@
             for (var i = 0u; i < duration.Length; i++)
             {
                 duration[i] = ability.AbilitySpecialData.First(x => x.Name == "duration").GetValue(i);
+            }
+
+            talent = AbilityOwner.FindSpell("special_bonus_unique_jakiro");
+
+            if (talent != null)
+            {
+                bonusDuration = talent.AbilitySpecialData.First(x => x.Name == "value").Value;
             }
 
             ObstacleStays = true;
@@ -88,7 +99,7 @@
 
         private float GetDuration()
         {
-            return duration[Ability.Level - 1];
+            return duration[Ability.Level - 1] + (talent?.Level > 0 ? bonusDuration : 0);
         }
 
         #endregion

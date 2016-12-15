@@ -1,4 +1,4 @@
-﻿namespace Evader.EvadableAbilities.Heroes.Windranger
+﻿namespace Evader.EvadableAbilities.Heroes.TreantProtector
 {
     using Base;
     using Base.Interfaces;
@@ -9,18 +9,17 @@
 
     using static Data.AbilityNames;
 
-    internal class Windrun : EvadableAbility, IModifier
+    internal class NaturesGuise : EvadableAbility, IModifier
     {
         #region Constructors and Destructors
 
-        public Windrun(Ability ability)
+        public NaturesGuise(Ability ability)
             : base(ability)
         {
-            Modifier = new EvadableModifier(EnemyTeam, EvadableModifier.GetHeroType.ModifierSource);
+            Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.LowestHealth);
 
-            Modifier.EnemyCounterAbilities.Add(Eul);
-            Modifier.EnemyCounterAbilities.Add(FortunesEnd);
-            Modifier.EnemyCounterAbilities.AddRange(Invul);
+            Modifier.AllyCounterAbilities.AddRange(AllyShields);
+            Modifier.AllyCounterAbilities.AddRange(Invul);
         }
 
         #endregion

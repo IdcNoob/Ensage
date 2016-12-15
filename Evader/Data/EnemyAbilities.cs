@@ -57,6 +57,7 @@
     using EvadableAbilities.Heroes.Medusa;
     using EvadableAbilities.Heroes.Meepo;
     using EvadableAbilities.Heroes.Mirana;
+    using EvadableAbilities.Heroes.MonkeyKing;
     using EvadableAbilities.Heroes.Morphling;
     using EvadableAbilities.Heroes.NagaSiren;
     using EvadableAbilities.Heroes.Necrophos;
@@ -89,6 +90,7 @@
     using EvadableAbilities.Heroes.SpiritBreaker;
     using EvadableAbilities.Heroes.StormSpirit;
     using EvadableAbilities.Heroes.Sven;
+    using EvadableAbilities.Heroes.Techies;
     using EvadableAbilities.Heroes.TemplarAssassin;
     using EvadableAbilities.Heroes.Terrorblade;
     using EvadableAbilities.Heroes.Tidehunter;
@@ -150,6 +152,7 @@
                 { "bounty_hunter_shuriken_toss", ability => new ShurikenToss(ability) },
                 { "bounty_hunter_track", ability => new Track(ability) },
                 { "brewmaster_thunder_clap", ability => new ThunderClap(ability) },
+                { "brewmaster_drunken_haze", ability => new DrunkenHaze(ability) },
                 { "brewmaster_primal_split", ability => new PrimalSplit(ability) },
                 { "broodmother_spawn_spiderlings", ability => new SpawnSpiderlings(ability) },
                 { "broodmother_insatiable_hunger", ability => new InsatiableHunger(ability) },
@@ -258,6 +261,9 @@
                 { "mirana_starfall", ability => new Starstorm(ability) },
                 { "mirana_arrow", ability => new SacredArrow(ability) },
                 { "mirana_invis", ability => new MoonlightShadow(ability) },
+                { "monkey_king_boundless_strike", ability => new BoundlessStrike(ability) },
+                { "monkey_king_primal_spring", ability => new PrimalSpring(ability) },
+                { "monkey_king_jingu_mastery", ability => new JinguMastery(ability) },
                 { "morphling_waveform", ability => new Waveform(ability) },
                 { "morphling_adaptive_strike", ability => new AdaptiveStrike(ability) },
                 { "morphling_morph_replicate", ability => new ReplicateTeleport(ability) },
@@ -312,6 +318,7 @@
                 { "sandking_burrowstrike", ability => new Burrowstrike(ability) },
                 { "sandking_epicenter", ability => new Epicenter(ability) },
                 { "shadow_demon_disruption", ability => new Disruption(ability) },
+                { "shadow_demon_soul_catcher", ability => new SoulCatcher(ability) },
                 { "shadow_demon_shadow_poison", ability => new ShadowPoison(ability) },
                 { "shadow_demon_demonic_purge", ability => new DemonicPurge(ability) },
                 { "nevermore_shadowraze1", ability => new Shadowraze(ability) },
@@ -342,6 +349,7 @@
                 { "sven_storm_bolt", ability => new StormHammer(ability) },
                 { "sven_warcry", ability => new Warcry(ability) },
                 { "sven_gods_strength", ability => new GodsStrength(ability) },
+                { "techies_suicide", ability => new BlastOff(ability) },
                 { "templar_assassin_meld", ability => new Meld(ability) },
                 { "templar_assassin_trap", ability => new PsionicTrap(ability) },
                 { "terrorblade_reflection", ability => new Reflection(ability) },
@@ -357,6 +365,7 @@
                 { "tinker_laser", ability => new Laser(ability) },
                 { "tinker_heat_seeking_missile", ability => new HeatSeekingMissile(ability) },
                 { "tiny_avalanche", ability => new Avalanche(ability) },
+                { "treant_natures_guise", ability => new NaturesGuise(ability) },
                 { "treant_leech_seed", ability => new LeechSeed(ability) },
                 { "treant_living_armor", ability => new LivingArmor(ability) },
                 { "treant_overgrowth", ability => new Overgrowth(ability) },
@@ -402,7 +411,9 @@
                 { "zuus_arc_lightning", ability => new ArcLightning(ability) },
                 { "zuus_lightning_bolt", ability => new LightningBolt(ability) },
                 { "zuus_thundergods_wrath", ability => new ThundergodsWrath(ability) },
+                { "zuus_cloud", ability => new Nimbus(ability) },
                 { "item_ethereal_blade", ability => new EtherealBlade(ability) },
+                { "item_rod_of_atos", ability => new RodOfAtos(ability) },
                 { "item_sheepstick", ability => new ScytheOfVyse(ability) },
                 { "item_orchid", ability => new OrchidMalevolence(ability) },
                 { "item_bloodthorn", ability => new Bloodthorn(ability) },

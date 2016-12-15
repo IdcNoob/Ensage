@@ -20,6 +20,8 @@
     {
         #region Fields
 
+        private readonly Ability talent;
+
         private Unit abilityUnit;
 
         private bool fowCast;
@@ -48,6 +50,8 @@
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
             Modifier.AllyCounterAbilities.AddRange(Invul);
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
+
+            talent = AbilityOwner.FindSpell("special_bonus_unique_mirana_2");
         }
 
         #endregion
@@ -169,6 +173,11 @@
         #endregion
 
         #region Methods
+
+        protected override float GetEndRadius()
+        {
+            return talent?.Level > 0 ? 1500 : base.GetEndRadius();
+        }
 
         protected override Vector3 GetProjectilePosition(bool ignoreCastPoint = false)
         {

@@ -200,8 +200,6 @@
             "slark_shadow_dance",
             "juggernaut_blade_fury",
             //"alchemist_chemical_rage",
-            //"lone_druid_true_form",
-            //"lone_druid_true_form_druid",
             "life_stealer_rage",
             "omniknight_repel",
             "riki_tricks_of_the_trade",

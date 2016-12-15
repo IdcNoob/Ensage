@@ -87,12 +87,6 @@
             }
         }
 
-        public override float GetProjectileSpeed()
-        {
-            //todo remove after db fix
-            return 400;
-        }
-
         public override float GetRemainingDisableTime()
         {
             return 0;

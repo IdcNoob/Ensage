@@ -6,7 +6,7 @@ namespace Evader.Data
     {
         #region Public Properties
 
-        public static Dictionary<string, string> ModifierThinkers { get; } = new Dictionary<string, string>
+        public static Dictionary<string, string> Modifiers { get; } = new Dictionary<string, string>
         {
             { "modifier_invoker_sun_strike", "invoker_sun_strike" },
             { "modifier_kunkka_torrent_thinker", "kunkka_torrent" },
@@ -19,6 +19,8 @@ namespace Evader.Data
             { "modifier_slark_dark_pact", "slark_dark_pact" },
             { "modifier_storm_spirit_static_remnant_thinker", "storm_spirit_static_remnant" },
             { "modifier_shredder_chakram_thinker", "shredder_chakram" },
+            { "modifier_monkey_king_spring_thinker", "monkey_king_primal_spring" },
+            { "modifier_morphling_waveform", "morphling_waveform" },
         };
 
         public static Dictionary<string, string> Particles { get; } = new Dictionary<string, string>
@@ -46,9 +48,12 @@ namespace Evader.Data
             { "_illuminate_charge.vpcf", "keeper_of_the_light_illuminate" },
             { "fire_spirit_launch", "phoenix_launch_fire_spirit" },
             { "supernova_start", "phoenix_supernova" },
+            { "spring_channel", "monkey_king_primal_spring" },
+            { "jump_treelaunch_ring", "monkey_king_primal_spring" },
+            { "_cloud.vpcf", "zuus_cloud" }
         };
 
-        public static Dictionary<string, uint> UnitVision { get; } = new Dictionary<string, uint>
+        public static Dictionary<string, uint> Vision { get; } = new Dictionary<string, uint>
         {
             { "shredder_timber_chain", 100 },
             { "weaver_shukuchi", 100 },
@@ -61,12 +66,14 @@ namespace Evader.Data
             { "venomancer_venomous_gale", 400 },
             { "shadow_demon_shadow_poison", 400 },
             { "windrunner_powershot", 400 },
+            { "phantom_assassin_stifling_dagger", 450 },
             { "skywrath_mage_concussive_shot", 400 },
             { "vengefulspirit_wave_of_terror", 500 },
+            { "mirana_arrow", 500 },
             { "ancient_apparition_ice_blast", 550 },
+            { "puck_illusory_orb", 550 },
             { "rattletrap_rocket_flare", 600 },
-            { "mirana_arrow", 650 },
-            { "puck_illusory_orb", 800 },
+            { "lich_chain_frost", 800 },
             { "razor_plasma_field", 800 }, // unit has name
         };
 

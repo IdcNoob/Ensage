@@ -1,4 +1,4 @@
-﻿namespace Evader.EvadableAbilities.Heroes.Windranger
+﻿namespace Evader.EvadableAbilities.Heroes.MonkeyKing
 {
     using Base;
     using Base.Interfaces;
@@ -9,18 +9,22 @@
 
     using static Data.AbilityNames;
 
-    internal class Windrun : EvadableAbility, IModifier
+    internal class JinguMastery : EvadableAbility, IModifier
     {
         #region Constructors and Destructors
 
-        public Windrun(Ability ability)
+        public JinguMastery(Ability ability)
             : base(ability)
         {
-            Modifier = new EvadableModifier(EnemyTeam, EvadableModifier.GetHeroType.ModifierSource);
+            Modifier = new EvadableModifier(
+                EnemyTeam,
+                EvadableModifier.GetHeroType.ModifierSource,
+                ignoreRemainingTime: true);
+
+            DisableTimeSinceCastCheck = true;
 
             Modifier.EnemyCounterAbilities.Add(Eul);
             Modifier.EnemyCounterAbilities.Add(FortunesEnd);
-            Modifier.EnemyCounterAbilities.AddRange(Invul);
         }
 
         #endregion

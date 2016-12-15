@@ -37,6 +37,8 @@
             quas = AbilityOwner.FindSpell("invoker_quas");
             wex = AbilityOwner.FindSpell("invoker_wex");
             exort = AbilityOwner.FindSpell("invoker_exort");
+
+            //todo: fix blast aoe talent
         }
 
         #endregion
