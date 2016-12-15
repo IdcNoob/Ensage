@@ -145,10 +145,13 @@
                 case Order.ToggleAbility:
                     if (!args.IsQueued)
                     {
-                        var abilityClassID = args.Ability.ClassID;
-                        if (abilityClassID == ClassID.CDOTA_Item_TeleportScroll
-                            || abilityClassID == ClassID.CDOTA_Item_BootsOfTravel
-                            || abilityClassID == ClassID.CDOTA_Item_BootsOfTravel_2)
+                        var abilityName = args.Ability.Name;
+                        if (abilityName == "item_tpscroll" || abilityName == "item_travel_boots"
+                            || abilityName == "item_travel_boots_2")
+                            //var abilityClassID = args.Ability.ClassID;
+                            //if (abilityClassID == ClassID.CDOTA_Item_TeleportScroll
+                            //    || abilityClassID == ClassID.CDOTA_Item_BootsOfTravel
+                            //    || abilityClassID == ClassID.CDOTA_Item_BootsOfTravel_2)
                         {
                             Sleeper.Sleep(1000, "Main");
                             return;
