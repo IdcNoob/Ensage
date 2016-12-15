@@ -93,8 +93,6 @@
             }
         };
 
-        private static bool connected;
-
         private static KeyValuePair<string, string> currentPair = new KeyValuePair<string, string>("None", "none");
 
         private static bool displayTempName;
@@ -144,7 +142,7 @@
                 (int)(HUDInfo.ScreenSizeY() * 0.09),
                 Color.Yellow);
 
-            if (displayTempName)
+            if (displayTempName && tempName.Any())
             {
                 textFont.DrawText(
                     null,
@@ -166,48 +164,34 @@
         }
 
         [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
-        private static void Game_OnFireEvent(FireEventEventArgs args)
-        {
-            var eventName = args.GameEvent.Name;
-
-            if (eventName == "player_connect_full")
-            {
-                connected = true;
-                return;
-            }
-
-            if (!connected || eventName != "game_rules_state_change")
-            {
-                return;
-            }
-
-            if (selectedLane != 0)
-            {
-                var team = ObjectManager.LocalPlayer.Team == Team.Radiant ? 0 : LaneList.Length - 1;
-                var xy = CoordinateMultiplayers[selectedLane - 1 + team];
-
-                SetCursorPos((int)(HUDInfo.ScreenSizeX() * xy[0]), (int)(HUDInfo.ScreenSizeY() * xy[1]));
-                mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
-
-                var sayTextIndex = Menu.Item(LaneList[selectedLane] + "Text").GetValue<StringList>().SelectedIndex;
-
-                if (sayTextIndex != 0)
-                {
-                    Game.ExecuteCommand("say_team " + SayText[selectedLane - 1][sayTextIndex]);
-                }
-            }
-
-            if (currentPair.Value != "None" && locked)
-            {
-                Game.ExecuteCommand("dota_select_hero " + currentPair.Value);
-            }
-
-            connected = false;
-            Unsub();
-        }
-
         private static void Game_OnUpdate(EventArgs args)
         {
+            if (Game.GameState == GameState.HeroSelection)
+            {
+                if (selectedLane != 0)
+                {
+                    var team = ObjectManager.LocalPlayer.Team == Team.Radiant ? 0 : LaneList.Length - 1;
+                    var xy = CoordinateMultiplayers[selectedLane - 1 + team];
+
+                    SetCursorPos((int)(HUDInfo.ScreenSizeX() * xy[0]), (int)(HUDInfo.ScreenSizeY() * xy[1]));
+                    mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+
+                    var sayTextIndex = Menu.Item(LaneList[selectedLane] + "Text").GetValue<StringList>().SelectedIndex;
+
+                    if (sayTextIndex != 0)
+                    {
+                        Game.ExecuteCommand("say_team " + SayText[selectedLane - 1][sayTextIndex]);
+                    }
+                }
+
+                if (currentPair.Value != "None" && locked)
+                {
+                    Game.ExecuteCommand("dota_select_hero " + currentPair.Value);
+                }
+
+                Unsub();
+            }
+
             if (!Utils.SleepCheck("laneMarker.Name"))
             {
                 return;
@@ -231,11 +215,12 @@
 
             if (args.WParam == Menu.Item("lockKey").GetValue<KeyBind>().Key)
             {
+                displayTempName = false;
+                tempName = string.Empty;
+
                 if (locked)
                 {
                     locked = false;
-                    displayTempName = false;
-                    tempName = string.Empty;
                     currentPair = new KeyValuePair<string, string>("None", "none");
                 }
                 else
@@ -249,14 +234,24 @@
                 return;
             }
 
-            var keyChar = Convert.ToChar(args.WParam);
+            var backspace = false;
+            if (args.WParam == 8 && tempName.Any())
+            {
+                tempName = tempName.Remove(tempName.Length - 1);
+                backspace = true;
+            }
 
-            if (!char.IsLetter(keyChar) || char.IsLower(keyChar))
+            var keyChar = Convert.ToChar(args.WParam);
+            if ((!char.IsLetter(keyChar) || char.IsLower(keyChar) || args.WParam == 192) && !backspace)
             {
                 return;
             }
 
-            tempName = !Utils.SleepCheck("laneMarker.Name") ? tempName + keyChar : keyChar.ToString();
+            if (!backspace)
+            {
+                tempName = !Utils.SleepCheck("laneMarker.Name") ? tempName + keyChar : keyChar.ToString();
+            }
+
             Utils.Sleep(2000, "laneMarker.Name");
             displayTempName = true;
 
@@ -323,7 +318,6 @@
         private static void Sub()
         {
             Game.OnWndProc += Game_OnWndProc;
-            Game.OnFireEvent += Game_OnFireEvent;
             Game.OnUpdate += Game_OnUpdate;
 
             Drawing.OnPreReset += Drawing_OnPreReset;
@@ -334,7 +328,6 @@
         private static void Unsub()
         {
             Game.OnWndProc -= Game_OnWndProc;
-            Game.OnFireEvent -= Game_OnFireEvent;
             Game.OnUpdate -= Game_OnUpdate;
 
             Drawing.OnPreReset -= Drawing_OnPreReset;

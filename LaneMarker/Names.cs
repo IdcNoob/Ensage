@@ -68,7 +68,7 @@
             { "Medusa", "npc_dota_hero_medusa" },
             { "Meepo, Geomancer", "npc_dota_hero_meepo" },
             { "Mirana", "npc_dota_hero_mirana" },
-            { "Monkey King", "npc_dota_hero_monkey_king" },
+            { "Monkey King, MK", "npc_dota_hero_monkey_king" },
             { "Morphling​", "npc_dota_hero_morphling" },
             { "Naga Siren​", "npc_dota_hero_naga_siren" },
             { "Nature's Prophet, Furion​", "npc_dota_hero_furion" },
