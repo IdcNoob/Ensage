@@ -71,7 +71,7 @@
 
         public void OnLoad()
         {
-            menu = new MenuManager();
+            menu = new MenuManager(addedItems);
             sleeper = new Sleeper();
 
             menu.OnChange += OnChange;
@@ -89,7 +89,7 @@
 
             try
             {
-                var allHeroes = Heroes.All.Where(x => x.IsValid && !x.IsIllusion);
+                var allHeroes = ObjectManager.GetEntitiesParallel<Hero>().Where(x => x.IsValid && !x.IsIllusion);
 
                 foreach (var hero in allHeroes)
                 {
@@ -99,20 +99,23 @@
                         addedHeroes.Add(hero.Handle);
                     }
 
-                    foreach (var item in hero.Inventory.Items)
+                    if (menu.IsItemsMenuEnabled(hero))
                     {
-                        var itemName = item.GetDefaultName();
-
-                        if (string.IsNullOrEmpty(itemName) || addedItems.ContainsKey(hero.StoredName() + itemName))
+                        foreach (var item in hero.Inventory.Items)
                         {
-                            continue;
-                        }
+                            var itemName = item.GetDefaultName();
 
-                        addedItems.Add(hero.StoredName() + itemName, item);
+                            if (string.IsNullOrEmpty(itemName) || addedItems.ContainsKey(hero.StoredName() + itemName))
+                            {
+                                continue;
+                            }
 
-                        if (item.GetRealCastRange() > 500)
-                        {
-                            await menu.AddMenuItem(hero, item);
+                            addedItems.Add(hero.StoredName() + itemName, item);
+
+                            if (item.GetRealCastRange() > 500)
+                            {
+                                await menu.AddMenuItem(hero, item);
+                            }
                         }
                     }
 

@@ -16,7 +16,15 @@
     {
         #region Fields
 
+        private readonly Dictionary<Hero, Menu> abilityMenus = new Dictionary<Hero, Menu>();
+
+        private readonly Dictionary<string, Item> addedItems;
+
+        private readonly Dictionary<Hero, MenuItem> enabledItemsMenu = new Dictionary<Hero, MenuItem>();
+
         private readonly Dictionary<Hero, Menu> heroMenus = new Dictionary<Hero, Menu>();
+
+        private readonly Dictionary<Hero, Menu> itemMenus = new Dictionary<Hero, Menu>();
 
         private readonly Menu menu;
 
@@ -34,9 +42,10 @@
 
         #region Constructors and Destructors
 
-        public MenuManager()
+        public MenuManager(Dictionary<string, Item> addedItems)
         {
             myHero = ObjectManager.LocalHero;
+            this.addedItems = addedItems;
 
             menu = new Menu("Advanced Ranges", "advancedRanges", true);
             menu.AddToMainMenu();
@@ -56,17 +65,91 @@
         {
             var heroName = hero.StoredName();
             var heroMenu = new Menu(hero.GetRealName(), heroName, false, heroName, true);
+
             menu.AddSubMenu(heroMenu);
             heroMenus.Add(hero, heroMenu);
 
-            await AddMenuItem(hero, null, Ranges.CustomRange.Attack);
-            await AddMenuItem(hero, null, Ranges.CustomRange.Expiriece);
-
-            foreach (var ability in
-                hero.Spellbook.Spells.Where(
-                    x => !x.IsHidden && x.ClassID != ClassID.CDOTA_Ability_AttributeBonus && !x.Name.Contains("empty")))
+            var key = hero.StoredName();
+            if (hero.Equals(myHero))
             {
-                await AddMenuItem(hero, ability);
+                key += "myHero";
+            }
+
+            var settings = new Menu("Settings", key + "settings");
+            heroMenus.First(x => x.Key.Equals(hero)).Value.AddSubMenu(settings);
+            await Task.Delay(200);
+
+            var abilities = new MenuItem(key + "generateAbilities", "Generate ability ranges").SetValue(false);
+            settings.AddItem(abilities);
+            await Task.Delay(200);
+
+            abilities.ValueChanged += async (sender, args) => {
+                if (!args.GetNewValue<bool>())
+                {
+                    args.Process = false;
+                    return;
+                }
+                await AddAbilities(hero);
+            };
+
+            if (abilities.IsActive())
+            {
+                await AddAbilities(hero);
+            }
+
+            var items = new MenuItem(key + "generateItems", "Generate item ranges").SetValue(false);
+            enabledItemsMenu.Add(hero, items);
+            settings.AddItem(items);
+            await Task.Delay(200);
+
+            items.ValueChanged += async (sender, args) => {
+                if (!args.GetNewValue<bool>())
+                {
+                    args.Process = false;
+                    return;
+                }
+                await AddAItems(hero);
+            };
+
+            if (items.IsActive())
+            {
+                await AddAItems(hero);
+            }
+
+            var attack = new MenuItem(key + "generateAttack", "Generate attack range").SetValue(false);
+            settings.AddItem(attack);
+            await Task.Delay(200);
+
+            attack.ValueChanged += async (sender, args) => {
+                if (!args.GetNewValue<bool>())
+                {
+                    args.Process = false;
+                    return;
+                }
+                await AddMenuItem(hero, null, Ranges.CustomRange.Attack);
+            };
+
+            if (attack.IsActive())
+            {
+                await AddMenuItem(hero, null, Ranges.CustomRange.Attack);
+            }
+
+            var expirience = new MenuItem(key + "generateExpirience", "Generate expirience range").SetValue(false);
+            settings.AddItem(expirience);
+            await Task.Delay(200);
+
+            expirience.ValueChanged += async (sender, args) => {
+                if (!args.GetNewValue<bool>())
+                {
+                    args.Process = false;
+                    return;
+                }
+                await AddMenuItem(hero, null, Ranges.CustomRange.Expiriece);
+            };
+
+            if (expirience.IsActive())
+            {
+                await AddMenuItem(hero, null, Ranges.CustomRange.Expiriece);
             }
         }
 
@@ -75,7 +158,8 @@
             Ability ability,
             Ranges.CustomRange customRange = Ranges.CustomRange.None)
         {
-            var abilityName = ability is Item ? ability.GetDefaultName() : ability?.StoredName();
+            var isItem = ability is Item;
+            var abilityName = isItem ? ability.GetDefaultName() : ability?.StoredName();
             var texture = abilityName;
             var menuName = string.Empty;
 
@@ -99,7 +183,6 @@
             }
 
             var key = hero.StoredName() + abilityName;
-
             if (hero.Equals(myHero))
             {
                 key += "myHero";
@@ -196,7 +279,25 @@
             await Task.Delay(50);
             abilityMenu.AddItem(blue.SetFontColor(Color.LightBlue));
             await Task.Delay(50);
-            heroMenus.First(x => x.Key.Equals(hero)).Value.AddSubMenu(abilityMenu);
+
+            if (customRange == Ranges.CustomRange.None)
+            {
+                Menu abilitiesMenu;
+                var dictionary = isItem ? abilityMenus : itemMenus;
+                if (!dictionary.TryGetValue(hero, out abilitiesMenu))
+                {
+                    abilitiesMenu = new Menu(isItem ? "Items" : "Abilities", key + (isItem ? "items" : "abilities"));
+                    heroMenus.First(x => x.Key.Equals(hero)).Value.AddSubMenu(abilitiesMenu);
+                    dictionary.Add(hero, abilitiesMenu);
+                }
+
+                abilitiesMenu.AddSubMenu(abilityMenu);
+            }
+            else
+            {
+                heroMenus.First(x => x.Key.Equals(hero)).Value.AddSubMenu(abilityMenu);
+            }
+
             await Task.Delay(50);
 
             OnChange?.Invoke(
@@ -218,9 +319,49 @@
                                           : abilityMenu.DisplayName + "  ";
         }
 
+        public bool IsItemsMenuEnabled(Hero hero)
+        {
+            MenuItem item;
+            return enabledItemsMenu.TryGetValue(hero, out item) && item.IsActive();
+        }
+
         public void OnClose()
         {
             menu.RemoveFromMainMenu();
+        }
+
+        #endregion
+
+        #region Methods
+
+        private async Task AddAbilities(Hero hero)
+        {
+            foreach (var ability in
+                hero.Spellbook.Spells.Where(
+                    x => !x.IsHidden && !x.Name.Contains("special_bonus") && !x.Name.Contains("empty")))
+            {
+                await AddMenuItem(hero, ability);
+            }
+        }
+
+        private async Task AddAItems(Hero hero)
+        {
+            foreach (var item in hero.Inventory.Items)
+            {
+                var itemName = item.GetDefaultName();
+
+                if (string.IsNullOrEmpty(itemName) || addedItems.ContainsKey(hero.StoredName() + itemName))
+                {
+                    continue;
+                }
+
+                addedItems.Add(hero.StoredName() + itemName, item);
+
+                if (item.GetRealCastRange() > 500)
+                {
+                    await AddMenuItem(hero, item);
+                }
+            }
         }
 
         #endregion
