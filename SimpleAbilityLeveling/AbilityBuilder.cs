@@ -116,6 +116,10 @@
                     return "lifestealer";
                 case ClassID.CDOTA_Unit_Hero_Treant:
                     return "treant-protector";
+                case ClassID.CDOTA_Unit_Hero_MonkeyKing:
+                    return "monkey-king";
+                case ClassID.CDOTA_Unit_Hero_AbyssalUnderlord:
+                    return "underlord";
             }
 
             var name = classId.ToString().Substring("CDOTA_Unit_Hero_".Length).Replace("_", string.Empty);
@@ -174,7 +178,13 @@
                         if (abilityName.Success)
                         {
                             var name = abilityName.Groups[1].Value.Replace("&#39;", "\'");
-                            if (heroName == "queen-of-pain" && name == "Blink")
+
+                            if (name == "Attribute Bonus")
+                            {
+                                //temp attribute bonus fix
+                                break;
+                            }
+                            else if (heroName == "queen-of-pain" && name == "Blink")
                             {
                                 // Anti-Mage Blink conflict fix
                                 name = "Queen of Pain Blink";

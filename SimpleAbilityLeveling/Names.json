@@ -889,6 +889,22 @@
             "DotaName": "mirana_invis"
         },
         {
+            "Name": "Boundless Strike",
+            "DotaName": "monkey_king_boundless_strike"
+        },
+        {
+            "Name": "Tree Dance",
+            "DotaName": "monkey_king_tree_dance"
+        },
+        {
+            "Name": "Jingu Mastery",
+            "DotaName": "monkey_king_jingu_mastery"
+        },
+        {
+            "Name": "Wukong's Command",
+            "DotaName": "monkey_king_wukongs_command"
+        },
+        {
             "Name": "Waveform",
             "DotaName": "morphling_waveform"
         },
@@ -945,7 +961,7 @@
             "DotaName": "necrolyte_heartstopper_aura"
         },
         {
-            "Name": "Sadist",
+            "Name": "Ghost Shroud",
             "DotaName": "necrolyte_sadist"
         },
         {
@@ -1425,7 +1441,7 @@
             "DotaName": "techies_stasis_trap"
         },
         {
-            "Name": "Suicide Squad, Attack!",
+            "Name": "Blast Off!",
             "DotaName": "techies_suicide"
         },
         {
@@ -1575,6 +1591,22 @@
         {
             "Name": "Walrus PUNCH!",
             "DotaName": "tusk_walrus_punch"
+        },
+        {
+            "Name": "Firestorm",
+            "DotaName": "abyssal_underlord_firestorm"
+        },
+        {
+            "Name": "Pit of Malice",
+            "DotaName": "abyssal_underlord_pit_of_malice"
+        },
+        {
+            "Name": "Atrophy Aura",
+            "DotaName": "abyssal_underlord_atrophy_aura"
+        },
+        {
+            "Name": "Dark Rift",
+            "DotaName": "abyssal_underlord_dark_rift"
         },
         {
             "Name": "Decay",

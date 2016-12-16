@@ -12,6 +12,7 @@
             "doom_bringer_empty2",
             "invoker_empty1",
             "invoker_empty2",
+            "invoker_invoke",
             "nevermore_shadowraze2",
             "nevermore_shadowraze3",
             "ember_spirit_activate_fire_remnant",
@@ -31,7 +32,9 @@
             "spectre_reality",
             "techies_focused_detonate",
             "techies_minefield_sign",
-            "templar_assassin_trap"
+            "templar_assassin_trap",
+            "monkey_king_primal_spring",
+            "monkey_king_mischief"
         };
 
         #endregion

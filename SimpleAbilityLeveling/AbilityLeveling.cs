@@ -1,5 +1,6 @@
 ﻿namespace SimpleAbilityLeveling
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -23,6 +24,8 @@
         private MenuManager menuManager;
 
         private Sleeper sleeper;
+
+        private List<Ability> talents;
 
         #endregion
 
@@ -125,10 +128,15 @@
         public void OnLoad()
         {
             hero = ObjectManager.LocalHero;
-            abilities = hero.Spellbook.Spells.Where(x => !x.IsHidden && !IgnoredAbilities.List.Contains(x.StoredName()));
+            abilities =
+                hero.Spellbook.Spells.Where(
+                    x =>
+                        !x.IsHidden && !IgnoredAbilities.List.Contains(x.StoredName())
+                        && !x.Name.Contains("special_bonus"));
             menuManager = new MenuManager(abilities.Select(x => x.StoredName()).ToList(), hero.Name);
             sleeper = new Sleeper();
             abilitylBuilder = new AbilityBuilder(hero);
+            talents = hero.Spellbook.Spells.Where(x => x.Name.Contains("special_bonus")).ToList();
 
             sleeper.Sleep(10000);
         }
@@ -142,7 +150,7 @@
 
             sleeper.Sleep(1000);
 
-            if (hero.AbilityPoints <= 0 || Game.IsPaused)
+            if (hero.AbilityPoints <= 0 || Game.IsPaused || !IsTalentLearned(hero.Level))
             {
                 return;
             }
@@ -202,10 +210,6 @@
             switch (ability.AbilityType)
             {
                 case AbilityType.Ultimate:
-                    if (hero.ClassID == ClassID.CDOTA_Unit_Hero_Invoker)
-                    {
-                        abilityLevel--;
-                    }
                     if (abilityLevel >= 3)
                     {
                         return false;
@@ -245,13 +249,13 @@
                                     }
                                     break;
                                 case 1:
-                                    if (heroLevel < 11)
+                                    if (heroLevel < 12)
                                     {
                                         return false;
                                     }
                                     break;
                                 case 2:
-                                    if (heroLevel < 16)
+                                    if (heroLevel < 18)
                                     {
                                         return false;
                                     }
@@ -262,9 +266,7 @@
                     break;
                 default:
                     // ability.MaximumLevel
-                    var maxLevel = ability.AbilityType == AbilityType.Attribute
-                                       ? 10
-                                       : hero.ClassID == ClassID.CDOTA_Unit_Hero_Invoker ? 7 : 4;
+                    var maxLevel = hero.ClassID == ClassID.CDOTA_Unit_Hero_Invoker ? 7 : 4;
 
                     if (abilityLevel >= maxLevel || heroLevel <= abilityLevel * 2)
                     {
@@ -297,6 +299,11 @@
 
             return abilityLevel >= lockLevel
                    && (otherNotLockedAbility || menuManager.AbilityFullyLocked(ability.StoredName()));
+        }
+
+        private bool IsTalentLearned(uint level)
+        {
+            return Math.Max((int)level - 5, 1) / 5 == talents.Count(x => x.Level > 0);
         }
 
         #endregion
