@@ -36,7 +36,7 @@
         public MenuManager()
         {
             menu.AddItem(
-                enabled = new MenuItem("enableKey", "Enabled").SetValue(new KeyBind('P', KeyBindType.Toggle, true)))
+                    enabled = new MenuItem("enableKey", "Enabled").SetValue(new KeyBind('P', KeyBindType.Toggle, true)))
                 .ValueChanged += OnStateChange;
             menu.AddItem(new MenuItem("resetKey", "Reset stacks").SetValue(new KeyBind('0', KeyBindType.Press)))
                 .SetTooltip("Set required stacks count to 1")
@@ -45,7 +45,7 @@
                 .SetTooltip("Will stack closest camp with your hero")
                 .ValueChanged += OnHeroStackEabled;
             menu.AddItem(
-                new MenuItem("forceAdd", "Force add/remove unit").SetValue(new KeyBind('L', KeyBindType.Press)))
+                    new MenuItem("forceAdd", "Force add/remove unit").SetValue(new KeyBind('L', KeyBindType.Press)))
                 .SetTooltip(
                     "Will add/remove selected unit to/from controllables. Useful for ally dominated creep with shared control")
                 .ValueChanged += OnMenuForceAdd;
@@ -106,9 +106,9 @@
             OnProgramStateChange?.Invoke(
                 this,
                 new MenuArgs
-                    {
-                        Enabled = arg.GetNewValue<KeyBind>().Active
-                    });
+                {
+                    Enabled = arg.GetNewValue<KeyBind>().Active
+                });
         }
 
         private void StacksReset(object sender, OnValueChangeEventArgs arg)

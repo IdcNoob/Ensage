@@ -12,6 +12,12 @@
 
     internal class Camp : JungleCamp
     {
+        #region Constants
+
+        private const uint WmMousewheel = 0x020A;
+
+        #endregion
+
         #region Static Fields
 
         private static readonly DotaTexture DecreaseArrow = Textures.GetTexture("materials/ensage_ui/other/arrow_usual");
@@ -20,8 +26,6 @@
             Textures.GetTexture("materials/ensage_ui/other/arrow_usual_left");
 
         private static readonly Vector2 OverlaySize = new Vector2(174, 80);
-
-        private static readonly uint WM_MOUSEWHEEL = 0x020A;
 
         #endregion
 
@@ -81,14 +85,13 @@
             {
                 return requiredStacksCount;
             }
-
             set
             {
                 requiredStacksCount = value > 9 ? 1 : value < 1 ? 9 : value;
             }
         }
 
-        public int StackCountTimeAdjustment { get; internal set; }
+        public int StackCountTimeAdjustment { get; set; }
 
         public double TimeAdjustment { get; set; }
 
@@ -112,30 +115,30 @@
 
         private bool IsUnderBox
             =>
-                Utils.IsUnderRectangle(
-                    Game.MouseScreenPosition,
-                    position.X - 32,
-                    position.Y - 12,
-                    OverlaySize.X + 1,
-                    OverlaySize.Y + 1);
+            Utils.IsUnderRectangle(
+                Game.MouseScreenPosition,
+                position.X - 32,
+                position.Y - 12,
+                OverlaySize.X + 1,
+                OverlaySize.Y + 1);
 
         private bool IsUnderDecreaseArrow
             =>
-                Utils.IsUnderRectangle(
-                    Game.MouseScreenPosition,
-                    position.X + requiredStacksTextSize.X + 5,
-                    position.Y + 38,
-                    arrowRectangleSize.X,
-                    arrowRectangleSize.Y);
+            Utils.IsUnderRectangle(
+                Game.MouseScreenPosition,
+                position.X + requiredStacksTextSize.X + 5,
+                position.Y + 38,
+                arrowRectangleSize.X,
+                arrowRectangleSize.Y);
 
         private bool IsUnderIncreaseArrow
             =>
-                Utils.IsUnderRectangle(
-                    Game.MouseScreenPosition,
-                    position.X + requiredStacksTextSize.X + countTextSize.X + arrowRectangleSize.X + 19,
-                    position.Y + 38,
-                    arrowRectangleSize.X,
-                    arrowRectangleSize.Y);
+            Utils.IsUnderRectangle(
+                Game.MouseScreenPosition,
+                position.X + requiredStacksTextSize.X + countTextSize.X + arrowRectangleSize.X + 19,
+                position.Y + 38,
+                arrowRectangleSize.X,
+                arrowRectangleSize.Y);
 
         #endregion
 
@@ -306,7 +309,7 @@
                 return;
             }
 
-            if (args.Msg == WM_MOUSEWHEEL && IsUnderBox)
+            if (args.Msg == WmMousewheel && IsUnderBox)
             {
                 var delta = (short)((args.WParam >> 16) & 0xFFFF);
                 if (delta > 0)

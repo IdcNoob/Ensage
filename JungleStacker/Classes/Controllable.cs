@@ -176,12 +176,12 @@
 
         private bool IsUnderCampNameText
             =>
-                Utils.IsUnderRectangle(
-                    Game.MouseScreenPosition,
-                    campNameTextPosition.X,
-                    campNameTextPosition.Y,
-                    MeasureCampNameTextSize.X,
-                    MeasureCampNameTextSize.Y);
+            Utils.IsUnderRectangle(
+                Game.MouseScreenPosition,
+                campNameTextPosition.X,
+                campNameTextPosition.Y,
+                MeasureCampNameTextSize.X,
+                MeasureCampNameTextSize.Y);
 
         private Vector2 MeasureCampNameTextSize
             => Drawing.MeasureText(CurrentCamp.Name, "Arial", new Vector2(16), FontFlags.None);
@@ -260,12 +260,12 @@
             }
 
             var campName = new DrawText
-                {
-                    Position = campNameTextPosition,
-                    Text = text,
-                    Color = Color.White,
-                    TextSize = new Vector2(16)
-                };
+            {
+                Position = campNameTextPosition,
+                Text = text,
+                Color = Color.White,
+                TextSize = new Vector2(16)
+            };
 
             if (IsUnderCampNameText && !IsHero)
             {
@@ -346,7 +346,7 @@
                     lastHealth = Unit.Health;
 
                     var seconds = gameTime % 60;
-                    if (seconds >= 57)
+                    if (seconds >= 57 || gameTime % 120 >= 65)
                     {
                         return;
                     }
@@ -355,7 +355,8 @@
                         Creeps.All.OrderBy(x => x.Distance2D(Unit))
                             .FirstOrDefault(
                                 x =>
-                                x.Distance2D(Unit) <= 600 && x.IsSpawned && x.IsAlive && x.IsNeutral && !x.Equals(Unit));
+                                    x.Distance2D(Unit) <= 600 && x.IsSpawned && x.IsAlive && x.IsNeutral
+                                    && !x.Equals(Unit));
 
                     var attackTarget = isRanged && target != null;
                     targetPosition = target?.Position.Extend(Unit.Position, 50) ?? CurrentCamp.CampPosition;
@@ -453,8 +454,8 @@
                         CurrentCamp.CurrentStacksCount =
                             Creeps.All.Where(
                                 x =>
-                                x.Distance2D(CurrentCamp.CampPosition) < 800 && x.IsSpawned && x.IsNeutral
-                                && !x.Equals(Unit)).ToList().CountStacks();
+                                    x.Distance2D(CurrentCamp.CampPosition) < 800 && x.IsSpawned && x.IsNeutral
+                                    && !x.Equals(Unit)).ToList().CountStacks();
 
                         if (CurrentCamp.CurrentStacksCount >= CurrentCamp.RequiredStacksCount)
                         {

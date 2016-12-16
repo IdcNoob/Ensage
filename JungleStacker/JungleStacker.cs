@@ -39,7 +39,6 @@
 
         public JungleStacker()
         {
-            // okay, events was made only for testing purposes...
             menu.OnProgramStateChange += OnProgramStateChange;
             menu.OnHeroStack += OnHeroStack;
             menu.OnForceAdd += OnForceAdd;
@@ -189,7 +188,7 @@
 
             foreach (var camp in
                 jungleCamps.GetCamps.Where(
-                    x => x.RequiredStacksCount > 1 && x.CurrentStacksCount < x.RequiredStacksCount && !x.IsStacking)
+                        x => x.RequiredStacksCount > 1 && x.CurrentStacksCount < x.RequiredStacksCount && !x.IsStacking)
                     .OrderByDescending(x => x.Ancients))
             {
                 var unit = controllableUnits.FirstOrDefault(x => x.IsValid && !x.IsStacking && !x.IsHero);
@@ -205,16 +204,16 @@
             foreach (var camp in
                 jungleCamps.GetCamps.Where(
                     x =>
-                    !controllableUnits.Any(
-                        z =>
-                        z.CurrentCamp == x
-                        && (z.CurrentStatus == Controllable.Status.MovingToStackPosition
-                            || z.CurrentStatus == Controllable.Status.WaitingOnStackPosition
-                            || z.CurrentStatus == Controllable.Status.TryingToCheckStacks))))
+                        !controllableUnits.Any(
+                            z =>
+                                z.CurrentCamp == x
+                                && (z.CurrentStatus == Controllable.Status.MovingToStackPosition
+                                    || z.CurrentStatus == Controllable.Status.WaitingOnStackPosition
+                                    || z.CurrentStatus == Controllable.Status.TryingToCheckStacks))))
             {
                 var campCreeps =
-                    Creeps.All.Where(
-                        x => x.IsValid && x.Distance2D(camp.CampPosition) < 600 && x.IsNeutral && x.Team != heroTeam)
+                    ObjectManager.GetEntitiesParallel<Creep>()
+                        .Where(x => x.IsValid && x.Distance2D(camp.CampPosition) < 600 && x.IsNeutral)
                         .ToList();
 
                 var aliveCampCreeps = campCreeps.Where(x => x.IsSpawned && x.IsAlive).ToList();
@@ -229,7 +228,7 @@
                     camp.IsCleared = true;
                     camp.CurrentStacksCount = 0;
                 }
-                else if ((int)Game.GameTime % 60 == 0 && camp.CurrentStacksCount <= 0)
+                else if ((int)(Game.GameTime + 60) % 120 == 0 && camp.CurrentStacksCount <= 0)
                 {
                     camp.CurrentStacksCount = 1;
                     camp.IsCleared = false;
@@ -265,7 +264,7 @@
 
             var allCamps =
                 jungleCamps.GetCamps.Where(
-                    x => x.RequiredStacksCount > 1 && x.CurrentStacksCount < x.RequiredStacksCount)
+                        x => x.RequiredStacksCount > 1 && x.CurrentStacksCount < x.RequiredStacksCount)
                     .OrderByDescending(x => x.Ancients);
 
             var nextCamp = allCamps.FirstOrDefault(x => !contrallable.BlockedCamps.Contains(x));
