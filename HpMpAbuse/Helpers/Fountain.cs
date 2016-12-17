@@ -10,7 +10,9 @@
     {
         #region Fields
 
-        private readonly Unit fountain;
+        private readonly Team team;
+
+        private Unit fountain;
 
         #endregion
 
@@ -18,9 +20,7 @@
 
         public Fountain(Team heroTeam)
         {
-            fountain =
-                ObjectManager.GetEntities<Unit>()
-                    .First(x => x.Name == "dota_fountain" && x.Team == heroTeam);
+            team = heroTeam;
         }
 
         #endregion
@@ -31,13 +31,29 @@
 
         private static MultiSleeper Sleeper => Variables.Sleeper;
 
+        private Unit FountainUnit
+        {
+            get
+            {
+                return fountain
+                       ?? (fountain =
+                               ObjectManager.GetEntities<Unit>()
+                                   .FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Unit_Fountain && x.Team == team));
+            }
+        }
+
         #endregion
 
         #region Public Methods and Operators
 
         public bool BottleCanBeRefilled()
         {
-            if (Hero.Distance2D(fountain) < 1300)
+            if (FountainUnit == null)
+            {
+                return false;
+            }
+
+            if (Hero.Distance2D(FountainUnit) < 1300)
             {
                 return true;
             }
