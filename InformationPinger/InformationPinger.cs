@@ -69,7 +69,7 @@
                 return;
             }
 
-            Variables.Sleeper.Sleep(500, this);
+            Variables.Sleeper.Sleep(1000, this);
 
             if (Game.IsPaused || !menu.Enabled)
             {
@@ -82,8 +82,8 @@
                     ObjectManager.GetEntitiesParallel<Hero>()
                         .Where(
                             x =>
-                            x.IsValid && x.Team == EnemyTeam && !x.IsIllusion && x.IsVisible
-                            && !heroesPinger.Select(z => z.Handle).Contains(x.Handle)))
+                                x.IsValid && x.Team == EnemyTeam && !x.IsIllusion && x.IsVisible
+                                && !heroesPinger.Select(z => z.Handle).Contains(x.Handle)))
                 {
                     var heroPinger = new HeroPinger(enemy);
                     if (loadedAfterGameStart)
@@ -105,7 +105,13 @@
             {
                 var doublePing = menu.DoubleAbilityPingEnabled;
                 var abilityEnemyCheck = menu.AbilityEnemyCheckEnabled;
-                if (heroesPinger.Any(x => x.ShouldPing && x.AbilityPinger(doublePing, abilityEnemyCheck)))
+                var rubickDisable = menu.RubicksStolenDisable;
+                var rubickUltimate = menu.RubicksStolenUltimate;
+                if (
+                    heroesPinger.Any(
+                        x =>
+                            x.ShouldPing
+                            && x.AbilityPinger(doublePing, abilityEnemyCheck, rubickDisable, rubickUltimate)))
                 {
                     return;
                 }
@@ -121,7 +127,8 @@
                 if (
                     heroesPinger.Any(
                         x =>
-                        (!statusCheck || x.ShouldPing) && x.ItemPinger(doublePing, itemEnemyCheck, cost, forceItems)))
+                            (!statusCheck || x.ShouldPing)
+                            && x.ItemPinger(doublePing, itemEnemyCheck, cost, forceItems)))
                 {
                     return;
                 }

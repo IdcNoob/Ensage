@@ -38,6 +38,10 @@
 
         private readonly MenuItem roshanKillTime;
 
+        private readonly MenuItem rubickDisable;
+
+        private readonly MenuItem rubickUltimate;
+
         private readonly MenuItem runeAutoDisable;
 
         private readonly MenuItem runeReminder;
@@ -59,37 +63,37 @@
             var itemMenu = new Menu("Enemy items", "items");
             itemMenu.AddItem(items = new MenuItem("itemsEnabled", "Enabled").SetValue(true));
             itemMenu.AddItem(
-                itemCostGoldThreshold = new MenuItem("itemCost", "Item cost").SetValue(new Slider(1800, 99, 5000)))
+                    itemCostGoldThreshold = new MenuItem("itemCost", "Item cost").SetValue(new Slider(1800, 99, 5000)))
                 .SetTooltip("Will ping items that costs more");
             itemMenu.AddItem(doubleItemPing = new MenuItem("itemsDoublePing", "Double ping").SetValue(false))
                 .SetTooltip("Will ping item 2 times, like most people do");
             itemMenu.AddItem(
                 forcePing =
-                new MenuItem("forcePing", "Force ping:").SetValue(
-                    new AbilityToggler(
-                    new Dictionary<string, bool>
-                        {
-                            { "item_smoke_of_deceit", true },
-                            { "item_dust", true },
-                            { "item_gem", true },
-                            { "item_bottle", true },
-                            { "item_ward_dispenser", true },
-                            { "item_ward_sentry", true },
-                            { "item_ward_observer", true }
-                        })));
+                    new MenuItem("forcePing", "Force ping:").SetValue(
+                        new AbilityToggler(
+                            new Dictionary<string, bool>
+                            {
+                                { "item_smoke_of_deceit", true },
+                                { "item_dust", true },
+                                { "item_gem", true },
+                                { "item_bottle", true },
+                                { "item_ward_dispenser", true },
+                                { "item_ward_sentry", true },
+                                { "item_ward_observer", true }
+                            })));
             itemMenu.AddItem(
                 bottleRune =
-                new MenuItem("bottleRune", "Bottled rune:").SetValue(
-                    new AbilityToggler(
-                    new Dictionary<string, bool>
-                        {
-                            { "item_bottle_illusion", false },
-                            { "item_bottle_regeneration", true },
-                            { "item_bottle_arcane", true },
-                            { "item_bottle_invisibility", true },
-                            { "item_bottle_doubledamage", true },
-                            { "item_bottle_haste", true }
-                        })));
+                    new MenuItem("bottleRune", "Bottled rune:").SetValue(
+                        new AbilityToggler(
+                            new Dictionary<string, bool>
+                            {
+                                { "item_bottle_illusion", false },
+                                { "item_bottle_regeneration", true },
+                                { "item_bottle_arcane", true },
+                                { "item_bottle_invisibility", true },
+                                { "item_bottle_doubledamage", true },
+                                { "item_bottle_haste", true }
+                            })));
             itemMenu.AddItem(itemEnemyCheck = new MenuItem("itemEnemyCheck", "Check for enemies").SetValue(false))
                 .SetTooltip("If there is any enemy hero/creep near you it wont ping, unless it's pinged enemy");
             itemMenu.AddItem(itemStatusCheck = new MenuItem("itemStatusCheck", "Check enemy status").SetValue(true))
@@ -100,7 +104,13 @@
             abilityMenu.AddItem(doubleAbilityPing = new MenuItem("abilitiesDoublePing", "Double ping").SetValue(false))
                 .SetTooltip("Will ping ability 2 times, like most people do");
             abilityMenu.AddItem(
-                abilityEnemyCheck = new MenuItem("abilityEnemyCheck", "Check for enemies").SetValue(false))
+                    rubickDisable = new MenuItem("rubickDisable", "Rubick's stolen disable").SetValue(false))
+                .SetTooltip("Will ping if rubick stole disable ability");
+            abilityMenu.AddItem(
+                    rubickUltimate = new MenuItem("rubickUltimate", "Rubick's stolen ultimate").SetValue(false))
+                .SetTooltip("Will ping if rubick stole ultimate ability");
+            abilityMenu.AddItem(
+                    abilityEnemyCheck = new MenuItem("abilityEnemyCheck", "Check for enemies").SetValue(false))
                 .SetTooltip("If there is any enemy hero/creep near you it wont ping");
 
             var roshanMenu = new Menu("Roshan", "roshan");
@@ -110,10 +120,10 @@
             runeMenu.AddItem(runeReminder = new MenuItem("runeReminder", "Time reminder").SetValue(true));
             runeMenu.AddItem(
                 runeReminderTime =
-                new MenuItem("runeReminderTime", "Secs before rune spawn").SetValue(new Slider(10, 0, 30)));
+                    new MenuItem("runeReminderTime", "Secs before rune spawn").SetValue(new Slider(10, 0, 30)));
             runeMenu.AddItem(
                 runeAutoDisable =
-                new MenuItem("runeAutoDisable", "Auto disable after X mins").SetValue(new Slider(10, 0, 60)));
+                    new MenuItem("runeAutoDisable", "Auto disable after X mins").SetValue(new Slider(10, 0, 60)));
 
             var wardsMenu = new Menu("Wards", "wards");
             wardsMenu.AddItem(wardsReminder = new MenuItem("wards", "Wards reminder").SetValue(true));
@@ -124,7 +134,7 @@
             courierMenu.AddItem(courierUpgradeReminder = new MenuItem("upgrade", "Upgrade reminder").SetValue(true));
             courierMenu.AddItem(
                 courierUpgradeDelay =
-                new MenuItem("upgradeDelay", "Delay between pings in mins").SetValue(new Slider(5, 1, 20)));
+                    new MenuItem("upgradeDelay", "Delay between pings in mins").SetValue(new Slider(5, 1, 20)));
 
             menu.AddItem(enabled = new MenuItem("enabled", "Enabled").SetValue(true));
 
@@ -166,6 +176,10 @@
 
         public bool RoshanKillTimeEnabled => roshanKillTime.IsActive();
 
+        public bool RubicksStolenDisable => rubickDisable.IsActive();
+
+        public bool RubicksStolenUltimate => rubickUltimate.IsActive();
+
         public int RuneAutoDisableTime => runeAutoDisable.GetValue<Slider>().Value;
 
         public bool RuneReminderEnabled => runeReminder.IsActive();
@@ -185,7 +199,7 @@
             var list = new List<RuneType>();
 
             foreach (var rune in bottleRune.GetValue<AbilityToggler>().Dictionary.Where(x => x.Value).Select(x => x.Key)
-                )
+            )
             {
                 switch (rune)
                 {

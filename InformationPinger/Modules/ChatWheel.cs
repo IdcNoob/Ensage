@@ -3,6 +3,7 @@
     using System;
 
     using Ensage;
+    using Ensage.Common;
 
     internal class ChatWheel
     {
@@ -37,7 +38,7 @@
 
             if (sayTime)
             {
-                Game.ExecuteCommand("chatwheel_say " + (int)Phrase.CurrentTime);
+                DelayAction.Add(250, () => Game.ExecuteCommand("chatwheel_say " + (int)Phrase.CurrentTime));
                 Variables.Sleeper.Sleep(random.Next(3111, 3333), "CanPing");
             }
             else
