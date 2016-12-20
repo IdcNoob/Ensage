@@ -13,6 +13,7 @@
     using Heroes;
 
     using SharpDX;
+    using SharpDX.Direct3D9;
 
     using Units;
     using Units.Mines;
@@ -20,6 +21,12 @@
 
     internal class VisionControl
     {
+        #region Static Fields
+
+        private static Font textFont;
+
+        #endregion
+
         #region Fields
 
         private readonly List<EnemyHero> enemyHeroes = new List<EnemyHero>();
@@ -43,6 +50,28 @@
         #endregion
 
         #region Public Methods and Operators
+
+        public void DrawingOnEndScene()
+        {
+            if (Drawing.Direct3DDevice9 == null)
+            {
+                return;
+            }
+
+            foreach (var unit in units.OfType<Ward>())
+            {
+                if (unit.ShowTexture)
+                {
+                    var position = Utils.WorldToMiniMap(unit.Position, new Vector2(20, 35));
+                    textFont.DrawText(
+                        null,
+                        "*",
+                        (int)position.X,
+                        (int)position.Y,
+                        unit is SentryWard ? Color.Blue : Color.Yellow);
+                }
+            }
+        }
 
         public void OnAddEntity(EntityEventArgs args)
         {
@@ -101,16 +130,16 @@
                 {
                     Drawing.DrawRect(screenPosition, unit.TextureSize, unit.Texture);
 
-                    if (unit is Ward)
-                    {
-                        Drawing.DrawText(
-                            "*",
-                            "Arial",
-                            Utils.WorldToMiniMap(unit.Position, new Vector2(20, 35)),
-                            new Vector2(45),
-                            unit is SentryWard ? Color.Blue : Color.Yellow,
-                            FontFlags.None);
-                    }
+                    //if (unit is Ward)
+                    //{
+                    //    Drawing.DrawText(
+                    //        "*",
+                    //        "Arial",
+                    //        Utils.WorldToMiniMap(unit.Position, new Vector2(20, 35)),
+                    //        new Vector2(45),
+                    //        unit is SentryWard ? Color.Blue : Color.Yellow,
+                    //        FontFlags.None);
+                    //}
                 }
 
                 if (!unit.ShowTimer)
@@ -143,6 +172,21 @@
             enemyTeam = hero.GetEnemyTeam();
             heroTeam = hero.Team;
             sleeper = new MultiSleeper();
+
+            textFont = new Font(
+                Drawing.Direct3DDevice9,
+                new FontDescription
+                {
+                    FaceName = "Tahoma",
+                    Height = 30,
+                    OutputPrecision = FontPrecision.Raster,
+                    Quality = FontQuality.ClearTypeNatural,
+                    CharacterSet = FontCharacterSet.Hangul,
+                    MipLevels = 3,
+                    PitchAndFamily = FontPitchAndFamily.Modern,
+                    Weight = FontWeight.Heavy,
+                    Width = 12
+                });
         }
 
         public void OnParticleEffectAdded(Entity sender, ParticleEffectAddedEventArgs args)
@@ -182,6 +226,16 @@
                         }
                     }
                 });
+        }
+
+        public void OnPostReset()
+        {
+            textFont.OnResetDevice();
+        }
+
+        public void OnPreReset()
+        {
+            textFont.OnLostDevice();
         }
 
         public void OnRemoveUnit(Unit unit)

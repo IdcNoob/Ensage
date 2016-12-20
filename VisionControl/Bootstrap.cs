@@ -29,6 +29,21 @@
             visionControl.OnDraw();
         }
 
+        private void Drawing_OnEndScene(EventArgs args)
+        {
+            visionControl.DrawingOnEndScene();
+        }
+
+        private void Drawing_OnPostReset(EventArgs args)
+        {
+            visionControl.OnPostReset();
+        }
+
+        private void Drawing_OnPreReset(EventArgs args)
+        {
+            visionControl.OnPreReset();
+        }
+
         private void Entity_OnInt32PropertyChange(Entity sender, Int32PropertyChangeEventArgs args)
         {
             visionControl.OnInt32PropertyChange(sender, args);
@@ -63,6 +78,9 @@
             ObjectManager.OnRemoveEntity -= ObjectManager_OnRemoveEntity;
             Entity.OnInt32PropertyChange -= Entity_OnInt32PropertyChange;
             Entity.OnParticleEffectAdded -= Entity_OnParticleEffectAdded;
+            Drawing.OnPreReset -= Drawing_OnPreReset;
+            Drawing.OnPostReset -= Drawing_OnPostReset;
+            Drawing.OnEndScene -= Drawing_OnEndScene;
             visionControl.OnClose();
         }
 
@@ -76,6 +94,9 @@
             ObjectManager.OnRemoveEntity += ObjectManager_OnRemoveEntity;
             Entity.OnInt32PropertyChange += Entity_OnInt32PropertyChange;
             Entity.OnParticleEffectAdded += Entity_OnParticleEffectAdded;
+            Drawing.OnPreReset += Drawing_OnPreReset;
+            Drawing.OnPostReset += Drawing_OnPostReset;
+            Drawing.OnEndScene += Drawing_OnEndScene;
         }
 
         #endregion

@@ -34,7 +34,6 @@
             var ranges = new Dictionary<string, bool>(units);
             var timers = new Dictionary<string, bool>
             {
-                { "techies_stasis_trap", true },
                 { "techies_remote_mines", true },
                 { "pugna_nether_ward", true },
                 { "undying_tombstone", true },

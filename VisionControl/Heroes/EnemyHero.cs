@@ -4,7 +4,6 @@
 
     using Ensage;
     using Ensage.Common.Extensions;
-    using Ensage.Common.Objects;
 
     using SharpDX;
 
@@ -68,13 +67,21 @@
         public uint CountObservers()
         {
             return (hero.FindItem(ObserverName)?.CurrentCharges ?? 0)
-                   + (hero.FindItem(DispenserName)?.CurrentCharges ?? 0) + BackpackCount(ObserverName);
+                   + (hero.FindItem(DispenserName)?.CurrentCharges ?? 0)
+                   + (hero.Inventory.Backpack.FirstOrDefault(x => x.IsValid && x.Name == ObserverName)?.CurrentCharges
+                      ?? 0)
+                   + (hero.Inventory.Backpack.FirstOrDefault(x => x.IsValid && x.Name == DispenserName)?.CurrentCharges
+                      ?? 0);
         }
 
         public uint CountSentries()
         {
             return (hero.FindItem(SentryName)?.CurrentCharges ?? 0)
-                   + (hero.FindItem(DispenserName)?.SecondaryCharges ?? 0) + BackpackCount(SentryName);
+                   + (hero.FindItem(DispenserName)?.SecondaryCharges ?? 0)
+                   + (hero.Inventory.Backpack.FirstOrDefault(x => x.IsValid && x.Name == SentryName)?.CurrentCharges
+                      ?? 0)
+                   + (hero.Inventory.Backpack.FirstOrDefault(x => x.IsValid && x.Name == DispenserName)?
+                          .SecondaryCharges ?? 0);
         }
 
         public uint CountWards(ClassID id)
@@ -112,49 +119,6 @@
         public Vector3 WardPosition()
         {
             return hero.InFront(350);
-        }
-
-        #endregion
-
-        #region Methods
-
-        private uint BackpackCount(string name)
-        {
-            var count = 0u;
-            for (var i = 6; i < 9; i++)
-            {
-                var currentSlot = (ItemSlot)i;
-
-                var currentItem = hero.Inventory.GetItem(currentSlot);
-                if (currentItem == null)
-                {
-                    continue;
-                }
-
-                var currentItemName = currentItem.StoredName();
-                if (currentItemName != name && currentItemName != DispenserName)
-                {
-                    continue;
-                }
-
-                if (currentItemName == name)
-                {
-                    count += currentItem.CurrentCharges;
-                }
-                else
-                {
-                    if (name == ObserverName)
-                    {
-                        count += currentItem.CurrentCharges;
-                    }
-                    else
-                    {
-                        count += currentItem.SecondaryCharges;
-                    }
-                }
-            }
-
-            return count;
         }
 
         #endregion
