@@ -163,32 +163,11 @@
             textFont.OnLostDevice();
         }
 
-        [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
         private static void Game_OnUpdate(EventArgs args)
         {
             if (Game.GameState == GameState.HeroSelection)
             {
-                if (selectedLane != 0)
-                {
-                    var team = ObjectManager.LocalPlayer.Team == Team.Radiant ? 0 : LaneList.Length - 1;
-                    var xy = CoordinateMultiplayers[selectedLane - 1 + team];
-
-                    SetCursorPos((int)(HUDInfo.ScreenSizeX() * xy[0]), (int)(HUDInfo.ScreenSizeY() * xy[1]));
-                    mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
-
-                    var sayTextIndex = Menu.Item(LaneList[selectedLane] + "Text").GetValue<StringList>().SelectedIndex;
-
-                    if (sayTextIndex != 0)
-                    {
-                        Game.ExecuteCommand("say_team " + SayText[selectedLane - 1][sayTextIndex]);
-                    }
-                }
-
-                if (currentPair.Value != "None" && locked)
-                {
-                    Game.ExecuteCommand("dota_select_hero " + currentPair.Value);
-                }
-
+                DelayAction.Add(Menu.Item("delay").GetValue<Slider>().Value, Pick);
                 Unsub();
             }
 
@@ -283,6 +262,8 @@
                 .SetTooltip("This will be said in team chat");
             Menu.AddItem(new MenuItem("JungleText", "Jungle text").SetValue(new StringList(SayText[3])))
                 .SetTooltip("This will be said in team chat");
+            Menu.AddItem(new MenuItem("delay", "Delay").SetValue(new Slider(0, 0, 2000)))
+                .SetTooltip("Add delay before picking/marking");
 
             selectedLane = Menu.Item("defaultLane").GetValue<StringList>().SelectedIndex;
 
@@ -311,6 +292,31 @@
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
         private static extern void mouse_event(int dwFlags, int dx, int dy, int dwData, int dwExtraInfo);
+
+        [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
+        private static void Pick()
+        {
+            if (selectedLane != 0)
+            {
+                var team = ObjectManager.LocalPlayer.Team == Team.Radiant ? 0 : LaneList.Length - 1;
+                var xy = CoordinateMultiplayers[selectedLane - 1 + team];
+
+                SetCursorPos((int)(HUDInfo.ScreenSizeX() * xy[0]), (int)(HUDInfo.ScreenSizeY() * xy[1]));
+                mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+
+                var sayTextIndex = Menu.Item(LaneList[selectedLane] + "Text").GetValue<StringList>().SelectedIndex;
+
+                if (sayTextIndex != 0)
+                {
+                    Game.ExecuteCommand("say_team " + SayText[selectedLane - 1][sayTextIndex]);
+                }
+            }
+
+            if (currentPair.Value != "None" && locked)
+            {
+                Game.ExecuteCommand("dota_select_hero " + currentPair.Value);
+            }
+        }
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool SetCursorPos(int x, int y);
