@@ -29,7 +29,7 @@
 
         public override void FindItem()
         {
-            Item = Hero.Inventory.StashItems.FirstOrDefault(x => x.StoredName() == Name);
+            Item = Hero.Inventory.Stash.FirstOrDefault(x => x.StoredName() == Name);
         }
 
         public override Attribute GetPowerTreadsAttribute()

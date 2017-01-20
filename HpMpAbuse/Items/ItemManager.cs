@@ -42,6 +42,7 @@
             UsableItems.Add(StashBottle = new StashBottle("item_bottle"));
             UsableItems.Add(new MagicStick("item_magic_stick"));
             UsableItems.Add(new UrnOfShadows("item_urn_of_shadows"));
+            UsableItems.Add(new Shrine("filler_ability"));
 
             Game.OnIngameUpdate += OnUpdate;
         }
@@ -256,19 +257,20 @@
 
         private void SaveItemSlot(Item item)
         {
-            for (var i = 0; i < 6; i++)
+            for (var i = ItemSlot.InventorySlot_1; i <= ItemSlot.InventorySlot_6; i++)
             {
-                var currentSlot = (ItemSlot)i;
-                if (itemSlots.ContainsKey(currentSlot))
+                if (itemSlots.ContainsKey(i))
                 {
                     continue;
                 }
-                var currentItem = Hero.Inventory.GetItem(currentSlot);
-                if (currentItem == null || !currentItem.Equals(item))
+
+                var inventoryItem = Hero.Inventory.GetItem(i);
+                if (inventoryItem == null || !inventoryItem.Equals(item))
                 {
                     continue;
                 }
-                itemSlots.Add(currentSlot, item);
+
+                itemSlots.Add(i, item);
                 break;
             }
         }

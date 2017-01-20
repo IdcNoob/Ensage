@@ -229,7 +229,7 @@
 
             var healing = false;
 
-            if ((Menu.Recovery.Active || (Menu.PowerTreads.Enabled && Menu.PowerTreads.SwitchOnHeal))
+            if ((Menu.Recovery.Active || Menu.PowerTreads.Enabled && Menu.PowerTreads.SwitchOnHeal)
                 && Hero.HasModifiers(Modifiers.Heal, false)
                 && (Hero.Health < Hero.MaximumHealth || Hero.Mana < Hero.MaximumMana))
             {
@@ -268,7 +268,7 @@
 
                 Sleeper.Sleep(80 * itemManager.DroppedItemsCount() + Game.Ping, "Used", true);
             }
-            else if ((!healing && !itemManager.StashBottleTaken) || !Menu.Recovery.Active)
+            else if (!healing && !itemManager.StashBottleTaken || !Menu.Recovery.Active)
             {
                 if (Sleeper.Sleeping("Used"))
                 {

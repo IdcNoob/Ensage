@@ -24,7 +24,8 @@
             "modifier_enchantress_natures_attendants",
             "modifier_oracle_purifying_flames",
             "modifier_warlock_shadow_word",
-            "modifier_treant_living_armor"
+            "modifier_treant_living_armor",
+            "modifier_filler_heal"
         };
 
         public static readonly string[] Invisibility =

@@ -71,6 +71,7 @@
     <Compile Include="Items\Bottle.cs" />
     <Compile Include="Items\GuardianGreaves.cs" />
     <Compile Include="Items\MagicStick.cs" />
+    <Compile Include="Items\Shrine.cs" />
     <Compile Include="Items\SoulRing.cs" />
     <Compile Include="Items\StashBottle.cs" />
     <Compile Include="Items\TranquilBoots.cs" />
