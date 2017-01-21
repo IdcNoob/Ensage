@@ -14,7 +14,9 @@
 
         #endregion
 
-        #region Public Properties
+        #region Properties
+
+        protected int BuybackCost => (int)(100 + Math.Pow(Hero.Level, 2) * 1.5 + Game.GameTime / 60 * 15);
 
         protected int GoldLossOnDeath
             =>
@@ -25,12 +27,6 @@
                    + ObjectManager.GetEntitiesParallel<Item>()
                        .Where(x => x != null && x.IsValid && x.Owner != null && x.Owner.IsValid && x.Owner.Equals(Hero))
                        .Sum(x => (int)x.Cost)) / 50);
-
-        #endregion
-
-        #region Properties
-
-        protected int BuybackCost => (int)(100 + Math.Pow(Hero.Level, 2) * 1.5 + Game.GameTime / 60 * 15);
 
         protected Hero Hero => Variables.Hero;
 

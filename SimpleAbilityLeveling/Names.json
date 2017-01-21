@@ -1321,7 +1321,7 @@
             "DotaName": "skywrath_mage_mystic_flare"
         },
         {
-            "Name": "Sprint",
+            "Name": "Guardian Sprint",
             "DotaName": "slardar_sprint"
         },
         {
@@ -1329,11 +1329,11 @@
             "DotaName": "slardar_slithereen_crush"
         },
         {
-            "Name": "Bash",
+            "Name": "Bash of the Deep",
             "DotaName": "slardar_bash"
         },
         {
-            "Name": "Amplify Damage",
+            "Name": "Corrosive Haze",
             "DotaName": "slardar_amplify_damage"
         },
         {

@@ -10,6 +10,7 @@
     using Ensage.Common.AbilityInfo;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects;
+    using Ensage.Common.Objects.UtilityObjects;
 
     using SharpDX;
 
@@ -43,19 +44,15 @@
 
         public void OnAddEntity(EntityEventArgs args)
         {
-            DelayAction.Add(
-                1000f,
-                () =>
-                    {
-                        var unit = args.Entity as Creep;
+            var creep = args.Entity as Creep;
 
-                        if (unit == null || !unit.IsValid || unit.Team == heroTeam)
-                        {
-                            return;
-                        }
+            if (creep == null || !creep.IsValid|| creep.Team == heroTeam)
+            {
+                return;
+            }
 
-                        killableList.Add(new Classes.Creep(unit));
-                    });
+            killableList.Add(new Classes.Creep(creep));
+
         }
 
         public void OnClose()
@@ -236,6 +233,7 @@
             hero = ObjectManager.LocalHero;
             heroMeepo = hero.ClassID == ClassID.CDOTA_Unit_Hero_Meepo;
             heroTeam = hero.Team;
+            sleeper = new Sleeper();
 
             foreach (var ability in
                 hero.Spellbook.Spells.Where(
@@ -269,16 +267,19 @@
             }
 
             killableList.Remove(remove);
+
         }
+
+        private Sleeper sleeper;
 
         public void OnUpdate()
         {
-            if (!Utils.SleepCheck("AbilityLastHit.Sleep"))
+            if (sleeper.Sleeping)
             {
                 return;
             }
 
-            Utils.Sleep(500, "AbilityLastHit.Sleep");
+            sleeper.Sleep(500);
 
             if (!menuManager.IsEnabled || !hero.IsAlive || !hero.CanCast() && !heroMeepo)
             {
