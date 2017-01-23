@@ -40,6 +40,10 @@
         public async Task AddAbility(EvadableAbility ability)
         {
             var ownerName = ability.Name.StartsWith("item_") ? "items" : ability.AbilityOwner.Name;
+            if (ownerName == "npc_dota_neutral_mud_golem_split")
+            {
+                ownerName = "npc_dota_neutral_mud_golem";
+            }
             var abilityName = ability.Name;
             var menuItemName = ownerName + abilityName;
             var modifierOnly = ability.GetType().BaseType?.Name == "EvadableAbility";

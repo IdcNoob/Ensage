@@ -115,7 +115,11 @@
     using EvadableAbilities.Heroes.WraithKing;
     using EvadableAbilities.Heroes.Zeus;
     using EvadableAbilities.Items;
+    using EvadableAbilities.Units.AncientProwlerShaman;
     using EvadableAbilities.Units.CentaurConqueror;
+    using EvadableAbilities.Units.DarkTrollSummoner;
+    using EvadableAbilities.Units.Familiar;
+    using EvadableAbilities.Units.HellbearSmasher;
     using EvadableAbilities.Units.PrimalSplit;
     using EvadableAbilities.Units.SatyrTormenter;
     using EvadableAbilities.Units.SpiritBear;
@@ -432,7 +436,12 @@
                 { "lone_druid_spirit_bear_entangle", ability => new Entangle(ability) },
                 { "brewmaster_earth_hurl_boulder", ability => new HurlBoulder(ability) },
                 { "brewmaster_storm_cyclone", ability => new Cyclone(ability) },
-                //  { "visage_summon_familiars_stone_form", ability => new StoneForm(ability) },
+                { "visage_summon_familiars_stone_form", ability => new StoneForm(ability) },
+                { "dark_troll_warlord_ensnare", ability => new TrollEnsnare(ability) },
+                { "mud_golem_hurl_boulder", ability => new HurlBoulder(ability) },
+                { "spawnlord_master_stomp", ability => new Desecrate(ability) },
+                { "spawnlord_master_freeze", ability => new Petrify(ability) },
+                { "polar_furbolg_ursa_warrior_thunder_clap", ability => new HellbearThunderClap(ability) }
             };
 
         #endregion

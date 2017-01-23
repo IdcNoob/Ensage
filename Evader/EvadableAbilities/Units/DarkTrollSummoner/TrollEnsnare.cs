@@ -1,4 +1,4 @@
-﻿namespace Evader.EvadableAbilities.Items
+namespace Evader.EvadableAbilities.Units.DarkTrollSummoner
 {
     using Base;
     using Base.Interfaces;
@@ -9,16 +9,25 @@
 
     using static Data.AbilityNames;
 
-    internal class SolarCrest : EvadableAbility, IModifier
+    internal class TrollEnsnare : LinearTarget, IModifier
     {
         #region Constructors and Destructors
 
-        public SolarCrest(Ability ability)
+        public TrollEnsnare(Ability ability)
             : base(ability)
         {
             Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.ModifierSource);
 
+            CounterAbilities.Add(PhaseShift);
+            CounterAbilities.Add(SleightOfFist);
+            CounterAbilities.Add(Manta);
+            CounterAbilities.Add(Eul);
+            CounterAbilities.Add(BallLightning);
+
             Modifier.AllyCounterAbilities.Add(Lotus);
+            Modifier.AllyCounterAbilities.Add(FortunesEnd);
+            Modifier.AllyCounterAbilities.Add(Manta);
+            Modifier.AllyCounterAbilities.Add(Eul);
             Modifier.AllyCounterAbilities.AddRange(AllyPurges);
         }
 
@@ -27,23 +36,6 @@
         #region Public Properties
 
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        public override void Check()
-        {
-        }
-
-        public override void Draw()
-        {
-        }
-
-        public override float GetRemainingTime(Hero hero = null)
-        {
-            return 0;
-        }
 
         #endregion
     }

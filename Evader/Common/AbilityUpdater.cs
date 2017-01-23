@@ -58,6 +58,7 @@
 
             GameDispatcher.OnUpdate += OnUpdate;
             ObjectManager.OnRemoveEntity += OnRemoveEntity;
+            Entity.OnInt64PropertyChange += EntityOnOnInt64PropertyChange;
         }
 
         #endregion
@@ -88,6 +89,7 @@
         {
             ObjectManager.OnRemoveEntity -= OnRemoveEntity;
             GameDispatcher.OnUpdate -= OnUpdate;
+            Entity.OnInt64PropertyChange -= EntityOnOnInt64PropertyChange;
 
             foreach (var disposable in UsableAbilities.OfType<IDisposable>())
             {
@@ -186,6 +188,23 @@
 
             sleeper.Sleep(3000);
             processing = false;
+        }
+
+        #endregion
+
+        #region Methods
+
+        private void EntityOnOnInt64PropertyChange(Entity sender, Int64PropertyChangeEventArgs args)
+        {
+            if (args.OldValue != 0 || args.NewValue != 1 || args.PropertyName != "m_iIsControllableByPlayer64")
+            {
+                return;
+            }
+
+            if (sender.Team == HeroTeam && sender is Creep)
+            {
+                EvadableAbilities.RemoveAll(x => x.OwnerHandle == sender.Handle);
+            }
         }
 
         #endregion

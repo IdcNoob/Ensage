@@ -30,12 +30,13 @@
             { "modifier_lone_druid_spirit_bear_entangle_effect", "lone_druid_spirit_bear_entangle" },
             { "modifier_oracle_fortunes_end_purge", "oracle_fortunes_end" },
             { "modifier_abyssal_underlord_pit_of_malice_ensare", "abyssal_underlord_pit_of_malice" },
+            { "modifier_spawnlord_master_freeze_root", "spawnlord_master_freeze" }
         };
 
         private readonly Dictionary<string, string> fixedItemModifiers = new Dictionary<string, string>
         {
             { "item_blade_mail_axe_pw", "item_blade_mail" },
-            { "item_travel_boots_tinker", "item_travel_boots" },
+            { "item_travel_boots_tinker", "item_travel_boots" }
         };
 
         private readonly List<string> trimModifierEnd = new List<string>
@@ -45,7 +46,7 @@
             "_blind",
             "_stun",
             "_debuff",
-            "_disarm",
+            "_disarm"
         };
 
         #endregion

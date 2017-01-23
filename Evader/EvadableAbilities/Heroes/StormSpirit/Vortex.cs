@@ -29,8 +29,6 @@
         {
             Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.LowestHealth);
 
-            //todo add aghanim
-
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(BallLightning);
             CounterAbilities.Add(Eul);
@@ -73,14 +71,9 @@
             {
                 StartPosition = AbilityOwner.NetworkPosition;
                 EndPosition = AbilityOwner.InFront(GetCastRange() + 150);
-                if (AbilityOwner.AghanimState())
-                {
-                    Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
-                }
-                else
-                {
-                    Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
-                }
+                Obstacle = AbilityOwner.AghanimState()
+                               ? Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle)
+                               : Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
             }
             else if (StartCast > 0 && Game.RawGameTime > EndCast)
             {

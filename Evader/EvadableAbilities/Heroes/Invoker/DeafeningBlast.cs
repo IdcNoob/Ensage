@@ -11,11 +11,7 @@
     {
         #region Fields
 
-        private readonly Ability exort;
-
-        private readonly Ability quas;
-
-        private readonly Ability wex;
+        private readonly Ability talent;
 
         #endregion
 
@@ -34,11 +30,7 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
 
-            quas = AbilityOwner.FindSpell("invoker_quas");
-            wex = AbilityOwner.FindSpell("invoker_wex");
-            exort = AbilityOwner.FindSpell("invoker_exort");
-
-            //todo: fix blast aoe talent
+            talent = AbilityOwner.FindSpell("special_bonus_unique_invoker_2");
         }
 
         #endregion
@@ -101,7 +93,7 @@
 
         private bool IsAOE()
         {
-            return quas?.Level >= 7 && wex?.Level >= 7 && exort?.Level >= 7;
+            return talent?.Level > 0;
         }
 
         #endregion

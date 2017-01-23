@@ -282,21 +282,23 @@
                     Debugger.WriteLine("elapsed time: " + modifier.ElapsedTime, Debugger.Type.Modifiers);
                     Debugger.WriteLine("remaining time: " + modifier.RemainingTime, Debugger.Type.Modifiers);
 
-                    string name;
-                    if (AdditionalAbilityData.Modifiers.TryGetValue(modifier.Name, out name))
+                    if (sender.Team != HeroTeam || modifier.Name == "modifier_faceless_void_chronosphere")
                     {
-                        foreach (var ability in
-                            abilityUpdater.EvadableAbilities.Where(x => x.Name == name && x.Enabled)
-                                .OfType<IModifierObstacle>())
+                        string name;
+                        if (AdditionalAbilityData.Modifiers.TryGetValue(modifier.Name, out name))
                         {
-                            ability.AddModifierObstacle(modifier, sender);
-                        }
+                            foreach (var ability in
+                                abilityUpdater.EvadableAbilities.Where(x => x.Name == name && x.Enabled)
+                                    .OfType<IModifierObstacle>())
+                            {
+                                ability.AddModifierObstacle(modifier, sender);
+                            }
 
-                        return;
+                            return;
+                        }
                     }
 
                     var hero = sender as Hero;
-
                     if (hero == null)
                     {
                         return;
@@ -380,7 +382,21 @@
 
             var ability =
                 abilityUpdater.EvadableAbilities.FirstOrDefault(x => x.Name == abilityName && x.Enabled) as IParticle;
-            ability?.AddParticle(args);
+            if (ability != null)
+            {
+                var rubick =
+                    ObjectManager.GetEntities<Hero>()
+                        .FirstOrDefault(
+                            x =>
+                                x.IsValid && !x.IsIllusion && x.ClassID == ClassID.CDOTA_Unit_Hero_Rubick
+                                && x.Team == HeroTeam);
+
+                if (rubick == null
+                    || rubick.Spellbook.Spells.FirstOrDefault(x => x.Name == abilityName).TimeSinceCasted() >= 0.5)
+                {
+                    ability.AddParticle(args);
+                }
+            }
         }
 
         public void OnUpdate()

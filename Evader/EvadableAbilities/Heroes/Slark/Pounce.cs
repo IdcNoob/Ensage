@@ -31,6 +31,11 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
 
+            CounterAbilities.Remove("slark_dark_pact");
+            CounterAbilities.Remove("slark_shadow_dance");
+            CounterAbilities.Remove("riki_tricks_of_the_trade");
+            CounterAbilities.Remove("item_black_king_bar");
+
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
         }
 

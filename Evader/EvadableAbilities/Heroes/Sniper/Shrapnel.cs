@@ -24,6 +24,7 @@
             DisableTimeSinceCastCheck = true;
 
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
+            Modifier.AllyCounterAbilities.Remove("legion_commander_press_the_attack");
         }
 
         #endregion

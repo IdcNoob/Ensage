@@ -1,4 +1,4 @@
-﻿namespace Evader.EvadableAbilities.Items
+﻿namespace Evader.EvadableAbilities.Units.AncientProwlerShaman
 {
     using Base;
     using Base.Interfaces;
@@ -9,16 +9,19 @@
 
     using static Data.AbilityNames;
 
-    internal class MedallionOfCourage : EvadableAbility, IModifier
+    internal class Petrify : EvadableAbility, IModifier
     {
         #region Constructors and Destructors
 
-        public MedallionOfCourage(Ability ability)
+        public Petrify(Ability ability)
             : base(ability)
         {
-            Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.ClosestToSource);
+            Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.ModifierSource);
 
             Modifier.AllyCounterAbilities.Add(Lotus);
+            Modifier.AllyCounterAbilities.Add(FortunesEnd);
+            Modifier.AllyCounterAbilities.Add(Manta);
+            Modifier.AllyCounterAbilities.Add(Eul);
             Modifier.AllyCounterAbilities.AddRange(AllyPurges);
         }
 

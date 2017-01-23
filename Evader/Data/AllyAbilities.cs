@@ -46,10 +46,7 @@ namespace Evader.Data
                 {
                     "oracle_fortunes_end",
                     ability =>
-                        new FortunesEnd(
-                            ability,
-                            AbilityType.Counter,
-                            AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                        new FortunesEnd(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 { "phoenix_supernova", ability => new Supernova(ability, AbilityType.Counter) },
                 { "tusk_snowball", ability => new Snowball(ability, AbilityType.Counter, AbilityCastTarget.Ally) },
@@ -61,6 +58,7 @@ namespace Evader.Data
                 { "item_bloodstone", ability => new Bloodstone(ability, AbilityType.Counter) },
                 { "item_armlet", ability => new ArmletOfMordiggian(ability, AbilityType.Counter) },
                 { "puck_phase_shift", ability => new PhaseShift(ability, AbilityType.Counter) },
+                { "templar_assassin_meld", ability => new Meld(ability, AbilityType.Counter) },
                 { "alchemist_chemical_rage", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "riki_tricks_of_the_trade", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "item_cyclone", ability => new Targetable(ability, AbilityType.Counter) },
@@ -76,7 +74,6 @@ namespace Evader.Data
                 { "sandking_sand_storm", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "slark_dark_pact", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "slark_shadow_dance", ability => new NotTargetable(ability, AbilityType.Counter) },
-                { "templar_assassin_meld", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "templar_assassin_refraction", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "weaver_shukuchi", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "windrunner_windrun", ability => new NotTargetable(ability, AbilityType.Counter) },
@@ -88,60 +85,42 @@ namespace Evader.Data
                 { "item_black_king_bar", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "item_manta", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "invoker_deafening_blast", ability => new Targetable(ability, AbilityType.Counter) },
-                //todo: improve keeper_of_the_light_blinding_light
-                { "keeper_of_the_light_blinding_light", ability => new Targetable(ability, AbilityType.Counter) },
-                //todo: doppelwalk use infront
+                {
+                    "keeper_of_the_light_blinding_light",
+                    ability => new BlindingLight(ability, AbilityType.Counter, AbilityCastTarget.Enemy)
+                },
                 { "phantom_lancer_doppelwalk", ability => new Targetable(ability, AbilityType.Counter) },
                 { "pugna_nether_ward", ability => new Targetable(ability, AbilityType.Counter) },
                 { "razor_static_link", ability => new Targetable(ability, AbilityType.Counter) },
                 {
                     "item_ethereal_blade",
                     ability =>
-                        new Targetable(
-                            ability,
-                            AbilityType.Counter,
-                            AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                        new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 {
                     "pugna_decrepify",
                     ability =>
-                        new Targetable(
-                            ability,
-                            AbilityType.Counter,
-                            AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                        new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 {
                     "obsidian_destroyer_astral_imprisonment",
                     ability =>
-                        new Targetable(
-                            ability,
-                            AbilityType.Counter,
-                            AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                        new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 {
                     "shadow_demon_disruption",
                     ability =>
-                        new Targetable(
-                            ability,
-                            AbilityType.Counter,
-                            AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                        new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
-                //todo: sub -0.1 cast point from nightmare
                 {
                     "bane_nightmare",
                     ability =>
-                        new Targetable(
-                            ability,
-                            AbilityType.Counter,
-                            AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                        new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 {
                     "oracle_fates_edict",
                     ability =>
-                        new Targetable(
-                            ability,
-                            AbilityType.Counter,
-                            AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                        new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 {
                     "item_diffusal_blade",
@@ -155,6 +134,7 @@ namespace Evader.Data
                     "brewmaster_drunken_haze",
                     ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Enemy)
                 },
+                { "necrolyte_sadist", ability => new NotTargetable(ability, AbilityType.Counter) },
                 { "tinker_laser", ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Enemy) },
                 {
                     "item_heavens_halberd",
@@ -249,10 +229,8 @@ namespace Evader.Data
                 { "sandking_burrowstrike", ability => new Targetable(ability, AbilityType.Disable) },
                 { "shadow_demon_disruption", ability => new Targetable(ability, AbilityType.Disable) },
                 { "shadow_shaman_voodoo", ability => new Targetable(ability, AbilityType.Disable) },
-                { "silencer_global_silence", ability => new Targetable(ability, AbilityType.Disable) },
                 { "skywrath_mage_ancient_seal", ability => new Targetable(ability, AbilityType.Disable) },
-                // todo: fix aghanim vortex
-                { "storm_spirit_electric_vortex", ability => new Targetable(ability, AbilityType.Disable) },
+                { "storm_spirit_electric_vortex", ability => new ElectricVortex(ability, AbilityType.Disable) },
                 { "sven_storm_bolt", ability => new Targetable(ability, AbilityType.Disable) },
                 { "tiny_avalanche", ability => new Targetable(ability, AbilityType.Disable) },
                 { "tusk_walrus_punch", ability => new Targetable(ability, AbilityType.Disable) },
@@ -270,6 +248,7 @@ namespace Evader.Data
                 { "axe_berserkers_call", ability => new NotTargetable(ability, AbilityType.Disable) },
                 { "centaur_hoof_stomp", ability => new NotTargetable(ability, AbilityType.Disable) },
                 { "puck_waning_rift", ability => new NotTargetable(ability, AbilityType.Disable) },
+                { "silencer_global_silence", ability => new NotTargetable(ability, AbilityType.Disable) },
                 { "slardar_slithereen_crush", ability => new NotTargetable(ability, AbilityType.Disable) }
             };
 

@@ -17,11 +17,9 @@
 
     using AbilityType = Data.AbilityType;
 
-    internal class PhaseShift : NotTargetable, IDisposable
+    internal class Meld : NotTargetable, IDisposable
     {
         #region Fields
-
-        private readonly float[] shiftDuration = new float[4];
 
         private readonly Sleeper sleeper;
 
@@ -29,16 +27,11 @@
 
         #region Constructors and Destructors
 
-        public PhaseShift(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
+        public Meld(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
             : base(ability, type, target)
         {
             sleeper = new Sleeper();
             Player.OnExecuteOrder += PlayerOnExecuteOrder;
-
-            for (var i = 0u; i < shiftDuration.Length; i++)
-            {
-                shiftDuration[i] = Ability.AbilitySpecialData.First(x => x.Name == "duration").GetValue(i) * 1000;
-            }
         }
 
         #endregion
@@ -59,20 +52,15 @@
         public override void Use(EvadableAbility ability, Unit target)
         {
             base.Use(ability, target);
-            if (Menu.PhaseShiftBlock)
+            if (Menu.MeldBlock)
             {
-                sleeper.Sleep(Math.Min(Menu.PhaseShiftBlockTime, GetShiftDuration()));
+                sleeper.Sleep(Menu.MeldBlockTime);
             }
         }
 
         #endregion
 
         #region Methods
-
-        private float GetShiftDuration()
-        {
-            return shiftDuration[Ability.Level - 1];
-        }
 
         private void PlayerOnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {

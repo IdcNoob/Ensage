@@ -35,6 +35,15 @@
                     return "Centaur Conqueror";
                 case "npc_dota_neutral_satyr_hellcaller":
                     return "Satyr Tormenter";
+                case "npc_dota_neutral_dark_troll_warlord":
+                    return "Dark Troll Summoner";
+                case "npc_dota_neutral_polar_furbolg_ursa_warrior":
+                    return "Hellbear Smasher";
+                case "npc_dota_neutral_prowler_shaman":
+                    return "Ancient Prowler Shaman";
+                case "npc_dota_neutral_mud_golem":
+                case "npc_dota_neutral_mud_golem_split":
+                    return "Mud Golem";
                 case "npc_dota_brewmaster_earth_1":
                 case "npc_dota_brewmaster_earth_2":
                 case "npc_dota_brewmaster_earth_3":
@@ -48,6 +57,10 @@
                 case "npc_dota_lone_druid_bear3":
                 case "npc_dota_lone_druid_bear4":
                     return "Spirit Bear";
+                case "npc_dota_visage_familiar1":
+                case "npc_dota_visage_familiar2":
+                case "npc_dota_visage_familiar3":
+                    return "Familiar";
             }
 
             Debugger.WriteLine("Real name not found for: " + unit.Name);
@@ -78,6 +91,17 @@
         public static bool IsTurning(this Unit unit)
         {
             return (int)unit.RotationDifference != 0;
+        }
+
+        public static float TimeSinceCasted(this Ability ability)
+        {
+            if (ability == null || !ability.IsValid || ability.Level <= 0 || !ability.Owner.IsVisible)
+            {
+                return float.MaxValue;
+            }
+
+            var cooldownLength = ability.CooldownLength;
+            return cooldownLength <= 0 ? float.MaxValue : cooldownLength - ability.Cooldown;
         }
 
         #endregion

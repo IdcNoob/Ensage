@@ -72,6 +72,10 @@
 
         public int BloodstoneHpThreshold { get; private set; }
 
+        public bool MeldBlock { get; private set; }
+
+        public int MeldBlockTime { get; private set; }
+
         public bool PhaseShiftBlock { get; private set; }
 
         public int PhaseShiftBlockTime { get; private set; }
@@ -175,6 +179,23 @@
                     PhaseShiftBlockTime = phaseShiftBlockTime.GetValue<Slider>().Value;
 
                     specials.AddSubMenu(phaseShiftMenu);
+                    break;
+                case "templar_assassin_meld":
+                    var meldMenu = new Menu(string.Empty, "meldMenu", textureName: abilityName);
+
+                    var meldBlock = new MenuItem("meldBlock", "Action block").SetValue(true);
+                    meldBlock.SetTooltip("Block player movement/attack actions when evader used meld");
+                    meldMenu.AddItem(meldBlock);
+                    meldBlock.ValueChanged += (sender, args) => MeldBlock = args.GetNewValue<bool>();
+                    MeldBlock = meldBlock.IsActive();
+
+                    var meldBlockTime =
+                        new MenuItem("meldBlockTime", "Block for (ms)").SetValue(new Slider(500, 100, 3000));
+                    meldMenu.AddItem(meldBlockTime);
+                    meldBlockTime.ValueChanged += (sender, args) => MeldBlockTime = args.GetNewValue<Slider>().Value;
+                    MeldBlockTime = meldBlockTime.GetValue<Slider>().Value;
+
+                    specials.AddSubMenu(meldMenu);
                     break;
             }
         }

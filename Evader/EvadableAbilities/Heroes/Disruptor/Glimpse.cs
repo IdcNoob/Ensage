@@ -63,7 +63,7 @@
                     startPosition = particleArgs.ParticleEffect.GetControlPoint(0);
                     endPosition = particleArgs.ParticleEffect.GetControlPoint(1);
                     heroPosition = startPosition;
-                    Obstacle = Pathfinder.AddObstacle(startPosition, 75, Obstacle, 350);
+                    Obstacle = Pathfinder.AddObstacle(startPosition, 200, Obstacle, 256);
                     EndCast = StartCast + GetRemainingTime();
                 });
         }
@@ -93,7 +93,7 @@
                 if (hero != null)
                 {
                     heroPosition = hero.NetworkPosition;
-                    Pathfinder.UpdateObstacle(Obstacle.Value, heroPosition, 75, 350);
+                    Pathfinder.UpdateObstacle(Obstacle.Value, heroPosition, 75, (int)hero.Position.Z);
                 }
             }
         }

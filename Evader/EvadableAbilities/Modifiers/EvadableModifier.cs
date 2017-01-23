@@ -86,7 +86,7 @@
 
         public virtual void Add(Modifier modifier, Hero hero)
         {
-            if (hero.Team != Team || (Modifier != null && Modifier.IsValid))
+            if (hero.Team != Team || Modifier != null && Modifier.IsValid)
             {
                 return;
             }
