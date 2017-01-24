@@ -83,10 +83,9 @@
         {
             SaveItemSlot(item);
 
-            if (Menu.Recovery.ItemsToBackPack && Hero.ActiveShop == ShopType.None
-                && Hero.Inventory.FreeBackpackSlots.Any())
+            if (Menu.Recovery.ItemsToBackPack && Hero.ActiveShop == ShopType.None)
             {
-                item.MoveItem(Hero.Inventory.FreeBackpackSlots.First());
+                item.MoveItem(ItemSlot.BackPack_1);
                 var itemSlot = itemSlots.First(x => x.Value.Equals(item)).Key;
                 item.MoveItem(itemSlot);
                 itemSlots.Remove(itemSlot);
