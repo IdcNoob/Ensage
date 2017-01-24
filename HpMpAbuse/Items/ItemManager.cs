@@ -82,6 +82,17 @@
         public void DropItem(Item item, bool queue = true)
         {
             SaveItemSlot(item);
+
+            if (Menu.Recovery.ItemsToBackPack && Hero.ActiveShop == ShopType.None
+                && Hero.Inventory.FreeBackpackSlots.Any())
+            {
+                item.MoveItem(Hero.Inventory.FreeBackpackSlots.First());
+                var itemSlot = itemSlots.First(x => x.Value.Equals(item)).Key;
+                item.MoveItem(itemSlot);
+                itemSlots.Remove(itemSlot);
+                return;
+            }
+
             droppedItems.Add(item.Handle);
             Hero.DropItem(item, Hero.Position, queue);
         }
@@ -216,6 +227,7 @@
                 {
                     TranquilBoots.FindItem();
                 }
+
                 Sleeper.Sleep(500, TranquilBoots);
             }
 
@@ -237,19 +249,17 @@
 
         private void SaveBottleStashSlot()
         {
-            for (var i = 6; i < 12; i++)
+            for (var i = ItemSlot.StashSlot_1; i <= ItemSlot.StashSlot_6; i++)
             {
-                var currentSlot = (ItemSlot)i;
-                var currentItem = Hero.Inventory.GetItem(currentSlot);
-
+                var currentItem = Hero.Inventory.GetItem(i);
                 if (currentItem == null)
                 {
                     continue;
                 }
 
-                if (Hero.Inventory.GetItem(currentSlot).Equals(StashBottle.Item))
+                if (Hero.Inventory.GetItem(i).Equals(StashBottle.Item))
                 {
-                    StashBottleSlot = currentSlot;
+                    StashBottleSlot = i;
                     break;
                 }
             }

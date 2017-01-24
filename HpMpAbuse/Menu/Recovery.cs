@@ -14,6 +14,8 @@
 
         private readonly MenuItem forcePickEnemyDistance;
 
+        private readonly MenuItem itemsToBackPack;
+
         private readonly MenuItem itemsToUse;
 
         private readonly MenuItem soulRingFountain;
@@ -60,6 +62,8 @@
                     bottleFountainIgnoreAllies =
                         new MenuItem("bottleFountainIgnoreAllies", "Auto bottle ignore allies").SetValue(false))
                 .SetTooltip("If enabled auto bottle will be used only on yourself");
+            menu.AddItem(itemsToBackPack = new MenuItem("itemsToBackPack", "Move items to backpack").SetValue(false))
+                .SetTooltip("Will move items to backpack to disable them instead of dropping on the ground");
 
             menu.AddSubMenu(forcePickMenu);
             menu.AddSubMenu(itemsMenu);
@@ -92,6 +96,8 @@
         public bool BottleAtFountainIgnoreAllies => bottleFountainIgnoreAllies.IsActive();
 
         public int ForcePickEnemyDistance => forcePickEnemyDistance.GetValue<Slider>().Value;
+
+        public bool ItemsToBackPack => itemsToBackPack.IsActive();
 
         public bool SoulRingAtFountain => soulRingFountain.IsActive();
 
