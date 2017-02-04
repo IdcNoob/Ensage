@@ -20,13 +20,14 @@
 
         protected int GoldLossOnDeath
             =>
-            Math.Min(
-                UnreliableGold,
-                100
-                + (ReliableGold + UnreliableGold
-                   + ObjectManager.GetEntitiesParallel<Item>()
-                       .Where(x => x != null && x.IsValid && x.Owner != null && x.Owner.IsValid && x.Owner.Equals(Hero))
-                       .Sum(x => (int)x.Cost)) / 50);
+                Math.Min(
+                    UnreliableGold,
+                    100
+                    + (ReliableGold + UnreliableGold
+                       + ObjectManager.GetEntitiesParallel<Item>()
+                           .Where(
+                               x => x != null && x.IsValid && x.Owner != null && x.Owner.IsValid && x.Owner.Equals(Hero))
+                           .Sum(x => (int)x.Cost)) / 50);
 
         protected Hero Hero => Variables.Hero;
 

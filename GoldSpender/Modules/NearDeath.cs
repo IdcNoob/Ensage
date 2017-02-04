@@ -39,7 +39,9 @@
 
             if (enabledItems.Contains(0))
             {
-                enabledItems.InsertRange(enabledItems.FindIndex(x => x == 0), Player.QuickBuyItems);
+                enabledItems.InsertRange(
+                    enabledItems.FindIndex(x => x == 0),
+                    Player.QuickBuyItems.OrderByDescending(x => Ability.GetAbilityDataByID(x).Cost));
                 enabledItems.Remove(0);
             }
 
@@ -166,18 +168,22 @@
         private uint GetItemCount(uint itemId)
         {
             return (Hero.Inventory.Items.FirstOrDefault(x => x.ID == itemId)?.CurrentCharges ?? 0)
-                   + (Hero.Inventory.StashItems.FirstOrDefault(x => x.ID == itemId)?.CurrentCharges ?? 0);
+                   + (Hero.Inventory.Stash.FirstOrDefault(x => x.ID == itemId)?.CurrentCharges ?? 0)
+                   + (Hero.Inventory.Backpack.FirstOrDefault(x => x.ID == itemId)?.CurrentCharges ?? 0);
         }
 
         private uint GetWardsCount(uint itemId)
         {
             var inventoryDispenser = Hero.Inventory.Items.FirstOrDefault(x => x.ID == 218);
-            var stashDispenser = Hero.Inventory.StashItems.FirstOrDefault(x => x.ID == 218);
+            var stashDispenser = Hero.Inventory.Stash.FirstOrDefault(x => x.ID == 218);
+            var backpackDispenser = Hero.Inventory.Backpack.FirstOrDefault(x => x.ID == 218);
 
             return GetItemCount(itemId)
                    + (itemId == 42
                           ? (inventoryDispenser?.CurrentCharges ?? 0) + (stashDispenser?.CurrentCharges ?? 0)
-                          : (inventoryDispenser?.SecondaryCharges ?? 0) + (stashDispenser?.SecondaryCharges ?? 0));
+                            + (backpackDispenser?.CurrentCharges ?? 0)
+                          : (inventoryDispenser?.SecondaryCharges ?? 0) + (stashDispenser?.SecondaryCharges ?? 0)
+                            + (backpackDispenser?.SecondaryCharges ?? 0));
         }
 
         #endregion
