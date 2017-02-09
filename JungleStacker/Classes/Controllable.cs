@@ -176,12 +176,12 @@
 
         private bool IsUnderCampNameText
             =>
-            Utils.IsUnderRectangle(
-                Game.MouseScreenPosition,
-                campNameTextPosition.X,
-                campNameTextPosition.Y,
-                MeasureCampNameTextSize.X,
-                MeasureCampNameTextSize.Y);
+                Utils.IsUnderRectangle(
+                    Game.MouseScreenPosition,
+                    campNameTextPosition.X,
+                    campNameTextPosition.Y,
+                    MeasureCampNameTextSize.X,
+                    MeasureCampNameTextSize.Y);
 
         private Vector2 MeasureCampNameTextSize
             => Drawing.MeasureText(CurrentCamp.Name, "Arial", new Vector2(16), FontFlags.None);

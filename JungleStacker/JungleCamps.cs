@@ -56,7 +56,7 @@
                         StackTime = 55,
                         Team = Team.Radiant,
                         Ancients = false,
-                        Name = "Medium Camp"
+                        Name = "Bot Medium Camp"
                     });
                 GetCamps.Add(
                     new Camp
@@ -114,7 +114,7 @@
                         StackTime = 55,
                         Team = Team.Radiant,
                         Ancients = false,
-                        Name = "Secret Hard Camp",
+                        Name = "Top Hard Camp",
                     });
                 GetCamps.Add(
                     new Camp
@@ -127,7 +127,7 @@
                         StackTime = 54,
                         Team = Team.Radiant,
                         Ancients = false,
-                        Name = "Secret Medium Camp",
+                        Name = "Top Medium Camp",
                     });
                 GetCamps.Add(
                     new Camp
@@ -140,7 +140,7 @@
                         StackTime = 54,
                         Team = Team.Radiant,
                         Ancients = true,
-                        Name = "Bot Ancients Camp",
+                        Name = "Ancients Camp",
                     });
             }
             else if (heroTeam == Team.Dire)
@@ -230,20 +230,20 @@
                         StackTime = 53,
                         Team = Team.Dire,
                         Ancients = false,
-                        Name = "Secret Medium Camp"
+                        Name = "Bot Ancients Camp"
                     });
                 GetCamps.Add(
                     new Camp
                     {
                         OverlayPosition = new Vector3(4696, 1120, 384),
                         CampPosition = new Vector3(4273, 791, 384),
-                        StackPosition = new Vector3(4552, -305, 384),
+                        StackPosition = new Vector3(3148, 687, 384),
                         WaitPosition = new Vector3(4001, 745, 384),
                         Id = 16,
                         StackTime = 55,
                         Team = Team.Dire,
                         Ancients = false,
-                        Name = "Secret Hard Camp"
+                        Name = "Bot Hard Camp"
                     });
                 GetCamps.Add(
                     new Camp
@@ -256,7 +256,7 @@
                         StackTime = 55,
                         Team = Team.Dire,
                         Ancients = false,
-                        Name = "Medium Camp",
+                        Name = "Top Medium Camp",
                         StackCountTimeAdjustment = 2,
                         TimeAdjustment = 1,
                         MaxTimeAdjustment = 2
@@ -272,7 +272,7 @@
                         StackTime = 54,
                         Team = Team.Dire,
                         Ancients = true,
-                        Name = "Bot Ancients Camp",
+                        Name = "Bot Medium Camp",
                         StackCountTimeAdjustment = 3,
                         TimeAdjustment = 1,
                         MaxTimeAdjustment = 1

@@ -115,30 +115,30 @@
 
         private bool IsUnderBox
             =>
-            Utils.IsUnderRectangle(
-                Game.MouseScreenPosition,
-                position.X - 32,
-                position.Y - 12,
-                OverlaySize.X + 1,
-                OverlaySize.Y + 1);
+                Utils.IsUnderRectangle(
+                    Game.MouseScreenPosition,
+                    position.X - 32,
+                    position.Y - 12,
+                    OverlaySize.X + 1,
+                    OverlaySize.Y + 1);
 
         private bool IsUnderDecreaseArrow
             =>
-            Utils.IsUnderRectangle(
-                Game.MouseScreenPosition,
-                position.X + requiredStacksTextSize.X + 5,
-                position.Y + 38,
-                arrowRectangleSize.X,
-                arrowRectangleSize.Y);
+                Utils.IsUnderRectangle(
+                    Game.MouseScreenPosition,
+                    position.X + requiredStacksTextSize.X + 5,
+                    position.Y + 38,
+                    arrowRectangleSize.X,
+                    arrowRectangleSize.Y);
 
         private bool IsUnderIncreaseArrow
             =>
-            Utils.IsUnderRectangle(
-                Game.MouseScreenPosition,
-                position.X + requiredStacksTextSize.X + countTextSize.X + arrowRectangleSize.X + 19,
-                position.Y + 38,
-                arrowRectangleSize.X,
-                arrowRectangleSize.Y);
+                Utils.IsUnderRectangle(
+                    Game.MouseScreenPosition,
+                    position.X + requiredStacksTextSize.X + countTextSize.X + arrowRectangleSize.X + 19,
+                    position.Y + 38,
+                    arrowRectangleSize.X,
+                    arrowRectangleSize.Y);
 
         #endregion
 
