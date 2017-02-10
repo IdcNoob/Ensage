@@ -106,25 +106,25 @@
 
             LaneData.Add(
                 new LaneData
-                    {
-                        LanePosition = LanePosition.Top,
-                        Points = topPath,
-                        Team = team
-                    });
+                {
+                    LanePosition = LanePosition.Top,
+                    Points = topPath,
+                    Team = team
+                });
             LaneData.Add(
                 new LaneData
-                    {
-                        LanePosition = LanePosition.Middle,
-                        Points = midPath,
-                        Team = team
-                    });
+                {
+                    LanePosition = LanePosition.Middle,
+                    Points = midPath,
+                    Team = team
+                });
             LaneData.Add(
                 new LaneData
-                    {
-                        LanePosition = LanePosition.Bottom,
-                        Points = botPath,
-                        Team = team
-                    });
+                {
+                    LanePosition = LanePosition.Bottom,
+                    Points = botPath,
+                    Team = team
+                });
         }
 
         #endregion

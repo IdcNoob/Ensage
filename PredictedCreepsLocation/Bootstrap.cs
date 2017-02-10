@@ -29,9 +29,27 @@
             predictions.OnDraw();
         }
 
+        private void Drawing_OnEndScene(EventArgs args)
+        {
+            predictions.DrawingOnEndScene();
+        }
+
+        private void Drawing_OnPostReset(EventArgs args)
+        {
+            predictions.OnPostReset();
+        }
+
+        private void Drawing_OnPreReset(EventArgs args)
+        {
+            predictions.OnPreReset();
+        }
+
         private void Game_OnClose(object sender, EventArgs e)
         {
             Drawing.OnDraw -= Drawing_OnDraw;
+            Drawing.OnPreReset -= Drawing_OnPreReset;
+            Drawing.OnPostReset -= Drawing_OnPostReset;
+            Drawing.OnEndScene -= Drawing_OnEndScene;
             Game.OnIngameUpdate -= Game_OnUpdate;
             Events.OnClose -= Game_OnClose;
             ObjectManager.OnRemoveEntity -= ObjectManager_OnRemoveEntity;
@@ -55,6 +73,9 @@
             Game.OnIngameUpdate += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
             Events.OnClose += Game_OnClose;
+            Drawing.OnPreReset += Drawing_OnPreReset;
+            Drawing.OnPostReset += Drawing_OnPostReset;
+            Drawing.OnEndScene += Drawing_OnEndScene;
         }
 
         #endregion
