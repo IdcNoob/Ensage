@@ -190,7 +190,12 @@ namespace Evader.Data
                     ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally)
                 },
                 { "item_glimmer_cape", ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally) },
-                { "item_lotus_orb", ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally) }
+                { "item_lotus_orb", ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally) },
+                {
+                    "item_quelling_blade", ability => new TargetTree(ability, AbilityType.Counter, AbilityCastTarget.Ally)
+                },
+                { "item_iron_talon", ability => new TargetTree(ability, AbilityType.Counter, AbilityCastTarget.Ally) },
+                { "item_bfury", ability => new TargetTree(ability, AbilityType.Counter, AbilityCastTarget.Ally) }
             };
 
         public Dictionary<string, Func<Ability, UsableAbility>> DisableAbilities { get; } = new Dictionary

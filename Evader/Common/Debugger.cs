@@ -27,14 +27,6 @@
 
             AbilityUsage,
 
-            Particles,
-
-            Modifiers,
-
-            Units,
-
-            Projectiles,
-
             Intersectons
         }
 
@@ -117,46 +109,6 @@
                     if (showType)
                     {
                         text = "[Evader][Abilities] " + text;
-                    }
-                    break;
-                case Type.Particles:
-                    if (!Menu.LogParticles)
-                    {
-                        return;
-                    }
-                    if (showType)
-                    {
-                        text = "[Evader][Particles] " + text;
-                    }
-                    break;
-                case Type.Modifiers:
-                    if (!Menu.LogModifiers)
-                    {
-                        return;
-                    }
-                    if (showType)
-                    {
-                        text = "[Evader][Modifiers] " + text;
-                    }
-                    break;
-                case Type.Units:
-                    if (!Menu.LogUnits)
-                    {
-                        return;
-                    }
-                    if (showType)
-                    {
-                        text = "[Evader][Units] " + text;
-                    }
-                    break;
-                case Type.Projectiles:
-                    if (!Menu.LogProjectiles)
-                    {
-                        return;
-                    }
-                    if (showType)
-                    {
-                        text = "[Evader][Projectiles] " + text;
                     }
                     break;
                 case Type.Intersectons:

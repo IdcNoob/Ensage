@@ -44,11 +44,6 @@
             evader.OnAddEntity(args);
         }
 
-        private void ObjectManagerOnAddTrackingProjectile(TrackingProjectileEventArgs args)
-        {
-            evader.OnAddTrackingProjectile(args);
-        }
-
         private void OnClose(object sender, EventArgs e)
         {
             Events.OnClose -= OnClose;
@@ -59,7 +54,6 @@
             Unit.OnModifierAdded -= Unit_OnModifierAdded;
             Unit.OnModifierRemoved -= Unit_OnModifierRemoved;
             Entity.OnParticleEffectAdded -= Entity_OnParticleEffectAdded;
-            ObjectManager.OnAddTrackingProjectile -= ObjectManagerOnAddTrackingProjectile;
             evader.OnClose();
         }
 
@@ -75,7 +69,6 @@
             Unit.OnModifierAdded += Unit_OnModifierAdded;
             Unit.OnModifierRemoved += Unit_OnModifierRemoved;
             Entity.OnParticleEffectAdded += Entity_OnParticleEffectAdded;
-            ObjectManager.OnAddTrackingProjectile += ObjectManagerOnAddTrackingProjectile;
         }
 
         private void Player_OnExecuteAction(Player sender, ExecuteOrderEventArgs args)

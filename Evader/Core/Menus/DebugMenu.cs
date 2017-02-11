@@ -39,26 +39,6 @@
             logIntersection.ValueChanged += (sender, args) => LogIntersection = args.GetNewValue<bool>();
             LogIntersection = logIntersection.IsActive();
 
-            var logModifiers = new MenuItem("debugLogModifiers", "Log modifiers").SetValue(false);
-            menu.AddItem(logModifiers);
-            logModifiers.ValueChanged += (sender, args) => LogModifiers = args.GetNewValue<bool>();
-            LogModifiers = logModifiers.IsActive();
-
-            var logParticles = new MenuItem("debugLogParticles", "Log particles").SetValue(false);
-            menu.AddItem(logParticles);
-            logParticles.ValueChanged += (sender, args) => LogParticles = args.GetNewValue<bool>();
-            LogParticles = logParticles.IsActive();
-
-            var logProjectiles = new MenuItem("debugLogProjectiles", "Log projectiles").SetValue(false);
-            menu.AddItem(logProjectiles);
-            logProjectiles.ValueChanged += (sender, args) => LogProjectiles = args.GetNewValue<bool>();
-            LogProjectiles = logProjectiles.IsActive();
-
-            var logUnits = new MenuItem("debugLogUnits", "Log units").SetValue(false);
-            menu.AddItem(logUnits);
-            logUnits.ValueChanged += (sender, args) => { LogUnits = args.GetNewValue<bool>(); };
-            LogUnits = logUnits.IsActive();
-
             rootMenu.AddSubMenu(menu);
         }
 
@@ -75,14 +55,6 @@
         public bool LogInformation { get; private set; }
 
         public bool LogIntersection { get; private set; }
-
-        public bool LogModifiers { get; private set; }
-
-        public bool LogParticles { get; private set; }
-
-        public bool LogProjectiles { get; private set; }
-
-        public bool LogUnits { get; private set; }
 
         #endregion
     }

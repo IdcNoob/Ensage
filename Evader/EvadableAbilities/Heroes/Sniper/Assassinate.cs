@@ -22,6 +22,11 @@
         public Assassinate(Ability ability)
             : base(ability)
         {
+            BlinkAbilities.Add("item_blink");
+            BlinkAbilities.Add("antimage_blink");
+            BlinkAbilities.Add("queenofpain_blink");
+            BlinkAbilities.Add("ember_spirit_activate_fire_remnant");
+
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(Eul);
             CounterAbilities.Add(SleightOfFist);

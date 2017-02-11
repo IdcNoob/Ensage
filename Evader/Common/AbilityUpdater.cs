@@ -46,7 +46,6 @@
             enemyAbilitiesData = new EnemyAbilities();
 
             Menu.UsableAbilities.AddAbility(AbilityNames.GoldSpender, AbilityType.Counter);
-            GoldSpender = new GoldSpender();
 
             Debugger.WriteLine("* Evader =>");
             Debugger.WriteLine("* Total abilities countered: " + enemyAbilitiesData.EvadableAbilities.Count);
@@ -67,7 +66,7 @@
 
         public List<EvadableAbility> EvadableAbilities { get; } = new List<EvadableAbility>();
 
-        public GoldSpender GoldSpender { get; }
+        public GoldSpender GoldSpender { get; } = new GoldSpender();
 
         public List<UsableAbility> UsableAbilities { get; } = new List<UsableAbility>();
 
@@ -143,8 +142,9 @@
                         abilities.AddRange(unit.Inventory.Items);
                     }
                 }
-                catch (Exception)
+                catch
                 {
+                    continue;
                 }
 
                 foreach (var ability in

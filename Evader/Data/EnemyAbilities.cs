@@ -60,6 +60,7 @@
     using EvadableAbilities.Heroes.MonkeyKing;
     using EvadableAbilities.Heroes.Morphling;
     using EvadableAbilities.Heroes.NagaSiren;
+    using EvadableAbilities.Heroes.NaturesProphet;
     using EvadableAbilities.Heroes.Necrophos;
     using EvadableAbilities.Heroes.NightStalker;
     using EvadableAbilities.Heroes.NyxAssassin;
@@ -274,6 +275,7 @@
                 { "naga_siren_ensnare", ability => new Ensnare(ability) },
                 { "naga_siren_rip_tide", ability => new RipTide(ability) },
                 { "naga_siren_song_of_the_siren", ability => new SongOfTheSiren(ability) },
+                { "furion_sprout", ability => new Sprout(ability) },
                 { "necrolyte_death_pulse", ability => new DeathPulse(ability) },
                 { "necrolyte_reapers_scythe", ability => new ReapersScythe(ability) },
                 { "night_stalker_void", ability => new Void(ability) },

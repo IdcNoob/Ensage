@@ -79,22 +79,6 @@
                 return;
             }
 
-            if (Menu.Debug.LogUnits)
-            {
-                Debugger.WriteLine("====", Debugger.Type.Units);
-                Debugger.WriteLine("unit name: " + unit.Name, Debugger.Type.Units);
-                Debugger.WriteLine("unit id: " + unit.ClassID, Debugger.Type.Units);
-                Debugger.WriteLine("vision: " + unit.DayVision, Debugger.Type.Units);
-                if (unit.Owner != null && unit.Owner.IsValid)
-                {
-                    Debugger.WriteLine("owner: " + unit.Owner.Name, Debugger.Type.Units);
-                }
-                else
-                {
-                    Debugger.WriteLine("owner not valid", Debugger.Type.Units);
-                }
-            }
-
             if (unit.ClassID != ClassID.CDOTA_BaseNPC || unit.AttackCapability != AttackCapability.None
                 || unit.Team == HeroTeam)
             {
@@ -152,21 +136,6 @@
 
             Debugger.WriteLine("  = >   Ability name: " + unitAbility.Name);
             unitAbility.AddUnit(unit);
-        }
-
-        public void OnAddTrackingProjectile(TrackingProjectileEventArgs args)
-        {
-            Debugger.WriteLine("==== projectile", Debugger.Type.Projectiles);
-            if (args.Projectile.Source != null)
-            {
-                Debugger.WriteLine("source: " + args.Projectile.Source.Name, Debugger.Type.Projectiles);
-                Debugger.WriteLine("source id: " + args.Projectile.Source.ClassID, Debugger.Type.Projectiles);
-            }
-            Debugger.WriteLine("speed: " + args.Projectile.Speed, Debugger.Type.Projectiles);
-            if (args.Projectile.Target != null)
-            {
-                Debugger.WriteLine("target: " + args.Projectile.Target.Name, Debugger.Type.Projectiles);
-            }
         }
 
         public void OnClose()
@@ -260,6 +229,7 @@
             abilityUpdater = new AbilityUpdater();
             randomiser = new Random();
             abilityModifiers = new AbilityModifiers();
+
             fountain =
                 ObjectManager.GetEntities<Unit>()
                     .First(x => x.ClassID == ClassID.CDOTA_Unit_Fountain && x.Team == HeroTeam);
@@ -275,13 +245,6 @@
             DelayAction.Add(
                 1,
                 () => {
-                    Debugger.WriteLine("====", Debugger.Type.Modifiers);
-                    Debugger.WriteLine("modifier name: " + modifier.Name, Debugger.Type.Modifiers);
-                    Debugger.WriteLine("modifier texture name: " + modifier.TextureName, Debugger.Type.Modifiers);
-                    Debugger.WriteLine("sender: " + sender.Name, Debugger.Type.Modifiers);
-                    Debugger.WriteLine("elapsed time: " + modifier.ElapsedTime, Debugger.Type.Modifiers);
-                    Debugger.WriteLine("remaining time: " + modifier.RemainingTime, Debugger.Type.Modifiers);
-
                     if (sender.Team != HeroTeam || modifier.Name == "modifier_faceless_void_chronosphere")
                     {
                         string name;
@@ -323,11 +286,6 @@
 
         public void OnModifierRemoved(Modifier modifier)
         {
-            Debugger.WriteLine("====", Debugger.Type.Modifiers);
-            Debugger.WriteLine("- modifier name: " + modifier.Name, Debugger.Type.Modifiers);
-            Debugger.WriteLine("- modifier tname: " + modifier.TextureName, Debugger.Type.Modifiers);
-            Debugger.WriteLine("- modifier owner: " + modifier.Owner.Name, Debugger.Type.Modifiers);
-
             var abilityName = abilityModifiers.GetAbilityName(modifier);
             if (string.IsNullOrEmpty(abilityName))
             {
@@ -349,29 +307,6 @@
             }
 
             var particleName = args.Name;
-
-            if (Menu.Debug.LogParticles)
-            {
-                if (particleName.Contains("ui_mouseactions") || particleName.Contains("generic_hit_blood")
-                    || particleName.Contains("base_attacks") || particleName.Contains("generic_gameplay")
-                    || particleName.Contains("ensage_ui"))
-                {
-                    return;
-                }
-
-                DelayAction.Add(
-                    1,
-                    () => {
-                        Debugger.WriteLine("====", Debugger.Type.Particles);
-                        Debugger.WriteLine("particle: " + particleName, Debugger.Type.Particles);
-                        for (var i = 0u; i <= args.ParticleEffect.HighestControlPoint; i++)
-                        {
-                            Debugger.WriteLine(
-                                i + " // " + args.ParticleEffect.GetControlPoint(i),
-                                Debugger.Type.Particles);
-                        }
-                    });
-            }
 
             var abilityName = AdditionalAbilityData.Particles.FirstOrDefault(x => particleName.Contains(x.Key)).Value;
 
@@ -641,8 +576,7 @@
                     {
                         Debugger.WriteLine(
                             "predicted: " + predictedAbilities.First().Name + " => "
-                            + ((Hero)projectile.Target).GetName(),
-                            Debugger.Type.Projectiles);
+                            + ((Hero)projectile.Target).GetName());
                         predictedAbilities.First().SetProjectile(projectile.Position, (Hero)projectile.Target);
                     }
                     continue;
@@ -679,13 +613,7 @@
                                 x.OwnerClassID == source.ClassID && (int)x.GetProjectileSpeed() == projectile.Speed
                                 && x.TimeSinceCast() < 1.5 + x.AdditionalDelay);
 
-                if (ability != null)
-                {
-                    Debugger.WriteLine(
-                        "projectile: " + ability.Name + " => " + ((Hero)projectile.Target).GetName(),
-                        Debugger.Type.Projectiles);
-                    ability.SetProjectile(projectile.Position, (Hero)projectile.Target);
-                }
+                ability?.SetProjectile(projectile.Position, (Hero)projectile.Target);
             }
 
             var allyIntersections = allies.ToDictionary(x => x, x => Pathfinder.GetIntersectingObstacles(x));
@@ -708,12 +636,13 @@
 
                     if (Menu.Debug.LogIntersection)
                     {
+                        Debugger.WriteLine("", Debugger.Type.Intersectons, false);
                         foreach (var hero in allyIntersections.Where(x => x.Value.Contains(obstacle)).Select(x => x.Key)
                         )
                         {
-                            Debugger.Write(hero.GetName() + " ", Debugger.Type.Intersectons);
+                            Debugger.Write(hero.GetName() + " ", Debugger.Type.Intersectons, false);
                         }
-                        Debugger.WriteLine("intersecting: " + ability.Name, Debugger.Type.Intersectons);
+                        Debugger.WriteLine("intersecting: " + ability.Name, Debugger.Type.Intersectons, true, false);
                     }
 
                     var abilityOwner = ability.AbilityOwner;
