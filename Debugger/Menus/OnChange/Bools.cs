@@ -8,12 +8,28 @@
 
         public Bools(Menu mainMenu)
         {
-            var menu = new Menu("Bools", "bools");
+            var menu = new Menu("Bools ", "bools");
 
-            var enabled = new MenuItem("boolsEnabled", "Enabled").SetValue(false);
+            var enabled =
+                new MenuItem("boolsEnabled", "Enabled").SetValue(false).SetTooltip("Entity.OnBoolPropertyChange");
             menu.AddItem(enabled);
             enabled.ValueChanged += (sender, args) => Enabled = args.GetNewValue<bool>();
+            enabled.ValueChanged += (sender, args) => {
+                Enabled = args.GetNewValue<bool>();
+                if (Enabled)
+                {
+                    menu.DisplayName = menu.DisplayName += "*";
+                }
+                else
+                {
+                    menu.DisplayName = menu.DisplayName.TrimEnd('*');
+                }
+            };
             Enabled = enabled.IsActive();
+            if (Enabled)
+            {
+                menu.DisplayName = menu.DisplayName += "*";
+            }
 
             var heroesOnly = new MenuItem("boolsHeroesOnly", "Heroes only").SetValue(false);
             menu.AddItem(heroesOnly);

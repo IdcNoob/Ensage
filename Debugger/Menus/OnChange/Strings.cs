@@ -8,12 +8,28 @@
 
         public Strings(Menu mainMenu)
         {
-            var menu = new Menu("Strings", "strings");
+            var menu = new Menu("Strings ", "strings");
 
-            var enabled = new MenuItem("stringsEnabled", "Enabled").SetValue(false);
+            var enabled =
+                new MenuItem("stringsEnabled", "Enabled").SetValue(false).SetTooltip("Entity.OnStringPropertyChange");
             menu.AddItem(enabled);
             enabled.ValueChanged += (sender, args) => Enabled = args.GetNewValue<bool>();
+            enabled.ValueChanged += (sender, args) => {
+                Enabled = args.GetNewValue<bool>();
+                if (Enabled)
+                {
+                    menu.DisplayName = menu.DisplayName += "*";
+                }
+                else
+                {
+                    menu.DisplayName = menu.DisplayName.TrimEnd('*');
+                }
+            };
             Enabled = enabled.IsActive();
+            if (Enabled)
+            {
+                menu.DisplayName = menu.DisplayName += "*";
+            }
 
             var heroesOnly = new MenuItem("stringsHeroesOnly", "Heroes only").SetValue(false);
             menu.AddItem(heroesOnly);

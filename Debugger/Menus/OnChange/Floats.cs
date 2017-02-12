@@ -8,12 +8,28 @@
 
         public Floats(Menu mainMenu)
         {
-            var menu = new Menu("Floats", "floats");
+            var menu = new Menu("Floats ", "floats");
 
-            var enabled = new MenuItem("floatsEnabled", "Enabled").SetValue(false);
+            var enabled =
+                new MenuItem("floatsEnabled", "Enabled").SetValue(false).SetTooltip("Entity.OnFloatPropertyChange");
             menu.AddItem(enabled);
             enabled.ValueChanged += (sender, args) => Enabled = args.GetNewValue<bool>();
+            enabled.ValueChanged += (sender, args) => {
+                Enabled = args.GetNewValue<bool>();
+                if (Enabled)
+                {
+                    menu.DisplayName = menu.DisplayName += "*";
+                }
+                else
+                {
+                    menu.DisplayName = menu.DisplayName.TrimEnd('*');
+                }
+            };
             Enabled = enabled.IsActive();
+            if (Enabled)
+            {
+                menu.DisplayName = menu.DisplayName += "*";
+            }
 
             var heroesOnly = new MenuItem("floatsHeroesOnly", "Heroes only").SetValue(false);
             menu.AddItem(heroesOnly);

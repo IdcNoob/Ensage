@@ -8,12 +8,28 @@
 
         public Int64(Menu mainMenu)
         {
-            var menu = new Menu("Int64", "int64");
+            var menu = new Menu("Int64 ", "int64");
 
-            var enabled = new MenuItem("int64Enabled", "Enabled").SetValue(false);
+            var enabled =
+                new MenuItem("int64Enabled", "Enabled").SetValue(false).SetTooltip("Entity.OnInt64PropertyChange");
             menu.AddItem(enabled);
             enabled.ValueChanged += (sender, args) => Enabled = args.GetNewValue<bool>();
+            enabled.ValueChanged += (sender, args) => {
+                Enabled = args.GetNewValue<bool>();
+                if (Enabled)
+                {
+                    menu.DisplayName = menu.DisplayName += "*";
+                }
+                else
+                {
+                    menu.DisplayName = menu.DisplayName.TrimEnd('*');
+                }
+            };
             Enabled = enabled.IsActive();
+            if (Enabled)
+            {
+                menu.DisplayName = menu.DisplayName += "*";
+            }
 
             var heroesOnly = new MenuItem("int64HeroesOnly", "Heroes only").SetValue(false);
             menu.AddItem(heroesOnly);

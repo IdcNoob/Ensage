@@ -8,6 +8,8 @@
 
     using OnChange;
 
+    using OnExecuteOrder;
+
     using SharpDX;
 
     internal class MenuManager
@@ -28,6 +30,7 @@
 
             OnAddRemove = new OnAddRemoveMenu(menu);
             OnChangeMenu = new OnChangeMenu(menu);
+            OnExecuteOrderMenu = new OnExecuteOrderMenu(menu);
             DumpingMenu = new DumpingMenu(menu);
 
             menu.AddToMainMenu();
@@ -42,6 +45,8 @@
         public OnAddRemoveMenu OnAddRemove { get; }
 
         public OnChangeMenu OnChangeMenu { get; }
+
+        public OnExecuteOrderMenu OnExecuteOrderMenu { get; }
 
         #endregion
 

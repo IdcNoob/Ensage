@@ -42,6 +42,8 @@
             Entity.OnInt64PropertyChange -= OnInt64PropertyChanged;
             Entity.OnStringPropertyChange -= OnStringPropertyChanged;
 
+            Player.OnExecuteOrder -= OnExecuteOrder;
+
             mainMenu.DumpingMenu.Spells.OnDump -= SpellsOnDump;
             mainMenu.DumpingMenu.Items.OnDump -= ItemsOnDump;
             mainMenu.DumpingMenu.Modifiers.OnDump -= ModifiersOnDump;
@@ -70,6 +72,8 @@
             Entity.OnInt32PropertyChange += OnInt32PropertyChanged;
             Entity.OnInt64PropertyChange += OnInt64PropertyChanged;
             Entity.OnStringPropertyChange += OnStringPropertyChanged;
+
+            Player.OnExecuteOrder += OnExecuteOrder;
 
             mainMenu.DumpingMenu.Spells.OnDump += SpellsOnDump;
             mainMenu.DumpingMenu.Items.OnDump += ItemsOnDump;
@@ -333,7 +337,7 @@
             {
                 var menu = mainMenu.OnAddRemove.Abilities;
 
-                if (!menu.OnAddEnabled || menu.IgnoreUseless && Data.IgnoredAbilities.Any(ability.Name.Contains)
+                if (!menu.OnRemoveEnabled || menu.IgnoreUseless && Data.IgnoredAbilities.Any(ability.Name.Contains)
                     || menu.HeroesOnly && !(ability.Owner is Hero))
                 {
                     return;
@@ -351,6 +355,66 @@
                 logger.Write("Owner classID: " + ability.Owner?.ClassID, Type, Color);
                 logger.EmptyLine();
             }
+        }
+
+        private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
+        {
+            switch (args.Order)
+            {
+                case Order.Ability:
+                case Order.AbilityLocation:
+                case Order.AbilityTarget:
+                case Order.AbilityTargetRune:
+                case Order.AbilityTargetTree:
+                case Order.ToggleAbility:
+                    if (!mainMenu.OnExecuteOrderMenu.Abilities.Enabled)
+                    {
+                        return;
+                    }
+                    break;
+                case Order.AttackLocation:
+                case Order.AttackTarget:
+                case Order.MoveLocation:
+                case Order.MoveTarget:
+                case Order.Stop:
+                case Order.Hold:
+                case Order.Continue:
+                case Order.Patrol:
+                    if (!mainMenu.OnExecuteOrderMenu.AttackMove.Enabled)
+                    {
+                        return;
+                    }
+                    break;
+                default:
+                    if (!mainMenu.OnExecuteOrderMenu.Other.Enabled)
+                    {
+                        return;
+                    }
+                    break;
+            }
+
+            const Color Color = Color.Magenta;
+            const Logger.Type Type = Logger.Type.ExecuteOrder;
+
+            logger.Write("Executed order", Type, Color, true);
+            logger.Write("Sender name: " + args.Entities.FirstOrDefault()?.Name, Type, Color);
+            logger.Write("Sender classID: " + args.Entities.FirstOrDefault()?.ClassID, Type, Color);
+            logger.Write("Order: " + args.Order, Type, Color);
+            if (args.Ability != null)
+            {
+                logger.Write("Ability name: " + args.Ability?.Name, Type, Color);
+                logger.Write("Ability classID: " + args.Ability?.ClassID, Type, Color);
+            }
+            if (!args.TargetPosition.IsZero)
+            {
+                logger.Write("Position: " + args.TargetPosition, Type, Color);
+            }
+            if (args.Target != null)
+            {
+                logger.Write("Target name: " + args.Target.Name, Type, Color);
+                logger.Write("Target classID: " + args.Target.ClassID, Type, Color);
+            }
+            logger.EmptyLine();
         }
 
         private void OnFloatPropertyChanged(Entity sender, FloatPropertyChangeEventArgs args)

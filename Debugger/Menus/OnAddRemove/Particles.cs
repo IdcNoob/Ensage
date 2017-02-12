@@ -8,12 +8,28 @@
 
         public Particles(Menu mainMenu)
         {
-            var menu = new Menu("Particles", "particles");
+            var menu = new Menu("Particles ", "particles");
 
-            var onAddEnabled = new MenuItem("onParticleAddEnabled", "On add enabled").SetValue(false);
+            var onAddEnabled =
+                new MenuItem("onParticleAddEnabled", "On add enabled").SetValue(false)
+                    .SetTooltip("Entity.OnParticleEffectAdded");
             menu.AddItem(onAddEnabled);
-            onAddEnabled.ValueChanged += (sender, args) => OnAddEnabled = args.GetNewValue<bool>();
+            onAddEnabled.ValueChanged += (sender, args) => {
+                OnAddEnabled = args.GetNewValue<bool>();
+                if (OnAddEnabled)
+                {
+                    menu.DisplayName = menu.DisplayName += "*";
+                }
+                else
+                {
+                    menu.DisplayName = menu.DisplayName.TrimEnd('*');
+                }
+            };
             OnAddEnabled = onAddEnabled.IsActive();
+            if (OnAddEnabled)
+            {
+                menu.DisplayName = menu.DisplayName += "*";
+            }
 
             var heroesOnly = new MenuItem("partcileHeroesOnly", "Heroes only").SetValue(false);
             menu.AddItem(heroesOnly);

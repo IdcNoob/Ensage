@@ -14,6 +14,12 @@
 
         #region Methods
 
+        private static void Main()
+        {
+            Events.OnLoad += OnLoad;
+            Events.OnClose += OnClose;
+        }
+
         private static void OnClose(object sender, EventArgs eventArgs)
         {
             Debugger.OnClose();
@@ -22,12 +28,6 @@
         private static void OnLoad(object sender, EventArgs eventArgs)
         {
             Debugger.OnLoad();
-        }
-
-        private static void Main()
-        {
-            Events.OnLoad += OnLoad;
-            Events.OnClose += OnClose;
         }
 
         #endregion

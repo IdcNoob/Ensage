@@ -33,6 +33,7 @@
             "m_iReliableGold",
             "m_nServerOrderSequenceNumber",
             "m_nResetEventsParity",
+            "m_cellY",
             "m_NetworkSequenceIndex"
         };
 

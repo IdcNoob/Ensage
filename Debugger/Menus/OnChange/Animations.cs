@@ -8,12 +8,27 @@
 
         public Animations(Menu mainMenu)
         {
-            var menu = new Menu("Animations", "animations");
+            var menu = new Menu("Animations ", "animations");
 
-            var enabled = new MenuItem("animationsEnabled", "Enabled").SetValue(false);
+            var enabled =
+                new MenuItem("animationsEnabled", "Enabled").SetValue(false).SetTooltip("Entity.OnAnimationChanged");
             menu.AddItem(enabled);
-            enabled.ValueChanged += (sender, args) => Enabled = args.GetNewValue<bool>();
+            enabled.ValueChanged += (sender, args) => {
+                Enabled = args.GetNewValue<bool>();
+                if (Enabled)
+                {
+                    menu.DisplayName = menu.DisplayName += "*";
+                }
+                else
+                {
+                    menu.DisplayName = menu.DisplayName.TrimEnd('*');
+                }
+            };
             Enabled = enabled.IsActive();
+            if (Enabled)
+            {
+                menu.DisplayName = menu.DisplayName += "*";
+            }
 
             var heroesOnly = new MenuItem("animationsHeroesOnly", "Heroes only").SetValue(false);
             menu.AddItem(heroesOnly);

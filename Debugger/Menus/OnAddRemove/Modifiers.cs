@@ -8,17 +8,49 @@
 
         public Modifiers(Menu mainMenu)
         {
-            var menu = new Menu("Modifiers", "modifiers");
+            var menu = new Menu("Modifiers ", "modifiers");
 
-            var onAddEnabled = new MenuItem("onModifierAddEnabled", "On add enabled").SetValue(false);
+            var onAddEnabled =
+                new MenuItem("onModifierAddEnabled", "On add enabled").SetValue(false)
+                    .SetTooltip("Unit.OnModifierAdded");
             menu.AddItem(onAddEnabled);
-            onAddEnabled.ValueChanged += (sender, args) => OnAddEnabled = args.GetNewValue<bool>();
+            onAddEnabled.ValueChanged += (sender, args) => {
+                OnAddEnabled = args.GetNewValue<bool>();
+                if (OnAddEnabled && !menu.DisplayName.EndsWith("*"))
+                {
+                    menu.DisplayName = menu.DisplayName += "*";
+                }
+                else if (!OnRemoveEnabled)
+                {
+                    menu.DisplayName = menu.DisplayName.TrimEnd('*');
+                }
+            };
             OnAddEnabled = onAddEnabled.IsActive();
+            if (OnAddEnabled)
+            {
+                menu.DisplayName = menu.DisplayName += "*";
+            }
 
-            var onRemoveEnabled = new MenuItem("onModifierRemoveEnabled", "On remove enabled").SetValue(false);
+            var onRemoveEnabled =
+                new MenuItem("onModifierRemoveEnabled", "On remove enabled").SetValue(false)
+                    .SetTooltip("Unit.OnModifierRemoved");
             menu.AddItem(onRemoveEnabled);
-            onRemoveEnabled.ValueChanged += (sender, args) => OnRemoveEnabled = args.GetNewValue<bool>();
+            onRemoveEnabled.ValueChanged += (sender, args) => {
+                OnRemoveEnabled = args.GetNewValue<bool>();
+                if (OnRemoveEnabled && !menu.DisplayName.EndsWith("*"))
+                {
+                    menu.DisplayName = menu.DisplayName += "*";
+                }
+                else if (!OnAddEnabled)
+                {
+                    menu.DisplayName = menu.DisplayName.TrimEnd('*');
+                }
+            };
             OnRemoveEnabled = onRemoveEnabled.IsActive();
+            if (OnRemoveEnabled)
+            {
+                menu.DisplayName = menu.DisplayName += "*";
+            }
 
             var heroesOnly = new MenuItem("modifierHeroesOnly", "Heroes only").SetValue(false);
             menu.AddItem(heroesOnly);
