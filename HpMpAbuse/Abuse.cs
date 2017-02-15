@@ -5,6 +5,7 @@
 
     using Ensage;
     using Ensage.Common.AbilityInfo;
+    using Ensage.Common.Enums;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects;
     using Ensage.Common.Objects.UtilityObjects;
@@ -145,10 +146,7 @@
                 case Order.ToggleAbility:
                     if (!args.IsQueued)
                     {
-                        var abilityClassID = args.Ability.ClassID;
-                        if (abilityClassID == ClassID.CDOTA_Item_TeleportScroll
-                            || abilityClassID == ClassID.CDOTA_Item_BootsOfTravel
-                            || abilityClassID == ClassID.CDOTA_Item_BootsOfTravel_2)
+                        if (abilityUpdater.IgnoredAbilities.Contains(args.Ability.ClassID))
                         {
                             Sleeper.Sleep(1000, "Main");
                             return;
@@ -243,7 +241,7 @@
 
             if (Menu.Recovery.Active && itemManager.UsableItems.Any(x => x.CanBeCasted()))
             {
-                if (EnemyNear())
+                if (IsEnemyNear())
                 {
                     itemManager.PickUpItems();
                     return;
@@ -283,14 +281,14 @@
 
             if (Menu.TranquilBoots.DropActive)
             {
-                if (EnemyNear())
+                if (IsEnemyNear())
                 {
                     itemManager.PickUpItems();
                     return;
                 }
                 if (itemManager.TranquilBoots.IsValid())
                 {
-                    itemManager.DropItem(itemManager.TranquilBoots.Item, false);
+                    itemManager.DropItem(itemManager.TranquilBoots.Item, false, true);
                     Sleeper.Sleep(200 + Game.Ping, "Main");
                 }
                 return;
@@ -323,8 +321,6 @@
                     return;
                 }
 
-                var regen = Hero.FindItem("item_ring_of_regen");
-
                 if (Menu.TranquilBoots.CombineActive)
                 {
                     if (itemManager.TranquilBoots.IsValid())
@@ -332,18 +328,34 @@
                         if (itemManager.TranquilBoots.AssembleTime(8))
                         {
                             itemManager.TranquilBoots.Disassemble();
-                        }
-                    }
-                    else if (regen != null)
-                    {
-                        if (regen.IsCombineLocked)
-                        {
-                            regen.UnlockCombining();
+                            Sleeper.Sleep(200 + Game.Ping, "Main");
                         }
                     }
                     else
                     {
-                        itemManager.PickUpItems("item_boots", "item_ring_of_protection", "item_ring_of_regen");
+                        if (
+                            ObjectManager.GetEntitiesParallel<PhysicalItem>()
+                                .Any(
+                                    x =>
+                                        x.IsValid && x.Distance2D(Hero) < 400
+                                        && itemManager.TranquilBoots.RequiredItems.Contains((ItemId)x.Item.ID)))
+                        {
+                            itemManager.PickUpItems(itemManager.TranquilBoots.RequiredItems);
+                            Sleeper.Sleep(200 + Game.Ping, "Main");
+                            return;
+                        }
+
+                        foreach (
+                            var item in
+                            Hero.Inventory.Items.Concat(Hero.Inventory.Backpack)
+                                .Where(
+                                    x =>
+                                        x.IsCombineLocked
+                                        && itemManager.TranquilBoots.RequiredItems.Contains((ItemId)x.ID)))
+                        {
+                            item.UnlockCombining();
+                        }
+
                         Sleeper.Sleep(300 + Game.Ping, "Main");
                     }
                 }
@@ -355,22 +367,17 @@
                         Sleeper.Sleep(200 + Game.Ping, "Main");
                         return;
                     }
-                    if (regen != null && !regen.IsCombineLocked)
+
+                    if (
+                        ObjectManager.GetEntitiesParallel<PhysicalItem>()
+                            .Any(
+                                x =>
+                                    x.IsValid && x.Distance2D(Hero) < 400
+                                    && itemManager.TranquilBoots.RequiredItems.Contains((ItemId)x.Item.ID)))
                     {
-                        regen.LockCombining();
-                    }
-                    else if (regen == null)
-                    {
-                        itemManager.PickUpItems("item_ring_of_regen");
+                        itemManager.PickUpItems(itemManager.TranquilBoots.RequiredItems);
                         Sleeper.Sleep(200 + Game.Ping, "Main");
-                    }
-                    else
-                    {
-                        if (Hero.FindItem("item_boots") == null || Hero.FindItem("item_ring_of_protection") == null)
-                        {
-                            itemManager.PickUpItems("item_boots", "item_ring_of_protection");
-                            Sleeper.Sleep(200 + Game.Ping, "Main");
-                        }
+                        return;
                     }
                 }
             }
@@ -402,11 +409,14 @@
 
         #region Methods
 
-        private bool EnemyNear()
+        private bool IsEnemyNear()
         {
             return
-                Heroes.GetByTeam(enemyTeam)
-                    .Any(x => x.IsAlive && x.Distance2D(Hero) <= Menu.Recovery.ForcePickEnemyDistance);
+                ObjectManager.GetEntitiesParallel<Hero>()
+                    .Any(
+                        x =>
+                            x.IsAlive && x.Team == enemyTeam
+                            && x.Distance2D(Hero) <= Menu.Recovery.ForcePickEnemyDistance);
         }
 
         private void UseAbility(ExecuteOrderEventArgs args)
@@ -431,8 +441,7 @@
                 return;
             }
 
-            if (ability.ManaCost <= Menu.PowerTreads.ManaThreshold
-                || abilityUpdater.IgnoredAbilities.Contains(ability.StoredName()))
+            if (ability.ManaCost <= Menu.PowerTreads.ManaThreshold)
             {
                 return;
             }

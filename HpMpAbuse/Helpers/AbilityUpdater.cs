@@ -1,12 +1,10 @@
 ﻿namespace HpMpAbuse.Helpers
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
     using Ensage;
     using Ensage.Common.Objects;
-    using Ensage.Common.Objects.UtilityObjects;
 
     using Menu;
 
@@ -14,14 +12,7 @@
     {
         #region Fields
 
-        public readonly List<string> IgnoredAbilities = new List<string>
-        {
-            "item_tpscroll",
-            "item_travel_boots",
-            "item_travel_boots_2"
-        };
-
-        private readonly List<string> addedAbilities = new List<string>();
+        private readonly List<uint> addedAbilities = new List<uint>();
 
         #endregion
 
@@ -29,18 +20,32 @@
 
         public AbilityUpdater()
         {
-            foreach (var ability in Hero.Spellbook.Spells.Reverse())
+            var abilities = Hero.Spellbook.Spells.ToList();
+            abilities.AddRange(
+                ObjectManager.GetEntities<Item>().Where(x => x.IsValid && x.Owner?.Handle == Hero.Handle));
+
+            foreach (var ability in abilities)
             {
-                if (!IgnoredAbilities.Contains(ability.StoredName()) && !ability.IsHidden && ability.GetManaCost(1) > 0)
+                if (IsValidAbility(ability))
                 {
                     Menu.AddAbility(ability.StoredName());
                 }
-                addedAbilities.Add(ability.StoredName());
+                addedAbilities.Add(ability.Handle);
             }
 
-            Sleeper.Sleep(5000, "AbilityUpdater");
-            Game.OnIngameUpdate += OnUpdate;
+            ObjectManager.OnAddEntity += ObjectManagerOnAddEntity;
         }
+
+        #endregion
+
+        #region Public Properties
+
+        public List<ClassID> IgnoredAbilities { get; } = new List<ClassID>
+        {
+            ClassID.CDOTA_Item_TeleportScroll,
+            ClassID.CDOTA_Item_BootsOfTravel,
+            ClassID.CDOTA_Item_BootsOfTravel_2
+        };
 
         #endregion
 
@@ -50,38 +55,35 @@
 
         private static MenuManager Menu => Variables.Menu;
 
-        private static MultiSleeper Sleeper => Variables.Sleeper;
-
         #endregion
 
         #region Public Methods and Operators
 
         public void OnClose()
         {
-            Game.OnIngameUpdate -= OnUpdate;
+            ObjectManager.OnAddEntity -= ObjectManagerOnAddEntity;
         }
 
         #endregion
 
         #region Methods
 
-        private void OnUpdate(EventArgs args)
+        private bool IsValidAbility(Ability ability)
         {
-            if (Sleeper.Sleeping("AbilityUpdater"))
+            return ability.IsValid && !ability.IsHidden && ability.GetManaCost(0) > 0
+                   && !IgnoredAbilities.Contains(ability.ClassID) && !addedAbilities.Contains(ability.Handle);
+        }
+
+        private void ObjectManagerOnAddEntity(EntityEventArgs args)
+        {
+            var ability = args.Entity as Ability;
+
+            if (ability == null || ability.Owner?.Handle != Hero.Handle || !IsValidAbility(ability))
             {
                 return;
             }
 
-            Sleeper.Sleep(3000, "AbilityUpdater");
-
-            foreach (var ability in Hero.Inventory.Items.Where(x => !addedAbilities.Contains(x.StoredName())))
-            {
-                if (!IgnoredAbilities.Contains(ability.StoredName()) && ability.GetManaCost(1) > 0)
-                {
-                    Menu.AddAbility(ability.StoredName());
-                }
-                addedAbilities.Add(ability.StoredName());
-            }
+            Menu.AddAbility(ability.StoredName());
         }
 
         #endregion

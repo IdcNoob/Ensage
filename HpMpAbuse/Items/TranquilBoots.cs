@@ -1,6 +1,9 @@
 ﻿namespace HpMpAbuse.Items
 {
+    using System.Collections.Generic;
+
     using Ensage;
+    using Ensage.Common.Enums;
     using Ensage.Common.Extensions;
 
     internal class TranquilBoots
@@ -17,6 +20,13 @@
         #region Public Properties
 
         public Item Item { get; private set; }
+
+        public List<ItemId> RequiredItems { get; } = new List<ItemId>
+        {
+            ItemId.item_ring_of_regen,
+            ItemId.item_ring_of_protection,
+            ItemId.item_boots
+        };
 
         #endregion
 

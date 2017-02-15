@@ -5,8 +5,8 @@
     using System.Linq;
 
     using Ensage;
+    using Ensage.Common.Enums;
     using Ensage.Common.Extensions;
-    using Ensage.Common.Objects;
     using Ensage.Common.Objects.UtilityObjects;
 
     using Helpers;
@@ -79,16 +79,22 @@
 
         #region Public Methods and Operators
 
-        public void DropItem(Item item, bool queue = true)
+        public void DropItem(Item item, bool queue = true, bool forceDrop = false)
         {
             SaveItemSlot(item);
 
-            if (Menu.Recovery.ItemsToBackPack && Hero.ActiveShop == ShopType.None)
+            if (Menu.Recovery.ItemsToBackPack && Hero.ActiveShop == ShopType.None && !forceDrop)
             {
+                if (Sleeper.Sleeping("disabled" + item.Handle))
+                {
+                    return;
+                }
+
                 item.MoveItem(ItemSlot.BackPack_1);
                 var itemSlot = itemSlots.First(x => x.Value.Equals(item)).Key;
                 item.MoveItem(itemSlot);
                 itemSlots.Remove(itemSlot);
+                Sleeper.Sleep(6000, "disabled" + item.Handle);
                 return;
             }
 
@@ -119,10 +125,10 @@
             UsableItems.Clear();
         }
 
-        public void PickUpItems(params string[] itemNames)
+        public void PickUpItems(IEnumerable<ItemId> itemIds)
         {
-            var items = ObjectManager.GetEntities<PhysicalItem>().Where(x => itemNames.Contains(x.Item.StoredName()));
-            foreach (var item in items)
+            foreach (var item in
+                ObjectManager.GetEntitiesParallel<PhysicalItem>().Where(x => itemIds.Contains((ItemId)x.Item.ID)))
             {
                 Hero.PickUpItem(item);
             }
@@ -143,7 +149,7 @@
             }
 
             var items =
-                ObjectManager.GetEntities<PhysicalItem>()
+                ObjectManager.GetEntitiesParallel<PhysicalItem>()
                     .Where(x => x.Distance2D(Hero) < 350 && (all || droppedItems.Contains(x.Item.Handle)))
                     .ToList();
 
