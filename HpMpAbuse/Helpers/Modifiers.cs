@@ -54,6 +54,8 @@
 
         public static string FountainRegeneration { get; } = "modifier_fountain_aura_buff";
 
+        public static string ShrineRegeneration { get; } = "modifier_filler_heal";
+
         public static string UrnRegeneration { get; } = "modifier_item_urn_heal";
 
         #endregion

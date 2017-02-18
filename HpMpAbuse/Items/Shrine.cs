@@ -51,7 +51,11 @@
 
         public override bool CanBeCasted()
         {
-            return !Sleeper.Sleeping(Name) && Hero.HasModifier("modifier_filler_heal");
+            return !Sleeper.Sleeping(Name) && Hero.HasModifier(Modifiers.ShrineRegeneration);
+        }
+
+        public override void FindItem()
+        {
         }
 
         public override Attribute GetPowerTreadsAttribute()

@@ -146,6 +146,11 @@
                 case Order.ToggleAbility:
                     if (!args.IsQueued)
                     {
+                        if (args.Ability.IsAbilityBehavior(AbilityBehavior.Channeled))
+                        {
+                            itemManager.Bottle.SetSleep(args.Ability.ChannelTime() * 1000);
+                        }
+
                         if (abilityUpdater.IgnoredAbilities.Contains(args.Ability.ClassID))
                         {
                             Sleeper.Sleep(1000, "Main");
@@ -345,8 +350,7 @@
                             return;
                         }
 
-                        foreach (
-                            var item in
+                        foreach (var item in
                             Hero.Inventory.Items.Concat(Hero.Inventory.Backpack)
                                 .Where(
                                     x =>
@@ -388,7 +392,8 @@
             }
 
             if (!Sleeper.Sleeping("SwitchBackPT") && !itemManager.PowerTreads.DelaySwitch()
-                && itemManager.PowerTreads.ActiveAttribute != itemManager.PowerTreads.DefaultAttribute && !healing)
+                && itemManager.PowerTreads.ActiveAttribute != itemManager.PowerTreads.DefaultAttribute && !healing
+                && !Hero.IsChanneling())
             {
                 if (heroAttacking)
                 {

@@ -104,7 +104,7 @@
 
         public void SwitchTo(Attribute attribute)
         {
-            if (!CanBeCasted() || (IsDisabled() && !Menu.Recovery.Active))
+            if (!CanBeCasted() || !IsValid() || IsDisabled() && !Menu.Recovery.Active)
             {
                 return;
             }
