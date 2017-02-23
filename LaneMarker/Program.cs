@@ -28,14 +28,15 @@
 
         private static readonly float[][] CoordinateMultiplayers =
         {
-            new[] { 0.19f, 0.96f }, // radiant safe
-            new[] { 0.13f, 0.90f }, // radiant mid
-            new[] { 0.09f, 0.86f }, // radiant hard
-            new[] { 0.16f, 0.94f }, // radiant jungle
-            new[] { 0.11f, 0.81f }, // dire safe
-            new[] { 0.16f, 0.87f }, // dire mid
-            new[] { 0.21f, 0.90f }, // dire hard
-            new[] { 0.13f, 0.83f } // dire jungle
+            //          16:9          16:10          4:3
+            new[] { 0.19f, 0.96f, 0.16f, 0.96f, 0.18f, 0.95f }, // radiant safe
+            new[] { 0.13f, 0.89f, 0.09f, 0.89f, 0.09f, 0.89f }, // radiant mid
+            new[] { 0.08f, 0.85f, 0.04f, 0.85f, 0.03f, 0.85f }, // radiant hard
+            new[] { 0.15f, 0.93f, 0.12f, 0.93f, 0.12f, 0.93f }, // radiant jungle
+            new[] { 0.11f, 0.81f, 0.06f, 0.81f, 0.06f, 0.80f }, // dire safe
+            new[] { 0.15f, 0.87f, 0.11f, 0.87f, 0.12f, 0.87f }, // dire mid
+            new[] { 0.21f, 0.92f, 0.18f, 0.91f, 0.20f, 0.91f }, // dire hard
+            new[] { 0.13f, 0.83f, 0.09f, 0.82f, 0.09f, 0.83f }, // dire jungle
         };
 
         private static readonly string[] LaneList = { "None", "Safe", "Mid", "Hard", "Jungle" };
@@ -98,6 +99,8 @@
         private static bool displayTempName;
 
         private static bool locked;
+
+        private static int ratio;
 
         private static int selectedLane;
 
@@ -248,6 +251,22 @@
 
         private static void Main()
         {
+            var sizeX = HUDInfo.ScreenSizeX();
+            var sizeY = HUDInfo.ScreenSizeY();
+
+            if ((sizeX / sizeY).Equals((float)16 / 9))
+            {
+                ratio = 0;
+            }
+            else if ((sizeX / sizeY).Equals((float)16 / 10))
+            {
+                ratio = 2;
+            }
+            else
+            {
+                ratio = 4;
+            }
+
             Menu.AddItem(new MenuItem("laneKey", "Change lane key").SetValue(new KeyBind(9, KeyBindType.Press)))
                 .SetTooltip("Only works when not in game");
             Menu.AddItem(new MenuItem("lockKey", "Lock/Clear").SetValue(new KeyBind(17, KeyBindType.Press)))
@@ -301,7 +320,7 @@
                 var team = ObjectManager.LocalPlayer.Team == Team.Radiant ? 0 : LaneList.Length - 1;
                 var xy = CoordinateMultiplayers[selectedLane - 1 + team];
 
-                SetCursorPos((int)(HUDInfo.ScreenSizeX() * xy[0]), (int)(HUDInfo.ScreenSizeY() * xy[1]));
+                SetCursorPos((int)(HUDInfo.ScreenSizeX() * xy[0 + ratio]), (int)(HUDInfo.ScreenSizeY() * xy[1 + ratio]));
                 mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
 
                 var sayTextIndex = Menu.Item(LaneList[selectedLane] + "Text").GetValue<StringList>().SelectedIndex;
