@@ -118,7 +118,7 @@
             { "Weaver​", "npc_dota_hero_weaver" },
             { "Windranger​, Windrunner, WR", "npc_dota_hero_windrunner" },
             { "Winter Wyvern, WW​​", "npc_dota_hero_winter_wyvern" },
-            { "Wraith King​, Leoric, Skeleton King WK", "npc_dota_hero_skeleton_king" },
+            { "Wraith King​, Leoric, Skeleton King, WK", "npc_dota_hero_skeleton_king" },
             { "Witch Doctor​", "npc_dota_hero_witch_doctor" }
         };
 

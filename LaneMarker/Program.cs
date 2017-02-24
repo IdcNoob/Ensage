@@ -26,17 +26,17 @@
 
         #region Static Fields
 
-        private static readonly float[][] CoordinateMultiplayers =
+        private static readonly double[,,] CoordinateMultiplayers =
         {
-            //          16:9          16:10          4:3
-            new[] { 0.19f, 0.96f, 0.16f, 0.96f, 0.18f, 0.95f }, // radiant safe
-            new[] { 0.13f, 0.89f, 0.09f, 0.89f, 0.09f, 0.89f }, // radiant mid
-            new[] { 0.08f, 0.85f, 0.04f, 0.85f, 0.03f, 0.85f }, // radiant hard
-            new[] { 0.15f, 0.93f, 0.12f, 0.93f, 0.12f, 0.93f }, // radiant jungle
-            new[] { 0.11f, 0.81f, 0.06f, 0.81f, 0.06f, 0.80f }, // dire safe
-            new[] { 0.15f, 0.87f, 0.11f, 0.87f, 0.12f, 0.87f }, // dire mid
-            new[] { 0.21f, 0.92f, 0.18f, 0.91f, 0.20f, 0.91f }, // dire hard
-            new[] { 0.13f, 0.83f, 0.09f, 0.82f, 0.09f, 0.83f }, // dire jungle
+            //     16:9            16:10            4:3
+            { { 0.19, 0.96 }, { 0.16, 0.96 }, { 0.18, 0.95 } }, // radiant safe
+            { { 0.13, 0.89 }, { 0.09, 0.89 }, { 0.09, 0.89 } }, // radiant mid
+            { { 0.08, 0.85 }, { 0.04, 0.85 }, { 0.03, 0.85 } }, // radiant hard
+            { { 0.15, 0.93 }, { 0.12, 0.93 }, { 0.12, 0.93 } }, // radiant jungle
+            { { 0.11, 0.81 }, { 0.06, 0.81 }, { 0.06, 0.80 } }, // dire safe
+            { { 0.15, 0.87 }, { 0.11, 0.87 }, { 0.12, 0.87 } }, // dire mid
+            { { 0.21, 0.92 }, { 0.18, 0.91 }, { 0.20, 0.91 } }, // dire hard
+            { { 0.13, 0.83 }, { 0.09, 0.82 }, { 0.09, 0.83 } }, // dire jungle
         };
 
         private static readonly string[] LaneList = { "None", "Safe", "Mid", "Hard", "Jungle" };
@@ -100,7 +100,7 @@
 
         private static bool locked;
 
-        private static int ratio;
+        private static int ratioAdjustment;
 
         private static int selectedLane;
 
@@ -172,6 +172,7 @@
             {
                 DelayAction.Add(Menu.Item("delay").GetValue<Slider>().Value, Pick);
                 Unsub();
+                return;
             }
 
             if (!Utils.SleepCheck("laneMarker.Name"))
@@ -251,22 +252,6 @@
 
         private static void Main()
         {
-            var sizeX = HUDInfo.ScreenSizeX();
-            var sizeY = HUDInfo.ScreenSizeY();
-
-            if ((sizeX / sizeY).Equals((float)16 / 9))
-            {
-                ratio = 0;
-            }
-            else if ((sizeX / sizeY).Equals((float)16 / 10))
-            {
-                ratio = 2;
-            }
-            else
-            {
-                ratio = 4;
-            }
-
             Menu.AddItem(new MenuItem("laneKey", "Change lane key").SetValue(new KeyBind(9, KeyBindType.Press)))
                 .SetTooltip("Only works when not in game");
             Menu.AddItem(new MenuItem("lockKey", "Lock/Clear").SetValue(new KeyBind(17, KeyBindType.Press)))
@@ -281,8 +266,8 @@
                 .SetTooltip("This will be said in team chat");
             Menu.AddItem(new MenuItem("JungleText", "Jungle text").SetValue(new StringList(SayText[3])))
                 .SetTooltip("This will be said in team chat");
-            Menu.AddItem(new MenuItem("delay", "Delay").SetValue(new Slider(0, 0, 2000)))
-                .SetTooltip("Add delay before picking/marking");
+            Menu.AddItem(new MenuItem("delay", "Delay").SetValue(new Slider(300, 300, 2000)))
+                .SetTooltip("Add delay before picking/marking if it's not working");
 
             selectedLane = Menu.Item("defaultLane").GetValue<StringList>().SelectedIndex;
 
@@ -303,6 +288,21 @@
                     Width = 12
                 });
 
+            var ratio = HUDInfo.ScreenSizeX() / HUDInfo.ScreenSizeY();
+
+            if (ratio.Equals((float)16 / 9))
+            {
+                ratioAdjustment = 0;
+            }
+            else if (ratio.Equals((float)16 / 10))
+            {
+                ratioAdjustment = 1;
+            }
+            else
+            {
+                ratioAdjustment = 2;
+            }
+
             Events.OnClose += (sender, args) => { Sub(); };
             Events.OnLoad += (sender, args) => { Unsub(); };
 
@@ -317,10 +317,11 @@
         {
             if (selectedLane != 0)
             {
-                var team = ObjectManager.LocalPlayer.Team == Team.Radiant ? 0 : LaneList.Length - 1;
-                var xy = CoordinateMultiplayers[selectedLane - 1 + team];
+                var teamAdjustment = ObjectManager.LocalPlayer.Team == Team.Radiant ? 0 : LaneList.Length - 1;
+                var xMult = CoordinateMultiplayers[selectedLane - 1 + teamAdjustment, ratioAdjustment, 0];
+                var yMult = CoordinateMultiplayers[selectedLane - 1 + teamAdjustment, ratioAdjustment, 1];
 
-                SetCursorPos((int)(HUDInfo.ScreenSizeX() * xy[0 + ratio]), (int)(HUDInfo.ScreenSizeY() * xy[1 + ratio]));
+                SetCursorPos((int)(HUDInfo.ScreenSizeX() * xMult), (int)(HUDInfo.ScreenSizeY() * yMult));
                 mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
 
                 var sayTextIndex = Menu.Item(LaneList[selectedLane] + "Text").GetValue<StringList>().SelectedIndex;

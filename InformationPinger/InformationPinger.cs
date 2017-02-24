@@ -83,7 +83,7 @@
                         .Where(
                             x =>
                                 x.IsValid && x.Team == EnemyTeam && !x.IsIllusion && x.IsVisible
-                                && !heroesPinger.Select(z => z.Handle).Contains(x.Handle)))
+                                && !heroesPinger.Exists(z => z.Handle == x.Handle)))
                 {
                     var heroPinger = new HeroPinger(enemy);
                     if (loadedAfterGameStart)

@@ -21,12 +21,6 @@
 
     internal class VisionControl
     {
-        #region Static Fields
-
-        private static Font textFont;
-
-        #endregion
-
         #region Fields
 
         private readonly List<EnemyHero> enemyHeroes = new List<EnemyHero>();
@@ -40,6 +34,8 @@
         private Team heroTeam;
 
         private MultiSleeper sleeper;
+
+        private Font textFont;
 
         #endregion
 
