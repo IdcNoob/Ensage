@@ -1,5 +1,6 @@
 ﻿namespace ItemManager.Core
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -9,6 +10,7 @@
     using Ensage.Common;
     using Ensage.Common.Enums;
     using Ensage.Common.Extensions;
+    using Ensage.Common.Objects.UtilityObjects;
 
     using Menus.RapierAbuse;
 
@@ -41,7 +43,8 @@
         {
             AbilityId.kunkka_tidebringer,
             AbilityId.sniper_assassinate,
-            AbilityId.monkey_king_boundless_strike
+            AbilityId.monkey_king_boundless_strike,
+            AbilityId.phantom_assassin_stifling_dagger
         };
 
         private readonly Hero hero;
@@ -65,6 +68,7 @@
             hero = myHero;
             items = myItems;
             menu = rapierAbuseMenu;
+            delayDisassemble = new Sleeper();
 
             if (items.GetMyItems(Items.StoredPlace.All).ToList().Exists(x => (ItemId)x.ID == ItemId.item_rapier))
             {
@@ -96,7 +100,7 @@
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!args.Entities.Contains(hero) || !menu.AbuseEnabled)
+            if (!args.Entities.Contains(hero) || !menu.AbuseEnabled || delayDisassemble.Sleeping)
             {
                 return;
             }
@@ -129,15 +133,25 @@
                     }
 
                     items.UnlockCombining(requiredItems);
-                    DelayAction.Add(
-                        (float)args.Ability.FindCastPoint() + Game.Ping + 1000,
-                        () => items.Disassemble(ItemId.item_rapier));
+
+                    var delay = (float)args.Ability.FindCastPoint() + Game.Ping + 500;
+                    var speed = args.Ability.GetProjectileSpeed();
+
+                    if (speed > 0)
+                    {
+                        delay += hero.Distance2D(args.Target) / speed * 1000;
+                        delayDisassemble.Sleep(delay);
+                    }
+
+                    DelayAction.Add(delay, () => items.Disassemble(ItemId.item_rapier));
                     break;
                 default:
                     items.Disassemble(ItemId.item_rapier);
                     break;
             }
         }
+
+        private readonly Sleeper delayDisassemble;
 
         private void OnInt32PropertyChange(Entity sender, Int32PropertyChangeEventArgs args)
         {
