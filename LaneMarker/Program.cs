@@ -290,11 +290,11 @@
 
             var ratio = HUDInfo.ScreenSizeX() / HUDInfo.ScreenSizeY();
 
-            if (ratio.Equals((float)16 / 9))
+            if (Math.Abs(ratio - (float)16 / 9) < 0.1)
             {
                 ratioAdjustment = 0;
             }
-            else if (ratio.Equals((float)16 / 10))
+            else if (Math.Abs(ratio - (float)16 / 10) < 0.1)
             {
                 ratioAdjustment = 1;
             }
