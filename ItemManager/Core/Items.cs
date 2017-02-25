@@ -139,7 +139,7 @@
             return itemSlots.FirstOrDefault(x => x.Key.Equals(item)).Value;
         }
 
-        public ItemSlot? GetSlot(Item item, StoredPlace storedPlace)
+        public ItemSlot? GetSlot(ItemId itemId, StoredPlace storedPlace)
         {
             var start = ItemSlot.InventorySlot_1;
             var end = ItemSlot.StashSlot_6;
@@ -161,7 +161,7 @@
             for (var i = start; i <= end; i++)
             {
                 var currentItem = hero.Inventory.GetItem(i);
-                if (currentItem != null && currentItem.Equals(item))
+                if (currentItem != null && (ItemId)currentItem.ID == itemId)
                 {
                     return i;
                 }
@@ -178,7 +178,7 @@
 
         public void SaveItemSlot(Item item)
         {
-            var slot = GetSlot(item, StoredPlace.All);
+            var slot = GetSlot((ItemId)item.ID, StoredPlace.All);
             if (slot != null)
             {
                 itemSlots[item] = slot.Value;

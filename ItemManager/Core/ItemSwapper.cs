@@ -5,6 +5,7 @@
     using System.Linq;
 
     using Ensage;
+    using Ensage.Common.Enums;
 
     using Menus.ItemSwap;
 
@@ -30,6 +31,7 @@
 
             itemSwapMenu.Backpack.OnSwap += BackpackOnSwap;
             itemSwapMenu.Stash.OnSwap += StashOnSwap;
+            Unit.OnModifierAdded += OnModifierAdded;
         }
 
         #endregion
@@ -40,6 +42,7 @@
         {
             menu.Backpack.OnSwap -= BackpackOnSwap;
             menu.Stash.OnSwap -= StashOnSwap;
+            Unit.OnModifierAdded -= OnModifierAdded;
         }
 
         #endregion
@@ -110,7 +113,7 @@
 
                 if (swapItem != null)
                 {
-                    var slot = items.GetSlot(swapItem, direction);
+                    var slot = items.GetSlot((ItemId)swapItem.ID, direction);
                     if (slot != null)
                     {
                         item.MoveItem(slot.Value);
@@ -129,6 +132,27 @@
                         MoveItem(item, allSlots.First(), freeSlots, allSlots, direction);
                     }
                 }
+            }
+        }
+
+        private void OnModifierAdded(Unit sender, ModifierChangedEventArgs args)
+        {
+            if (!menu.AutoSwapTpScroll || sender.Handle != hero.Handle || args.Modifier.TextureName != "item_tpscroll")
+            {
+                return;
+            }
+
+            var backpackItem =
+                items.GetMyItems(Items.StoredPlace.Backpack).OrderByDescending(x => x.Cost).FirstOrDefault();
+            if (backpackItem == null)
+            {
+                return;
+            }
+
+            var scrollSlot = items.GetSlot(ItemId.item_tpscroll, Items.StoredPlace.Inventory);
+            if (scrollSlot != null)
+            {
+                backpackItem.MoveItem(scrollSlot.Value);
             }
         }
 

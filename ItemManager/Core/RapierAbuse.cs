@@ -1,6 +1,5 @@
 ﻿namespace ItemManager.Core
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -17,6 +16,8 @@
     internal class RapierAbuse
     {
         #region Fields
+
+        private readonly Sleeper delayDisassemble;
 
         private readonly string[] disableModifiers =
         {
@@ -150,8 +151,6 @@
                     break;
             }
         }
-
-        private readonly Sleeper delayDisassemble;
 
         private void OnInt32PropertyChange(Entity sender, Int32PropertyChangeEventArgs args)
         {

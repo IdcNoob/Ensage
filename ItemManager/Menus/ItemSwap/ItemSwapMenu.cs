@@ -28,12 +28,21 @@ namespace ItemManager.Menus.ItemSwap
             force.ValueChanged += (sender, args) => ForceItemSwap = args.GetNewValue<bool>();
             ForceItemSwap = force.IsActive();
 
+            var autoScrollMove =
+                new MenuItem("autoScrollMoveBackpack", "Auto swap tp scroll").SetValue(false)
+                    .SetTooltip("Auto swap tp scroll with most valuable backpack item when used");
+            menu.AddItem(autoScrollMove);
+            autoScrollMove.ValueChanged += (sender, args) => AutoSwapTpScroll = args.GetNewValue<bool>();
+            AutoSwapTpScroll = autoScrollMove.IsActive();
+
             mainMenu.AddSubMenu(menu);
         }
 
         #endregion
 
         #region Public Properties
+
+        public bool AutoSwapTpScroll { get; private set; }
 
         public Backpack Backpack { get; }
 
