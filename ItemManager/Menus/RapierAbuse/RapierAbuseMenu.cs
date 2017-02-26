@@ -1,5 +1,9 @@
 namespace ItemManager.Menus.RapierAbuse
 {
+    using System;
+
+    using Args;
+
     using Ensage.Common.Menu;
 
     internal class RapierAbuseMenu
@@ -10,10 +14,18 @@ namespace ItemManager.Menus.RapierAbuse
         {
             var menu = new Menu("Rapier abuse", "rapierAbuse");
 
-            var abuse = new MenuItem("rapierAbuseEnabled", "Combine abuse").SetValue(false);
+            var abuse = new MenuItem("rapierAbuseEnabled", "Auto combine abuse").SetValue(false);
             menu.AddItem(abuse);
             abuse.ValueChanged += (sender, args) => AbuseEnabled = args.GetNewValue<bool>();
             AbuseEnabled = abuse.IsActive();
+
+            var manualAbuse =
+                new MenuItem("rapierManualAbuseEnabled", "Manual combine abuse").SetValue(
+                    new KeyBind('-', KeyBindType.Press)).SetTooltip("You can set it to your orbwalker key");
+            menu.AddItem(manualAbuse);
+            manualAbuse.ValueChanged +=
+                (sender, args) =>
+                    OnManualRapierAbuse?.Invoke(this, new BoolEventArgs(args.GetNewValue<KeyBind>().Active));
 
             var hpThreshold = new MenuItem("rapierhpThreshold", "HP Threshold").SetValue(new Slider(500, 0, 2000));
             menu.AddItem(hpThreshold);
@@ -30,6 +42,12 @@ namespace ItemManager.Menus.RapierAbuse
 
             mainMenu.AddSubMenu(menu);
         }
+
+        #endregion
+
+        #region Public Events
+
+        public event EventHandler<BoolEventArgs> OnManualRapierAbuse;
 
         #endregion
 

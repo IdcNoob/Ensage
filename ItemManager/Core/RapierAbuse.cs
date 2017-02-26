@@ -37,7 +37,8 @@
             "modifier_brewmaster_storm_cyclone",
             "modifier_invoker_deafening_blast_knockback",
             "modifier_pudge_meat_hook",
-            "modifier_heavens_halberd_debuff"
+            "modifier_heavens_halberd_debuff",
+            "modifier_legion_commander_duel"
         };
 
         private readonly List<AbilityId> enabledAbilities = new List<AbilityId>
@@ -60,6 +61,8 @@
             ItemId.item_relic
         };
 
+        private bool manualModeEnabled;
+
         #endregion
 
         #region Constructors and Destructors
@@ -76,6 +79,7 @@
                 Player.OnExecuteOrder += OnExecuteOrder;
                 Entity.OnInt32PropertyChange += OnInt32PropertyChange;
                 Unit.OnModifierAdded += OnModifierAdded;
+                menu.OnManualRapierAbuse += OnManualRapierAbuse;
             }
             else
             {
@@ -93,6 +97,7 @@
             Entity.OnInt32PropertyChange -= OnInt32PropertyChange;
             Unit.OnModifierAdded -= OnModifierAdded;
             items.OnItemChange -= OnItemChange;
+            menu.OnManualRapierAbuse -= OnManualRapierAbuse;
         }
 
         #endregion
@@ -101,7 +106,7 @@
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!args.Entities.Contains(hero) || !menu.AbuseEnabled || delayDisassemble.Sleeping)
+            if (!args.Entities.Contains(hero) || !menu.AbuseEnabled || delayDisassemble.Sleeping || manualModeEnabled)
             {
                 return;
             }
@@ -173,7 +178,23 @@
                 Player.OnExecuteOrder += OnExecuteOrder;
                 Entity.OnInt32PropertyChange += OnInt32PropertyChange;
                 Unit.OnModifierAdded += OnModifierAdded;
+                menu.OnManualRapierAbuse += OnManualRapierAbuse;
                 items.OnItemChange -= OnItemChange;
+            }
+        }
+
+        private void OnManualRapierAbuse(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (boolEventArgs.Enabled && hero.Health > menu.HpThreshold)
+            {
+                manualModeEnabled = true;
+                items.UnlockCombining(requiredItems);
+                DelayAction.Add(8000, TimeCheck);
+            }
+            else
+            {
+                manualModeEnabled = false;
+                items.Disassemble(ItemId.item_rapier);
             }
         }
 
