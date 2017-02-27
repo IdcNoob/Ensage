@@ -14,7 +14,7 @@
 
     using Utils = Ensage.Common.Utils;
 
-    internal class GoldSpender
+    internal class RapierAbuse
     {
         #region Fields
 
@@ -30,13 +30,14 @@
 
         #region Public Methods and Operators
 
-        public bool ShouldSpendGold(EvadableAbility ability)
+        public void Disassemble()
         {
-            if (sleeper.Sleeping)
-            {
-                return false;
-            }
+            Utils.Sleep(1000, "ItemManager.ForceRapierDisassemble");
+            sleeper.Sleep(1000);
+        }
 
+        public bool ShouldForceRapierDisassemble(EvadableAbility ability)
+        {
             float damage;
 
             try
@@ -57,13 +58,7 @@
             //  Debugger.WriteLine("// * Incoming damage: " + damage + " from: " + ability.Name);
             //  Debugger.WriteLine("// * HP left: " + Hero.Health);
 
-            return Hero.Health <= damage;
-        }
-
-        public void Spend()
-        {
-            Utils.Sleep(1000, "GoldSpender.ForceSpend");
-            sleeper.Sleep(1000);
+            return Hero.Health <= damage || ability.IsDisable;
         }
 
         #endregion

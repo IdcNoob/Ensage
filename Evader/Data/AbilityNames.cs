@@ -167,6 +167,8 @@
 
         public static string PhaseShift { get; } = "puck_phase_shift";
 
+        public static string RapierAbuse { get; } = "item_rapier";
+
         public static string SleightOfFist { get; } = "ember_spirit_sleight_of_fist";
 
         public static string SnowBall { get; } = "tusk_snowball";

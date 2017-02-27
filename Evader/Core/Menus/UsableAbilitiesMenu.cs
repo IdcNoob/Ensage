@@ -84,7 +84,7 @@
 
         #region Public Methods and Operators
 
-        public void AddAbility(string abilityName, AbilityType abilityType)
+        public void AddAbility(string abilityName, AbilityType abilityType, bool enabled = true)
         {
             switch (abilityType)
             {
@@ -93,7 +93,7 @@
                     {
                         return;
                     }
-                    counterAbilityToggler.Add(abilityName);
+                    counterAbilityToggler.Add(abilityName, enabled);
                     usableCounterAbilities.SetValue(counterAbilityToggler);
                     break;
                 case AbilityType.Blink:
@@ -101,7 +101,7 @@
                     {
                         return;
                     }
-                    blinkAbilityToggler.Add(abilityName);
+                    blinkAbilityToggler.Add(abilityName, enabled);
                     usableBlinkAbilities.SetValue(blinkAbilityToggler);
                     break;
                 case AbilityType.Disable:
@@ -109,7 +109,7 @@
                     {
                         return;
                     }
-                    disableAbilityToggler.Add(abilityName);
+                    disableAbilityToggler.Add(abilityName, enabled);
                     usableDiasbleAbilities.SetValue(disableAbilityToggler);
                     break;
             }

@@ -1,5 +1,6 @@
 ﻿namespace ItemManager.Core
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -17,7 +18,7 @@
     {
         #region Fields
 
-        private readonly Sleeper delayDisassemble;
+        private readonly Sleeper delayDisassemble = new Sleeper();
 
         private readonly string[] disableModifiers =
         {
@@ -49,6 +50,8 @@
             AbilityId.phantom_assassin_stifling_dagger
         };
 
+        private readonly Sleeper evaderCheck = new Sleeper();
+
         private readonly Hero hero;
 
         private readonly Items items;
@@ -72,13 +75,13 @@
             hero = myHero;
             items = myItems;
             menu = rapierAbuseMenu;
-            delayDisassemble = new Sleeper();
 
             if (items.GetMyItems(Items.StoredPlace.All).ToList().Exists(x => (ItemId)x.ID == ItemId.item_rapier))
             {
                 Player.OnExecuteOrder += OnExecuteOrder;
                 Entity.OnInt32PropertyChange += OnInt32PropertyChange;
                 Unit.OnModifierAdded += OnModifierAdded;
+                Game.OnUpdate += OnUpdate;
                 menu.OnManualRapierAbuse += OnManualRapierAbuse;
             }
             else
@@ -96,6 +99,7 @@
             Player.OnExecuteOrder -= OnExecuteOrder;
             Entity.OnInt32PropertyChange -= OnInt32PropertyChange;
             Unit.OnModifierAdded -= OnModifierAdded;
+            Game.OnUpdate -= OnUpdate;
             items.OnItemChange -= OnItemChange;
             menu.OnManualRapierAbuse -= OnManualRapierAbuse;
         }
@@ -178,6 +182,7 @@
                 Player.OnExecuteOrder += OnExecuteOrder;
                 Entity.OnInt32PropertyChange += OnInt32PropertyChange;
                 Unit.OnModifierAdded += OnModifierAdded;
+                Game.OnUpdate += OnUpdate;
                 menu.OnManualRapierAbuse += OnManualRapierAbuse;
                 items.OnItemChange -= OnItemChange;
             }
@@ -215,6 +220,17 @@
             {
                 items.Disassemble(ItemId.item_rapier);
             }
+        }
+
+        private void OnUpdate(EventArgs args)
+        {
+            if (evaderCheck.Sleeping || Utils.SleepCheck("ItemManager.ForceRapierDisassemble"))
+            {
+                return;
+            }
+
+            items.Disassemble(ItemId.item_rapier);
+            evaderCheck.Sleep(1000);
         }
 
         private void TimeCheck()

@@ -57,6 +57,7 @@ namespace Evader.Data
         public static Dictionary<string, uint> Vision { get; } = new Dictionary<string, uint>
         {
             { "shredder_timber_chain", 100 },
+            { "rattletrap_hookshot", 100 },
             { "weaver_shukuchi", 100 },
             { "invoker_tornado", 200 },
             { "tusk_ice_shards", 200 },

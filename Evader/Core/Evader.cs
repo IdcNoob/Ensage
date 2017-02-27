@@ -753,6 +753,14 @@
                 foreach (var priority in
                     ability.UseCustomPriority ? ability.Priority : Menu.Settings.DefaultPriority)
                 {
+                    if (Menu.UsableAbilities.Enabled(AbilityNames.RapierAbuse, AbilityType.Counter))
+                    {
+                        if (abilityUpdater.RapierAbuse.ShouldForceRapierDisassemble(ability))
+                        {
+                            abilityUpdater.RapierAbuse.Disassemble();
+                        }
+                    }
+
                     switch (priority)
                     {
                         case EvadePriority.Walk:
