@@ -20,6 +20,7 @@ namespace ItemManager.Menus.ItemSwap
 
             Backpack = new Backpack(menu);
             Stash = new Stash(menu);
+            Auto = new Auto(menu);
 
             var force =
                 new MenuItem("forceSwapBackpack", "Force swap").SetValue(false)
@@ -28,13 +29,6 @@ namespace ItemManager.Menus.ItemSwap
             force.ValueChanged += (sender, args) => ForceItemSwap = args.GetNewValue<bool>();
             ForceItemSwap = force.IsActive();
 
-            var autoScrollMove =
-                new MenuItem("autoScrollMoveBackpack", "Auto swap tp scroll").SetValue(false)
-                    .SetTooltip("Auto swap tp scroll with most valuable backpack item when used");
-            menu.AddItem(autoScrollMove);
-            autoScrollMove.ValueChanged += (sender, args) => AutoSwapTpScroll = args.GetNewValue<bool>();
-            AutoSwapTpScroll = autoScrollMove.IsActive();
-
             mainMenu.AddSubMenu(menu);
         }
 
@@ -42,7 +36,7 @@ namespace ItemManager.Menus.ItemSwap
 
         #region Public Properties
 
-        public bool AutoSwapTpScroll { get; private set; }
+        public Auto Auto { get; }
 
         public Backpack Backpack { get; }
 

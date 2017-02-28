@@ -53,6 +53,7 @@
     <Compile Include="Core\RapierAbuse.cs" />
     <Compile Include="Core\ItemSwapper.cs" />
     <Compile Include="Args\ItemEventArgs.cs" />
+    <Compile Include="Menus\ItemSwap\Auto.cs" />
     <Compile Include="Menus\ItemSwap\Backpack.cs" />
     <Compile Include="Menus\ItemSwap\Stash.cs" />
     <Compile Include="Menus\ItemSwap\ItemSwapMenu.cs" />

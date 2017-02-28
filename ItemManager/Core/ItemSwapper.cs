@@ -32,6 +32,7 @@
             itemSwapMenu.Backpack.OnSwap += BackpackOnSwap;
             itemSwapMenu.Stash.OnSwap += StashOnSwap;
             Unit.OnModifierAdded += OnModifierAdded;
+            ObjectManager.OnRemoveEntity += OnRemoveEntity;
         }
 
         #endregion
@@ -43,6 +44,7 @@
             menu.Backpack.OnSwap -= BackpackOnSwap;
             menu.Stash.OnSwap -= StashOnSwap;
             Unit.OnModifierAdded -= OnModifierAdded;
+            ObjectManager.OnRemoveEntity -= OnRemoveEntity;
         }
 
         #endregion
@@ -137,7 +139,7 @@
 
         private void OnModifierAdded(Unit sender, ModifierChangedEventArgs args)
         {
-            if (!menu.AutoSwapTpScroll || sender.Handle != hero.Handle || args.Modifier.TextureName != "item_tpscroll")
+            if (!menu.Auto.SwapTpScroll || sender.Handle != hero.Handle || args.Modifier.TextureName != "item_tpscroll")
             {
                 return;
             }
@@ -154,6 +156,30 @@
             {
                 backpackItem.MoveItem(scrollSlot.Value);
             }
+        }
+
+        private void OnRemoveEntity(EntityEventArgs args)
+        {
+            if (!menu.Auto.SwapCheeseAegis || args.Entity.Owner?.Handle != hero.Handle)
+            {
+                return;
+            }
+
+            var item = args.Entity as Item;
+            if (item == null || (ItemId)item.ID != ItemId.item_cheese && (ItemId)item.ID != ItemId.item_aegis)
+            {
+                return;
+            }
+
+            var freeSlots = hero.Inventory.FreeSlots.ToList();
+            if (!freeSlots.Any())
+            {
+                return;
+            }
+
+            var backpackItem =
+                items.GetMyItems(Items.StoredPlace.Backpack).OrderByDescending(x => x.Cost).FirstOrDefault();
+            backpackItem?.MoveItem(freeSlots.First());
         }
 
         private void StashOnSwap(object sender, EventArgs eventArgs)

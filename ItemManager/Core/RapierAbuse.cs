@@ -73,7 +73,8 @@
             items = myItems;
             menu = rapierAbuseMenu;
 
-            if (items.GetMyItems(Items.StoredPlace.All).ToList().Exists(x => (ItemId)x.ID == ItemId.item_rapier))
+            var currentItems = items.GetMyItems(Items.StoredPlace.All).Select(x => (ItemId)x.ID).ToList();
+            if (currentItems.Contains(ItemId.item_rapier) || requiredItems.All(x => currentItems.Contains(x)))
             {
                 Player.OnExecuteOrder += OnExecuteOrder;
                 Entity.OnInt32PropertyChange += OnInt32PropertyChange;
