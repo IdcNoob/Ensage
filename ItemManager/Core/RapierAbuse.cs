@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
 
     using Args;
 
@@ -26,24 +27,18 @@
             "modifier_obsidian_destroyer_astral_imprisonment_prison",
             "modifier_eul_cyclone",
             "modifier_invoker_tornado",
-            "modifier_bane_nightmare",
-            "modifier_shadow_shaman_shackles",
-            "modifier_axe_berserkers_call",
-            "modifier_storm_spirit_electric_vortex_pull",
-            "modifier_cyclone",
             "modifier_sheepstick_debuff",
             "modifier_shadow_shaman_voodoo",
             "modifier_lion_voodoo",
-            "modifier_sheepstick",
             "modifier_brewmaster_storm_cyclone",
             "modifier_invoker_deafening_blast_knockback",
-            "modifier_pudge_meat_hook",
-            "modifier_heavens_halberd_debuff",
-            "modifier_legion_commander_duel"
+            "modifier_heavens_halberd_debuff"
         };
 
         private readonly List<AbilityId> enabledAbilities = new List<AbilityId>
         {
+            AbilityId.tusk_walrus_punch,
+            AbilityId.ember_spirit_sleight_of_fist,
             AbilityId.kunkka_tidebringer,
             AbilityId.sniper_assassinate,
             AbilityId.monkey_king_boundless_strike,
@@ -63,6 +58,8 @@
             ItemId.item_demon_edge,
             ItemId.item_relic
         };
+
+        private CancellationTokenSource cts = new CancellationTokenSource();
 
         private bool manualModeEnabled;
 
@@ -131,7 +128,10 @@
                                 hero.Attack(target);
                             }
                         }
-                        DelayAction.Add(8000, TimeCheck);
+
+                        cts.Cancel();
+                        cts = new CancellationTokenSource();
+                        DelayAction.Add(8000, TimeCheck, cts.Token);
                     }
                     break;
                 case Order.AbilityTarget:
@@ -153,10 +153,24 @@
                         delayDisassemble.Sleep(delay);
                     }
 
-                    DelayAction.Add(delay, () => items.Disassemble(ItemId.item_rapier));
+                    var distance =
+                        Math.Max(
+                            (args.Target?.Position ?? args.TargetPosition).Distance2D(hero)
+                            - args.Ability.GetCastRange(),
+                            0) / hero.MovementSpeed * 1000;
+
+                    cts.Cancel();
+                    cts = new CancellationTokenSource();
+                    DelayAction.Add(delay + distance, () => items.Disassemble(ItemId.item_rapier), cts.Token);
                     break;
                 default:
+                    if (!cts.Token.IsCancellationRequested)
+                    {
+                        cts.Cancel();
+                    }
+
                     items.Disassemble(ItemId.item_rapier);
+                    delayDisassemble.Sleep(Game.Ping);
                     break;
             }
         }
@@ -194,7 +208,8 @@
             {
                 manualModeEnabled = true;
                 items.UnlockCombining(requiredItems);
-                DelayAction.Add(8000, TimeCheck);
+                cts = new CancellationTokenSource();
+                DelayAction.Add(8000, TimeCheck, cts.Token);
             }
             else
             {
@@ -216,7 +231,7 @@
                 return;
             }
 
-            if (modifier.IsStunDebuff || disableModifiers.Contains(modifier.Name))
+            if (disableModifiers.Contains(modifier.Name))
             {
                 items.Disassemble(ItemId.item_rapier);
             }
@@ -259,7 +274,8 @@
                     }
 
                     items.UnlockCombining(new[] { ItemId.item_demon_edge, ItemId.item_relic });
-                    DelayAction.Add(8000, TimeCheck);
+                    cts = new CancellationTokenSource();
+                    DelayAction.Add(8000, TimeCheck, cts.Token);
                 });
         }
 
