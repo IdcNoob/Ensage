@@ -45,8 +45,6 @@
 
         private Random randomiser;
 
-        private MultiSleeper sleeper;
-
         private StatusDrawer statusDrawer;
 
         #endregion
@@ -60,6 +58,8 @@
         private static MenuManager Menu => Variables.Menu;
 
         private static Pathfinder Pathfinder => Variables.Pathfinder;
+
+        private MultiSleeper sleeper => Variables.Sleeper;
 
         #endregion
 
@@ -224,7 +224,7 @@
             Variables.Menu = new MenuManager();
             Variables.Pathfinder = new Pathfinder();
 
-            sleeper = new MultiSleeper();
+            Variables.Sleeper = new MultiSleeper();
             statusDrawer = new StatusDrawer();
             abilityUpdater = new AbilityUpdater();
             randomiser = new Random();
@@ -750,17 +750,17 @@
                 var abilityOwner = ability.AbilityOwner;
                 var remainingTime = ability.GetRemainingTime(ally);
 
+                if (allyIsMe && Menu.UsableAbilities.Enabled(AbilityNames.RapierAbuse, AbilityType.Counter))
+                {
+                    if (abilityUpdater.RapierAbuse.ShouldForceRapierDisassemble(ability))
+                    {
+                        abilityUpdater.RapierAbuse.Disassemble();
+                    }
+                }
+
                 foreach (var priority in
                     ability.UseCustomPriority ? ability.Priority : Menu.Settings.DefaultPriority)
                 {
-                    if (allyIsMe && Menu.UsableAbilities.Enabled(AbilityNames.RapierAbuse, AbilityType.Counter))
-                    {
-                        if (abilityUpdater.RapierAbuse.ShouldForceRapierDisassemble(ability))
-                        {
-                            abilityUpdater.RapierAbuse.Disassemble();
-                        }
-                    }
-
                     switch (priority)
                     {
                         case EvadePriority.Walk:
@@ -793,7 +793,7 @@
                                         || Pathfinder.GetIntersectingObstacles(Hero.NetworkPosition, Hero.HullRadius)
                                             .Any())
                                     {
-                                        Debugger.WriteLine("moving into obstacle", Debugger.Type.AbilityUsage);
+                                        Debugger.WriteLine("moving into obstacle", Debugger.Type.Intersectons);
 
                                         var tempPath =
                                             Pathfinder.CalculatePathFromObstacle(

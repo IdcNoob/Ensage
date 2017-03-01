@@ -1,6 +1,7 @@
 ﻿namespace Evader.Core
 {
     using Ensage;
+    using Ensage.Common.Objects.UtilityObjects;
 
     using Menus;
 
@@ -17,6 +18,8 @@
         public static MenuManager Menu { get; set; }
 
         public static Pathfinder Pathfinder { get; set; }
+
+        public static MultiSleeper Sleeper { get; set; }
 
         #endregion
     }

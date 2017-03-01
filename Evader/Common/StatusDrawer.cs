@@ -5,6 +5,7 @@
 
     using Ensage;
     using Ensage.Common;
+    using Ensage.Common.Objects.UtilityObjects;
 
     using SharpDX;
 
@@ -16,6 +17,8 @@
 
         private const string Font = "Arial";
 
+        private const string MovementBlockedText = "Movement Blocked";
+
         private const string PathfinderText = "Pathfinder";
 
         #endregion
@@ -23,6 +26,8 @@
         #region Fields
 
         private readonly Vector2 evaderTextPosition;
+
+        private readonly Vector2 movementBlockedPosition;
 
         private readonly Vector2 pathfinderTextPosition;
 
@@ -42,11 +47,15 @@
             var x = HUDInfo.ScreenSizeX();
             var evaderTextSize = Drawing.MeasureText(EvaderText, Font, textSize, FontFlags.None);
             var pathfinderTextSize = Drawing.MeasureText(PathfinderText, Font, textSize, FontFlags.None);
+            var movementBlockedText = Drawing.MeasureText(MovementBlockedText, Font, textSize, FontFlags.None);
 
             evaderTextPosition = new Vector2(x - evaderTextSize.X - 10, evaderTextSize.Y + 25);
             pathfinderTextPosition = new Vector2(
                 x - pathfinderTextSize.X - 10,
                 pathfinderTextSize.Y + evaderTextPosition.Y);
+            movementBlockedPosition = new Vector2(
+                x - movementBlockedText.X - 10,
+                movementBlockedText.Y + pathfinderTextPosition.Y);
         }
 
         #endregion
@@ -54,6 +63,8 @@
         #region Properties
 
         private static HotkeysMenu Menu => Variables.Menu.Hotkeys;
+
+        private MultiSleeper sleeper => Variables.Sleeper;
 
         #endregion
 
@@ -71,6 +82,17 @@
             if (Menu.EnabledPathfinder)
             {
                 Drawing.DrawText(PathfinderText, Font, pathfinderTextPosition, textSize, textColor, FontFlags.None);
+            }
+
+            if (sleeper.Sleeping("avoiding") || sleeper.Sleeping("block"))
+            {
+                Drawing.DrawText(
+                    MovementBlockedText,
+                    Font,
+                    movementBlockedPosition,
+                    textSize,
+                    Color.Red,
+                    FontFlags.None);
             }
         }
 
