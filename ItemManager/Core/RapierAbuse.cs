@@ -130,9 +130,11 @@
                             }
                         }
 
-                        cts.Cancel();
-                        cts = new CancellationTokenSource();
-                        DelayAction.Add(8000, TimeCheck, cts.Token);
+                        if (cts.Token.IsCancellationRequested)
+                        {
+                            cts = new CancellationTokenSource();
+                            DelayAction.Add(8000, TimeCheck, cts.Token);
+                        }
                     }
                     break;
                 case Order.AbilityTarget:
