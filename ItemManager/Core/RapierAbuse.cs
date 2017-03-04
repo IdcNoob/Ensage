@@ -133,7 +133,7 @@
                         if (cts.Token.IsCancellationRequested)
                         {
                             cts = new CancellationTokenSource();
-                            DelayAction.Add(8000, TimeCheck, cts.Token);
+                            DelayAction.Add(6000, TimeCheck, cts.Token);
                         }
                     }
                     break;
@@ -202,6 +202,7 @@
                 Game.OnUpdate += OnUpdate;
                 menu.OnManualRapierAbuse += OnManualRapierAbuse;
                 items.OnItemChange -= OnItemChange;
+                items.Disassemble(ItemId.item_rapier);
             }
         }
 
@@ -212,7 +213,7 @@
                 manualModeEnabled = true;
                 items.UnlockCombining(requiredItems);
                 cts = new CancellationTokenSource();
-                DelayAction.Add(8000, TimeCheck, cts.Token);
+                DelayAction.Add(6000, TimeCheck, cts.Token);
             }
             else
             {
@@ -258,7 +259,7 @@
                     .Where(
                         x =>
                             (ItemId)x.ID == ItemId.item_rapier && x.AssembledTime + 10 > Game.RawGameTime
-                            && x.AssembledTime + 7 < Game.RawGameTime)
+                            && x.AssembledTime + 5 < Game.RawGameTime)
                     .ToList();
 
             if (!rapiers.Any())
@@ -278,7 +279,7 @@
 
                     items.UnlockCombining(new[] { ItemId.item_demon_edge, ItemId.item_relic });
                     cts = new CancellationTokenSource();
-                    DelayAction.Add(8000, TimeCheck, cts.Token);
+                    DelayAction.Add(6000, TimeCheck, cts.Token);
                 });
         }
 
