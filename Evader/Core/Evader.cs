@@ -732,7 +732,8 @@
                     .Where(x => x != null)
                     .OrderByDescending(x => x.IsDisable))
             {
-                if (ability == null || sleeper.Sleeping(ability))
+                if (ability == null || sleeper.Sleeping(ability)
+                    || ability.AbilityOwner.Distance2D(ally) > ability.Ability.GetCastRange() + 100)
                 {
                     continue;
                 }
