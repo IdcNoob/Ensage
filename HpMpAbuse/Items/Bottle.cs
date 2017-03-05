@@ -43,7 +43,8 @@
         public bool CanBeAutoCasted()
         {
             return base.CanBeCasted() && Item.CurrentCharges > 0 && Menu.Recovery.BottleAtFountain
-                   && !Hero.IsChanneling() && ((Ensage.Items.Bottle)Item).StoredRune == RuneType.None;
+                   && !Hero.IsChanneling() && ((Ensage.Items.Bottle)Item).StoredRune == RuneType.None
+                   && !Hero.HasModifiers(Modifiers.Invisibility, false);
         }
 
         public override bool CanBeCasted()
