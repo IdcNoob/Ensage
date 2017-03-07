@@ -80,11 +80,15 @@
             var positions = new Dictionary<string, float>();
             for (var i = 0; i < uniqueAbilities.Count; i++)
             {
+                var texture = uniqueAbilities[i].Contains("special_")
+                                  ? Drawing.GetTexture("materials/ensage_ui/other/chat_wheel/arrow_1")
+                                  : Drawing.GetTexture("materials/ensage_ui/spellicons/" + uniqueAbilities[i]);
+
                 Drawing.DrawRect(
                     new Vector2(xStart, yStart + i * 40 * ratio),
                     new Vector2(45 * ratio, 40 * ratio),
-                    Textures.GetSpellTexture(uniqueAbilities[i]));
-                positions.Add(uniqueAbilities[i], xStart + i * 40 * ratio - 63 * ratio);
+                    texture);
+                positions.Add(uniqueAbilities[i], yStart + i * 40 * ratio);
                 Drawing.DrawRect(
                     new Vector2(xStart - 2, yStart - 2 + i * 40 * ratio),
                     new Vector2((build.Count + 1) * 48 * ratio, 2),
@@ -98,10 +102,27 @@
 
             for (var i = 0; i < build.Count; i++)
             {
-                var number = (i + 1).ToString();
-                var size = Drawing.MeasureText(number, "Arial", new Vector2(35 * ratio), FontFlags.None);
+                var number = i + 1;
+
+                if (number >= 10)
+                {
+                    //skip level 10 (talent)
+                    number++;
+                }
+                if (number >= 15)
+                {
+                    //skip level 15 (talent)
+                    number++;
+                }
+                if (number >= 17)
+                {
+                    //skip level 17 (empty)
+                    number++;
+                }
+
+                var size = Drawing.MeasureText(number.ToString(), "Arial", new Vector2(35 * ratio), FontFlags.None);
                 Drawing.DrawText(
-                    number,
+                    number.ToString(),
                     "Arial",
                     new Vector2(
                         xStart + 45 * ratio + i * 48 * ratio + (48 * ratio - size.X) / 2,

@@ -161,6 +161,7 @@
                         html = streamReader.ReadToEnd();
                     }
                 }
+
                 var abilityBuild = Regex.Match(html, @"<div class=""skill-build"">.+?</div></div></div></div>");
 
                 while (abilityBuild.Success)
@@ -179,12 +180,12 @@
                         {
                             var name = abilityName.Groups[1].Value.Replace("&#39;", "\'");
 
-                            if (name == "Attribute Bonus")
+                            if (name.Contains("Talent:"))
                             {
-                                //temp attribute bonus fix
                                 break;
                             }
-                            else if (heroName == "queen-of-pain" && name == "Blink")
+
+                            if (heroName == "queen-of-pain" && name == "Blink")
                             {
                                 // Anti-Mage Blink conflict fix
                                 name = "Queen of Pain Blink";
@@ -202,8 +203,7 @@
                         {
                             Game.PrintMessage(
                                 "<font color='#FF0000'>[Simple Ability Leveling] Ability " + abilityName.Groups[1].Value
-                                + " not found<br>[Simple Ability Leveling] Report this on forum please</font>",
-                                MessageType.LogMessage);
+                                + " not found<br>[Simple Ability Leveling] Report this on forum please</font>");
                             error = true;
                         }
 
@@ -227,8 +227,7 @@
             {
                 Game.PrintMessage(
                     "<font color='#FF0000'>[Simple Ability Leveling] Something went wrong with " + hero.GetRealName()
-                    + " build<br>[Simple Ability Leveling] Report this on forum please</font>",
-                    MessageType.LogMessage);
+                    + " build<br>[Simple Ability Leveling] Report this on forum please</font>");
                 error = true;
             }
         }
