@@ -150,7 +150,7 @@
 
         public override float GetRequiredTime(EvadableAbility ability, Unit unit, float remainingTime)
         {
-            return Math.Max(ability.GetRemainingTime(Hero) - 0.1f, 0);
+            return Math.Max(Math.Min(ability.GetRemainingTime(Hero) - 0.15f, FullEnableTime), 0);
         }
 
         public override void Use(EvadableAbility ability, Unit target)
@@ -162,7 +162,7 @@
             Ability.ToggleAbility();
 
             manualDisable = false;
-            Sleep(800);
+            Sleep(FullEnableTime * 1000);
         }
 
         public override bool UseCustomSleep(out float sleepTime)
