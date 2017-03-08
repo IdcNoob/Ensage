@@ -751,14 +751,6 @@
                 var abilityOwner = ability.AbilityOwner;
                 var remainingTime = ability.GetRemainingTime(ally);
 
-                if (allyIsMe && Menu.UsableAbilities.Enabled(AbilityNames.RapierAbuse, AbilityType.Counter))
-                {
-                    if (abilityUpdater.RapierAbuse.ShouldForceRapierDisassemble(ability))
-                    {
-                        abilityUpdater.RapierAbuse.Disassemble();
-                    }
-                }
-
                 foreach (var priority in
                     ability.UseCustomPriority ? ability.Priority : Menu.Settings.DefaultPriority)
                 {

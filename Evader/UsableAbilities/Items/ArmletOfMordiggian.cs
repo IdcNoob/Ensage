@@ -191,12 +191,8 @@
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!args.Entities.Contains(Hero))
-            {
-                return;
-            }
-
-            if (args.Ability?.ClassID != ClassID.CDOTA_Item_Armlet)
+            if (!args.Entities.Contains(Hero) || args.Ability?.ClassID != ClassID.CDOTA_Item_Armlet
+                || args.Order != Order.ToggleAbility)
             {
                 return;
             }

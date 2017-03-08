@@ -46,7 +46,6 @@
             enemyAbilitiesData = new EnemyAbilities();
 
             Menu.UsableAbilities.AddAbility(AbilityNames.GoldSpender, AbilityType.Counter, false);
-            Menu.UsableAbilities.AddAbility(AbilityNames.RapierAbuse, AbilityType.Counter, false);
 
             Debugger.WriteLine("* Evader =>");
             Debugger.WriteLine("* Total abilities countered: " + enemyAbilitiesData.EvadableAbilities.Count);
@@ -68,8 +67,6 @@
         public List<EvadableAbility> EvadableAbilities { get; } = new List<EvadableAbility>();
 
         public GoldSpender GoldSpender { get; } = new GoldSpender();
-
-        public RapierAbuse RapierAbuse { get; } = new RapierAbuse();
 
         public List<UsableAbility> UsableAbilities { get; } = new List<UsableAbility>();
 

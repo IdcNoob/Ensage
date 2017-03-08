@@ -4,8 +4,6 @@
 
     using ItemSwap;
 
-    using RapierAbuse;
-
     internal class MenuManager
     {
         #region Fields
@@ -21,7 +19,6 @@
             menu = new Menu("Item Manager", "itemManager", true);
 
             ItemSwapMenu = new ItemSwapMenu(menu);
-            RapierAbuseMenu = new RapierAbuseMenu(menu);
 
             menu.AddToMainMenu();
         }
@@ -31,8 +28,6 @@
         #region Public Properties
 
         public ItemSwapMenu ItemSwapMenu { get; }
-
-        public RapierAbuseMenu RapierAbuseMenu { get; }
 
         #endregion
 

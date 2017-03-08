@@ -16,8 +16,6 @@
 
         private MenuManager menu;
 
-        private RapierAbuse rapierAbuse;
-
         #endregion
 
         #region Public Methods and Operators
@@ -26,7 +24,6 @@
         {
             menu.OnClose();
             items.OnClose();
-            rapierAbuse.OnClose();
             itemSwapper.OnClose();
         }
 
@@ -35,7 +32,6 @@
             hero = ObjectManager.LocalHero;
             menu = new MenuManager();
             items = new Items(hero, menu.ItemSwapMenu);
-            rapierAbuse = new RapierAbuse(hero, items, menu.RapierAbuseMenu);
             itemSwapper = new ItemSwapper(hero, items, menu.ItemSwapMenu);
         }
 

@@ -4,8 +4,6 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    using Args;
-
     using Ensage;
     using Ensage.Common;
     using Ensage.Common.Enums;
@@ -38,18 +36,11 @@
             {
                 itemSwapper.AddItem(item.Name);
                 items.Add(item);
-                OnItemChange?.Invoke(this, new ItemEventArgs((ItemId)item.ID, true));
             }
 
             ObjectManager.OnAddEntity += OnAddEntity;
             ObjectManager.OnRemoveEntity += OnRemoveEntity;
         }
-
-        #endregion
-
-        #region Public Events
-
-        public event EventHandler<ItemEventArgs> OnItemChange;
 
         #endregion
 
@@ -214,7 +205,6 @@
 
                     menu.AddItem(item.Name);
                     items.Add(item);
-                    OnItemChange?.Invoke(this, new ItemEventArgs((ItemId)item.ID, true));
                 });
         }
 
@@ -233,7 +223,6 @@
             }
 
             items.Remove(item);
-            OnItemChange?.Invoke(this, new ItemEventArgs((ItemId)item.ID, false));
         }
 
         #endregion

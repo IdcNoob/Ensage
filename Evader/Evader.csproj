@@ -395,7 +395,6 @@
     <Compile Include="UsableAbilities\Abilities\PhaseShift.cs" />
     <Compile Include="UsableAbilities\Base\TargetTree.cs" />
     <Compile Include="UsableAbilities\External\GoldSpender.cs" />
-    <Compile Include="UsableAbilities\External\RapierAbuse.cs" />
     <Compile Include="UsableAbilities\Items\ArmletOfMordiggian.cs" />
     <Compile Include="UsableAbilities\Items\BladeMail.cs" />
     <Compile Include="UsableAbilities\Items\Bloodstone.cs" />
