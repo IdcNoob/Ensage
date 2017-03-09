@@ -76,7 +76,9 @@
                 switch (itemID)
                 {
                     case 40: // dust
-                        if (GetItemCount(itemID) >= 2)
+                        if (GetItemCount(itemID) >= 2
+                            || !ObjectManager.GetEntitiesParallel<Ability>()
+                                .Any(x => x.Owner?.Team == enemyTeam && x.IsInvis()))
                         {
                             continue;
                         }
@@ -103,6 +105,12 @@
                         break;
                     case 188: // smoke
                         if (GetItemCount(itemID) >= 1)
+                        {
+                            continue;
+                        }
+                        break;
+                    case 257: // tome of knowledge
+                        if (Hero.Level >= 25)
                         {
                             continue;
                         }
