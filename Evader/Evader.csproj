@@ -36,7 +36,7 @@
     <Reference Include="Ensage">
       <HintPath>C:\BanIsComing\References\Ensage.dll</HintPath>
     </Reference>
-    <Reference Include="Ensage.Common, Version=1.2.5.4, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="Ensage.Common">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\BanIsComing\References\Ensage.Common.dll</HintPath>
     </Reference>

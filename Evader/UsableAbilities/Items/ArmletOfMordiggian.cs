@@ -24,9 +24,11 @@
     {
         #region Constants
 
-        private const string ArmletModifierName = "modifier_item_armlet_unholy_strength";
+        private const float ArmletFullEnableTime = 0.8f;
 
-        private const float FullEnableTime = 0.8f;
+        private const int ArmletHpGain = 475;
+
+        private const string ArmletModifierName = "modifier_item_armlet_unholy_strength";
 
         #endregion
 
@@ -113,33 +115,39 @@
             }
 
             var damageSource = ability.AbilityOwner;
+            var health = (int)unit.Health;
 
-            if (ability.IsDisable)
+            if (armletEnabled)
             {
-                var totalDamage = (damageSource.MinimumDamage + damageSource.BonusDamage)
-                                  * damageSource.AttacksPerSecond * 2;
-                var totalMana = damageSource.Mana;
-
-                foreach (var spell in damageSource.Spellbook.Spells.Where(x => x.Level > 0 && x.Cooldown <= 0))
-                {
-                    if (totalMana >= spell.ManaCost)
-                    {
-                        totalDamage += (int)Math.Round(AbilityDamage.CalculateDamage(spell, damageSource, unit));
-                        totalMana -= spell.ManaCost;
-                    }
-                }
-
-                return unit.Health <= totalDamage;
+                health = Math.Max(health - ArmletHpGain, 1);
             }
 
-            var damage = (int)Math.Round(AbilityDamage.CalculateDamage(ability.Ability, damageSource, unit));
+            //if (ability.IsDisable)
+            //{
+            //    var totalDamage = (damageSource.MinimumDamage + damageSource.BonusDamage)
+            //                      * damageSource.AttacksPerSecond * 2;
+            //    var totalMana = damageSource.Mana;
 
-            if (HpRestored(ability.GetRemainingTime(Hero)) < damage)
+            //    foreach (var spell in damageSource.Spellbook.Spells.Where(x => x.Level > 0 && x.Cooldown <= 0))
+            //    {
+            //        if (totalMana >= spell.ManaCost)
+            //        {
+            //            totalDamage += (int)Math.Round(AbilityDamage.CalculateDamage(spell, damageSource, unit));
+            //            totalMana -= spell.ManaCost;
+            //        }
+            //    }
+
+            //    return health <= totalDamage;
+            //}
+
+            var damage = Math.Round(AbilityDamage.CalculateDamage(ability.Ability, damageSource, unit));
+
+            if (HpRestored(ability.GetRemainingTime(Hero)) + health < damage)
             {
                 return false;
             }
 
-            return unit.Health <= damage;
+            return health <= damage;
         }
 
         public void Dispose()
@@ -150,7 +158,7 @@
 
         public override float GetRequiredTime(EvadableAbility ability, Unit unit, float remainingTime)
         {
-            return Math.Max(Math.Min(ability.GetRemainingTime(Hero) - 0.15f, FullEnableTime), 0);
+            return Math.Max(Math.Min(ability.GetRemainingTime(Hero) - 0.15f, ArmletFullEnableTime), 0);
         }
 
         public override void Use(EvadableAbility ability, Unit target)
@@ -162,7 +170,7 @@
             Ability.ToggleAbility();
 
             manualDisable = false;
-            Sleep(FullEnableTime * 1000);
+            Sleep(ArmletFullEnableTime * 1000);
         }
 
         public override bool UseCustomSleep(out float sleepTime)
@@ -178,7 +186,13 @@
         private static float HpRestored(float time)
         {
             time -= Game.Ping / 1000;
-            return Math.Min(time, FullEnableTime) * 475 / FullEnableTime;
+
+            if (time < 0)
+            {
+                return 0;
+            }
+
+            return Math.Min(time, ArmletFullEnableTime) * ArmletHpGain / ArmletFullEnableTime;
         }
 
         private bool DotModifiers(ParallelQuery<Unit> nearEnemies)
@@ -191,8 +205,8 @@
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!args.Entities.Contains(Hero) || args.Ability?.ClassID != ClassID.CDOTA_Item_Armlet
-                || args.Order != Order.ToggleAbility)
+            if (!Menu.ArmletAutoToggle || !args.Entities.Contains(Hero) || args.Order != Order.ToggleAbility
+                || args.Ability?.ClassID != ClassID.CDOTA_Item_Armlet)
             {
                 return;
             }
@@ -211,7 +225,7 @@
             else
             {
                 manualDisable = false;
-                Sleep(FullEnableTime * 1000);
+                Sleep(ArmletFullEnableTime * 1000);
             }
         }
 
@@ -251,7 +265,7 @@
 
                     if (enemy.AttackCapability == AttackCapability.Ranged)
                     {
-                        sleep += Hero.Distance2D(enemy) / (float)enemy.ProjectileSpeed();
+                        sleep += (Hero.Distance2D(enemy) - Hero.RingRadius) / (float)enemy.ProjectileSpeed();
                     }
 
                     attacking.Sleep(sleep, enemy);
@@ -276,13 +290,18 @@
 
             var heroProjectiles =
                 ObjectManager.TrackingProjectiles.Where(
-                    x => x?.Target is Hero && x.Source is Unit && x.Target.Equals(Hero)).ToList();
+                    x => x.Target?.Handle == Hero.Handle && x.Source is Unit).ToList();
 
             var noProjectiles =
                 heroProjectiles.All(
                     x =>
-                        x.Position.Distance2D(position) / x.Speed > 0.30
-                        || x.Position.Distance2D(position) / x.Speed < Game.Ping / 1000);
+                        HpRestored(Math.Max(x.Position.Distance2D(position) - Hero.RingRadius, 0) / x.Speed - 0.25f)
+                        > Math.Round(
+                            Hero.DamageTaken(
+                                ((Unit)x.Source).MinimumDamage + ((Unit)x.Source).BonusDamage,
+                                DamageType.Physical,
+                                (Unit)x.Source,
+                                minusArmor: 4)));
 
             var noAutoAttacks = nearEnemies.All(x => x.FindRelativeAngle(Hero.Position) > 0.5 || !attacking.Sleeping(x));
 

@@ -31,6 +31,7 @@
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsPhys);
             CounterAbilities.AddRange(Invis);
+            CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Remove("item_blade_mail");
 
