@@ -53,11 +53,16 @@
             Events.OnUpdate += SpeedTrack;
         }
 
-        public static Vector3 PredictedXYZ(Target target, float delay)
+        public static Vector3 PredictedXYZ(Hero hero, Target target, float delay)
         {
             if (IsIdle(target.Hero))
             {
                 return target.Position;
+            }
+
+            if (target.IsVsisible && target.FindAngle(hero.Position) < 0.5f)
+            {
+                delay /= 2;
             }
 
             var targetSpeed = new Vector3();

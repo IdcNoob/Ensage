@@ -39,7 +39,7 @@
     <Reference Include="Ensage.Common">
       <HintPath>C:\BanIsComing\References\Ensage.Common.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX, Version=2.6.3.0, Culture=neutral, PublicKeyToken=345b829e6e492981, processorArchitecture=MSIL">
+    <Reference Include="SharpDX">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\BanIsComing\References\SharpDX.dll</HintPath>
     </Reference>

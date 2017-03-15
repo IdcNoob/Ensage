@@ -34,12 +34,12 @@
             menu.AddItem(
                 items = new MenuItem("itemToUse", "Use:").SetValue(
                     new AbilityToggler(
-                            new Dictionary<string, bool>
-                                {
-                                    { "item_blink", true },
-                                    { "item_shivas_guard", true },
-                                    { "item_soul_ring", true },
-                                })));
+                        new Dictionary<string, bool>
+                        {
+                            { "item_blink", true },
+                            { "item_shivas_guard", true },
+                            { "item_soul_ring", true },
+                        })));
             menu.AddItem(new MenuItem("comboKey", "Chase").SetValue(new KeyBind('F', KeyBindType.Press)))
                 .SetTooltip("Chase/Kill enemy using abilities and items")
                 .ValueChanged += (sender, arg) => { ChaseEnabled = arg.GetNewValue<KeyBind>().Active; };

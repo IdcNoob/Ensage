@@ -66,14 +66,14 @@
                 allTrees.OrderBy(x => x.Distance2D(target.Position))
                     .FirstOrDefault(
                         x =>
-                        x.Distance2D(target.Position) <= radius * 1.9 && x.Distance2D(hero) <= distance
-                        && NavMesh.GetCellFlags(x.Position).HasFlag(NavMeshCellFlags.Tree));
+                            x.Distance2D(target.Position) <= radius * 1.9 && x.Distance2D(hero) <= distance
+                            && NavMesh.GetCellFlags(x.Position).HasFlag(NavMeshCellFlags.Tree));
 
             return tree != null && whirlingDeathCanBeCasted
                        ? new Vector3(
-                             (target.Position.X + tree.Position.X) / 2,
-                             (target.Position.Y + tree.Position.Y) / 2,
-                             target.Position.Z)
+                           (target.Position.X + tree.Position.X) / 2,
+                           (target.Position.Y + tree.Position.Y) / 2,
+                           target.Position.Z)
                        : target.GetPosition();
         }
 
@@ -95,21 +95,23 @@
 
             return
                 trees.Where(
-                    x =>
-                    (ignoreMaxDistance
-                     || x.Distance2D(
-                         TimberPrediction.PredictedXYZ(
-                             target,
-                             timberChain.CastPoint + x.Distance2D(targetPosition) / timberChain.Speed))
-                     <= maxDistanceToEnemy
-                     || (target.Hero.GetTurnTime(x.Position) <= 0 && x.Distance2D(targetPosition) < 600))
-                    && x.Distance2D(hero) >= minDistanceToHero)
+                        x =>
+                            (ignoreMaxDistance
+                             || x.Distance2D(
+                                 TimberPrediction.PredictedXYZ(
+                                     hero,
+                                     target,
+                                     timberChain.CastPoint + x.Distance2D(targetPosition) / timberChain.Speed))
+                             <= maxDistanceToEnemy
+                             || (target.Hero.GetTurnTime(x.Position) <= 0 && x.Distance2D(targetPosition) < 600))
+                            && x.Distance2D(hero) >= minDistanceToHero)
                     .FirstOrDefault(
                         z =>
-                        trees.Where(x => !x.Equals(z))
-                            .All(
-                                x =>
-                                x.Distance2D(hero) > 150 && !IsPointOnLine(x.Position, hero.Position, z.Position, 25)));
+                            trees.Where(x => !x.Equals(z))
+                                .All(
+                                    x =>
+                                        x.Distance2D(hero) > 150
+                                        && !IsPointOnLine(x.Position, hero.Position, z.Position, 25)));
         }
 
         public Tree GetDamageTree(Hero hero, Vector3 target, TimberChain timberChain, bool dagger = false)
@@ -121,12 +123,14 @@
                 trees.OrderBy(x => x.Distance2D(target))
                     .FirstOrDefault(
                         x =>
-                        trees.Where(z => !z.Equals(x))
-                            .All(
-                                z =>
-                                z.Distance2D(hero) > 150 && !IsPointOnLine(z.Position, hero.Position, x.Position, 25))
-                        && (IsPointOnLine(target, hero.Position, x.Position, timberChain.Radius, false)
-                            || x.Distance2D(target) < timberChain.Radius - 50) && (dagger || x.Distance2D(target) < 600));
+                            trees.Where(z => !z.Equals(x))
+                                .All(
+                                    z =>
+                                        z.Distance2D(hero) > 150
+                                        && !IsPointOnLine(z.Position, hero.Position, x.Position, 25))
+                            && (IsPointOnLine(target, hero.Position, x.Position, timberChain.Radius, false)
+                                || x.Distance2D(target) < timberChain.Radius - 50)
+                            && (dagger || x.Distance2D(target) < 600));
         }
 
         public Tree GetMoveTree(Hero hero, Vector3 mouse, float range, float minRange)
@@ -137,12 +141,13 @@
             return
                 trees.FirstOrDefault(
                     x =>
-                    x.Distance2D(hero) > minRange
-                    && x.Distance2D(mouse) + x.Distance2D(hero) < hero.Distance2D(mouse) + 100
-                    && trees.Where(z => !z.Equals(x))
-                           .All(
-                               z =>
-                               z.Distance2D(hero) > 150 && !IsPointOnLine(z.Position, hero.Position, x.Position, 25)));
+                        x.Distance2D(hero) > minRange
+                        && x.Distance2D(mouse) + x.Distance2D(hero) < hero.Distance2D(mouse) + 100
+                        && trees.Where(z => !z.Equals(x))
+                            .All(
+                                z =>
+                                    z.Distance2D(hero) > 150
+                                    && !IsPointOnLine(z.Position, hero.Position, x.Position, 25)));
         }
 
         public void SetUnavailableTrees(Vector3 start, Vector3 end, Chakram chakram)
@@ -201,12 +206,13 @@
                 allTrees.OrderBy(x => x.Distance2D(target))
                     .Where(
                         x =>
-                        x.Distance2D(hero) <= range && NavMesh.GetCellFlags(x.Position).HasFlag(NavMeshCellFlags.Tree)
-                        && (time <= 0
-                            || !unavailableTrees.Any(
-                                z =>
-                                z.Item1.Distance2D(x) <= z.Item2
-                                && time + hero.GetTurnTime(x) + x.Distance2D(hero) / speed >= z.Item3)));
+                            x.Distance2D(hero) <= range
+                            && NavMesh.GetCellFlags(x.Position).HasFlag(NavMeshCellFlags.Tree)
+                            && (time <= 0
+                                || !unavailableTrees.Any(
+                                    z =>
+                                        z.Item1.Distance2D(x) <= z.Item2
+                                        && time + hero.GetTurnTime(x) + x.Distance2D(hero) / speed >= z.Item3)));
         }
 
         #endregion

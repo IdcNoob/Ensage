@@ -100,7 +100,7 @@
 
         public void OnExecuteAbilitiy(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!menuManager.IsEnabled)
+            if (!menuManager.IsEnabled || !args.Entities.Contains(hero))
             {
                 return;
             }
@@ -158,7 +158,8 @@
                 return;
             }
 
-            if (Game.IsPaused || !hero.IsAlive || hero.IsChanneling() || !menuManager.IsEnabled)
+            if (Game.IsPaused || !hero.IsAlive || hero.IsChanneling() || !menuManager.IsEnabled
+                || !Utils.SleepCheck("Evader.Avoiding"))
             {
                 return;
             }
@@ -244,6 +245,7 @@
                 if (phaseChakram != null)
                 {
                     var predictedPosition = TimberPrediction.PredictedXYZ(
+                        hero,
                         target,
                         distanceToEnemy / phaseChakram.Speed * 1000);
 
@@ -259,6 +261,7 @@
                 if (timberChain.IsInPhase && timberChain.CastedOnEnemy)
                 {
                     var predictedPosition = TimberPrediction.PredictedXYZ(
+                        hero,
                         target,
                         distanceToEnemy / timberChain.Speed * 1000);
 
@@ -355,6 +358,7 @@
                         && treeFactory.TreesInPath(hero, targetPosition, 100) >= 5)
                     {
                         var predictedPosition = TimberPrediction.PredictedXYZ(
+                            hero,
                             target,
                             usableChakram.GetSleepTime + ping
                             + target.GetDistance(heroPosition) / usableChakram.Speed * 1000
@@ -372,6 +376,7 @@
                     if (target.IsVsisible && possibleDamageTree != null)
                     {
                         var predictedPosition = TimberPrediction.PredictedXYZ(
+                            hero,
                             target,
                             timberChain.CastPoint * 1000
                             + (distanceToEnemy + hero.Distance2D(possibleDamageTree.Position)) / timberChain.Speed
@@ -432,6 +437,7 @@
                     /*&& (TimberPrediction.StraightTime(target.Hero) > 500 || distanceToEnemy < 300)*/)
                 {
                     var predictedPosition = TimberPrediction.PredictedXYZ(
+                        hero,
                         target,
                         usableChakram.GetSleepTime + ping
                         + target.GetDistance(heroPosition) / usableChakram.Speed * 1000
