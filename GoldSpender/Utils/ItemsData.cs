@@ -46,7 +46,6 @@
             { 61, ShopFlags.Side | ShopFlags.Secret }, //Vitality Booster
             { 181, ShopFlags.Base | ShopFlags.Side }, //Orb of Venom
             { 182, ShopFlags.Base | ShopFlags.Side }, //Stout Shield
-            { 240, ShopFlags.Base | ShopFlags.Side }, //Blight Stone
         };
 
         #endregion
