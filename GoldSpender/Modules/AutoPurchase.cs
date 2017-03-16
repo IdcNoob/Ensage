@@ -45,7 +45,7 @@
             {
                 switch (itemID)
                 {
-                    case 59: // energy booster
+                    case AbilityId.item_energy_booster:
                         if (Hero.FindItem("item_arcane_boots") != null)
                         {
                             continue;
@@ -53,11 +53,11 @@
                         break;
                 }
 
-                var cost = Ability.GetAbilityDataByID(itemID).Cost;
+                var cost = Ability.GetAbilityDataByID((uint)itemID).Cost;
 
                 if (gold >= cost)
                 {
-                    itemsToBuy.Add(itemID);
+                    itemsToBuy.Add((uint)itemID);
                     gold -= (int)cost;
                 }
             }

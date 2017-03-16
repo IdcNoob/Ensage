@@ -41,7 +41,7 @@
             {
                 enabledItems.InsertRange(
                     enabledItems.FindIndex(x => x == 0),
-                    Player.QuickBuyItems.OrderByDescending(x => Ability.GetAbilityDataByID(x).Cost));
+                    Player.QuickBuyItems.OrderByDescending(x => Ability.GetAbilityDataByID((uint)x).Cost));
                 enabledItems.Remove(0);
             }
 
@@ -75,7 +75,7 @@
 
                 switch (itemID)
                 {
-                    case 40: // dust
+                    case AbilityId.item_dust:
                         if (GetItemCount(itemID) >= 2
                             || !ObjectManager.GetEntitiesParallel<Ability>()
                                 .Any(x => x.Owner?.Team == enemyTeam && x.IsInvis()))
@@ -83,33 +83,33 @@
                             continue;
                         }
                         break;
-                    case 42: // observer
-                    case 43: // sentry
+                    case AbilityId.item_ward_observer:
+                    case AbilityId.item_ward_sentry:
                         if (GetWardsCount(itemID) >= 2)
                         {
                             continue;
                         }
                         break;
-                    case 46: // teleport scroll
+                    case AbilityId.item_tpscroll:
                         if (GetItemCount(itemID) >= 2 || Hero.FindItem("item_travel_boots", true) != null
                             || Hero.FindItem("item_travel_boots_2", true) != null)
                         {
                             continue;
                         }
                         break;
-                    case 59: // energy booster
+                    case AbilityId.item_energy_booster:
                         if (Hero.FindItem("item_arcane_boots") != null)
                         {
                             continue;
                         }
                         break;
-                    case 188: // smoke
+                    case AbilityId.item_smoke_of_deceit:
                         if (GetItemCount(itemID) >= 1)
                         {
                             continue;
                         }
                         break;
-                    case 257: // tome of knowledge
+                    case AbilityId.item_tome_of_knowledge:
                         if (Hero.Level >= 25)
                         {
                             continue;
@@ -117,16 +117,16 @@
                         break;
                 }
 
-                var cost = Ability.GetAbilityDataByID(itemID).Cost;
+                var cost = Ability.GetAbilityDataByID((uint)itemID).Cost;
 
                 if (unreliableGold >= cost)
                 {
-                    itemsToBuy.Add(Tuple.Create(unit, itemID));
+                    itemsToBuy.Add(Tuple.Create(unit, (uint)itemID));
                     unreliableGold -= (int)cost;
                 }
                 else if (reliableGold + unreliableGold >= cost)
                 {
-                    itemsToBuy.Add(Tuple.Create(unit, itemID));
+                    itemsToBuy.Add(Tuple.Create(unit, (uint)itemID));
                     break;
                 }
             }
@@ -173,21 +173,21 @@
 
         #region Methods
 
-        private uint GetItemCount(uint itemId)
+        private uint GetItemCount(AbilityId id)
         {
-            return (Hero.Inventory.Items.FirstOrDefault(x => x.ID == itemId)?.CurrentCharges ?? 0)
-                   + (Hero.Inventory.Stash.FirstOrDefault(x => x.ID == itemId)?.CurrentCharges ?? 0)
-                   + (Hero.Inventory.Backpack.FirstOrDefault(x => x.ID == itemId)?.CurrentCharges ?? 0);
+            return (Hero.Inventory.Items.FirstOrDefault(x => x.AbilityId == id)?.CurrentCharges ?? 0)
+                   + (Hero.Inventory.Stash.FirstOrDefault(x => x.AbilityId == id)?.CurrentCharges ?? 0)
+                   + (Hero.Inventory.Backpack.FirstOrDefault(x => x.AbilityId == id)?.CurrentCharges ?? 0);
         }
 
-        private uint GetWardsCount(uint itemId)
+        private uint GetWardsCount(AbilityId id)
         {
             var inventoryDispenser = Hero.Inventory.Items.FirstOrDefault(x => x.ID == 218);
             var stashDispenser = Hero.Inventory.Stash.FirstOrDefault(x => x.ID == 218);
             var backpackDispenser = Hero.Inventory.Backpack.FirstOrDefault(x => x.ID == 218);
 
-            return GetItemCount(itemId)
-                   + (itemId == 42
+            return GetItemCount(id)
+                   + (id == AbilityId.item_ward_observer
                           ? (inventoryDispenser?.CurrentCharges ?? 0) + (stashDispenser?.CurrentCharges ?? 0)
                             + (backpackDispenser?.CurrentCharges ?? 0)
                           : (inventoryDispenser?.SecondaryCharges ?? 0) + (stashDispenser?.SecondaryCharges ?? 0)

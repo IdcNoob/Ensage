@@ -8,20 +8,20 @@
     {
         #region Static Fields
 
-        public static List<uint> HighPriorityItems = new List<uint>
+        public static List<AbilityId> HighPriorityItems = new List<AbilityId>
         {
-            60 //Point Booster
+            AbilityId.item_point_booster //Point Booster
         };
 
-        public static Dictionary<string, uint> ItemsToBuyNearDeath = new Dictionary<string, uint>
+        public static Dictionary<string, AbilityId> ItemsToBuyNearDeath = new Dictionary<string, AbilityId>
         {
-            { "item_smoke_of_deceit", 188 },
-            { "item_dust", 40 },
-            { "item_tome_of_knowledge", 257 },
-            { "item_ward_sentry", 43 },
-            { "item_ward_observer", 42 },
-            { "attribute_bonus", 0 },
-            { "item_tpscroll", 46 }
+            { "item_smoke_of_deceit", AbilityId.item_smoke_of_deceit },
+            { "item_dust", AbilityId.item_dust },
+            { "item_tome_of_knowledge", AbilityId.item_tome_of_knowledge },
+            { "item_ward_sentry", AbilityId.item_ward_sentry },
+            { "item_ward_observer", AbilityId.item_ward_observer },
+            { "attribute_bonus", AbilityId.ability_base },
+            { "item_tpscroll", AbilityId.item_tpscroll }
         };
 
         #endregion
