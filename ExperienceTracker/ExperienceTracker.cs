@@ -62,7 +62,7 @@
                     FontFlags.None);
             }
 
-            foreach (var tower in towers.Where(x => x.Value > 0))
+            foreach (var tower in towers.Where(x => x.Value > 0 && x.Key != null && x.Key.IsValid))
             {
                 var warningText = tower.Value.ToString();
 
