@@ -6,7 +6,6 @@
 
     using Ensage;
     using Ensage.Common;
-    using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
 
     using SharpDX;
@@ -18,8 +17,6 @@
         private readonly Dictionary<Creep, int> deadCreeps = new Dictionary<Creep, int>();
 
         private readonly List<Enemy> enemies = new List<Enemy>();
-
-        private readonly Dictionary<Tower, int> towers = new Dictionary<Tower, int>();
 
         private Hero hero;
 
@@ -57,24 +54,6 @@
                     warningText,
                     "Arial",
                     HUDInfo.GetHPbarPosition(enemy.Hero) + new Vector2(menu.WarningX, menu.WarningY),
-                    new Vector2(menu.WarningSize),
-                    new Color(menu.WarningRedColor, menu.WarningGreenColor, menu.WarningBlueColor),
-                    FontFlags.None);
-            }
-
-            foreach (var tower in towers.Where(x => x.Value > 0 && x.Key != null && x.Key.IsValid))
-            {
-                var warningText = tower.Value.ToString();
-
-                if (!menu.SimplifiedWarning)
-                {
-                    warningText += " enem" + (tower.Value > 1 ? "ies" : "y") + " near";
-                }
-
-                Drawing.DrawText(
-                    warningText,
-                    "Arial",
-                    HUDInfo.GetHPbarPosition(tower.Key) + new Vector2(menu.WarningX, menu.WarningY - 40),
                     new Vector2(menu.WarningSize),
                     new Color(menu.WarningRedColor, menu.WarningGreenColor, menu.WarningBlueColor),
                     FontFlags.None);
@@ -122,7 +101,6 @@
             menu.OnClose();
             enemies.Clear();
             deadCreeps.Clear();
-            towers.Clear();
         }
 
         private void EventsOnLoad(object sender, EventArgs eventArgs)
@@ -160,38 +138,6 @@
                 }
 
                 deadCreeps.Clear();
-            }
-
-            if (!sleeper.Sleeping(towers))
-            {
-                foreach (
-                    var tower in ObjectManager.GetEntitiesParallel<Tower>().Where(x => x.IsAlive && x.Team == heroTeam))
-                {
-                    var armorStacks = tower.FindModifier("modifier_tower_armor_bonus")?.StackCount ?? 0;
-                    if (armorStacks <= 0)
-                    {
-                        towers[tower] = 0;
-                        continue;
-                    }
-
-                    var visibleEnemiesCount =
-                        ObjectManager.GetEntitiesParallel<Hero>()
-                            .Count(
-                                x =>
-                                    x.IsValid && x.IsAlive && x.Team != heroTeam && x.IsVisible
-                                    && x.Distance2D(tower) <= 1200);
-
-                    if (armorStacks != visibleEnemiesCount)
-                    {
-                        towers[tower] = armorStacks;
-                    }
-                    else
-                    {
-                        towers[tower] = 0;
-                    }
-                }
-
-                sleeper.Sleep(500, towers);
             }
 
             if (sleeper.Sleeping(enemies))
