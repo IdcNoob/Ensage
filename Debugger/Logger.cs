@@ -57,7 +57,8 @@
 
             if (firstLine)
             {
-                Console.Write(TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss") + " // ");
+                Console.Write(
+                    Game.RawGameTime + " (" + TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss") + ") // ");
             }
             else
             {

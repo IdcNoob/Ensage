@@ -19,6 +19,7 @@
         {
             Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.ModifierSource);
 
+            Modifier.AllyCounterAbilities.Add(Enrage);
             Modifier.AllyCounterAbilities.Add(Lotus);
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
             Modifier.AllyCounterAbilities.AddRange(VsMagic);

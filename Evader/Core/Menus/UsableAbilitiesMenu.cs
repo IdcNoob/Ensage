@@ -2,27 +2,22 @@
 {
     using System.Collections.Generic;
 
-    using Data;
-
+    using Ensage;
     using Ensage.Common.Menu;
+
+    using AbilityType = Data.AbilityType;
 
     internal class UsableAbilitiesMenu
     {
         #region Fields
 
-        private readonly Dictionary<string, bool> blinkAbilities = new Dictionary<string, bool>();
+        private readonly List<string> addedBlinkAbilities = new List<string>();
 
-        private readonly Dictionary<string, bool> counterAbilities = new Dictionary<string, bool>();
+        private readonly List<string> addedCounterAbilities = new List<string>();
 
-        private readonly Dictionary<string, bool> disableAbilities = new Dictionary<string, bool>();
+        private readonly List<string> addedDisableAbilities = new List<string>();
 
         private readonly Menu specials;
-
-        private readonly MenuItem usableBlinkAbilities;
-
-        private readonly MenuItem usableCounterAbilities;
-
-        private readonly MenuItem usableDiasbleAbilities;
 
         private AbilityToggler blinkAbilityToggler;
 
@@ -38,17 +33,14 @@
         {
             var menu = new Menu("Abilities", "usableAbilities");
             menu.AddItem(
-                usableBlinkAbilities =
-                    new MenuItem("usableBlinkAbilities", "Blink:").SetValue(
-                        blinkAbilityToggler = new AbilityToggler(blinkAbilities)));
+                new MenuItem("usableBlinkAbilities", "Blink:").SetValue(
+                    blinkAbilityToggler = new AbilityToggler(new Dictionary<string, bool>())));
             menu.AddItem(
-                usableCounterAbilities =
-                    new MenuItem("usableCounterAbilities", "Counter:").SetValue(
-                        counterAbilityToggler = new AbilityToggler(counterAbilities)));
+                new MenuItem("usableCounterAbilities", "Counter:").SetValue(
+                    counterAbilityToggler = new AbilityToggler(new Dictionary<string, bool>())));
             menu.AddItem(
-                usableDiasbleAbilities =
-                    new MenuItem("usableDiasbleAbilities", "Disable:").SetValue(
-                        disableAbilityToggler = new AbilityToggler(disableAbilities)));
+                new MenuItem("usableDiasbleAbilities", "Disable:").SetValue(
+                    disableAbilityToggler = new AbilityToggler(new Dictionary<string, bool>())));
 
             specials = new Menu("Specials", "specials");
             menu.AddSubMenu(specials);
@@ -65,6 +57,8 @@
         public bool ArmletAutoToggle { get; private set; }
 
         public bool ArmletEnemiesCheck { get; private set; }
+
+        public bool AutoDisableAtFountain { get; private set; }
 
         public bool BloodstoneAutoSuicide { get; private set; }
 
@@ -89,28 +83,29 @@
             switch (abilityType)
             {
                 case AbilityType.Counter:
-                    if (counterAbilities.ContainsKey(abilityName))
+                    if (addedCounterAbilities.Contains(abilityName))
                     {
                         return;
                     }
+
                     counterAbilityToggler.Add(abilityName, enabled);
-                    usableCounterAbilities.SetValue(counterAbilityToggler);
+                    addedCounterAbilities.Add(abilityName);
                     break;
                 case AbilityType.Blink:
-                    if (blinkAbilities.ContainsKey(abilityName))
+                    if (addedBlinkAbilities.Contains(abilityName))
                     {
                         return;
                     }
                     blinkAbilityToggler.Add(abilityName, enabled);
-                    usableBlinkAbilities.SetValue(blinkAbilityToggler);
+                    addedBlinkAbilities.Add(abilityName);
                     break;
                 case AbilityType.Disable:
-                    if (disableAbilities.ContainsKey(abilityName))
+                    if (addedDisableAbilities.Contains(abilityName))
                     {
                         return;
                     }
                     disableAbilityToggler.Add(abilityName, enabled);
-                    usableDiasbleAbilities.SetValue(disableAbilityToggler);
+                    addedDisableAbilities.Add(abilityName);
                     break;
             }
 
@@ -137,6 +132,8 @@
                     BloodstoneEnemyRange = enemyCheck.GetValue<Slider>().Value;
 
                     specials.AddSubMenu(bloodstoneMenu);
+                    Game.PrintMessage(
+                        "<font color='#ff7700'>[Evader]</font> Bloodstone has special settings in the menu");
                     break;
                 case "item_armlet":
                     var armletMenu = new Menu(string.Empty, "armletMenu", textureName: abilityName);
@@ -153,6 +150,11 @@
                         (sender, args) => ArmetHpThreshold = args.GetNewValue<Slider>().Value;
                     ArmetHpThreshold = armetHpThreshold.GetValue<Slider>().Value;
 
+                    var fountainDisable = new MenuItem("armletAutoDisable", "Auto disable at fountain").SetValue(true);
+                    armletMenu.AddItem(fountainDisable);
+                    fountainDisable.ValueChanged += (sender, args) => AutoDisableAtFountain = args.GetNewValue<bool>();
+                    AutoDisableAtFountain = fountainDisable.IsActive();
+
                     var enemyNearOnly = new MenuItem("armletOnlyNearEnemies", "Only near enemies").SetValue(true);
                     enemyNearOnly.SetTooltip("If enabled, will toggle only when enemies are near");
                     armletMenu.AddItem(enemyNearOnly);
@@ -160,6 +162,7 @@
                     ArmletEnemiesCheck = enemyNearOnly.IsActive();
 
                     specials.AddSubMenu(armletMenu);
+                    Game.PrintMessage("<font color='#ff7700'>[Evader]</font> Armlet has special settings in the menu");
                     break;
                 case "puck_phase_shift":
                     var phaseShiftMenu = new Menu(string.Empty, "phaseShiftMenu", textureName: abilityName);
@@ -179,6 +182,8 @@
                     PhaseShiftBlockTime = phaseShiftBlockTime.GetValue<Slider>().Value;
 
                     specials.AddSubMenu(phaseShiftMenu);
+                    Game.PrintMessage(
+                        "<font color='#ff7700'>[Evader]</font> Phase Shift has special settings in the menu");
                     break;
                 case "templar_assassin_meld":
                     var meldMenu = new Menu(string.Empty, "meldMenu", textureName: abilityName);
@@ -196,6 +201,7 @@
                     MeldBlockTime = meldBlockTime.GetValue<Slider>().Value;
 
                     specials.AddSubMenu(meldMenu);
+                    Game.PrintMessage("<font color='#ff7700'>[Evader]</font> Meld has special settings in the menu");
                     break;
             }
         }

@@ -52,6 +52,7 @@
             CounterAbilities.AddRange(Invis);
             CounterAbilities.Add(Lotus);
 
+            Modifier.AllyCounterAbilities.Add(Enrage);
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
             Modifier.AllyCounterAbilities.AddRange(Invul);
             Modifier.AllyCounterAbilities.AddRange(VsPhys);

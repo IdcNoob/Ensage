@@ -387,9 +387,6 @@
                 return;
             }
 
-            var heroCanCast = Hero.CanCast();
-            var heroCanUseItems = Hero.CanUseItems();
-
             var allies =
                 ObjectManager.GetEntitiesParallel<Hero>()
                     .Where(
@@ -440,8 +437,6 @@
                                                         where
                                                         usableAbility.CanBeUsedOnEnemy
                                                         && Menu.UsableAbilities.Enabled(abilityName, usableAbility.Type)
-                                                        && (usableAbility.IsItem && heroCanUseItems
-                                                            || !usableAbility.IsItem && heroCanCast)
                                                         select usableAbility;
 
                     foreach (var modifierEnemyCounterAbility in modifierEnemyCounterAbilities)
@@ -495,8 +490,6 @@
                                                        abilityName equals usableAbility.Name
                                                        where
                                                        Menu.UsableAbilities.Enabled(abilityName, usableAbility.Type)
-                                                       && (usableAbility.IsItem && heroCanUseItems
-                                                           || !usableAbility.IsItem && heroCanCast)
                                                        select usableAbility;
 
                     foreach (var modifierCounterAbility in modifierAllyCounterAbilities)
@@ -513,7 +506,7 @@
 
                         var requiredTime = modifierCounterAbility.GetRequiredTime(ability, ally, modifierRemainingTime)
                                            + Game.Ping / 1000;
-                        if (requiredTime < 0.3 && modifierAbility.Modifier.GetElapsedTime() < 0.5)
+                        if (requiredTime < 0.3 && modifierAbility.Modifier.GetElapsedTime() < 0.3)
                         {
                             return;
                         }
@@ -549,7 +542,7 @@
                     abilityUpdater.UsableAbilities.FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Item_BlinkDagger) as
                         BlinkDagger;
 
-                if (blinkDagger != null && blinkDagger.CanBeCasted(null, null) && heroCanUseItems)
+                if (blinkDagger != null && blinkDagger.CanBeCasted(null, null))
                 {
                     blinkDagger.UseInFront();
                 }
@@ -652,8 +645,6 @@
                                            where
                                            usableAbility.Type == AbilityType.Disable
                                            && Menu.UsableAbilities.Enabled(abilityName, AbilityType.Disable)
-                                           && (usableAbility.IsItem && heroCanUseItems
-                                               || !usableAbility.IsItem && heroCanCast)
                                            select usableAbility;
 
                     foreach (var disableAbility in disableAbilities)
@@ -733,7 +724,7 @@
                     .OrderByDescending(x => x.IsDisable))
             {
                 if (ability == null || sleeper.Sleeping(ability)
-                    || ability.AbilityOwner.Distance2D(ally) > ability.Ability.GetCastRange() + 100)
+                    || ability.AbilityOwner.Distance2D(ally) > ability.Ability.GetCastRange() + 300)
                 {
                     continue;
                 }
@@ -757,7 +748,9 @@
                     switch (priority)
                     {
                         case EvadePriority.Walk:
-                            if (allyIsMe && !ability.DisablePathfinder && Menu.Hotkeys.EnabledPathfinder
+                            if (allyIsMe && !ability.DisablePathfinder
+                                && (Menu.Hotkeys.PathfinderMode == Pathfinder.EvadeMode.All
+                                    || Menu.Hotkeys.PathfinderMode == Pathfinder.EvadeMode.Disables && ability.IsDisable)
                                 && Hero.CanMove())
                             {
                                 var remainingWalkTime = remainingTime - 0.1f;
@@ -864,7 +857,9 @@
                                 }
                                 else
                                 {
-                                    Pathfinder.CalculatePathFromObstacle(remainingWalkTime - 0.2f, out success);
+                                    Pathfinder.CalculatePathFromObstacle(
+                                        Math.Max(remainingWalkTime - 0.2f, 0),
+                                        out success);
 
                                     if (success)
                                     {

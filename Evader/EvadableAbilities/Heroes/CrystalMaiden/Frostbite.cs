@@ -23,6 +23,7 @@
             CounterAbilities.AddRange(VsMagic);
             CounterAbilities.Remove("abaddon_aphotic_shield");
 
+            Modifier.AllyCounterAbilities.Add(Enrage);
             Modifier.AllyCounterAbilities.Add(Lotus);
             Modifier.AllyCounterAbilities.Add(FortunesEnd);
             Modifier.AllyCounterAbilities.Add(PhaseShift);

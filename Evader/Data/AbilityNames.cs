@@ -126,6 +126,8 @@
 
         public static string Doppelganger { get; } = "phantom_lancer_doppelwalk";
 
+        public static string Enrage { get; } = "ursa_enrage";
+
         public static string Eul { get; } = "item_cyclone";
 
         public static string FalsePromise { get; } = "oracle_false_promise";

@@ -39,12 +39,19 @@
             logIntersection.ValueChanged += (sender, args) => LogIntersection = args.GetNewValue<bool>();
             LogIntersection = logIntersection.IsActive();
 
+            var armletToggler = new MenuItem("debugArmlet", "Armlet toggler").SetValue(false);
+            menu.AddItem(armletToggler);
+            armletToggler.ValueChanged += (sender, args) => ArmletToggler = args.GetNewValue<bool>();
+            ArmletToggler = armletToggler.IsActive();
+
             rootMenu.AddSubMenu(menu);
         }
 
         #endregion
 
         #region Public Properties
+
+        public bool ArmletToggler { get; private set; }
 
         public bool DrawAbilities { get; private set; }
 

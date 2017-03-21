@@ -39,6 +39,19 @@
 
         #endregion
 
+        #region Enums
+
+        public enum EvadeMode
+        {
+            All,
+
+            Disables,
+
+            None
+        }
+
+        #endregion
+
         #region Public Properties
 
         public NavMeshPathfinding Pathfinding { get; }
@@ -158,6 +171,11 @@
                 remainingTime * 1000,
                 true,
                 out success);
+        }
+
+        public IEnumerable<Vector3> CalculateStaticLongPath(Vector3 endPath, out bool success)
+        {
+            return Pathfinding.CalculateStaticLongPath(Hero.NetworkPosition, endPath, 5000, false, out success);
         }
 
         public void Dispose()

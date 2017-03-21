@@ -41,8 +41,8 @@
                 return false;
             }
 
-            return !Sleeper.Sleeping && Ability.CanBeCasted() && Hero.Distance2D(unit) <= GetCastRange()
-                   && CheckEnemy(unit);
+            return !Sleeper.Sleeping && Ability.CanBeCasted() && Hero.CanCast()
+                   && Hero.Distance2D(unit) <= GetCastRange() && CheckEnemy(unit);
         }
 
         #endregion

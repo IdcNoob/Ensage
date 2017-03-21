@@ -18,6 +18,7 @@
         {
             Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.LowestHealth);
 
+            Modifier.AllyCounterAbilities.Add(Enrage);
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
             Modifier.AllyCounterAbilities.AddRange(Invul);

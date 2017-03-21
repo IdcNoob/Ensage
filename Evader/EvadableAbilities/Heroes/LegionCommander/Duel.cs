@@ -1,5 +1,7 @@
 ﻿namespace Evader.EvadableAbilities.Heroes.LegionCommander
 {
+    using System.Linq;
+
     using Base;
     using Base.Interfaces;
 
@@ -38,6 +40,7 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Remove("item_glimmer_cape");
 
+            Modifier.AllyCounterAbilities.Add(Enrage);
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
             Modifier.AllyCounterAbilities.Add(FalsePromise);
             Modifier.AllyCounterAbilities.AddRange(Invul);
@@ -47,6 +50,9 @@
             Modifier.EnemyCounterAbilities.AddRange(VsPhys);
             Modifier.EnemyCounterAbilities.Add(FatesEdict);
             Modifier.EnemyCounterAbilities.AddRange(DisableAbilities);
+
+            //leave invuls to use on allies
+            Modifier.EnemyCounterAbilities.RemoveAll(x => Invul.Contains(x));
         }
 
         #endregion

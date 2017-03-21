@@ -40,9 +40,21 @@
 
         #region Public Methods and Operators
 
-        public static void DrawGreenCircle(Vector3 position)
+        public static void DeleteGreenCircle()
         {
-            if (!Menu.DrawMap)
+            greenCirclePartcile?.Dispose();
+            greenCirclePartcile = null;
+        }
+
+        public static void DeleteRedCircle()
+        {
+            redCirclePartcile?.Dispose();
+            redCirclePartcile = null;
+        }
+
+        public static void DrawGreenCircle(Vector3 position, bool force = false)
+        {
+            if (!Menu.DrawMap && !force)
             {
                 return;
             }
@@ -59,9 +71,9 @@
             greenCirclePartcile.SetControlPoint(0, position);
         }
 
-        public static void DrawRedCircle(Vector3 position)
+        public static void DrawRedCircle(Vector3 position, bool force = false)
         {
-            if (!Menu.DrawMap)
+            if (!Menu.DrawMap && !force)
             {
                 return;
             }

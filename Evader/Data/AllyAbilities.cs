@@ -39,6 +39,7 @@ namespace Evader.Data
             <string, Func<Ability, UsableAbility>>
             {
                 { "storm_spirit_ball_lightning", ability => new BallLightning(ability, AbilityType.Counter) },
+                { "ursa_enrage", ability => new Enrage(ability, AbilityType.Counter) },
                 {
                     "ember_spirit_sleight_of_fist",
                     ability => new SleightOfFist(ability, AbilityType.Counter, AbilityCastTarget.Enemy)

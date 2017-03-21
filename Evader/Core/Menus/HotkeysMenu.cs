@@ -4,6 +4,12 @@
 
     internal class HotkeysMenu
     {
+        #region Fields
+
+        private Pathfinder.EvadeMode pathfinderMode;
+
+        #endregion
+
         #region Constructors and Destructors
 
         public HotkeysMenu(Menu rootMenu)
@@ -17,11 +23,15 @@
             EnabledEvader = enabledEvader.IsActive();
 
             var enabledPathfinder =
-                new MenuItem("enablePathfinder", "Enable pathfinder").SetValue(
-                    new KeyBind(35, KeyBindType.Toggle, true));
+                new MenuItem("changePathfinder", "Change pathfinder mode").SetValue(new KeyBind(35, KeyBindType.Press))
+                    .SetTooltip("Colors: orange - evade all; red - evade only disables");
             menu.AddItem(enabledPathfinder);
-            enabledPathfinder.ValueChanged += (sender, args) => EnabledPathfinder = args.GetNewValue<KeyBind>().Active;
-            EnabledPathfinder = enabledPathfinder.IsActive();
+            enabledPathfinder.ValueChanged += (sender, args) => {
+                if (args.GetNewValue<KeyBind>().Active)
+                {
+                    PathfinderMode++;
+                }
+            };
 
             menu.AddItem(
                     new MenuItem("forceBlink", "Force blink").SetValue(new KeyBind(46, KeyBindType.Press))
@@ -37,9 +47,19 @@
 
         public bool EnabledEvader { get; private set; }
 
-        public bool EnabledPathfinder { get; private set; }
-
         public bool ForceBlink { get; private set; }
+
+        public Pathfinder.EvadeMode PathfinderMode
+        {
+            get
+            {
+                return pathfinderMode;
+            }
+            private set
+            {
+                pathfinderMode = value > Pathfinder.EvadeMode.None ? 0 : value;
+            }
+        }
 
         #endregion
     }

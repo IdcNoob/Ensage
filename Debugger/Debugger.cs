@@ -87,9 +87,9 @@
 
         private void ItemsOnDump(object sender, EventArgs e)
         {
-            var unit = ObjectManager.LocalPlayer.Selection.FirstOrDefault() as Unit;
+            var unit = ObjectManager.LocalPlayer.Selection.FirstOrDefault(x => x.IsValid) as Unit;
 
-            if (unit == null || !unit.IsValid)
+            if (unit == null)
             {
                 return;
             }
@@ -163,9 +163,9 @@
 
         private void ModifiersOnDump(object sender, EventArgs e)
         {
-            var unit = ObjectManager.LocalPlayer.Selection.FirstOrDefault() as Unit;
+            var unit = ObjectManager.LocalPlayer.Selection.FirstOrDefault(x => x.IsValid) as Unit;
 
-            if (unit == null || !unit.IsValid)
+            if (unit == null)
             {
                 return;
             }
@@ -708,9 +708,9 @@
 
         private void SpellsOnDump(object sender, EventArgs eventArgs)
         {
-            var unit = ObjectManager.LocalPlayer.Selection.FirstOrDefault() as Unit;
+            var unit = ObjectManager.LocalPlayer.Selection.FirstOrDefault(x => x.IsValid) as Unit;
 
-            if (unit == null || !unit.IsValid)
+            if (unit == null)
             {
                 return;
             }
@@ -778,9 +778,9 @@
 
         private void UnitsOnDump(object sender, EventArgs e)
         {
-            var unit = ObjectManager.LocalPlayer.Selection.FirstOrDefault() as Unit;
+            var unit = ObjectManager.LocalPlayer.Selection.FirstOrDefault(x => x.IsValid) as Unit;
 
-            if (unit == null || !unit.IsValid)
+            if (unit == null)
             {
                 return;
             }

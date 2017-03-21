@@ -52,7 +52,7 @@
 
         public override bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
-            return !Sleeper.Sleeping && Ability.CanBeCasted();
+            return !Sleeper.Sleeping && Ability.CanBeCasted() && Hero.CanCast();
         }
 
         public override float GetRequiredTime(EvadableAbility ability, Unit unit, float remainingTime)

@@ -26,7 +26,8 @@
 
         public override bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
-            return !Sleeper.Sleeping && Hero.HasModifier("modifier_morphling_replicate_timer") && Ability.CanBeCasted();
+            return !Sleeper.Sleeping && Hero.HasModifier("modifier_morphling_replicate_timer") && Ability.CanBeCasted()
+                   && Hero.CanCast();
         }
 
         public override float GetRequiredTime(EvadableAbility ability, Unit unit, float remainingTime)

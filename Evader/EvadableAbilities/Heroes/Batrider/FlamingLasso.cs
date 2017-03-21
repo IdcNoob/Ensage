@@ -31,6 +31,7 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Lotus);
 
+            Modifier.AllyCounterAbilities.Add(Enrage);
             Modifier.AllyCounterAbilities.AddRange(Invul);
             Modifier.AllyCounterAbilities.Add(FalsePromise);
             Modifier.AllyCounterAbilities.AddRange(AllyShields);

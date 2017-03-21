@@ -35,7 +35,8 @@
 
         public override bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
-            return !Sleeper.Sleeping && Ability.CanBeCasted() && Hero.Distance2D(unit) <= grabRadius && CheckEnemy(unit);
+            return !Sleeper.Sleeping && Ability.CanBeCasted() && Hero.CanCast() && Hero.Distance2D(unit) <= grabRadius
+                   && CheckEnemy(unit);
         }
 
         public override void Use(EvadableAbility ability, Unit target)

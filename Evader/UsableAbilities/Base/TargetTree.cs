@@ -26,7 +26,7 @@
 
         public override bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
-            return !Sleeper.Sleeping && Ability.CanBeCasted()
+            return !Sleeper.Sleeping && Ability.CanBeCasted() && Hero.CanCast()
                    && ((AOE)ability).StartPosition.Distance2D(Hero) <= Ability.GetCastRange();
         }
 

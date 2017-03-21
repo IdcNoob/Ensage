@@ -32,6 +32,7 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
 
+            Modifier.AllyCounterAbilities.Add(Enrage);
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
 

@@ -44,6 +44,7 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Remove("abaddon_aphotic_shield");
 
+            Modifier.AllyCounterAbilities.Add(Enrage);
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
             Modifier.AllyCounterAbilities.AddRange(Invul);
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
@@ -115,6 +116,15 @@
         public override float GetRemainingTime(Hero hero = null)
         {
             return StartCast + (fowCast ? 0 : CastPoint) + AdditionalDelay - Game.RawGameTime;
+        }
+
+        #endregion
+
+        #region Methods
+
+        protected override float GetCastRange()
+        {
+            return base.GetCastRange() + 100;
         }
 
         #endregion

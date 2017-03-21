@@ -33,6 +33,7 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(NetherWard);
 
+            Modifier.AllyCounterAbilities.Add(Enrage);
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
             Modifier.AllyCounterAbilities.AddRange(Invul);
             Modifier.AllyCounterAbilities.AddRange(VsMagic);

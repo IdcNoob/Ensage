@@ -50,6 +50,7 @@
             CounterAbilities.Add(Lotus);
             CounterAbilities.Remove("abaddon_aphotic_shield");
 
+            Modifier.AllyCounterAbilities.Add(Enrage);
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
             Modifier.AllyCounterAbilities.AddRange(Invul);
             Modifier.AllyCounterAbilities.AddRange(VsMagic);

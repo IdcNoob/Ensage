@@ -35,8 +35,8 @@
         {
             // todo: fix ally check
 
-            return !Sleeper.Sleeping && Ability.CanBeCasted() && Hero.Distance2D(unit) <= aftershockRadius
-                   && CheckEnemy(unit);
+            return !Sleeper.Sleeping && Ability.CanBeCasted() && Hero.CanCast()
+                   && Hero.Distance2D(unit) <= aftershockRadius && CheckEnemy(unit);
         }
 
         #endregion

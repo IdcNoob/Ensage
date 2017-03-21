@@ -79,9 +79,15 @@
 
             Drawing.DrawText(EvaderText, Font, evaderTextPosition, textSize, textColor, FontFlags.None);
 
-            if (Menu.EnabledPathfinder)
+            if (Menu.PathfinderMode != Pathfinder.EvadeMode.None)
             {
-                Drawing.DrawText(PathfinderText, Font, pathfinderTextPosition, textSize, textColor, FontFlags.None);
+                Drawing.DrawText(
+                    PathfinderText,
+                    Font,
+                    pathfinderTextPosition,
+                    textSize,
+                    Menu.PathfinderMode == Pathfinder.EvadeMode.All ? textColor : Color.Red,
+                    FontFlags.None);
             }
 
             if (sleeper.Sleeping("avoiding") || sleeper.Sleeping("block"))

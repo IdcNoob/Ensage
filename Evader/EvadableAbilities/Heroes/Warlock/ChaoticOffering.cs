@@ -23,6 +23,7 @@
                 EvadableModifier.GetHeroType.LowestHealth,
                 ignoreRemainingTime: true);
 
+            Modifier.AllyCounterAbilities.Add(Enrage);
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
 

@@ -1,6 +1,7 @@
 ﻿namespace Evader.UsableAbilities.Items
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
 
     using Base;
@@ -18,6 +19,8 @@
 
     using EvadableAbilities.Base;
 
+    using SharpDX;
+
     using AbilityType = Data.AbilityType;
 
     internal class ArmletOfMordiggian : UsableAbility, IDisposable
@@ -34,34 +37,90 @@
 
         #region Fields
 
-        private readonly MultiSleeper attacking;
+        private readonly Dictionary<Unit, double> attacks = new Dictionary<Unit, double>();
 
-        private readonly MultiSleeper attackStart;
+        private readonly Sleeper delay = new Sleeper();
 
-        private readonly string[] cantToggleArmletEnemyModifiers =
+        private readonly Dictionary<string, Tuple<int, float>> enemyDOT = new Dictionary<string, Tuple<int, float>>
         {
-            "modifier_dark_seer_ion_shell",
-            "modifier_ember_spirit_flame_guard",
-            "modifier_juggernaut_blade_fury",
-            "modifier_leshrac_diabolic_edict",
-            "modifier_phoenix_sun_ray",
-            "modifier_slark_dark_pact_pulses"
+            { "modifier_doom_bringer_scorched_earth_effect", Tuple.Create(625, 1f) },
+            { "modifier_rattletrap_battery_assault", Tuple.Create(300, 0.7f) },
+            { "modifier_leshrac_pulse_nova", Tuple.Create(475, 1f) },
+            { "modifier_sandking_sand_storm", Tuple.Create(550, 0.5f) },
+            { "modifier_pudge_rot", Tuple.Create(275, 0.2f) },
+            { "modifier_dark_seer_ion_shell", Tuple.Create(275, 0.1f) },
+            { "modifier_ember_spirit_flame_guard", Tuple.Create(425, 0.2f) },
+            { "modifier_juggernaut_blade_fury", Tuple.Create(275, 0.2f) },
+            { "modifier_leshrac_diabolic_edict", Tuple.Create(525, 0.25f) },
+            { "modifier_phoenix_sun_ray", Tuple.Create(1325, 0.2f) },
+            { "modifier_slark_dark_pact_pulses", Tuple.Create(350, 0.1f) },
+            { "modifier_gyrocopter_rocket_barrage", Tuple.Create(425, 0.1f) },
         };
 
-        private readonly string[] cantToggleArmletHeroModifiers =
+        private readonly Dictionary<string, float> initialDOTTimings = new Dictionary<string, float>();
+
+        private readonly Dictionary<string, float> selfDOT = new Dictionary<string, float>
         {
-            "modifier_ice_blast",
-            "modifier_necrolyte_heartstopper_aura_effect",
-            "modifier_pudge_rot",
-            "modifier_arc_warden_flux",
-            "modifier_crystal_maiden_freezing_field_slow",
-            "modifier_death_prophet_spirit_siphon_slow",
-            "modifier_disruptor_static_storm",
-            "modifier_skywrath_mystic_flare_aura_effect",
-            "modifier_tornado_tempest_debuff"
+            { "modifier_queenofpain_shadow_strike", 3f },
+            { "modifier_crystal_maiden_frostbite", 0.5f },
+            { "modifier_alchemist_acid_spray", 1f },
+            { "modifier_cold_feet", 1f },
+            { "modifier_arc_warden_flux", 0.5f },
+            { "modifier_axe_battle_hunger", 1f },
+            { "modifier_flamebreak_damage", 1f },
+            { "modifier_dazzle_poison_touch", 1f },
+            { "modifier_disruptor_thunder_strike", 2f },
+            { "modifier_doom_bringer_infernal_blade_burn", 1f },
+            { "modifier_dragon_knight_corrosive_breath_dot", 1f },
+            { "modifier_earth_spirit_magnetize", 0.5f },
+            { "modifier_ember_spirit_searing_chains", 1f },
+            { "modifier_enigma_malefice", 2f },
+            { "modifier_invoker_ice_wall_slow_debuff", 1f },
+            { "modifier_invoker_chaos_meteor_burn", 0.5f },
+            { "modifier_huskar_burning_spear_debuff", 1f },
+            { "modifier_jakiro_dual_breath_burn", 0.5f },
+            { "modifier_jakiro_liquid_fire_burn", 0.5f },
+            { "modifier_meepo_geostrike_debuff", 1f },
+            { "modifier_ogre_magi_ignite", 1f },
+            { "modifier_phoenix_icarus_dive_burn", 1f },
+            { "modifier_phoenix_fire_spirit_burn", 1f },
+            { "modifier_phoenix_sun_debuff", 1f },
+            { "modifier_silencer_curse_of_the_silent", 1f },
+            { "modifier_sniper_shrapnel_slow", 1f },
+            { "modifier_lone_druid_spirit_bear_entangle_effect", 1f },
+            { "modifier_shredder_chakram_debuff", 0.5f },
+            { "modifier_treant_leech_seed", 0.75f },
+            { "modifier_treant_overgrowth", 1f },
+            { "modifier_abyssal_underlord_firestorm_burn", 1f },
+            { "modifier_venomancer_venomous_gale", 3f },
+            { "modifier_venomancer_poison_sting", 1f },
+            { "modifier_venomancer_poison_sting_ward", 1f },
+            { "modifier_venomancer_poison_nova", 1f },
+            { "modifier_viper_corrosive_skin_slow", 1f },
+            { "modifier_viper_poison_attack_slow", 1f },
+            { "modifier_viper_viper_strike_slow", 1f },
+            { "modifier_warlock_shadow_word", 1f },
+            { "modifier_weaver_swarm_debuff", 0.8f },
+            { "modifier_winter_wyvern_arctic_burn_slow", 1f },
+            { "modifier_maledict", 1f },
+            { "modifier_skeleton_king_hellfire_blast", 1f },
+            { "modifier_item_orb_of_venom_slow", 1f },
+            { "modifier_item_radiance_debuff", 1f },
+            { "modifier_item_urn_damage", 1f },
+            { "modifier_spawnlord_master_freeze_root", 0.5f },
+            { "modifier_broodmother_poison_sting_debuff", 1f },
+            { "modifier_gnoll_assassin_envenomed_weapon_poison", 1f },
+            { "modifier_warlock_golem_permanent_immolation_debuff", 1f },
+            { "modifier_ice_blast", 0.01f }, // block
+            { "modifier_necrolyte_heartstopper_aura_effect", 0.2f },
+            { "modifier_crystal_maiden_freezing_field_slow", 0.1f },
+            { "modifier_death_prophet_spirit_siphon_slow", 0.25f },
+            { "modifier_disruptor_static_storm", 0.25f },
+            { "modifier_skywrath_mystic_flare_aura_effect", 0.1f },
+            { "modifier_tornado_tempest_debuff", 0.25f },
         };
 
-        private readonly Sleeper delay;
+        private bool armletEnabled;
 
         private bool canToggle;
 
@@ -74,19 +133,22 @@
         public ArmletOfMordiggian(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
             : base(ability, type, target)
         {
-            attacking = new MultiSleeper();
-            attackStart = new MultiSleeper();
-            delay = new Sleeper();
-
-            delay.Sleep(1000);
+            armletEnabled = Hero.Modifiers.Any(x => x.Name == ArmletModifierName);
 
             Game.OnUpdate += OnUpdate;
             Player.OnExecuteOrder += OnExecuteOrder;
+            Drawing.OnDraw += OnDraw;
+            ObjectManager.OnRemoveEntity += OnRemoveEntity;
+            Entity.OnAnimationChanged += OnAnimationChanged;
+            Unit.OnModifierAdded += OnModifierAdded;
+            Unit.OnModifierRemoved += OnModifierRemoved;
         }
 
         #endregion
 
         #region Properties
+
+        private static DebugMenu DebugMenu => Variables.Menu.Debug;
 
         private static UsableAbilitiesMenu Menu => Variables.Menu.UsableAbilities;
 
@@ -96,20 +158,12 @@
 
         public override bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
-            if (Sleeper.Sleeping)
+            if (Sleeper.Sleeping || !Hero.CanUseItems())
             {
                 return false;
             }
 
-            var nearEnemies =
-                ObjectManager.GetEntitiesParallel<Unit>()
-                    .Where(
-                        x =>
-                            x.IsValid && x.IsAlive && x.IsSpawned && x.AttackCapability != AttackCapability.None
-                            && x.Team != HeroTeam && x.Distance2D(Hero) < x.GetAttackRange() + 300);
-
-            var armletEnabled = Hero.Modifiers.Any(x => x.Name == ArmletModifierName);
-            if (armletEnabled && DotModifiers(nearEnemies))
+            if (armletEnabled && AffectedByDOT())
             {
                 return false;
             }
@@ -154,6 +208,11 @@
         {
             Game.OnUpdate -= OnUpdate;
             Player.OnExecuteOrder -= OnExecuteOrder;
+            Drawing.OnDraw -= OnDraw;
+            ObjectManager.OnRemoveEntity -= OnRemoveEntity;
+            Entity.OnAnimationChanged -= OnAnimationChanged;
+            Unit.OnModifierAdded -= OnModifierAdded;
+            Unit.OnModifierRemoved -= OnModifierRemoved;
         }
 
         public override float GetRequiredTime(EvadableAbility ability, Unit unit, float remainingTime)
@@ -163,10 +222,11 @@
 
         public override void Use(EvadableAbility ability, Unit target)
         {
-            if (Hero.Modifiers.Any(x => x.Name == ArmletModifierName))
+            if (armletEnabled)
             {
                 Ability.ToggleAbility();
             }
+
             Ability.ToggleAbility();
 
             manualDisable = false;
@@ -187,7 +247,7 @@
         {
             time -= Game.Ping / 1000;
 
-            if (time < 0)
+            if (time <= 0)
             {
                 return 0;
             }
@@ -195,12 +255,109 @@
             return Math.Min(time, ArmletFullEnableTime) * ArmletHpGain / ArmletFullEnableTime;
         }
 
-        private bool DotModifiers(ParallelQuery<Unit> nearEnemies)
+        private bool AffectedByDOT()
         {
-            var heroModifiers = Hero.HasModifiers(cantToggleArmletHeroModifiers, false);
-            var enemyModifiers = nearEnemies.Any(x => x.HasModifiers(cantToggleArmletEnemyModifiers, false));
+            foreach (var modifier in Hero.Modifiers.Where(x => !x.IsHidden && x.IsDebuff))
+            {
+                float tick;
+                if (!selfDOT.TryGetValue(modifier.Name, out tick))
+                {
+                    continue;
+                }
 
-            return enemyModifiers || heroModifiers;
+                float initialTime;
+                if (!initialDOTTimings.TryGetValue(modifier.Name, out initialTime))
+                {
+                    continue;
+                }
+
+                var elapsedTime = (Game.RawGameTime - initialTime) % tick;
+                if (elapsedTime + 0.25 - Game.Ping / 1000 > tick || elapsedTime < 0.1)
+                {
+                    return true;
+                }
+            }
+
+            foreach (var unit in
+                ObjectManager.GetEntitiesParallel<Unit>()
+                    .Where(
+                        x => x.IsValid && x.IsAlive && x.IsSpawned && x.Team != HeroTeam && x.Distance2D(Hero) < 1325))
+            {
+                foreach (var modifier in unit.Modifiers.Where(x => !x.IsHidden))
+                {
+                    Tuple<int, float> tuple;
+                    if (!enemyDOT.TryGetValue(modifier.Name, out tuple))
+                    {
+                        continue;
+                    }
+
+                    var distance = tuple.Item1;
+                    if (Hero.Distance2D(unit) > distance)
+                    {
+                        continue;
+                    }
+
+                    var tick = tuple.Item2;
+                    var elapsedTime = modifier.ElapsedTime % tick;
+                    if (elapsedTime + 0.25 - Game.Ping / 1000 > tick || elapsedTime < 0.1)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private void OnAnimationChanged(Entity sender, EventArgs args)
+        {
+            if (sender.Team == HeroTeam
+                || !sender.Animation.Name.Contains("attack") && sender.Animation.Name != "radiant_tower002")
+            {
+                return;
+            }
+
+            var unit = sender as Unit;
+            if (unit == null || !unit.IsAttacking())
+            {
+                return;
+            }
+
+            attacks[unit] = Game.RawGameTime;
+        }
+
+        private void OnDraw(EventArgs args)
+        {
+            if (!DebugMenu.ArmletToggler)
+            {
+                return;
+            }
+
+            if (canToggle)
+            {
+                Drawing.DrawText(
+                    "Can toggle",
+                    "Arial",
+                    HUDInfo.GetHPbarPosition(Hero) + new Vector2(10, -30),
+                    new Vector2(25),
+                    Color.White,
+                    FontFlags.None);
+            }
+
+            foreach (
+                var source in
+                ObjectManager.GetEntities<Unit>()
+                    .Where(x => x.IsAlive && x.Distance2D(Hero) < 1000 && x.IsAttacking() && !x.Equals(Hero)))
+            {
+                Drawing.DrawText(
+                    "Attacking " + source.AttackPoint().ToString("0.##") + " / "
+                    + source.AttackBackswing().ToString("0.##"),
+                    "Arial",
+                    HUDInfo.GetHPbarPosition(source) + new Vector2(-15, -20),
+                    new Vector2(20),
+                    Color.White,
+                    FontFlags.None);
+            }
         }
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
@@ -217,7 +374,7 @@
                 return;
             }
 
-            if (Hero.Modifiers.Any(x => x.Name == ArmletModifierName))
+            if (armletEnabled)
             {
                 manualDisable = true;
                 Sleep(100 + Game.Ping);
@@ -226,6 +383,47 @@
             {
                 manualDisable = false;
                 Sleep(ArmletFullEnableTime * 1000);
+            }
+        }
+
+        private void OnModifierAdded(Unit sender, ModifierChangedEventArgs args)
+        {
+            if (sender.Handle != Hero.Handle)
+            {
+                return;
+            }
+
+            var name = args.Modifier.Name;
+
+            if (name == ArmletModifierName)
+            {
+                armletEnabled = true;
+            }
+            else if (name == "modifier_fountain_aura_buff" && armletEnabled && canToggle && Menu.AutoDisableAtFountain
+                     && !Sleeper.Sleeping)
+            {
+                Ability.ToggleAbility();
+            }
+            else if (selfDOT.ContainsKey(name))
+            {
+                initialDOTTimings[name] = Game.RawGameTime;
+            }
+        }
+
+        private void OnModifierRemoved(Unit sender, ModifierChangedEventArgs args)
+        {
+            if (sender.Handle == Hero.Handle && args.Modifier.Name == ArmletModifierName)
+            {
+                armletEnabled = false;
+            }
+        }
+
+        private void OnRemoveEntity(EntityEventArgs args)
+        {
+            var unit = args.Entity as Unit;
+            if (unit != null)
+            {
+                attacks.Remove(unit);
             }
         }
 
@@ -249,71 +447,106 @@
                 return;
             }
 
-            var nearEnemies =
-                ObjectManager.GetEntitiesParallel<Unit>()
-                    .Where(
-                        x =>
-                            x.IsValid && x.IsAlive && x.IsSpawned && x.AttackCapability != AttackCapability.None
-                            && x.Team != HeroTeam && x.Distance2D(Hero) < x.GetAttackRange() + 200);
-
-            foreach (var enemy in
-                nearEnemies.Where(x => x.AttackCapability == AttackCapability.Melee || x.Distance2D(Hero) < 250))
+            if (armletEnabled && AffectedByDOT())
             {
-                if (!attackStart.Sleeping(enemy) && enemy.IsAttacking())
-                {
-                    var sleep = (float)UnitDatabase.GetAttackPoint(enemy) * 1000;
-
-                    if (enemy.AttackCapability == AttackCapability.Ranged)
-                    {
-                        sleep += (Hero.Distance2D(enemy) - Hero.RingRadius) / (float)enemy.ProjectileSpeed();
-                    }
-
-                    attacking.Sleep(sleep, enemy);
-                    attackStart.Sleep(enemy.SecondsPerAttack * 1000, enemy);
-                }
-                else if (attackStart.Sleeping(enemy) && !enemy.IsAttacking())
-                {
-                    attackStart.Reset(enemy);
-                    attacking.Sleep((float)UnitDatabase.GetAttackBackswing(enemy) * 1000, enemy);
-                }
-            }
-
-            var armletEnabled = Hero.Modifiers.Any(x => x.Name == ArmletModifierName);
-            if (armletEnabled && DotModifiers(nearEnemies))
-            {
+                canToggle = false;
                 return;
             }
 
-            var position = Hero.IsMoving && Math.Abs(Hero.RotationDifference) < 60
-                               ? Hero.InFront(100)
-                               : Hero.NetworkPosition;
+            var position = Hero.NetworkPosition;
+            // Hero.IsMoving && Math.Abs(Hero.RotationDifference) < 60
+            //                   ? Hero.InFront(100)
+            //                   : Hero.NetworkPosition;
 
-            var heroProjectiles =
-                ObjectManager.TrackingProjectiles.Where(
-                    x => x.Target?.Handle == Hero.Handle && x.Source is Unit).ToList();
+            var noProjectiles = true;
+            foreach (var projectile in ObjectManager.TrackingProjectiles.Where(x => x.Target?.Handle == Hero.Handle))
+            {
+                var unit = projectile.Source as Unit;
+                if (unit == null)
+                {
+                    continue;
+                }
 
-            var noProjectiles =
-                heroProjectiles.All(
+                var hpRestored =
+                    HpRestored(
+                        Math.Max(projectile.Position.Distance2D(position) - Hero.RingRadius, 0) / projectile.Speed
+                        - 0.20f);
+
+                var damage = Hero.DamageTaken(unit.MaximumDamage + unit.BonusDamage, DamageType.Physical, unit);
+
+                switch (unit.ClassID)
+                {
+                    case ClassID.CDOTA_Unit_Hero_Silencer:
+                        if (!Hero.IsMagicImmune())
+                        {
+                            damage += ((Hero)unit).TotalIntelligence
+                                      * (0.2f + (float)unit.Spellbook.SpellW.Level * 15 / 100);
+                        }
+                        break;
+                    case ClassID.CDOTA_Unit_Hero_Obsidian_Destroyer:
+                        if (!Hero.IsMagicImmune())
+                        {
+                            damage += unit.MaximumMana * (0.05f + (float)unit.Spellbook.SpellQ.Level / 100);
+                        }
+                        break;
+                    case ClassID.CDOTA_Unit_Hero_Clinkz:
+                        damage += Hero.DamageTaken(20 + unit.Spellbook.SpellW.Level * 10, DamageType.Physical, unit);
+                        break;
+                }
+
+                if (damage >= hpRestored)
+                {
+                    noProjectiles = false;
+                    break;
+                }
+            }
+
+            var noAutoAttacks = true;
+            foreach (var attack in
+                attacks.Where(
                     x =>
-                        HpRestored(Math.Max(x.Position.Distance2D(position) - Hero.RingRadius, 0) / x.Speed - 0.25f)
-                        > Math.Round(
-                            Hero.DamageTaken(
-                                ((Unit)x.Source).MinimumDamage + ((Unit)x.Source).BonusDamage,
-                                DamageType.Physical,
-                                (Unit)x.Source,
-                                minusArmor: 4)));
+                        x.Key.IsAlive && x.Key.Distance2D(Hero) <= x.Key.GetAttackRange() + 200
+                        && x.Key.FindRelativeAngle(Hero.Position) < 0.5
+                        && (x.Key.IsMelee || x.Key.Distance2D(Hero) < 400 || x.Key.AttackPoint() < 0.15)))
+            {
+                var unit = attack.Key;
+                var attackStart = attack.Value;
+                var attackPoint = unit.AttackPoint();
+                var secondsPerAttack = unit.SecondsPerAttack;
 
-            var noAutoAttacks = nearEnemies.All(x => x.FindRelativeAngle(Hero.Position) > 0.5 || !attacking.Sleeping(x));
+                var damageTime = attackStart + attackPoint;
+                if (unit.IsRanged)
+                {
+                    damageTime += Math.Max(unit.Distance2D(Hero) - Hero.RingRadius, 0) / unit.ProjectileSpeed();
+                }
+
+                var echoSabre = unit.FindItem("item_echo_sabre", true);
+
+                if ((Game.RawGameTime <= damageTime + 0.075
+                     && (attackPoint < 0.35 || Game.RawGameTime + attackPoint * 0.6 > damageTime))
+                    || (attackPoint < 0.25 && Game.RawGameTime > damageTime + unit.AttackBackswing() * 0.8
+                        && Game.RawGameTime <= attackStart + secondsPerAttack + 0.075)
+                    || (echoSabre != null && unit.IsMelee
+                        && echoSabre.CooldownLength - echoSabre.Cooldown <= attackPoint * 2))
+                {
+                    noAutoAttacks = false;
+                    break;
+                }
+            }
+
+            canToggle = noProjectiles && noAutoAttacks || !armletEnabled;
 
             if (Sleeper.Sleeping)
             {
                 return;
             }
 
-            canToggle = noProjectiles && noAutoAttacks || !armletEnabled;
+            var nearEnemies =
+                ObjectManager.GetEntitiesParallel<Unit>()
+                    .Any(x => x.IsValid && x.Team != HeroTeam && x.IsAlive && x.IsSpawned && x.Distance2D(Hero) < 1000);
 
             if (Hero.Health < Menu.ArmetHpThreshold && canToggle
-                && (nearEnemies.Any() || heroProjectiles.Any() || !Menu.ArmletEnemiesCheck && !manualDisable))
+                && (nearEnemies || !Menu.ArmletEnemiesCheck && !manualDisable))
             {
                 Use(null, null);
             }

@@ -97,8 +97,9 @@
 
         public virtual bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
-            return !Sleeper.Sleeping && Ability.CanBeCasted() && Hero.Distance2D(unit) <= GetCastRange()
-                   && CheckEnemy(unit);
+            return !Sleeper.Sleeping && Ability.CanBeCasted()
+                   && (IsItem && Hero.CanUseItems() || !IsItem && Hero.CanCast())
+                   && Hero.Distance2D(unit) <= GetCastRange() && CheckEnemy(unit);
         }
 
         public abstract float GetRequiredTime(EvadableAbility ability, Unit unit, float remainingTime);
