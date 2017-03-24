@@ -18,7 +18,6 @@
             { AbilityId.item_platemail, ShopFlags.Secret }, //Platemail
             { AbilityId.item_quarterstaff, ShopFlags.Base | ShopFlags.Side }, //Quarterstaff
             { AbilityId.item_quelling_blade, ShopFlags.Base | ShopFlags.Side }, //Quelling Blade
-            { AbilityId.item_slippers, ShopFlags.Base | ShopFlags.Side }, //Slippers of Agility
             { AbilityId.item_belt_of_strength, ShopFlags.Base | ShopFlags.Side }, //Belt of Strength
             { AbilityId.item_boots_of_elves, ShopFlags.Base | ShopFlags.Side }, //Band of Elvenskin
             { AbilityId.item_robe, ShopFlags.Base | ShopFlags.Side }, //Robe of the Magi
