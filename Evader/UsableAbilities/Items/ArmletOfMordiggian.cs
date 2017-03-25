@@ -53,6 +53,7 @@
             { "modifier_juggernaut_blade_fury", Tuple.Create(275, 0.2f) },
             { "modifier_leshrac_diabolic_edict", Tuple.Create(525, 0.25f) },
             { "modifier_phoenix_sun_ray", Tuple.Create(1325, 0.2f) },
+            { "modifier_slark_dark_pact", Tuple.Create(350, 1.5f) },
             { "modifier_slark_dark_pact_pulses", Tuple.Create(350, 0.1f) },
             { "modifier_gyrocopter_rocket_barrage", Tuple.Create(425, 0.1f) },
         };
@@ -86,6 +87,7 @@
             { "modifier_phoenix_fire_spirit_burn", 1f },
             { "modifier_phoenix_sun_debuff", 1f },
             { "modifier_silencer_curse_of_the_silent", 1f },
+            { "modifier_silencer_last_word", 4f },
             { "modifier_sniper_shrapnel_slow", 1f },
             { "modifier_lone_druid_spirit_bear_entangle_effect", 1f },
             { "modifier_shredder_chakram_debuff", 0.5f },
@@ -116,6 +118,7 @@
             { "modifier_crystal_maiden_freezing_field_slow", 0.1f },
             { "modifier_death_prophet_spirit_siphon_slow", 0.25f },
             { "modifier_disruptor_static_storm", 0.25f },
+            { "modifier_pugna_life_drain", 0.25f },
             { "modifier_skywrath_mystic_flare_aura_effect", 0.1f },
             { "modifier_tornado_tempest_debuff", 0.25f },
         };
@@ -272,7 +275,9 @@
                 }
 
                 var elapsedTime = (Game.RawGameTime - initialTime) % tick;
-                if (elapsedTime + 0.25 - Game.Ping / 1000 > tick || elapsedTime < 0.1)
+                var ping = Game.Ping / 1000;
+
+                if (elapsedTime + 0.20 + ping > tick || elapsedTime + ping < 0.1)
                 {
                     return true;
                 }
@@ -299,7 +304,9 @@
 
                     var tick = tuple.Item2;
                     var elapsedTime = modifier.ElapsedTime % tick;
-                    if (elapsedTime + 0.25 - Game.Ping / 1000 > tick || elapsedTime < 0.1)
+                    var ping = Game.Ping / 1000;
+
+                    if (elapsedTime + 0.20 + ping > tick || elapsedTime + ping < 0.1)
                     {
                         return true;
                     }
@@ -453,10 +460,9 @@
                 return;
             }
 
-            var position = Hero.NetworkPosition;
-            // Hero.IsMoving && Math.Abs(Hero.RotationDifference) < 60
-            //                   ? Hero.InFront(100)
-            //                   : Hero.NetworkPosition;
+            var position = Hero.IsMoving && Math.Abs(Hero.RotationDifference) < 60
+                               ? Hero.InFront(100)
+                               : Hero.NetworkPosition;
 
             var noProjectiles = true;
             foreach (var projectile in ObjectManager.TrackingProjectiles.Where(x => x.Target?.Handle == Hero.Handle))
@@ -510,9 +516,10 @@
                         && (x.Key.IsMelee || x.Key.Distance2D(Hero) < 400 || x.Key.AttackPoint() < 0.15)))
             {
                 var unit = attack.Key;
-                var attackStart = attack.Value;
+                var attackStart = attack.Value - Game.Ping/1000;
                 var attackPoint = unit.AttackPoint();
                 var secondsPerAttack = unit.SecondsPerAttack;
+                var time = Game.RawGameTime;
 
                 var damageTime = attackStart + attackPoint;
                 if (unit.IsRanged)
@@ -522,10 +529,9 @@
 
                 var echoSabre = unit.FindItem("item_echo_sabre", true);
 
-                if ((Game.RawGameTime <= damageTime + 0.075
-                     && (attackPoint < 0.35 || Game.RawGameTime + attackPoint * 0.6 > damageTime))
-                    || (attackPoint < 0.25 && Game.RawGameTime > damageTime + unit.AttackBackswing() * 0.8
-                        && Game.RawGameTime <= attackStart + secondsPerAttack + 0.075)
+                if ((time <= damageTime + 0.075 && (attackPoint < 0.35 || time + attackPoint * 0.6 > damageTime))
+                    || (attackPoint < 0.25 && time > damageTime + unit.AttackBackswing() * 0.8
+                        && time <= attackStart + secondsPerAttack + 0.075)
                     || (echoSabre != null && unit.IsMelee
                         && echoSabre.CooldownLength - echoSabre.Cooldown <= attackPoint * 2))
                 {
