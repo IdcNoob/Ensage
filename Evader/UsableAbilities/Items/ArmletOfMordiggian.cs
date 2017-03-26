@@ -25,6 +25,24 @@
 
     internal class ArmletOfMordiggian : UsableAbility, IDisposable
     {
+        #region Constructors and Destructors
+
+        public ArmletOfMordiggian(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
+            : base(ability, type, target)
+        {
+            armletEnabled = Hero.Modifiers.Any(x => x.Name == ArmletModifierName);
+
+            Game.OnUpdate += OnUpdate;
+            Player.OnExecuteOrder += OnExecuteOrder;
+            Drawing.OnDraw += OnDraw;
+            ObjectManager.OnRemoveEntity += OnRemoveEntity;
+            Entity.OnAnimationChanged += OnAnimationChanged;
+            Unit.OnModifierAdded += OnModifierAdded;
+            Unit.OnModifierRemoved += OnModifierRemoved;
+        }
+
+        #endregion
+
         #region Constants
 
         private const float ArmletFullEnableTime = 0.8f;
@@ -41,7 +59,7 @@
 
         private readonly Sleeper delay = new Sleeper();
 
-        private readonly Dictionary<string, Tuple<int, float>> enemyDOT = new Dictionary<string, Tuple<int, float>>
+        private readonly Dictionary<string, Tuple<int, float>> enemyDot = new Dictionary<string, Tuple<int, float>>
         {
             { "modifier_doom_bringer_scorched_earth_effect", Tuple.Create(625, 1f) },
             { "modifier_rattletrap_battery_assault", Tuple.Create(300, 0.7f) },
@@ -55,12 +73,12 @@
             { "modifier_phoenix_sun_ray", Tuple.Create(1325, 0.2f) },
             { "modifier_slark_dark_pact", Tuple.Create(350, 1.5f) },
             { "modifier_slark_dark_pact_pulses", Tuple.Create(350, 0.1f) },
-            { "modifier_gyrocopter_rocket_barrage", Tuple.Create(425, 0.1f) },
+            { "modifier_gyrocopter_rocket_barrage", Tuple.Create(425, 0.1f) }
         };
 
-        private readonly Dictionary<string, float> initialDOTTimings = new Dictionary<string, float>();
+        private readonly Dictionary<string, float> initialDotTimings = new Dictionary<string, float>();
 
-        private readonly Dictionary<string, float> selfDOT = new Dictionary<string, float>
+        private readonly Dictionary<string, float> selfDot = new Dictionary<string, float>
         {
             { "modifier_queenofpain_shadow_strike", 3f },
             { "modifier_crystal_maiden_frostbite", 0.5f },
@@ -120,7 +138,7 @@
             { "modifier_disruptor_static_storm", 0.25f },
             { "modifier_pugna_life_drain", 0.25f },
             { "modifier_skywrath_mystic_flare_aura_effect", 0.1f },
-            { "modifier_tornado_tempest_debuff", 0.25f },
+            { "modifier_tornado_tempest_debuff", 0.25f }
         };
 
         private bool armletEnabled;
@@ -128,24 +146,6 @@
         private bool canToggle;
 
         private bool manualDisable;
-
-        #endregion
-
-        #region Constructors and Destructors
-
-        public ArmletOfMordiggian(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
-            : base(ability, type, target)
-        {
-            armletEnabled = Hero.Modifiers.Any(x => x.Name == ArmletModifierName);
-
-            Game.OnUpdate += OnUpdate;
-            Player.OnExecuteOrder += OnExecuteOrder;
-            Drawing.OnDraw += OnDraw;
-            ObjectManager.OnRemoveEntity += OnRemoveEntity;
-            Entity.OnAnimationChanged += OnAnimationChanged;
-            Unit.OnModifierAdded += OnModifierAdded;
-            Unit.OnModifierRemoved += OnModifierRemoved;
-        }
 
         #endregion
 
@@ -166,7 +166,7 @@
                 return false;
             }
 
-            if (armletEnabled && AffectedByDOT())
+            if (armletEnabled && AffectedByDot())
             {
                 return false;
             }
@@ -258,18 +258,18 @@
             return Math.Min(time, ArmletFullEnableTime) * ArmletHpGain / ArmletFullEnableTime;
         }
 
-        private bool AffectedByDOT()
+        private bool AffectedByDot()
         {
             foreach (var modifier in Hero.Modifiers.Where(x => !x.IsHidden && x.IsDebuff))
             {
                 float tick;
-                if (!selfDOT.TryGetValue(modifier.Name, out tick))
+                if (!selfDot.TryGetValue(modifier.Name, out tick))
                 {
                     continue;
                 }
 
                 float initialTime;
-                if (!initialDOTTimings.TryGetValue(modifier.Name, out initialTime))
+                if (!initialDotTimings.TryGetValue(modifier.Name, out initialTime))
                 {
                     continue;
                 }
@@ -291,7 +291,7 @@
                 foreach (var modifier in unit.Modifiers.Where(x => !x.IsHidden))
                 {
                     Tuple<int, float> tuple;
-                    if (!enemyDOT.TryGetValue(modifier.Name, out tuple))
+                    if (!enemyDot.TryGetValue(modifier.Name, out tuple))
                     {
                         continue;
                     }
@@ -351,8 +351,7 @@
                     FontFlags.None);
             }
 
-            foreach (
-                var source in
+            foreach (var source in
                 ObjectManager.GetEntities<Unit>()
                     .Where(x => x.IsAlive && x.Distance2D(Hero) < 1000 && x.IsAttacking() && !x.Equals(Hero)))
             {
@@ -411,9 +410,9 @@
             {
                 Ability.ToggleAbility();
             }
-            else if (selfDOT.ContainsKey(name))
+            else if (selfDot.ContainsKey(name))
             {
-                initialDOTTimings[name] = Game.RawGameTime;
+                initialDotTimings[name] = Game.RawGameTime;
             }
         }
 
@@ -441,7 +440,7 @@
                 return;
             }
 
-            delay.Sleep(50);
+            delay.Sleep(Menu.ArmetCheckDelay);
 
             if (!Game.IsInGame || Game.IsPaused || !Menu.ArmletAutoToggle)
             {
@@ -449,12 +448,7 @@
                 return;
             }
 
-            if (!Hero.IsAlive || !Hero.CanUseItems())
-            {
-                return;
-            }
-
-            if (armletEnabled && AffectedByDOT())
+            if (!Hero.IsAlive || !Hero.CanUseItems() || armletEnabled && AffectedByDot())
             {
                 canToggle = false;
                 return;
@@ -500,6 +494,17 @@
                         break;
                 }
 
+                if (Hero.HasModifier("modifier_invoker_cold_snap"))
+                {
+                    var quas =
+                        ObjectManager.GetEntitiesParallel<Ability>()
+                            .FirstOrDefault(x => x.AbilityId == AbilityId.invoker_quas);
+                    if (quas != null)
+                    {
+                        damage += Hero.DamageTaken(quas.Level * 7, DamageType.Magical, unit);
+                    }
+                }
+
                 if (damage >= hpRestored)
                 {
                     noProjectiles = false;
@@ -513,10 +518,10 @@
                     x =>
                         x.Key.IsAlive && x.Key.Distance2D(Hero) <= x.Key.GetAttackRange() + 200
                         && x.Key.FindRelativeAngle(Hero.Position) < 0.5
-                        && (x.Key.IsMelee || x.Key.Distance2D(Hero) < 400 || x.Key.AttackPoint() < 0.15)))
+                        && (x.Key.IsMelee || x.Key.Distance2D(Hero) < 400 /*|| x.Key.AttackPoint() < 0.15*/)))
             {
                 var unit = attack.Key;
-                var attackStart = attack.Value - Game.Ping/1000;
+                var attackStart = attack.Value - Game.Ping / 1000;
                 var attackPoint = unit.AttackPoint();
                 var secondsPerAttack = unit.SecondsPerAttack;
                 var time = Game.RawGameTime;
@@ -529,11 +534,11 @@
 
                 var echoSabre = unit.FindItem("item_echo_sabre", true);
 
-                if ((time <= damageTime + 0.075 && (attackPoint < 0.35 || time + attackPoint * 0.6 > damageTime))
-                    || (attackPoint < 0.25 && time > damageTime + unit.AttackBackswing() * 0.8
-                        && time <= attackStart + secondsPerAttack + 0.075)
-                    || (echoSabre != null && unit.IsMelee
-                        && echoSabre.CooldownLength - echoSabre.Cooldown <= attackPoint * 2))
+                if (time <= damageTime + 0.075 && (attackPoint < 0.35 || time + attackPoint * 0.6 > damageTime)
+                    || attackPoint < 0.25 && time > damageTime + unit.AttackBackswing() * 0.8
+                    && time <= attackStart + secondsPerAttack + 0.075
+                    || echoSabre != null && unit.IsMelee
+                    && echoSabre.CooldownLength - echoSabre.Cooldown <= attackPoint * 2)
                 {
                     noAutoAttacks = false;
                     break;

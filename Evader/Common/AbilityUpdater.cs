@@ -177,7 +177,18 @@
                         if (enemyAbilitiesData.EvadableAbilities.TryGetValue(ability.Name, out func))
                         {
                             var evadableAbility = func.Invoke(ability);
-                            await Menu.EnemiesSettings.AddAbility(evadableAbility);
+
+                            if (Menu.Debug.FastAbilityAdd)
+                            {
+                                #pragma warning disable 4014
+                                Menu.EnemiesSettings.AddAbility(evadableAbility);
+                                #pragma warning restore 4014
+                            }
+                            else
+                            {
+                                await Menu.EnemiesSettings.AddAbility(evadableAbility);
+                            }
+
                             EvadableAbilities.Add(evadableAbility);
                         }
                     }

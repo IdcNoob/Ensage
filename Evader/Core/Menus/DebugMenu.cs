@@ -44,6 +44,12 @@
             armletToggler.ValueChanged += (sender, args) => ArmletToggler = args.GetNewValue<bool>();
             ArmletToggler = armletToggler.IsActive();
 
+            var fastAbilityAdd = new MenuItem("fastAbilityAdd", "Fast ability add").SetValue(false);
+            fastAbilityAdd.SetTooltip("Don't enable this");
+            menu.AddItem(fastAbilityAdd);
+            fastAbilityAdd.ValueChanged += (sender, args) => FastAbilityAdd = args.GetNewValue<bool>();
+            FastAbilityAdd = fastAbilityAdd.IsActive();
+
             rootMenu.AddSubMenu(menu);
         }
 
@@ -52,6 +58,8 @@
         #region Public Properties
 
         public bool ArmletToggler { get; private set; }
+
+        public bool FastAbilityAdd { get; private set; }
 
         public bool DrawAbilities { get; private set; }
 

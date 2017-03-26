@@ -54,6 +54,8 @@
 
         public int ArmetHpThreshold { get; private set; }
 
+        public int ArmetCheckDelay { get; private set; }
+
         public bool ArmletAutoToggle { get; private set; }
 
         public bool ArmletEnemiesCheck { get; private set; }
@@ -149,6 +151,14 @@
                     armetHpThreshold.ValueChanged +=
                         (sender, args) => ArmetHpThreshold = args.GetNewValue<Slider>().Value;
                     ArmetHpThreshold = armetHpThreshold.GetValue<Slider>().Value;
+
+                    var checkDelay =
+                      new MenuItem("armletCheckDelay", "Check delay").SetValue(new Slider(75, 0, 300));
+                    checkDelay.SetTooltip("Lower delay => better calculations, but requires more resources");
+                    armletMenu.AddItem(checkDelay);
+                    checkDelay.ValueChanged +=
+                        (sender, args) => ArmetCheckDelay = args.GetNewValue<Slider>().Value;
+                    ArmetCheckDelay = checkDelay.GetValue<Slider>().Value;
 
                     var fountainDisable = new MenuItem("armletAutoDisable", "Auto disable at fountain").SetValue(true);
                     armletMenu.AddItem(fountainDisable);
