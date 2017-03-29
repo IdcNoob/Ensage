@@ -10,7 +10,7 @@ namespace ItemManager.Menus.ItemSwap
 
         public ItemSwapMenu(Menu mainMenu)
         {
-            var menu = new Menu(" Item swapper", "itemSwapper", false, "vengefulspirit_nether_swap", true);
+            var menu = new Menu("Item swapper", "itemSwapper");
 
             Backpack = new Backpack(menu);
             Stash = new Stash(menu);

@@ -51,19 +51,32 @@
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!menu.Auto.TpScrollAbuse || args.Order != Order.AbilityLocation
+            if (!menu.Auto.AbuseTpScroll || args.Order != Order.AbilityLocation
                 || args.Ability.AbilityId != AbilityId.item_tpscroll)
             {
                 return;
             }
 
             var tpScroll = (Item)args.Ability;
-            var slot = items.GetSlot(tpScroll.AbilityId, Items.StoredPlace.Inventory);
+            var tpScrollSlot = items.GetSlot(tpScroll.AbilityId, Items.StoredPlace.Inventory);
+
+            if (menu.Auto.SwapTpScroll)
+            {
+                var backpackItem =
+                    items.GetMyItems(Items.StoredPlace.Backpack).OrderByDescending(x => x.Cost).FirstOrDefault();
+
+                if (backpackItem != null && tpScrollSlot != null)
+                {
+                    backpackItem.MoveItem(tpScrollSlot.Value);
+                    return;
+                }
+            }
+
             tpScroll.MoveItem(ItemSlot.BackPack_1);
 
-            if (slot != null)
+            if (tpScrollSlot != null)
             {
-                DelayAction.Add(500, () => tpScroll.MoveItem(slot.Value));
+                DelayAction.Add(500, () => tpScroll.MoveItem(tpScrollSlot.Value));
             }
         }
 
@@ -159,7 +172,7 @@
 
         private void OnModifierAdded(Unit sender, ModifierChangedEventArgs args)
         {
-            if (!menu.Auto.SwapTpScroll || menu.Auto.TpScrollAbuse || sender.Handle != hero.Handle
+            if (!menu.Auto.SwapTpScroll || menu.Auto.AbuseTpScroll || sender.Handle != hero.Handle
                 || args.Modifier.TextureName != "item_tpscroll")
             {
                 return;
@@ -167,6 +180,7 @@
 
             var backpackItem =
                 items.GetMyItems(Items.StoredPlace.Backpack).OrderByDescending(x => x.Cost).FirstOrDefault();
+
             if (backpackItem == null)
             {
                 return;

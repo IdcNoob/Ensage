@@ -22,7 +22,7 @@
 
             Stash = 4,
 
-            All = Inventory | Backpack | Stash
+            Any = Inventory | Backpack | Stash
         }
 
         #endregion
@@ -158,7 +158,7 @@
 
         public void SaveItemSlot(Item item)
         {
-            var slot = GetSlot(item.AbilityId, StoredPlace.All);
+            var slot = GetSlot(item.AbilityId, StoredPlace.Any);
             if (slot != null)
             {
                 itemSlots[item] = slot.Value;
@@ -197,7 +197,7 @@
                 return;
             }
 
-            if (!GetMyItems(StoredPlace.All).ToList().Exists(x => x.Name == item.Name))
+            if (!GetMyItems(StoredPlace.Any).ToList().Exists(x => x.Name == item.Name))
             {
                 menu.RemoveItem(item.Name);
             }

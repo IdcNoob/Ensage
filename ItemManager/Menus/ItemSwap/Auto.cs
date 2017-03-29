@@ -21,8 +21,8 @@
                 new MenuItem("tpAbuse", "Town portal scroll abuse").SetValue(false)
                     .SetTooltip("Removes town portal scroll cooldown");
             menu.AddItem(tpScrollAbuse);
-            tpScrollAbuse.ValueChanged += (sender, args) => TpScrollAbuse = args.GetNewValue<bool>();
-            TpScrollAbuse = tpScrollAbuse.IsActive();
+            tpScrollAbuse.ValueChanged += (sender, args) => AbuseTpScroll = args.GetNewValue<bool>();
+            AbuseTpScroll = tpScrollAbuse.IsActive();
 
             var autoAegis =
                 new MenuItem("autoAegisMoveBackpack", "Aegis/Cheese").SetValue(false)
@@ -36,7 +36,7 @@
 
         #endregion
 
-        public bool TpScrollAbuse { get; private set; }
+        public bool AbuseTpScroll { get; private set; }
 
         #region Public Properties
 
