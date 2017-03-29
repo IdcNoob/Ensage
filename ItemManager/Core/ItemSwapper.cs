@@ -49,34 +49,41 @@
             Player.OnExecuteOrder += OnExecuteOrder;
         }
 
+        private readonly List<AbilityId> teleportAbilities = new List<AbilityId>
+        {
+            AbilityId.item_tpscroll,
+            AbilityId.item_travel_boots,
+            AbilityId.item_travel_boots_2
+        };
+
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
             if (!menu.Auto.AbuseTpScroll || args.Order != Order.AbilityLocation
-                || args.Ability.AbilityId != AbilityId.item_tpscroll)
+                || !teleportAbilities.Contains(args.Ability.AbilityId))
             {
                 return;
             }
 
-            var tpScroll = (Item)args.Ability;
-            var tpScrollSlot = items.GetSlot(tpScroll.AbilityId, Items.StoredPlace.Inventory);
+            var item = (Item)args.Ability;
+            var itemSlot = items.GetSlot(item.AbilityId, Items.StoredPlace.Inventory);
 
             if (menu.Auto.SwapTpScroll)
             {
                 var backpackItem =
                     items.GetMyItems(Items.StoredPlace.Backpack).OrderByDescending(x => x.Cost).FirstOrDefault();
 
-                if (backpackItem != null && tpScrollSlot != null)
+                if (backpackItem != null && itemSlot != null)
                 {
-                    backpackItem.MoveItem(tpScrollSlot.Value);
+                    backpackItem.MoveItem(itemSlot.Value);
                     return;
                 }
             }
 
-            tpScroll.MoveItem(ItemSlot.BackPack_1);
+            item.MoveItem(ItemSlot.BackPack_1);
 
-            if (tpScrollSlot != null)
+            if (itemSlot != null)
             {
-                DelayAction.Add(500, () => tpScroll.MoveItem(tpScrollSlot.Value));
+                DelayAction.Add(500, () => item.MoveItem(itemSlot.Value));
             }
         }
 
