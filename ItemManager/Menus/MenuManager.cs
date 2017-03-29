@@ -1,7 +1,5 @@
 ﻿namespace ItemManager.Menus
 {
-    using CourierHelper;
-
     using Ensage.Common.Menu;
 
     using ItemSwap;
