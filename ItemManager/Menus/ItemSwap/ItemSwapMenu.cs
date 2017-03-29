@@ -6,17 +6,11 @@ namespace ItemManager.Menus.ItemSwap
 
     internal class ItemSwapMenu
     {
-        #region Fields
-
-        private readonly List<string> addedItems = new List<string>();
-
-        #endregion
-
         #region Constructors and Destructors
 
         public ItemSwapMenu(Menu mainMenu)
         {
-            var menu = new Menu("Item swapper", "itemSwapper");
+            var menu = new Menu(" Item swapper", "itemSwapper", false, "vengefulspirit_nether_swap", true);
 
             Backpack = new Backpack(menu);
             Stash = new Stash(menu);
@@ -31,6 +25,12 @@ namespace ItemManager.Menus.ItemSwap
 
             mainMenu.AddSubMenu(menu);
         }
+
+        #endregion
+
+        #region Fields
+
+        private readonly List<string> addedItems = new List<string>();
 
         #endregion
 

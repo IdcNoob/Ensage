@@ -14,6 +14,8 @@
 
         private ItemSwapper itemSwapper;
 
+        //private CourierHelper courierHelper;
+
         private MenuManager menu;
 
         #endregion
@@ -33,6 +35,7 @@
             menu = new MenuManager();
             items = new Items(hero, menu.ItemSwapMenu);
             itemSwapper = new ItemSwapper(hero, items, menu.ItemSwapMenu);
+           // courierHelper = new CourierHelper(hero, items, menu.CourierHelperMenu);
         }
 
         #endregion

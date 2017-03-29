@@ -5,12 +5,25 @@
     using System.Linq;
 
     using Ensage;
-    using Ensage.Common.Enums;
+    using Ensage.Common;
 
     using Menus.ItemSwap;
 
     internal class ItemSwapper
     {
+        #region Public Methods and Operators
+
+        public void OnClose()
+        {
+            menu.Backpack.OnSwap -= BackpackOnSwap;
+            menu.Stash.OnSwap -= StashOnSwap;
+            Unit.OnModifierAdded -= OnModifierAdded;
+            ObjectManager.OnRemoveEntity -= OnRemoveEntity;
+            Player.OnExecuteOrder -= OnExecuteOrder;
+        }
+
+        #endregion
+
         #region Fields
 
         private readonly Hero hero;
@@ -33,18 +46,25 @@
             itemSwapMenu.Stash.OnSwap += StashOnSwap;
             Unit.OnModifierAdded += OnModifierAdded;
             ObjectManager.OnRemoveEntity += OnRemoveEntity;
+            Player.OnExecuteOrder += OnExecuteOrder;
         }
 
-        #endregion
-
-        #region Public Methods and Operators
-
-        public void OnClose()
+        private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            menu.Backpack.OnSwap -= BackpackOnSwap;
-            menu.Stash.OnSwap -= StashOnSwap;
-            Unit.OnModifierAdded -= OnModifierAdded;
-            ObjectManager.OnRemoveEntity -= OnRemoveEntity;
+            if (!menu.Auto.TpScrollAbuse || args.Order != Order.AbilityLocation
+                || args.Ability.AbilityId != AbilityId.item_tpscroll)
+            {
+                return;
+            }
+
+            var tpScroll = (Item)args.Ability;
+            var slot = items.GetSlot(tpScroll.AbilityId, Items.StoredPlace.Inventory);
+            tpScroll.MoveItem(ItemSlot.BackPack_1);
+
+            if (slot != null)
+            {
+                DelayAction.Add(500, () => tpScroll.MoveItem(slot.Value));
+            }
         }
 
         #endregion
@@ -115,7 +135,7 @@
 
                 if (swapItem != null)
                 {
-                    var slot = items.GetSlot((ItemId)swapItem.ID, direction);
+                    var slot = items.GetSlot(swapItem.AbilityId, direction);
                     if (slot != null)
                     {
                         item.MoveItem(slot.Value);
@@ -139,7 +159,8 @@
 
         private void OnModifierAdded(Unit sender, ModifierChangedEventArgs args)
         {
-            if (!menu.Auto.SwapTpScroll || sender.Handle != hero.Handle || args.Modifier.TextureName != "item_tpscroll")
+            if (!menu.Auto.SwapTpScroll || menu.Auto.TpScrollAbuse || sender.Handle != hero.Handle
+                || args.Modifier.TextureName != "item_tpscroll")
             {
                 return;
             }
@@ -151,7 +172,7 @@
                 return;
             }
 
-            var scrollSlot = items.GetSlot(ItemId.item_tpscroll, Items.StoredPlace.Inventory);
+            var scrollSlot = items.GetSlot(AbilityId.item_tpscroll, Items.StoredPlace.Inventory);
             if (scrollSlot != null)
             {
                 backpackItem.MoveItem(scrollSlot.Value);
@@ -166,7 +187,7 @@
             }
 
             var item = args.Entity as Item;
-            if (item == null || (ItemId)item.ID != ItemId.item_cheese && (ItemId)item.ID != ItemId.item_aegis)
+            if (item == null || item.AbilityId != AbilityId.item_cheese && item.AbilityId != AbilityId.item_aegis)
             {
                 return;
             }

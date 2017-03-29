@@ -6,21 +6,24 @@
 
     using Ensage;
     using Ensage.Common;
-    using Ensage.Common.Enums;
 
     using Menus.ItemSwap;
 
     internal class Items
     {
-        #region Fields
+        #region Enums
 
-        private readonly Hero hero;
+        [Flags]
+        public enum StoredPlace
+        {
+            Inventory = 1,
 
-        private readonly List<Item> items = new List<Item>();
+            Backpack = 2,
 
-        private readonly Dictionary<Item, ItemSlot> itemSlots = new Dictionary<Item, ItemSlot>();
+            Stash = 4,
 
-        private readonly ItemSwapMenu menu;
+            All = Inventory | Backpack | Stash
+        }
 
         #endregion
 
@@ -44,19 +47,15 @@
 
         #endregion
 
-        #region Enums
+        #region Fields
 
-        [Flags]
-        public enum StoredPlace
-        {
-            Inventory = 1,
+        private readonly Hero hero;
 
-            Backpack = 2,
+        private readonly List<Item> items = new List<Item>();
 
-            Stash = 4,
+        private readonly Dictionary<Item, ItemSlot> itemSlots = new Dictionary<Item, ItemSlot>();
 
-            All = Inventory | Backpack | Stash
-        }
+        private readonly ItemSwapMenu menu;
 
         #endregion
 
@@ -93,16 +92,6 @@
 
         #region Public Methods and Operators
 
-        public void Disassemble(ItemId itemId)
-        {
-            foreach (var item in
-                GetMyItems(StoredPlace.Backpack | StoredPlace.Inventory)
-                    .Where(x => (ItemId)x.ID == itemId && x.AssembledTime + 10 > Game.RawGameTime))
-            {
-                item.DisassembleItem();
-            }
-        }
-
         public IEnumerable<Item> GetMyItems(StoredPlace storedPlace)
         {
             var list = new List<Item>();
@@ -130,7 +119,7 @@
             return itemSlots.FirstOrDefault(x => x.Key.Equals(item)).Value;
         }
 
-        public ItemSlot? GetSlot(ItemId itemId, StoredPlace storedPlace)
+        public ItemSlot? GetSlot(AbilityId itemId, StoredPlace storedPlace)
         {
             var start = ItemSlot.InventorySlot_1;
             var end = ItemSlot.StashSlot_6;
@@ -152,7 +141,7 @@
             for (var i = start; i <= end; i++)
             {
                 var currentItem = hero.Inventory.GetItem(i);
-                if (currentItem != null && (ItemId)currentItem.ID == itemId)
+                if (currentItem != null && currentItem.AbilityId == itemId)
                 {
                     return i;
                 }
@@ -169,20 +158,10 @@
 
         public void SaveItemSlot(Item item)
         {
-            var slot = GetSlot((ItemId)item.ID, StoredPlace.All);
+            var slot = GetSlot(item.AbilityId, StoredPlace.All);
             if (slot != null)
             {
                 itemSlots[item] = slot.Value;
-            }
-        }
-
-        public void UnlockCombining(IEnumerable<ItemId> itemIds)
-        {
-            foreach (var item in
-                GetMyItems(StoredPlace.Backpack | StoredPlace.Inventory)
-                    .Where(x => itemIds.Contains((ItemId)x.ID) && x.IsCombineLocked))
-            {
-                item.UnlockCombining();
             }
         }
 
@@ -194,18 +173,19 @@
         {
             DelayAction.Add(
                 500,
-                () => {
-                    var item = args.Entity as Item;
-
-                    if (item == null || !item.IsValid || item.IsRecipe || args.Entity?.Owner?.Handle != hero.Handle
-                        || items.Contains(item))
+                () =>
                     {
-                        return;
-                    }
+                        var item = args.Entity as Item;
 
-                    menu.AddItem(item.Name);
-                    items.Add(item);
-                });
+                        if (item == null || !item.IsValid || item.IsRecipe || args.Entity?.Owner?.Handle != hero.Handle
+                            || items.Contains(item))
+                        {
+                            return;
+                        }
+
+                        menu.AddItem(item.Name);
+                        items.Add(item);
+                    });
         }
 
         private void OnRemoveEntity(EntityEventArgs args)

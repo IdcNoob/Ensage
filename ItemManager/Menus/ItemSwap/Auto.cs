@@ -17,6 +17,13 @@
             autoScrollMove.ValueChanged += (sender, args) => SwapTpScroll = args.GetNewValue<bool>();
             SwapTpScroll = autoScrollMove.IsActive();
 
+            var tpScrollAbuse =
+                new MenuItem("tpAbuse", "Town portal scroll abuse").SetValue(false)
+                    .SetTooltip("Removes town portal scroll cooldown");
+            menu.AddItem(tpScrollAbuse);
+            tpScrollAbuse.ValueChanged += (sender, args) => TpScrollAbuse = args.GetNewValue<bool>();
+            TpScrollAbuse = tpScrollAbuse.IsActive();
+
             var autoAegis =
                 new MenuItem("autoAegisMoveBackpack", "Aegis/Cheese").SetValue(false)
                     .SetTooltip("Auto swap aegis and cheese with most valuable backpack item when used");
@@ -28,6 +35,8 @@
         }
 
         #endregion
+
+        public bool TpScrollAbuse { get; private set; }
 
         #region Public Properties
 

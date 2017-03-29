@@ -7,12 +7,6 @@
 
     internal class Stash
     {
-        #region Fields
-
-        private AbilityToggler abilityToggler;
-
-        #endregion
-
         #region Constructors and Destructors
 
         public Stash(Menu mainMenu)
@@ -25,15 +19,22 @@
 
             var key = new MenuItem("stashKey", "Hotkey").SetValue(new KeyBind('X', KeyBindType.Press));
             menu.AddItem(key);
-            key.ValueChanged += (sender, args) => {
-                if (args.GetNewValue<KeyBind>().Active)
+            key.ValueChanged += (sender, args) =>
                 {
-                    OnSwap?.Invoke(this, EventArgs.Empty);
-                }
-            };
+                    if (args.GetNewValue<KeyBind>().Active)
+                    {
+                        OnSwap?.Invoke(this, EventArgs.Empty);
+                    }
+                };
 
             mainMenu.AddSubMenu(menu);
         }
+
+        #endregion
+
+        #region Fields
+
+        private AbilityToggler abilityToggler;
 
         #endregion
 
