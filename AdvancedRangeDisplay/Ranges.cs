@@ -13,24 +13,6 @@
 
     internal class Ranges
     {
-        #region Fields
-
-        private readonly List<uint> addedHeroes = new List<uint>();
-
-        private readonly Dictionary<string, Item> addedItems = new Dictionary<string, Item>();
-
-        private readonly Dictionary<Hero, List<AbilityDraw>> drawedAbilities = new Dictionary<Hero, List<AbilityDraw>>();
-
-        private bool delay;
-
-        private MenuManager menu;
-
-        private Sleeper sleeper;
-
-        #endregion
-
-        #region Enums
-
         public enum CustomRange
         {
             None,
@@ -40,18 +22,37 @@
             Attack
         }
 
-        #endregion
+        private readonly List<uint> addedHeroes = new List<uint>();
 
-        #region Public Methods and Operators
+        private readonly Dictionary<string, Item> addedItems = new Dictionary<string, Item>();
+
+        private readonly Dictionary<Creep, ParticleEffect> creeps = new Dictionary<Creep, ParticleEffect>();
+
+        private readonly Dictionary<Hero, List<AbilityDraw>> drawedAbilities = new Dictionary<Hero, List<AbilityDraw>>();
+
+        private bool delay;
+
+        private Team enemyTeam;
+
+        private MenuManager menu;
+
+        private Sleeper sleeper;
 
         public void OnClose()
         {
             menu.OnChange -= OnChange;
+            menu.OnCreepColorChange -= OnCreepColorChange;
+            menu.OnCreepChange -= OnCreepChange;
+            Entity.OnInt32PropertyChange -= OnInt32PropertyChange;
+            ObjectManager.OnRemoveEntity -= OnRemoveEntity;
+            ObjectManager.OnAddEntity -= OnAddEntity;
             menu.OnClose();
             drawedAbilities.SelectMany(x => x.Value).ForEach(x => x.ParticleEffect?.Dispose());
             addedHeroes.Clear();
             drawedAbilities.Clear();
             addedItems.Clear();
+            creeps.ForEach(x => x.Value?.Dispose());
+            creeps.Clear();
         }
 
         public void OnDraw()
@@ -71,11 +72,110 @@
 
         public void OnLoad()
         {
+            enemyTeam = ObjectManager.LocalHero.GetEnemyTeam();
             menu = new MenuManager(addedItems);
             sleeper = new Sleeper();
 
             menu.OnChange += OnChange;
+            menu.OnCreepColorChange += OnCreepColorChange;
+            menu.OnCreepChange += OnCreepChange;
+            Entity.OnInt32PropertyChange += OnInt32PropertyChange;
+            ObjectManager.OnRemoveEntity += OnRemoveEntity;
+            ObjectManager.OnAddEntity += OnAddEntity;
+
+            OnCreepChange(
+                null,
+                new BoolEventArgs
+                {
+                    Enabled = menu.ShowCreepAggroRange
+                });
+
             sleeper.Sleep(1000);
+        }
+
+        private void OnCreepChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (boolEventArgs.Enabled)
+            {
+                foreach (var creep in ObjectManager.GetEntities<Creep>().Where(x => x.IsAlive && x.Team == enemyTeam))
+                {
+                    var effect = new ParticleEffect(@"particles\ui_mouseactions\drag_selected_ring.vpcf", creep);
+                    effect.SetControlPoint(
+                        1,
+                        new Vector3(menu.CreepRedColor, menu.CreepGreenColor, menu.CreepBlueColor));
+                    effect.SetControlPoint(2, new Vector3(525, 255, 0));
+
+                    creeps.Add(creep, effect);
+                }
+            }
+            else
+            {
+                creeps.ForEach(x => x.Value?.Dispose());
+                creeps.Clear();
+            }
+        }
+
+        private void OnCreepColorChange(object sender, EventArgs eventArgs)
+        {
+            foreach (var effect in creeps.Values)
+            {
+                effect?.SetControlPoint(1, new Vector3(menu.CreepRedColor, menu.CreepGreenColor, menu.CreepBlueColor));
+            }
+        }
+
+        private void OnAddEntity(EntityEventArgs args)
+        {
+            if (!menu.ShowCreepAggroRange)
+            {
+                return;
+            }
+
+            var creep = args.Entity as Creep;
+            if (creep == null || creep.Team != enemyTeam)
+            {
+                return;
+            }
+
+            var effect = new ParticleEffect(@"particles\ui_mouseactions\drag_selected_ring.vpcf", creep);
+            effect.SetControlPoint(1, new Vector3(menu.CreepRedColor, menu.CreepGreenColor, menu.CreepBlueColor));
+            effect.SetControlPoint(2, new Vector3(525, 255, 0));
+
+            creeps.Add(creep, effect);
+        }
+
+        private void OnRemoveEntity(EntityEventArgs args)
+        {
+            if (!menu.ShowCreepAggroRange)
+            {
+                return;
+            }
+
+            var creep = args.Entity as Creep;
+            if (creep != null && creep.Team != enemyTeam)
+            {
+                ParticleEffect effect;
+                creeps.TryGetValue(creep, out effect);
+                effect?.Dispose();
+                creeps.Remove(creep);
+            }
+        }
+
+        private void OnInt32PropertyChange(Entity sender, Int32PropertyChangeEventArgs args)
+        {
+            if (!menu.ShowCreepAggroRange || args.NewValue == args.OldValue || args.NewValue > 0
+                || args.PropertyName != "m_iHealth")
+            {
+                return;
+            }
+
+            var creep = sender as Creep;
+            if (creep != null && creep.Team == enemyTeam)
+            {
+                ParticleEffect effect;
+                creeps.TryGetValue(creep, out effect);
+                effect?.Dispose();
+                creeps.Remove(creep);
+            }
         }
 
         public async void OnUpdate()
@@ -174,10 +274,6 @@
             sleeper.Sleep(3000);
         }
 
-        #endregion
-
-        #region Methods
-
         private static void Redraw(AbilityDraw drawedAbility)
         {
             if (drawedAbility.ParticleEffect == null)
@@ -257,7 +353,5 @@
                 drawedAbility.Disabled = true;
             }
         }
-
-        #endregion
     }
 }

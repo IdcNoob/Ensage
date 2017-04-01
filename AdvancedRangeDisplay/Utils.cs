@@ -8,8 +8,6 @@
 
     internal static class Utils
     {
-        #region Public Methods and Operators
-
         public static string GetDefaultName(this Ability ability)
         {
             if (ability == null || !ability.IsValid)
@@ -57,7 +55,5 @@
 
             return castRange;
         }
-
-        #endregion
     }
 }

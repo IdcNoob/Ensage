@@ -8,22 +8,12 @@
 
     internal class Bootstrap
     {
-        #region Fields
-
         private readonly Ranges ranges = new Ranges();
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void Initialize()
         {
             Events.OnLoad += OnLoad;
         }
-
-        #endregion
-
-        #region Methods
 
         private void Drawing_OnDraw(EventArgs args)
         {
@@ -50,7 +40,5 @@
             GameDispatcher.OnIngameUpdate += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
         }
-
-        #endregion
     }
 }

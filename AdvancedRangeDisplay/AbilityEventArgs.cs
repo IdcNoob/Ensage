@@ -6,8 +6,6 @@ namespace AdvancedRangeDisplay
 
     internal class AbilityEventArgs : EventArgs
     {
-        #region Public Properties
-
         public int? Blue { get; set; } = null;
 
         public bool Enabled { get; set; }
@@ -23,7 +21,5 @@ namespace AdvancedRangeDisplay
         public int? Red { get; set; } = null;
 
         public bool Redraw { get; set; }
-
-        #endregion
     }
 }

@@ -10,8 +10,6 @@
 
     internal class AbilityDraw
     {
-        #region Constructors and Destructors
-
         public AbilityDraw(Hero hero, string abilityName)
         {
             Hero = hero;
@@ -28,10 +26,6 @@
                     break;
             }
         }
-
-        #endregion
-
-        #region Public Properties
 
         public Ability Ability { get; set; }
 
@@ -62,10 +56,6 @@
         public float RealCastRange { get; set; }
 
         public int Red { get; set; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void FindAbility()
         {
@@ -126,7 +116,5 @@
                 Radius = Ability.GetRadius() + 25;
             }
         }
-
-        #endregion
     }
 }

@@ -14,8 +14,6 @@
 
     internal class MenuManager
     {
-        #region Fields
-
         private readonly Dictionary<Hero, Menu> abilityMenus = new Dictionary<Hero, Menu>();
 
         private readonly Dictionary<string, Item> addedItems;
@@ -38,28 +36,80 @@
             "kunkka_tidebringer",
         };
 
-        #endregion
-
-        #region Constructors and Destructors
-
         public MenuManager(Dictionary<string, Item> addedItems)
         {
             myHero = ObjectManager.LocalHero;
             this.addedItems = addedItems;
 
             menu = new Menu("Advanced Ranges", "advancedRanges", true);
+
+            AddCreepRangesMenu();
             menu.AddToMainMenu();
         }
 
-        #endregion
+        public bool ShowCreepAggroRange { get; private set; }
 
-        #region Public Events
+        public int CreepRedColor { get; private set; }
+
+        public int CreepBlueColor { get; private set; }
+
+        public int CreepGreenColor { get; private set; }
+
+        private void AddCreepRangesMenu()
+        {
+            var creepsMenu = new Menu("Creeps", "creepRanges");
+            var aggroRangeMenu = new Menu("Aggro range", "aggroRangeMenu");
+
+            var creepsAggro = new MenuItem("creepsAggro", "Aggro range").SetValue(false);
+            creepsAggro.ValueChanged += (sender, args) =>
+                {
+                    ShowCreepAggroRange = args.GetNewValue<bool>();
+                    OnCreepChange?.Invoke(
+                        this,
+                        new BoolEventArgs
+                        {
+                            Enabled = ShowCreepAggroRange
+                        });
+                };
+            ShowCreepAggroRange = creepsAggro.IsActive();
+            aggroRangeMenu.AddItem(creepsAggro);
+
+            var red = new MenuItem("creepsAggroRed", "Red").SetValue(new Slider(255, 0, 255));
+            red.ValueChanged += (sender, args) =>
+                {
+                    CreepRedColor = args.GetNewValue<Slider>().Value;
+                    OnCreepColorChange?.Invoke(this, EventArgs.Empty);
+                };
+            CreepRedColor = red.GetValue<Slider>().Value;
+            aggroRangeMenu.AddItem(red);
+
+            var green = new MenuItem("creepsAggroGreen", "Green").SetValue(new Slider(0, 0, 255));
+            green.ValueChanged += (sender, args) =>
+                {
+                    CreepGreenColor = args.GetNewValue<Slider>().Value;
+                    OnCreepColorChange?.Invoke(this, EventArgs.Empty);
+                };
+            CreepGreenColor = green.GetValue<Slider>().Value;
+            aggroRangeMenu.AddItem(green);
+
+            var blue = new MenuItem("creepsAggroBlue", "Blue").SetValue(new Slider(0, 0, 255));
+            blue.ValueChanged += (sender, args) =>
+                {
+                    CreepBlueColor = args.GetNewValue<Slider>().Value;
+                    OnCreepColorChange?.Invoke(this, EventArgs.Empty);
+                };
+            CreepBlueColor = blue.GetValue<Slider>().Value;
+            aggroRangeMenu.AddItem(blue);
+
+            creepsMenu.AddSubMenu(aggroRangeMenu);
+            menu.AddSubMenu(creepsMenu);
+        }
 
         public event EventHandler<AbilityEventArgs> OnChange;
 
-        #endregion
+        public event EventHandler<BoolEventArgs> OnCreepChange;
 
-        #region Public Methods and Operators
+        public event EventHandler<EventArgs> OnCreepColorChange;
 
         public async Task AddHeroMenu(Hero hero)
         {
@@ -83,14 +133,15 @@
             settings.AddItem(abilities);
             await Task.Delay(200);
 
-            abilities.ValueChanged += async (sender, args) => {
-                if (!args.GetNewValue<bool>())
+            abilities.ValueChanged += async (sender, args) =>
                 {
-                    args.Process = false;
-                    return;
-                }
-                await AddAbilities(hero);
-            };
+                    if (!args.GetNewValue<bool>())
+                    {
+                        args.Process = false;
+                        return;
+                    }
+                    await AddAbilities(hero);
+                };
 
             if (abilities.IsActive())
             {
@@ -102,14 +153,15 @@
             settings.AddItem(items);
             await Task.Delay(200);
 
-            items.ValueChanged += async (sender, args) => {
-                if (!args.GetNewValue<bool>())
+            items.ValueChanged += async (sender, args) =>
                 {
-                    args.Process = false;
-                    return;
-                }
-                await AddAItems(hero);
-            };
+                    if (!args.GetNewValue<bool>())
+                    {
+                        args.Process = false;
+                        return;
+                    }
+                    await AddAItems(hero);
+                };
 
             if (items.IsActive())
             {
@@ -120,14 +172,15 @@
             settings.AddItem(attack);
             await Task.Delay(200);
 
-            attack.ValueChanged += async (sender, args) => {
-                if (!args.GetNewValue<bool>())
+            attack.ValueChanged += async (sender, args) =>
                 {
-                    args.Process = false;
-                    return;
-                }
-                await AddMenuItem(hero, null, Ranges.CustomRange.Attack);
-            };
+                    if (!args.GetNewValue<bool>())
+                    {
+                        args.Process = false;
+                        return;
+                    }
+                    await AddMenuItem(hero, null, Ranges.CustomRange.Attack);
+                };
 
             if (attack.IsActive())
             {
@@ -138,14 +191,15 @@
             settings.AddItem(expirience);
             await Task.Delay(200);
 
-            expirience.ValueChanged += async (sender, args) => {
-                if (!args.GetNewValue<bool>())
+            expirience.ValueChanged += async (sender, args) =>
                 {
-                    args.Process = false;
-                    return;
-                }
-                await AddMenuItem(hero, null, Ranges.CustomRange.Expiriece);
-            };
+                    if (!args.GetNewValue<bool>())
+                    {
+                        args.Process = false;
+                        return;
+                    }
+                    await AddMenuItem(hero, null, Ranges.CustomRange.Expiriece);
+                };
 
             if (expirience.IsActive())
             {
@@ -205,67 +259,72 @@
             var blue = new MenuItem(key + "blue", "Blue").SetValue(new Slider(0, 0, 255));
             await Task.Delay(100);
 
-            enable.ValueChanged += (sender, arg) => {
-                var enabled = arg.GetNewValue<bool>();
-                abilityMenu.DisplayName = enabled
-                                              ? abilityMenu.DisplayName + "*"
-                                              : abilityMenu.DisplayName.Replace("*", "");
-                OnChange?.Invoke(
-                    this,
-                    new AbilityEventArgs
-                    {
-                        Hero = hero,
-                        Name = abilityName,
-                        Enabled = enabled,
-                        Redraw = true
-                    });
-            };
+            enable.ValueChanged += (sender, arg) =>
+                {
+                    var enabled = arg.GetNewValue<bool>();
+                    abilityMenu.DisplayName = enabled
+                                                  ? abilityMenu.DisplayName + "*"
+                                                  : abilityMenu.DisplayName.Replace("*", "");
+                    OnChange?.Invoke(
+                        this,
+                        new AbilityEventArgs
+                        {
+                            Hero = hero,
+                            Name = abilityName,
+                            Enabled = enabled,
+                            Redraw = true
+                        });
+                };
 
-            radiusOnly.ValueChanged += (sender, args) => {
-                OnChange?.Invoke(
-                    this,
-                    new AbilityEventArgs
-                    {
-                        Hero = hero,
-                        Name = abilityName,
-                        Enabled = enable.IsActive(),
-                        RadiusOnly = args.GetNewValue<bool>(),
-                        Redraw = true
-                    });
-            };
+            radiusOnly.ValueChanged += (sender, args) =>
+                {
+                    OnChange?.Invoke(
+                        this,
+                        new AbilityEventArgs
+                        {
+                            Hero = hero,
+                            Name = abilityName,
+                            Enabled = enable.IsActive(),
+                            RadiusOnly = args.GetNewValue<bool>(),
+                            Redraw = true
+                        });
+                };
 
-            red.ValueChanged += (sender, arg) => {
-                OnChange?.Invoke(
-                    this,
-                    new AbilityEventArgs
-                    {
-                        Hero = hero,
-                        Name = abilityName,
-                        Red = arg.GetNewValue<Slider>().Value
-                    });
-            };
+            red.ValueChanged += (sender, arg) =>
+                {
+                    OnChange?.Invoke(
+                        this,
+                        new AbilityEventArgs
+                        {
+                            Hero = hero,
+                            Name = abilityName,
+                            Red = arg.GetNewValue<Slider>().Value
+                        });
+                };
 
-            green.ValueChanged += (sender, arg) => {
-                OnChange?.Invoke(
-                    this,
-                    new AbilityEventArgs
-                    {
-                        Hero = hero,
-                        Name = abilityName,
-                        Green = arg.GetNewValue<Slider>().Value
-                    });
-            };
+            green.ValueChanged += (sender, arg) =>
+                {
+                    OnChange?.Invoke(
+                        this,
+                        new AbilityEventArgs
+                        {
+                            Hero = hero,
+                            Name = abilityName,
+                            Green = arg.GetNewValue<Slider>().Value
+                        });
+                };
 
-            blue.ValueChanged += (sender, arg) => {
-                OnChange?.Invoke(
-                    this,
-                    new AbilityEventArgs
-                    {
-                        Hero = hero,
-                        Name = abilityName,
-                        Blue = arg.GetNewValue<Slider>().Value
-                    });
-            };
+            blue.ValueChanged += (sender, arg) =>
+                {
+                    OnChange?.Invoke(
+                        this,
+                        new AbilityEventArgs
+                        {
+                            Hero = hero,
+                            Name = abilityName,
+                            Blue = arg.GetNewValue<Slider>().Value
+                        });
+                };
 
             abilityMenu.AddItem(enable);
             if (radiusOnlyAbilities.Contains(abilityName))
@@ -330,10 +389,6 @@
             menu.RemoveFromMainMenu();
         }
 
-        #endregion
-
-        #region Methods
-
         private async Task AddAbilities(Hero hero)
         {
             foreach (var ability in
@@ -363,7 +418,5 @@
                 }
             }
         }
-
-        #endregion
     }
 }
