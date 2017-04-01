@@ -24,6 +24,9 @@
                 case "expRange":
                     CustomRange = Ranges.CustomRange.Expiriece;
                     break;
+                case "aggroRange":
+                    CustomRange = Ranges.CustomRange.Aggro;
+                    break;
             }
         }
 
@@ -102,6 +105,10 @@
                 case Ranges.CustomRange.Expiriece:
                     RealCastRange = 1450;
                     Range = 1450;
+                    return;
+                case Ranges.CustomRange.Aggro:
+                    RealCastRange = 525;
+                    Range = 525;
                     return;
             }
 

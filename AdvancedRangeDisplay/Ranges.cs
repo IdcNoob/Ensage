@@ -19,7 +19,9 @@
 
             Expiriece,
 
-            Attack
+            Attack,
+
+            Aggro
         }
 
         private readonly List<uint> addedHeroes = new List<uint>();
@@ -227,6 +229,7 @@
                         switch (drawedAbility.CustomRange)
                         {
                             case CustomRange.Expiriece:
+                            case CustomRange.Aggro:
                                 continue;
                             case CustomRange.Attack:
                                 if (Math.Abs(drawedAbility.Range - hero.GetAttackRange()) > 10)

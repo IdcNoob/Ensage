@@ -205,6 +205,25 @@
             {
                 await AddMenuItem(hero, null, Ranges.CustomRange.Expiriece);
             }
+
+            var aggro = new MenuItem(key + "generateAggro", "Generate agrro range").SetValue(false);
+            settings.AddItem(aggro);
+            await Task.Delay(200);
+
+            aggro.ValueChanged += async (sender, args) =>
+                {
+                    if (!args.GetNewValue<bool>())
+                    {
+                        args.Process = false;
+                        return;
+                    }
+                    await AddMenuItem(hero, null, Ranges.CustomRange.Aggro);
+                };
+
+            if (aggro.IsActive())
+            {
+                await AddMenuItem(hero, null, Ranges.CustomRange.Aggro);
+            }
         }
 
         public async Task AddMenuItem(
@@ -227,6 +246,11 @@
                 case Ranges.CustomRange.Expiriece:
                     abilityName = "expRange";
                     menuName = "Exp range";
+                    texture = null;
+                    break;
+                case Ranges.CustomRange.Aggro:
+                    abilityName = "aggroRange";
+                    menuName = "Aggro range";
                     texture = null;
                     break;
             }
