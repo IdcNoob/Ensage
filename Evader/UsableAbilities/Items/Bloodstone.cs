@@ -42,7 +42,7 @@
 
         public override bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
-            if (Sleeper.Sleeping || !Ability.CanBeCasted() || !Hero.CanUseItems())
+            if (Sleeper.Sleeping || !Ability.CanBeCasted() || !Hero.CanUseItems() || Hero.CanReincarnate())
             {
                 return false;
             }
@@ -134,7 +134,7 @@
                 return;
             }
 
-            if (!Hero.IsAlive || !Ability.CanBeCasted() || !Hero.CanUseItems())
+            if (!Hero.IsAlive || !Ability.CanBeCasted() || !Hero.CanUseItems() || Hero.CanReincarnate())
             {
                 return;
             }
