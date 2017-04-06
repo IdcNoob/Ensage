@@ -40,6 +40,12 @@ namespace Evader.Data
             {
                 { "storm_spirit_ball_lightning", ability => new BallLightning(ability, AbilityType.Counter) },
                 { "ursa_enrage", ability => new Enrage(ability, AbilityType.Counter) },
+                { "clinkz_searing_arrows", ability => new OrbAbility(ability, AbilityType.Counter) },
+                { "obsidian_destroyer_arcane_orb", ability => new OrbAbility(ability, AbilityType.Counter) },
+                { "enchantress_impetus", ability => new OrbAbility(ability, AbilityType.Counter) },
+                { "huskar_burning_spear", ability => new OrbAbility(ability, AbilityType.Counter) },
+                { "silencer_glaives_of_wisdom", ability => new OrbAbility(ability, AbilityType.Counter) },
+                { "viper_poison_attack", ability => new OrbAbility(ability, AbilityType.Counter) },
                 {
                     "ember_spirit_sleight_of_fist",
                     ability => new SleightOfFist(ability, AbilityType.Counter, AbilityCastTarget.Enemy)

@@ -394,6 +394,7 @@
     <Compile Include="UsableAbilities\Abilities\Enrage.cs" />
     <Compile Include="UsableAbilities\Abilities\Meld.cs" />
     <Compile Include="UsableAbilities\Abilities\PhaseShift.cs" />
+    <Compile Include="UsableAbilities\Base\OrbAbility.cs" />
     <Compile Include="UsableAbilities\Base\TargetTree.cs" />
     <Compile Include="UsableAbilities\External\GoldSpender.cs" />
     <Compile Include="UsableAbilities\Items\ArmletOfMordiggian.cs" />
