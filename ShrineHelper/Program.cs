@@ -81,6 +81,8 @@
         private static void Main()
         {
             Events.OnLoad += EventsOnLoad;
+            
+            int.TryParse("1337", out var yolo);
         }
 
         private static void PlayerOnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
