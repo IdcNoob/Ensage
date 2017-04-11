@@ -4,27 +4,25 @@
 
     internal class Particles
     {
-        #region Constructors and Destructors
-
         public Particles(Menu mainMenu)
         {
             var menu = new Menu("Particles ", "particles");
 
-            var onAddEnabled =
-                new MenuItem("onParticleAddEnabled", "On add enabled").SetValue(false)
-                    .SetTooltip("Entity.OnParticleEffectAdded");
+            var onAddEnabled = new MenuItem("onParticleAddEnabled", "On add enabled").SetValue(false)
+                .SetTooltip("Entity.OnParticleEffectAdded");
             menu.AddItem(onAddEnabled);
-            onAddEnabled.ValueChanged += (sender, args) => {
-                OnAddEnabled = args.GetNewValue<bool>();
-                if (OnAddEnabled)
+            onAddEnabled.ValueChanged += (sender, args) =>
                 {
-                    menu.DisplayName = menu.DisplayName += "*";
-                }
-                else
-                {
-                    menu.DisplayName = menu.DisplayName.TrimEnd('*');
-                }
-            };
+                    OnAddEnabled = args.GetNewValue<bool>();
+                    if (OnAddEnabled)
+                    {
+                        menu.DisplayName = menu.DisplayName += "*";
+                    }
+                    else
+                    {
+                        menu.DisplayName = menu.DisplayName.TrimEnd('*');
+                    }
+                };
             OnAddEnabled = onAddEnabled.IsActive();
             if (OnAddEnabled)
             {
@@ -54,10 +52,6 @@
             mainMenu.AddSubMenu(menu);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public bool HeroesOnly { get; private set; }
 
         public bool IgnoreUseless { get; private set; }
@@ -67,7 +61,5 @@
         public bool OnAddEnabled { get; private set; }
 
         public bool ShowControlPointValues { get; private set; }
-
-        #endregion
     }
 }

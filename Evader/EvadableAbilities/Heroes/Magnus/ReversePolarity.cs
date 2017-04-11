@@ -11,8 +11,6 @@
 
     internal class ReversePolarity : AOE, IModifier
     {
-        #region Constructors and Destructors
-
         public ReversePolarity(Ability ability)
             : base(ability)
         {
@@ -39,12 +37,6 @@
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

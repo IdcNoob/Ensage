@@ -11,8 +11,6 @@
 
     internal class InformationPinger
     {
-        #region Fields
-
         private readonly ChatWheel chatWheel = new ChatWheel();
 
         private readonly List<HeroPinger> heroesPinger = new List<HeroPinger>();
@@ -29,17 +27,9 @@
 
         private WardPinger wardPinger;
 
-        #endregion
-
-        #region Properties
-
         private static Team EnemyTeam => Variables.EnemyTeam;
 
         private static Hero Hero => Variables.Hero;
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void OnClose()
         {
@@ -78,12 +68,10 @@
 
             if (!Variables.Sleeper.Sleeping(heroesPinger))
             {
-                foreach (var enemy in
-                    ObjectManager.GetEntitiesParallel<Hero>()
-                        .Where(
-                            x =>
-                                x.IsValid && x.Team == EnemyTeam && !x.IsIllusion && x.IsVisible
-                                && !heroesPinger.Exists(z => z.Handle == x.Handle)))
+                foreach (var enemy in ObjectManager.GetEntitiesParallel<Hero>()
+                    .Where(
+                        x => x.IsValid && x.Team == EnemyTeam && !x.IsIllusion && x.IsVisible
+                             && !heroesPinger.Exists(z => z.Handle == x.Handle)))
                 {
                     var heroPinger = new HeroPinger(enemy);
                     if (loadedAfterGameStart)
@@ -107,11 +95,8 @@
                 var abilityEnemyCheck = menu.AbilityEnemyCheckEnabled;
                 var rubickDisable = menu.RubicksStolenDisable;
                 var rubickUltimate = menu.RubicksStolenUltimate;
-                if (
-                    heroesPinger.Any(
-                        x =>
-                            x.ShouldPing
-                            && x.AbilityPinger(doublePing, abilityEnemyCheck, rubickDisable, rubickUltimate)))
+                if (heroesPinger.Any(
+                    x => x.ShouldPing && x.AbilityPinger(doublePing, abilityEnemyCheck, rubickDisable, rubickUltimate)))
                 {
                     return;
                 }
@@ -124,11 +109,8 @@
                 var cost = menu.ItemCostGoldThreshold;
                 var forceItems = menu.ForcePingItems();
                 var statusCheck = menu.ItemEnemyStatusEnabled;
-                if (
-                    heroesPinger.Any(
-                        x =>
-                            (!statusCheck || x.ShouldPing)
-                            && x.ItemPinger(doublePing, itemEnemyCheck, cost, forceItems)))
+                if (heroesPinger.Any(
+                    x => (!statusCheck || x.ShouldPing) && x.ItemPinger(doublePing, itemEnemyCheck, cost, forceItems)))
                 {
                     return;
                 }
@@ -172,7 +154,5 @@
                 return;
             }
         }
-
-        #endregion
     }
 }

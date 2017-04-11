@@ -4,17 +4,11 @@
 
     internal class NoObstacleAbility : EvadableAbility
     {
-        #region Constructors and Destructors
-
         public NoObstacleAbility(Ability ability)
             : base(ability)
         {
             DisablePathfinder = true;
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -44,7 +38,5 @@
         {
             return StartCast + CastPoint + AdditionalDelay - Game.RawGameTime;
         }
-
-        #endregion
     }
 }

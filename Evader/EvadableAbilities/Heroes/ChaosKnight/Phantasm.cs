@@ -8,14 +8,10 @@
 
     internal class Phantasm : NoObstacleAbility
     {
-        #region Constructors and Destructors
-
         public Phantasm(Ability ability)
             : base(ability)
         {
             DisableAbilities.AddRange(DisableAbilityNames);
         }
-
-        #endregion
     }
 }

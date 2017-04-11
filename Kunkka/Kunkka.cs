@@ -17,8 +17,6 @@
 
     internal class Kunkka
     {
-        #region Fields
-
         private readonly List<IAbility> allSpells = new List<IAbility>();
 
         private readonly List<Vector3> runePositions = new List<Vector3>
@@ -61,10 +59,6 @@
 
         private Xreturn xReturn;
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public void OnClose()
         {
             menuManager.OnClose();
@@ -89,7 +83,7 @@
 
         public void OnExecuteAbilitiy(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!args.Entities.Contains(hero) || !menuManager.IsEnabled)
+            if (!args.Entities.Contains(hero) || !menuManager.IsEnabled || !args.IsPlayerInput)
             {
                 return;
             }
@@ -100,7 +94,7 @@
                 return;
             }
 
-            if (ability.Equals(ghostShip.Ability) && args.Order == Order.AbilityLocation)
+            if (ability.Equals(ghostShip.Ability) && args.OrderId == OrderId.AbilityLocation)
             {
                 ghostShip.Position = hero.Position.Extend(args.TargetPosition, ghostShip.CastRange);
             }
@@ -194,8 +188,7 @@
 
             if (ghostShip.IsInPhase)
             {
-                ghostShip.HitTime = Game.RawGameTime
-                                    + ghostShip.CastRange
+                ghostShip.HitTime = Game.RawGameTime + ghostShip.CastRange
                                     / (hero.AghanimState() ? ghostShip.AghanimSpeed : ghostShip.Speed) + 0.12;
             }
 
@@ -212,12 +205,10 @@
                         return;
                     }
 
-                    var fountain =
-                        ObjectManager.GetEntitiesParallel<Unit>()
-                            .FirstOrDefault(
-                                x =>
-                                    x.Team == heroTeam && x.ClassID == ClassID.CDOTA_Unit_Fountain
-                                    && x.Distance2D(hero) > 2000);
+                    var fountain = ObjectManager.GetEntitiesParallel<Unit>()
+                        .FirstOrDefault(
+                            x => x.Team == heroTeam && x.ClassId == ClassId.CDOTA_Unit_Fountain
+                                 && x.Distance2D(hero) > 2000);
 
                     if (fountain == null)
                     {
@@ -244,17 +235,14 @@
                 var armletEnabled = hero.HasModifier("modifier_item_armlet_unholy_strength");
 
                 var hitTarget =
-                    (Unit)
-                    Creeps.All.OrderBy(x => x.Distance2D(Game.MousePosition))
+                    (Unit)Creeps.All.OrderBy(x => x.Distance2D(Game.MousePosition))
                         .FirstOrDefault(
-                            x =>
-                                x.Team != heroTeam && x.IsSpawned && x.IsVisible && x.Distance2D(hero) < 2000
-                                && x.Distance2D(Game.MousePosition) < 250)
-                    ?? Heroes.All.OrderBy(x => x.Distance2D(Game.MousePosition))
+                            x => x.Team != heroTeam && x.IsSpawned && x.IsVisible && x.Distance2D(hero) < 2000
+                                 && x.Distance2D(Game.MousePosition) < 250) ?? Heroes.All
+                        .OrderBy(x => x.Distance2D(Game.MousePosition))
                         .FirstOrDefault(
-                            x =>
-                                x.Team != heroTeam && x.IsVisible && x.Distance2D(hero) < 2000
-                                && x.Distance2D(Game.MousePosition) < 250);
+                            x => x.Team != heroTeam && x.IsVisible && x.Distance2D(hero) < 2000
+                                 && x.Distance2D(Game.MousePosition) < 250);
 
                 if (xReturn.CanBeCasted && !blink.CanBeCasted()
                     && (hitTarget == null || !hitTarget.IsAlive || tideBringer.Casted))
@@ -316,16 +304,14 @@
                     return;
                 }
 
-                var reincarnating =
-                    ObjectManager.GetEntitiesParallel<Hero>()
-                        .FirstOrDefault(
-                            x =>
-                                x.IsValid && !x.IsIllusion && x.IsReincarnating
-                                && x.Distance2D(hero) < torrent.CastRange);
+                var reincarnating = ObjectManager.GetEntitiesParallel<Hero>()
+                    .FirstOrDefault(
+                        x => x.IsValid && !x.IsIllusion && x.IsReincarnating && x.Distance2D(hero) < torrent.CastRange);
 
                 if (reincarnating != null)
                 {
-                    if (reincarnating.RespawnTime - Game.RawGameTime < torrent.AdditionalDelay + Game.Ping / 1000 + 0.42)
+                    if (reincarnating.RespawnTime - Game.RawGameTime
+                        < torrent.AdditionalDelay + Game.Ping / 1000 + 0.42)
                     {
                         torrent.UseAbility(reincarnating.Position);
                         sleeper.Sleep(300);
@@ -356,14 +342,12 @@
             if (!targetLocked && !xMark.IsInPhase)
             {
                 var mouse = Game.MousePosition;
-                target =
-                    ObjectManager.GetEntitiesParallel<Hero>()
-                        .Where(
-                            x =>
-                                x.IsValid && x.IsAlive && x.IsVisible && !x.IsIllusion && x.Team != heroTeam
-                                && x.Distance2D(mouse) < 600)
-                        .OrderBy(x => x.Distance2D(mouse))
-                        .FirstOrDefault();
+                target = ObjectManager.GetEntitiesParallel<Hero>()
+                    .Where(
+                        x => x.IsValid && x.IsAlive && x.IsVisible && !x.IsIllusion && x.Team != heroTeam
+                             && x.Distance2D(mouse) < 600)
+                    .OrderBy(x => x.Distance2D(mouse))
+                    .FirstOrDefault();
             }
 
             if (target == null || xMark.CastRange < hero.Distance2D(target) && !targetLocked)
@@ -451,16 +435,15 @@
                         return;
                     }
 
-                    if (torrent.Casted
-                        && Game.RawGameTime
+                    if (torrent.Casted && Game.RawGameTime
                         >= torrent.HitTime - ghostShip.CastPoint - xReturn.CastPoint - Game.Ping / 1000)
                     {
                         ghostShip.UseAbility(GetTorrentThinker()?.Position ?? xMark.Position);
                     }
                 }
 
-                if (torrent.CanBeCasted
-                    && (!fullCombo || (ghostShip.CanBeCasted || !hero.AghanimState() && ghostShip.Cooldown > 2)))
+                if (torrent.CanBeCasted && (!fullCombo || (ghostShip.CanBeCasted
+                                                           || !hero.AghanimState() && ghostShip.Cooldown > 2)))
                 {
                     torrent.UseAbility(xMark.Position);
                     sleeper.Sleep(torrent.GetSleepTime);
@@ -485,9 +468,8 @@
             {
                 var gameTime = Game.RawGameTime;
 
-                var pudge =
-                    Heroes.GetByTeam(heroTeam)
-                        .FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Unit_Hero_Pudge && x.IsAlive && !x.IsIllusion);
+                var pudge = Heroes.GetByTeam(heroTeam)
+                    .FirstOrDefault(x => x.ClassId == ClassId.CDOTA_Unit_Hero_Pudge && x.IsAlive && !x.IsIllusion);
 
                 if (pudge != null)
                 {
@@ -513,9 +495,8 @@
                     }
                 }
 
-                var mirana =
-                    Heroes.GetByTeam(heroTeam)
-                        .FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Unit_Hero_Mirana && x.IsAlive && !x.IsIllusion);
+                var mirana = Heroes.GetByTeam(heroTeam)
+                    .FirstOrDefault(x => x.ClassId == ClassId.CDOTA_Unit_Hero_Mirana && x.IsAlive && !x.IsIllusion);
 
                 if (mirana != null)
                 {
@@ -576,7 +557,8 @@
                     {
                         hitTime -= 0.25 / (150 / Math.Min(Game.Ping, 150));
                     }
-                    if (xMark.Position.Distance2D(ghostShip.Position) <= ghostShip.Radius && hitTime <= gameTime - delay)
+                    if (xMark.Position.Distance2D(ghostShip.Position) <= ghostShip.Radius
+                        && hitTime <= gameTime - delay)
                     {
                         xReturn.UseAbility();
                     }
@@ -597,10 +579,6 @@
                 }
             }
         }
-
-        #endregion
-
-        #region Methods
 
         private double CalculateHitTime(Unit unit, Ability ability, float gameTime, float adjustCastPoint = 1)
         {
@@ -641,14 +619,10 @@
 
         private Unit GetTorrentThinker()
         {
-            return
-                ObjectManager.GetEntitiesParallel<Unit>()
-                    .FirstOrDefault(
-                        x =>
-                            x.ClassID == ClassID.CDOTA_BaseNPC
-                            && x.Modifiers.Any(z => z.Name == "modifier_kunkka_torrent_thinker") && x.Team == heroTeam);
+            return ObjectManager.GetEntitiesParallel<Unit>()
+                .FirstOrDefault(
+                    x => x.ClassId == ClassId.CDOTA_BaseNPC
+                         && x.Modifiers.Any(z => z.Name == "modifier_kunkka_torrent_thinker") && x.Team == heroTeam);
         }
-
-        #endregion
     }
 }

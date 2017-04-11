@@ -8,8 +8,6 @@
 
     internal static class Utils
     {
-        #region Public Methods and Operators
-
         public static Vector2 WorldToMiniMap(Vector3 pos, Vector2 size)
         {
             const float MapLeft = -8000;
@@ -55,7 +53,5 @@
 
             return new Vector2((float)Math.Floor(screenX - size.X / 2), (float)Math.Floor(screenY - size.Y / 2));
         }
-
-        #endregion
     }
 }

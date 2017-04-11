@@ -7,22 +7,12 @@
 
     internal class Bootstrap
     {
-        #region Fields
-
         private readonly Timbersaw timbersaw = new Timbersaw();
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void Initialize()
         {
             Events.OnLoad += OnLoad;
         }
-
-        #endregion
-
-        #region Methods
 
         private void Drawing_OnDraw(EventArgs args)
         {
@@ -45,7 +35,7 @@
 
         private void OnLoad(object sender, EventArgs e)
         {
-            if (ObjectManager.LocalHero.ClassID != ClassID.CDOTA_Unit_Hero_Shredder)
+            if (ObjectManager.LocalHero.ClassId != ClassId.CDOTA_Unit_Hero_Shredder)
             {
                 return;
             }
@@ -61,7 +51,5 @@
         {
             timbersaw.OnExecuteAbilitiy(sender, args);
         }
-
-        #endregion
     }
 }

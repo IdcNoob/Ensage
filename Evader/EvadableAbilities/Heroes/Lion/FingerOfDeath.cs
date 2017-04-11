@@ -11,13 +11,7 @@
 
     internal class FingerOfDeath : LinearTarget
     {
-        #region Fields
-
         private readonly float aghanimRadius;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public FingerOfDeath(Ability ability)
             : base(ability)
@@ -45,10 +39,6 @@
             aghanimRadius = Ability.AbilitySpecialData.First(x => x.Name == "splash_radius_scepter").Value + 60;
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetCastRange()
         {
             return base.GetCastRange() + 150;
@@ -58,7 +48,5 @@
         {
             return AbilityOwner.AghanimState() ? aghanimRadius : base.GetRadius();
         }
-
-        #endregion
     }
 }

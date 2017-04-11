@@ -16,25 +16,15 @@
 
     internal class ShadowPoison : LinearProjectile, IUnit
     {
-        #region Fields
-
         private Unit abilityUnit;
 
         private bool fowCast;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public ShadowPoison(Ability ability)
             : base(ability)
         {
             CounterAbilities.Add(PhaseShift);
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddUnit(Unit unit)
         {
@@ -120,13 +110,9 @@
                 return StartCast + CastPoint - Game.RawGameTime;
             }
 
-            return StartCast + (fowCast ? 0 : CastPoint)
-                   + (position.Distance2D(StartPosition) - GetRadius()) / GetProjectileSpeed() - Game.RawGameTime;
+            return StartCast + (fowCast ? 0 : CastPoint) + (position.Distance2D(StartPosition) - GetRadius())
+                   / GetProjectileSpeed() - Game.RawGameTime;
         }
-
-        #endregion
-
-        #region Methods
 
         protected override Vector3 GetProjectilePosition(bool ignoreCastPoint = false)
         {
@@ -137,7 +123,5 @@
         {
             return abilityUnit != null && abilityUnit.IsValid;
         }
-
-        #endregion
     }
 }

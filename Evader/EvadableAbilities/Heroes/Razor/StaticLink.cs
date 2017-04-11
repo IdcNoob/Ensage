@@ -11,8 +11,6 @@
 
     internal class StaticLink : LinearTarget, IModifier
     {
-        #region Constructors and Destructors
-
         public StaticLink(Ability ability)
             : base(ability)
         {
@@ -32,12 +30,6 @@
             Modifier.EnemyCounterAbilities.AddRange(Invul);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

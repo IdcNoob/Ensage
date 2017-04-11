@@ -25,13 +25,7 @@
 
     internal class BallLightning : Targetable
     {
-        #region Fields
-
         private Vector3 pointForLinearProjectile;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public BallLightning(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
             : base(ability, type, target)
@@ -40,15 +34,7 @@
             CastPoint += 0.1f;
         }
 
-        #endregion
-
-        #region Properties
-
         private static Pathfinder Pathfinder => Variables.Pathfinder;
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
@@ -152,7 +138,5 @@
 
             Sleep(CastPoint);
         }
-
-        #endregion
     }
 }

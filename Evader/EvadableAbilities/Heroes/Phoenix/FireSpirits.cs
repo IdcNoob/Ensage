@@ -15,8 +15,6 @@
 
     internal class FireSpirits : LinearProjectile, IParticle, IModifier
     {
-        #region Constructors and Destructors
-
         public FireSpirits(Ability ability)
             : base(ability)
         {
@@ -31,15 +29,7 @@
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
@@ -47,14 +37,15 @@
 
             DelayAction.Add(
                 1,
-                () => {
-                    StartPosition = particleArgs.ParticleEffect.GetControlPoint(0);
-                    EndPosition = StartPosition.Extend(
-                        StartPosition + particleArgs.ParticleEffect.GetControlPoint(1),
-                        GetCastRange());
-                    EndCast = StartCast + StartPosition.Distance2D(EndPosition) / GetProjectileSpeed();
-                    Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
-                });
+                () =>
+                    {
+                        StartPosition = particleArgs.ParticleEffect.GetControlPoint(0);
+                        EndPosition = StartPosition.Extend(
+                            StartPosition + particleArgs.ParticleEffect.GetControlPoint(1),
+                            GetCastRange());
+                        EndCast = StartCast + StartPosition.Distance2D(EndPosition) / GetProjectileSpeed();
+                        Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
+                    });
         }
 
         public override bool CanBeStopped()
@@ -88,11 +79,8 @@
 
             var position = hero.NetworkPosition;
 
-            return StartCast
-                   + (position.Distance2D(StartPosition) - GetProjectileRadius(position)) / GetProjectileSpeed()
-                   - Game.RawGameTime + 0.05f;
+            return StartCast + (position.Distance2D(StartPosition) - GetProjectileRadius(position))
+                   / GetProjectileSpeed() - Game.RawGameTime + 0.05f;
         }
-
-        #endregion
     }
 }

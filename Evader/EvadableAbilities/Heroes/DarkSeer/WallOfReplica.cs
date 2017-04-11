@@ -11,8 +11,6 @@
 
     internal class WallOfReplica : LinearAOE
     {
-        #region Constructors and Destructors
-
         public WallOfReplica(Ability ability)
             : base(ability)
         {
@@ -25,10 +23,6 @@
             CounterAbilities.AddRange(VsPhys);
             CounterAbilities.AddRange(Invis);
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -60,15 +54,9 @@
             AbilityDrawer.DrawRectangle(StartPosition, EndPosition, GetRadius());
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetRadius()
         {
             return base.GetRadius() - 400;
         }
-
-        #endregion
     }
 }

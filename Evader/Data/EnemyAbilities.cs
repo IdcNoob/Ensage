@@ -129,10 +129,8 @@
 
     internal class EnemyAbilities
     {
-        #region Public Properties
-
-        public Dictionary<string, Func<Ability, EvadableAbility>> EvadableAbilities { get; } = new Dictionary
-            <string, Func<Ability, EvadableAbility>>
+        public Dictionary<string, Func<Ability, EvadableAbility>> EvadableAbilities { get; } =
+            new Dictionary<string, Func<Ability, EvadableAbility>>
             {
                 { "abaddon_death_coil", ability => new MistCoil(ability) },
                 { "abaddon_borrowed_time", ability => new BorrowedTime(ability) },
@@ -445,7 +443,5 @@
                 { "spawnlord_master_freeze", ability => new Petrify(ability) },
                 { "polar_furbolg_ursa_warrior_thunder_clap", ability => new HellbearThunderClap(ability) }
             };
-
-        #endregion
     }
 }

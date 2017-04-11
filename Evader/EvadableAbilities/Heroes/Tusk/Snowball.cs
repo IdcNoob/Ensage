@@ -18,8 +18,6 @@
 
     internal class Snowball : Projectile, IModifier
     {
-        #region Constructors and Destructors
-
         public Snowball(Ability ability)
             : base(ability)
         {
@@ -47,15 +45,7 @@
             AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "snowball_windup").Value;
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -78,7 +68,7 @@
                 {
                     EndPosition = AbilityOwner.InFront(GetCastRange());
                     Pathfinder.UpdateObstacle(Obstacle.Value, StartPosition, EndPosition);
-                    AbilityDrawer.UpdateRectaglePosition(StartPosition, EndPosition, GetRadius());
+                    AbilityDrawer.UpdateRectanglePosition(StartPosition, EndPosition, GetRadius());
                 }
                 else if (ProjectileTarget != null)
                 {
@@ -104,7 +94,5 @@
                 }
             }
         }
-
-        #endregion
     }
 }

@@ -8,8 +8,6 @@
 
     internal class Void : LinearTarget
     {
-        #region Constructors and Destructors
-
         public Void(Ability ability)
             : base(ability)
         {
@@ -20,7 +18,5 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Lotus);
         }
-
-        #endregion
     }
 }

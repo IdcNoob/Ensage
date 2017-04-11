@@ -8,15 +8,11 @@
 
     internal class SongOfTheSiren : AOE
     {
-        #region Constructors and Destructors
-
         public SongOfTheSiren(Ability ability)
             : base(ability)
         {
             BlinkAbilities.AddRange(BlinkAbilityNames);
             DisableAbilities.AddRange(DisableAbilityNames);
         }
-
-        #endregion
     }
 }

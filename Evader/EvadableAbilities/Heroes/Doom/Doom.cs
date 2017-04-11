@@ -11,8 +11,6 @@
 
     internal class Doom : LinearTarget, IModifier
     {
-        #region Constructors and Destructors
-
         public Doom(Ability ability)
             : base(ability)
         {
@@ -35,12 +33,6 @@
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

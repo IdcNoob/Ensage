@@ -8,8 +8,6 @@
 
     internal class SanitysEclipse : LinearAOE
     {
-        #region Constructors and Destructors
-
         public SanitysEclipse(Ability ability)
             : base(ability)
         {
@@ -30,7 +28,5 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
         }
-
-        #endregion
     }
 }

@@ -12,8 +12,6 @@
 
     internal class ShadowStrike : Projectile, IModifier
     {
-        #region Constructors and Destructors
-
         public ShadowStrike(Ability ability)
             : base(ability)
         {
@@ -29,12 +27,6 @@
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

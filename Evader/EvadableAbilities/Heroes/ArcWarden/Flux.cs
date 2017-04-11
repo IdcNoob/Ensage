@@ -11,8 +11,6 @@
 
     internal class Flux : LinearTarget, IModifier
     {
-        #region Constructors and Destructors
-
         public Flux(Ability ability)
             : base(ability)
         {
@@ -28,12 +26,6 @@
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

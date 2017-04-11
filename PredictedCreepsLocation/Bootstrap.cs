@@ -7,22 +7,12 @@
 
     internal class Bootstrap
     {
-        #region Fields
-
         private readonly Predictions predictions = new Predictions();
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void Initialize()
         {
             Events.OnLoad += OnLoad;
         }
-
-        #endregion
-
-        #region Methods
 
         private void Drawing_OnDraw(EventArgs args)
         {
@@ -77,7 +67,5 @@
             Drawing.OnPostReset += Drawing_OnPostReset;
             Drawing.OnEndScene += Drawing_OnEndScene;
         }
-
-        #endregion
     }
 }

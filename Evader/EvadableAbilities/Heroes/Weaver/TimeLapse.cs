@@ -8,8 +8,6 @@
 
     internal class TimeLapse : NoObstacleAbility
     {
-        #region Constructors and Destructors
-
         public TimeLapse(Ability ability)
             : base(ability)
         {
@@ -17,7 +15,5 @@
 
             DisableAbilities.Remove(Eul);
         }
-
-        #endregion
     }
 }

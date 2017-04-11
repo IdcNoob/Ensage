@@ -6,15 +6,12 @@
 
     internal class DebugMenu
     {
-        #region Constructors and Destructors
-
         public DebugMenu(Menu rootMenu)
         {
             var menu = new Menu("Debug", "debug").SetFontColor(Color.PaleVioletRed);
 
-            var drawAbilities =
-                new MenuItem("debugAbilities", "Draw abilities").SetValue(false)
-                    .SetTooltip("Draw enemy ability ranges, timings and projectiles when casted");
+            var drawAbilities = new MenuItem("debugAbilities", "Draw abilities").SetValue(false)
+                .SetTooltip("Draw enemy ability ranges, timings and projectiles when casted");
             menu.AddItem(drawAbilities);
             drawAbilities.ValueChanged += (sender, args) => DrawAbilities = args.GetNewValue<bool>();
             DrawAbilities = drawAbilities.IsActive();
@@ -53,24 +50,18 @@
             rootMenu.AddSubMenu(menu);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public bool ArmletToggler { get; private set; }
-
-        public bool FastAbilityAdd { get; private set; }
 
         public bool DrawAbilities { get; private set; }
 
         public bool DrawMap { get; private set; }
+
+        public bool FastAbilityAdd { get; private set; }
 
         public bool LogAbilityUsage { get; private set; }
 
         public bool LogInformation { get; private set; }
 
         public bool LogIntersection { get; private set; }
-
-        #endregion
     }
 }

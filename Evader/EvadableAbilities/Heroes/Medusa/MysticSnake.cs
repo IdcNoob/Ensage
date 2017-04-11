@@ -16,17 +16,11 @@
 
     internal class MysticSnake : Projectile
     {
-        #region Fields
-
         private readonly float jumpRadius;
 
         private Vector3 lastProjectilePosition;
 
         private bool obstacleToAOE;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public MysticSnake(Ability ability)
             : base(ability)
@@ -45,10 +39,6 @@
 
             jumpRadius = Ability.AbilitySpecialData.First(x => x.Name == "radius").Value;
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -79,7 +69,7 @@
                 {
                     EndPosition = AbilityOwner.InFront(GetCastRange());
                     Pathfinder.UpdateObstacle(Obstacle.Value, StartPosition, EndPosition);
-                    AbilityDrawer.UpdateRectaglePosition(StartPosition, EndPosition, GetRadius());
+                    AbilityDrawer.UpdateRectanglePosition(StartPosition, EndPosition, GetRadius());
                 }
                 else if (ProjectileTarget != null)
                 {
@@ -93,8 +83,8 @@
                     lastProjectilePosition = projectilePosition;
 
                     AbilityDrawer.Dispose(AbilityDrawer.Type.Rectangle);
-                    EndCast = Game.RawGameTime
-                              + (ProjectileTarget.Distance2D(projectilePosition) - 20) / GetProjectileSpeed();
+                    EndCast = Game.RawGameTime + (ProjectileTarget.Distance2D(projectilePosition) - 20)
+                              / GetProjectileSpeed();
 
                     if (!obstacleToAOE)
                     {
@@ -120,7 +110,5 @@
 
             obstacleToAOE = false;
         }
-
-        #endregion
     }
 }

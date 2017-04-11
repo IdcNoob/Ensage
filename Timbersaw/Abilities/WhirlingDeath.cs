@@ -6,13 +6,7 @@
 
     internal class WhirlingDeath : TimberAbility
     {
-        #region Fields
-
         private readonly Sleeper comboSleeper;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public WhirlingDeath(Ability ability)
             : base(ability)
@@ -21,19 +15,11 @@
             comboSleeper = new Sleeper();
         }
 
-        #endregion
-
-        #region Public Properties
-
         public bool Combo { get; set; }
 
         public bool ComboDelayPassed => !comboSleeper.Sleeping;
 
         public float Radius { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void SetComboDelay(float delay)
         {
@@ -45,7 +31,5 @@
             Ability.UseAbility();
             Sleeper.Sleep(1000);
         }
-
-        #endregion
     }
 }

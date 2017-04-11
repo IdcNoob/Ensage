@@ -8,14 +8,10 @@
 
     internal class QueenOfPainBlink : NoObstacleAbility
     {
-        #region Constructors and Destructors
-
         public QueenOfPainBlink(Ability ability)
             : base(ability)
         {
             DisableAbilities.AddRange(DisableAbilityNames);
         }
-
-        #endregion
     }
 }

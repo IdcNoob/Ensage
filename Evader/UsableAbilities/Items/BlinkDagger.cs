@@ -11,23 +11,15 @@
 
     internal class BlinkDagger : BlinkAbility
     {
-        #region Constructors and Destructors
-
         public BlinkDagger(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
             : base(ability, type, target)
         {
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void UseInFront()
         {
             Ability.UseAbility(Hero.InFront(1150));
             Sleep();
         }
-
-        #endregion
     }
 }

@@ -18,8 +18,6 @@
 
     internal class AbilityBuilder
     {
-        #region Fields
-
         private readonly Dictionary<string, string> abilityNames = new Dictionary<string, string>();
 
         private readonly Hero hero;
@@ -31,10 +29,6 @@
 
         private bool error;
 
-        #endregion
-
-        #region Constructors and Destructors
-
         [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
         public AbilityBuilder(Hero hero)
         {
@@ -43,23 +37,14 @@
             JToken @object;
             if (JObject.Parse(Encoding.Default.GetString(Resource.Names)).TryGetValue("AbilityNames", out @object))
             {
-                abilityNames =
-                    JsonConvert.DeserializeObject<AbilityNames[]>(@object.ToString())
-                        .ToDictionary(x => x.Name, x => x.DotaName);
+                abilityNames = JsonConvert.DeserializeObject<AbilityNames[]>(@object.ToString())
+                    .ToDictionary(x => x.Name, x => x.DotaName);
             }
 
-            SaveAbilityBuild(GetDotabuffName(hero.ClassID));
+            SaveAbilityBuild(GetDotabuffName(hero.ClassId));
         }
 
-        #endregion
-
-        #region Public Properties
-
         public string BestBuildWinRate { get; private set; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public Ability GetAbility(uint level)
         {
@@ -72,7 +57,7 @@
 
             return bestBuild.TryGetValue(level, out ability)
                        ? ability
-                       : hero.Spellbook.Spells.FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Ability_AttributeBonus);
+                       : hero.Spellbook.Spells.FirstOrDefault(x => x.ClassId == ClassId.CDOTA_Ability_AttributeBonus);
         }
 
         public IEnumerable<Ability> GetBestBuild()
@@ -80,46 +65,26 @@
             return bestBuild.OrderBy(x => x.Key).Select(x => x.Value);
         }
 
-        #endregion
-
-        #region Methods
-
-        private static string GetDotabuffName(ClassID classId)
+        private static string GetDotabuffName(ClassId classId)
         {
             switch (classId)
             {
-                case ClassID.CDOTA_Unit_Hero_DoomBringer:
-                    return "doom";
-                case ClassID.CDOTA_Unit_Hero_Furion:
-                    return "natures-prophet";
-                case ClassID.CDOTA_Unit_Hero_Magnataur:
-                    return "magnus";
-                case ClassID.CDOTA_Unit_Hero_Necrolyte:
-                    return "necrophos";
-                case ClassID.CDOTA_Unit_Hero_Nevermore:
-                    return "shadow-fiend";
-                case ClassID.CDOTA_Unit_Hero_Obsidian_Destroyer:
-                    return "outworld-devourer";
-                case ClassID.CDOTA_Unit_Hero_Rattletrap:
-                    return "clockwerk";
-                case ClassID.CDOTA_Unit_Hero_Shredder:
-                    return "timbersaw";
-                case ClassID.CDOTA_Unit_Hero_SkeletonKing:
-                    return "wraith-king";
-                case ClassID.CDOTA_Unit_Hero_Wisp:
-                    return "io";
-                case ClassID.CDOTA_Unit_Hero_Zuus:
-                    return "zeus";
-                case ClassID.CDOTA_Unit_Hero_Windrunner:
-                    return "windranger";
-                case ClassID.CDOTA_Unit_Hero_Life_Stealer:
-                    return "lifestealer";
-                case ClassID.CDOTA_Unit_Hero_Treant:
-                    return "treant-protector";
-                case ClassID.CDOTA_Unit_Hero_MonkeyKing:
-                    return "monkey-king";
-                case ClassID.CDOTA_Unit_Hero_AbyssalUnderlord:
-                    return "underlord";
+                case ClassId.CDOTA_Unit_Hero_DoomBringer: return "doom";
+                case ClassId.CDOTA_Unit_Hero_Furion: return "natures-prophet";
+                case ClassId.CDOTA_Unit_Hero_Magnataur: return "magnus";
+                case ClassId.CDOTA_Unit_Hero_Necrolyte: return "necrophos";
+                case ClassId.CDOTA_Unit_Hero_Nevermore: return "shadow-fiend";
+                case ClassId.CDOTA_Unit_Hero_Obsidian_Destroyer: return "outworld-devourer";
+                case ClassId.CDOTA_Unit_Hero_Rattletrap: return "clockwerk";
+                case ClassId.CDOTA_Unit_Hero_Shredder: return "timbersaw";
+                case ClassId.CDOTA_Unit_Hero_SkeletonKing: return "wraith-king";
+                case ClassId.CDOTA_Unit_Hero_Wisp: return "io";
+                case ClassId.CDOTA_Unit_Hero_Zuus: return "zeus";
+                case ClassId.CDOTA_Unit_Hero_Windrunner: return "windranger";
+                case ClassId.CDOTA_Unit_Hero_Life_Stealer: return "lifestealer";
+                case ClassId.CDOTA_Unit_Hero_Treant: return "treant-protector";
+                case ClassId.CDOTA_Unit_Hero_MonkeyKing: return "monkey-king";
+                case ClassId.CDOTA_Unit_Hero_AbyssalUnderlord: return "underlord";
             }
 
             var name = classId.ToString().Substring("CDOTA_Unit_Hero_".Length).Replace("_", string.Empty);
@@ -231,7 +196,5 @@
                 error = true;
             }
         }
-
-        #endregion
     }
 }

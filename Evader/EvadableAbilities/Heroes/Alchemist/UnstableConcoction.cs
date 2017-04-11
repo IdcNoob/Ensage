@@ -20,8 +20,6 @@
 
     internal class UnstableConcoction : Projectile, IModifier
     {
-        #region Fields
-
         private readonly float stunRadius;
 
         private readonly Ability unstableConcoction;
@@ -29,10 +27,6 @@
         private Vector3 lastProjectilePosition;
 
         private bool obstacleToAOE;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public UnstableConcoction(Ability ability)
             : base(ability)
@@ -62,15 +56,7 @@
             unstableConcoction = AbilityOwner.FindSpell("alchemist_unstable_concoction");
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override bool CanBeStopped()
         {
@@ -106,7 +92,7 @@
                 {
                     EndPosition = AbilityOwner.InFront(GetCastRange());
                     Pathfinder.UpdateObstacle(Obstacle.Value, StartPosition, EndPosition);
-                    AbilityDrawer.UpdateRectaglePosition(StartPosition, EndPosition, GetRadius());
+                    AbilityDrawer.UpdateRectanglePosition(StartPosition, EndPosition, GetRadius());
                 }
                 else if (ProjectileTarget != null)
                 {
@@ -120,8 +106,8 @@
                     lastProjectilePosition = projectilePosition;
 
                     AbilityDrawer.Dispose(AbilityDrawer.Type.Rectangle);
-                    EndCast = Game.RawGameTime
-                              + (ProjectileTarget.Distance2D(projectilePosition) - 50) / GetProjectileSpeed();
+                    EndCast = Game.RawGameTime + (ProjectileTarget.Distance2D(projectilePosition) - 50)
+                              / GetProjectileSpeed();
 
                     if (!obstacleToAOE)
                     {
@@ -158,7 +144,5 @@
             var cooldownLength = unstableConcoction.CooldownLength;
             return cooldownLength <= 0 ? float.MaxValue : cooldownLength - unstableConcoction.Cooldown - 5;
         }
-
-        #endregion
     }
 }

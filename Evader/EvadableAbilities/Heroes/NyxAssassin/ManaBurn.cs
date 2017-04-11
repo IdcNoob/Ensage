@@ -11,8 +11,6 @@
 
     internal class ManaBurn : LinearTarget
     {
-        #region Constructors and Destructors
-
         public ManaBurn(Ability ability)
             : base(ability)
         {
@@ -23,10 +21,6 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Lotus);
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -47,7 +41,5 @@
                 End();
             }
         }
-
-        #endregion
     }
 }

@@ -15,23 +15,13 @@
 
     internal class Snowball : Targetable
     {
-        #region Fields
-
         private readonly float grabRadius;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Snowball(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
             : base(ability, type, target)
         {
             grabRadius = Ability.AbilitySpecialData.First(x => x.Name == "snowball_grab_radius").Value;
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
@@ -48,7 +38,5 @@
             }
             Sleep();
         }
-
-        #endregion
     }
 }

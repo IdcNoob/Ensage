@@ -9,8 +9,6 @@
 
     internal class CreepsData
     {
-        #region Constructors and Destructors
-
         public CreepsData(Team team)
         {
             var topPath = new List<Vector3>();
@@ -127,12 +125,6 @@
                 });
         }
 
-        #endregion
-
-        #region Public Properties
-
         public List<LaneData> LaneData { get; } = new List<LaneData>();
-
-        #endregion
     }
 }

@@ -15,15 +15,9 @@
 
     internal class Eclipse : AOE
     {
-        #region Fields
-
         private readonly float[] duration = new float[3];
 
         private readonly float[] durationAghanim = new float[3];
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Eclipse(Ability ability)
             : base(ability)
@@ -47,14 +41,10 @@
             for (var i = 0u; i < duration.Length; i++)
             {
                 duration[i] = ability.AbilitySpecialData.First(x => x.Name == "duration_tooltip").GetValue(i);
-                durationAghanim[i] =
-                    ability.AbilitySpecialData.First(x => x.Name == "duration_tooltip_scepter").GetValue(i);
+                durationAghanim[i] = ability.AbilitySpecialData.First(x => x.Name == "duration_tooltip_scepter")
+                    .GetValue(i);
             }
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -98,16 +88,10 @@
             return ability.Type != AbilityType.Disable && AbilityOwner.HasModifier("modifier_luna_eclipse");
         }
 
-        #endregion
-
-        #region Methods
-
         private float GetEclipseDuration()
         {
             var level = Ability.Level - 1;
             return AbilityOwner.AghanimState() ? durationAghanim[level] : duration[level];
         }
-
-        #endregion
     }
 }

@@ -8,8 +8,6 @@
 
     internal class SpawnSpiderlings : Projectile
     {
-        #region Constructors and Destructors
-
         public SpawnSpiderlings(Ability ability)
             : base(ability)
         {
@@ -24,7 +22,5 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Lotus);
         }
-
-        #endregion
     }
 }

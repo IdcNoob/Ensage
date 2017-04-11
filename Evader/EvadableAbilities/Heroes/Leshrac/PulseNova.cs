@@ -12,8 +12,6 @@
 
     internal class PulseNova : EvadableAbility, IModifier
     {
-        #region Constructors and Destructors
-
         public PulseNova(Ability ability)
             : base(ability)
         {
@@ -31,15 +29,7 @@
             Modifier.AllyCounterAbilities.Remove("juggernaut_blade_fury");
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -53,7 +43,5 @@
         {
             return 0;
         }
-
-        #endregion
     }
 }

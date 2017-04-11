@@ -8,8 +8,6 @@
 
     internal class DualBreath : LinearProjectile
     {
-        #region Constructors and Destructors
-
         public DualBreath(Ability ability)
             : base(ability)
         {
@@ -18,15 +16,9 @@
             CounterAbilities.AddRange(VsMagic);
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetCastRange()
         {
             return base.GetCastRange() + 100;
         }
-
-        #endregion
     }
 }

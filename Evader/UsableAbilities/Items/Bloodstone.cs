@@ -22,23 +22,13 @@
 
     internal class Bloodstone : UsableAbility, IDisposable
     {
-        #region Constructors and Destructors
-
         public Bloodstone(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
             : base(ability, type, target)
         {
             Game.OnUpdate += OnUpdate;
         }
 
-        #endregion
-
-        #region Properties
-
         private static UsableAbilitiesMenu Menu => Variables.Menu.UsableAbilities;
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
@@ -123,10 +113,6 @@
             return true;
         }
 
-        #endregion
-
-        #region Methods
-
         private void OnUpdate(EventArgs args)
         {
             if (!Game.IsInGame || Game.IsPaused || Sleeper.Sleeping || !Menu.BloodstoneAutoSuicide)
@@ -139,18 +125,15 @@
                 return;
             }
 
-            if ((float)Hero.Health / Hero.MaximumHealth * 100 <= Menu.BloodstoneHpThreshold
-                && ObjectManager.GetEntitiesParallel<Hero>()
+            if ((float)Hero.Health / Hero.MaximumHealth * 100 <= Menu.BloodstoneHpThreshold && ObjectManager
+                    .GetEntitiesParallel<Hero>()
                     .Any(
-                        x =>
-                            x.IsValid && x.IsAlive && !x.IsIllusion && x.Team != HeroTeam
-                            && x.Distance2D(Hero) < Menu.BloodstoneEnemyRange))
+                        x => x.IsValid && x.IsAlive && !x.IsIllusion && x.Team != HeroTeam
+                             && x.Distance2D(Hero) < Menu.BloodstoneEnemyRange))
             {
                 Debugger.WriteLine("// * Bloodstone auto suicide");
                 Use(null, null);
             }
         }
-
-        #endregion
     }
 }

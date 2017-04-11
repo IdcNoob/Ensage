@@ -4,8 +4,6 @@
 
     internal static class Names
     {
-        #region Static Fields
-
         public static Dictionary<string, string> Heroes = new Dictionary<string, string>
         {
             { "Io, Wisp", "npc_dota_hero_wisp" },
@@ -121,7 +119,5 @@
             { "Wraith King​, Leoric, Skeleton King, WK", "npc_dota_hero_skeleton_king" },
             { "Witch Doctor​", "npc_dota_hero_witch_doctor" }
         };
-
-        #endregion
     }
 }

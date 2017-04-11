@@ -8,8 +8,6 @@
 
     internal class SoulRip : LinearTarget
     {
-        #region Constructors and Destructors
-
         public SoulRip(Ability ability)
             : base(ability)
         {
@@ -20,7 +18,5 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Lotus);
         }
-
-        #endregion
     }
 }

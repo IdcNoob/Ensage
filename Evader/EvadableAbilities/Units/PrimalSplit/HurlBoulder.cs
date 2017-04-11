@@ -12,8 +12,6 @@
 
     internal class HurlBoulder : Projectile, IModifier
     {
-        #region Constructors and Destructors
-
         public HurlBoulder(Ability ability)
             : base(ability)
         {
@@ -35,12 +33,6 @@
             Modifier.AllyCounterAbilities.AddRange(Invul);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

@@ -12,8 +12,6 @@
 
     internal class EMP : AOE, IParticle
     {
-        #region Constructors and Destructors
-
         public EMP(Ability ability)
             : base(ability)
         {
@@ -33,21 +31,18 @@
             AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "delay").Value;
         }
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
             StartCast = Game.RawGameTime;
 
             DelayAction.Add(
                 1,
-                () => {
-                    StartPosition = particleArgs.ParticleEffect.GetControlPoint(0);
-                    EndCast = StartCast + AdditionalDelay;
-                    Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
-                });
+                () =>
+                    {
+                        StartPosition = particleArgs.ParticleEffect.GetControlPoint(0);
+                        EndCast = StartCast + AdditionalDelay;
+                        Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
+                    });
         }
 
         public override bool CanBeStopped()
@@ -67,7 +62,5 @@
         {
             return EndCast - Game.RawGameTime;
         }
-
-        #endregion
     }
 }

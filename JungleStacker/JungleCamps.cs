@@ -10,8 +10,6 @@
 
     internal class JungleCamps
     {
-        #region Constructors and Destructors
-
         public JungleCamps(Team heroTeam)
         {
             if (heroTeam == Team.Radiant)
@@ -280,22 +278,12 @@
             }
         }
 
-        #endregion
-
-        #region Public Properties
-
         public List<Camp> GetCamps { get; } = new List<Camp>();
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void OnClose()
         {
             GetCamps.ForEach(x => x.OnClose());
             GetCamps.Clear();
         }
-
-        #endregion
     }
 }

@@ -9,19 +9,9 @@
 
     internal static class MouseEmulation
     {
-        #region Constants
-
         private const int MouseSpeed = 30;
 
-        #endregion
-
-        #region Static Fields
-
         private static readonly Random Random = new Random();
-
-        #endregion
-
-        #region Public Methods and Operators
 
         [DllImport("user32.dll")]
         public static extern bool GetCursorPos(out Point p);
@@ -49,10 +39,6 @@
                 10.0 * randomSpeed,
                 10.0 * randomSpeed);
         }
-
-        #endregion
-
-        #region Methods
 
         private static double Hypot(double dx, double dy)
         {
@@ -146,7 +132,5 @@
                 SetCursorPos(endX, endY);
             }
         }
-
-        #endregion
     }
 }

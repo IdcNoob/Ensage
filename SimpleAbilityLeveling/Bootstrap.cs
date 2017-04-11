@@ -7,22 +7,12 @@
 
     internal class Bootstrap
     {
-        #region Fields
-
         private readonly AbilityLeveling abilityLeveling = new AbilityLeveling();
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void Initialize()
         {
             Events.OnLoad += OnLoad;
         }
-
-        #endregion
-
-        #region Methods
 
         private void Drawing_OnDraw(EventArgs args)
         {
@@ -49,7 +39,5 @@
             Game.OnIngameUpdate += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
         }
-
-        #endregion
     }
 }

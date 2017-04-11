@@ -13,16 +13,10 @@
 
     internal class TargetTree : UsableAbility
     {
-        #region Constructors and Destructors
-
         public TargetTree(Ability ability, AbilityType type, AbilityCastTarget target)
             : base(ability, type, target)
         {
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
@@ -37,11 +31,10 @@
 
         public override void Use(EvadableAbility ability, Unit target)
         {
-            var frontTree =
-                ObjectManager.GetEntitiesFast<Tree>()
-                    .Where(x => x.IsValid && x.IsAlive && x.Distance2D(Hero) < 350 && x.Name == "dota_temp_tree")
-                    .OrderBy(x => target.FindRelativeAngle(x.Position))
-                    .FirstOrDefault();
+            var frontTree = ObjectManager.GetEntitiesFast<Tree>()
+                .Where(x => x.IsValid && x.IsAlive && x.Distance2D(Hero) < 350 && x.Name == "dota_temp_tree")
+                .OrderBy(x => target.FindRelativeAngle(x.Position))
+                .FirstOrDefault();
 
             if (frontTree == null)
             {
@@ -51,7 +44,5 @@
             Ability.UseAbility(frontTree);
             Sleep();
         }
-
-        #endregion
     }
 }

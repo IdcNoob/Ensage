@@ -4,8 +4,6 @@
 
     internal class RunePinger
     {
-        #region Public Methods and Operators
-
         public bool TimeToSpawn(int time)
         {
             if (Variables.Sleeper.Sleeping(this))
@@ -23,7 +21,5 @@
 
             return false;
         }
-
-        #endregion
     }
 }

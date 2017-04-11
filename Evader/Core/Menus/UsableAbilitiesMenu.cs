@@ -9,15 +9,13 @@
 
     internal class UsableAbilitiesMenu
     {
-        #region Fields
-
         private readonly List<string> addedBlinkAbilities = new List<string>();
 
         private readonly List<string> addedCounterAbilities = new List<string>();
 
         private readonly List<string> addedDisableAbilities = new List<string>();
 
-        private readonly Menu specials;
+        private readonly Menu menu;
 
         private AbilityToggler blinkAbilityToggler;
 
@@ -25,13 +23,11 @@
 
         private AbilityToggler disableAbilityToggler;
 
-        #endregion
-
-        #region Constructors and Destructors
+        private Menu specials;
 
         public UsableAbilitiesMenu(Menu rootMenu)
         {
-            var menu = new Menu("Abilities", "usableAbilities");
+            menu = new Menu("Abilities", "usableAbilities");
             menu.AddItem(
                 new MenuItem("usableBlinkAbilities", "Blink:").SetValue(
                     blinkAbilityToggler = new AbilityToggler(new Dictionary<string, bool>())));
@@ -42,23 +38,16 @@
                 new MenuItem("usableDiasbleAbilities", "Disable:").SetValue(
                     disableAbilityToggler = new AbilityToggler(new Dictionary<string, bool>())));
 
-            specials = new Menu("Specials", "specials");
-            menu.AddSubMenu(specials);
-
             rootMenu.AddSubMenu(menu);
         }
 
-        #endregion
-
-        #region Public Properties
-
-        public int ArmetHpThreshold { get; private set; }
-
-        public int ArmetCheckDelay { get; private set; }
-
         public bool ArmletAutoToggle { get; private set; }
 
+        public int ArmletCheckDelay { get; private set; }
+
         public bool ArmletEnemiesCheck { get; private set; }
+
+        public int ArmletHpThreshold { get; private set; }
 
         public bool AutoDisableAtFountain { get; private set; }
 
@@ -75,10 +64,6 @@
         public bool PhaseShiftBlock { get; private set; }
 
         public int PhaseShiftBlockTime { get; private set; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddAbility(string abilityName, AbilityType abilityType, bool enabled = true)
         {
@@ -114,6 +99,8 @@
             switch (abilityName)
             {
                 case "item_bloodstone":
+                    InitializeSpecialsMenu();
+
                     var bloodstoneMenu = new Menu(string.Empty, "bloodstoneMenu", textureName: abilityName);
 
                     var autoSuicide = new MenuItem("bsAutoSuicide", "Auto suicide").SetValue(false);
@@ -130,7 +117,8 @@
                         new MenuItem("bsEnemyCheck", "Use only when enemy in range of").SetValue(
                             new Slider(750, 0, 2000));
                     bloodstoneMenu.AddItem(enemyCheck);
-                    enemyCheck.ValueChanged += (sender, args) => BloodstoneEnemyRange = args.GetNewValue<Slider>().Value;
+                    enemyCheck.ValueChanged +=
+                        (sender, args) => BloodstoneEnemyRange = args.GetNewValue<Slider>().Value;
                     BloodstoneEnemyRange = enemyCheck.GetValue<Slider>().Value;
 
                     specials.AddSubMenu(bloodstoneMenu);
@@ -138,6 +126,8 @@
                         "<font color='#ff7700'>[Evader]</font> Bloodstone has special settings in the menu");
                     break;
                 case "item_armlet":
+                    InitializeSpecialsMenu();
+
                     var armletMenu = new Menu(string.Empty, "armletMenu", textureName: abilityName);
 
                     var autoToggle = new MenuItem("armletAutoToggle", "Auto toggle").SetValue(true);
@@ -145,20 +135,18 @@
                     autoToggle.ValueChanged += (sender, args) => ArmletAutoToggle = args.GetNewValue<bool>();
                     ArmletAutoToggle = autoToggle.IsActive();
 
-                    var armetHpThreshold =
+                    var armletHpThreshold =
                         new MenuItem("armletHpThreshold", "Minimum hp").SetValue(new Slider(222, 100, 300));
-                    armletMenu.AddItem(armetHpThreshold);
-                    armetHpThreshold.ValueChanged +=
-                        (sender, args) => ArmetHpThreshold = args.GetNewValue<Slider>().Value;
-                    ArmetHpThreshold = armetHpThreshold.GetValue<Slider>().Value;
+                    armletMenu.AddItem(armletHpThreshold);
+                    armletHpThreshold.ValueChanged +=
+                        (sender, args) => ArmletHpThreshold = args.GetNewValue<Slider>().Value;
+                    ArmletHpThreshold = armletHpThreshold.GetValue<Slider>().Value;
 
-                    var checkDelay =
-                      new MenuItem("armletCheckDelay", "Check delay").SetValue(new Slider(75, 0, 300));
+                    var checkDelay = new MenuItem("armletCheckDelay", "Check delay").SetValue(new Slider(75, 0, 300));
                     checkDelay.SetTooltip("Lower delay => better calculations, but requires more resources");
                     armletMenu.AddItem(checkDelay);
-                    checkDelay.ValueChanged +=
-                        (sender, args) => ArmetCheckDelay = args.GetNewValue<Slider>().Value;
-                    ArmetCheckDelay = checkDelay.GetValue<Slider>().Value;
+                    checkDelay.ValueChanged += (sender, args) => ArmletCheckDelay = args.GetNewValue<Slider>().Value;
+                    ArmletCheckDelay = checkDelay.GetValue<Slider>().Value;
 
                     var fountainDisable = new MenuItem("armletAutoDisable", "Auto disable at fountain").SetValue(true);
                     armletMenu.AddItem(fountainDisable);
@@ -175,6 +163,8 @@
                     Game.PrintMessage("<font color='#ff7700'>[Evader]</font> Armlet has special settings in the menu");
                     break;
                 case "puck_phase_shift":
+                    InitializeSpecialsMenu();
+
                     var phaseShiftMenu = new Menu(string.Empty, "phaseShiftMenu", textureName: abilityName);
 
                     var phaseShiftBlock = new MenuItem("phaseShiftBlock", "Action block").SetValue(true);
@@ -196,6 +186,8 @@
                         "<font color='#ff7700'>[Evader]</font> Phase Shift has special settings in the menu");
                     break;
                 case "templar_assassin_meld":
+                    InitializeSpecialsMenu();
+
                     var meldMenu = new Menu(string.Empty, "meldMenu", textureName: abilityName);
 
                     var meldBlock = new MenuItem("meldBlock", "Action block").SetValue(true);
@@ -231,6 +223,15 @@
             return false;
         }
 
-        #endregion
+        private void InitializeSpecialsMenu()
+        {
+            if (specials != null)
+            {
+                return;
+            }
+
+            specials = new Menu("Specials", "specials");
+            menu.AddSubMenu(specials);
+        }
     }
 }

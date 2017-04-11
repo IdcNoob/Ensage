@@ -6,8 +6,6 @@
 
     internal abstract class Mine : IUnit
     {
-        #region Constructors and Destructors
-
         protected Mine(Unit unit, string abilityName)
         {
             Unit = unit;
@@ -29,9 +27,9 @@
             Texture = Drawing.GetTexture("materials/ensage_ui/other/npc_dota_techies_remote_mine");
         }
 
-        #endregion
+        protected static MenuManager Menu => Variables.Menu;
 
-        #region Public Properties
+        protected Unit Unit { get; set; }
 
         public float Duration { get; protected set; }
 
@@ -54,15 +52,5 @@
         public DotaTexture Texture { get; protected set; }
 
         public Vector2 TextureSize { get; set; }
-
-        #endregion
-
-        #region Properties
-
-        protected static MenuManager Menu => Variables.Menu;
-
-        protected Unit Unit { get; set; }
-
-        #endregion
     }
 }

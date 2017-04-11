@@ -8,8 +8,6 @@
 
     internal class BrainSap : LinearTarget
     {
-        #region Constructors and Destructors
-
         public BrainSap(Ability ability)
             : base(ability)
         {
@@ -22,7 +20,5 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(NetherWard);
         }
-
-        #endregion
     }
 }

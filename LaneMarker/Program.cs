@@ -16,15 +16,9 @@
 
     internal class Program
     {
-        #region Constants
-
         private const int MOUSEEVENTF_LEFTDOWN = 0x02;
 
         private const int MOUSEEVENTF_LEFTUP = 0x04;
-
-        #endregion
-
-        #region Static Fields
 
         private static readonly double[,,] CoordinateMultiplayers =
         {
@@ -107,10 +101,6 @@
         private static string tempName;
 
         private static Font textFont;
-
-        #endregion
-
-        #region Methods
 
         private static void Drawing_OnEndScene(EventArgs args)
         {
@@ -238,9 +228,8 @@
             Utils.Sleep(2000, "laneMarker.Name");
             displayTempName = true;
 
-            var namePair =
-                Names.Heroes.FirstOrDefault(
-                    x => Regex.IsMatch(Regex.Replace(x.Key, @"\s+", ""), tempName, RegexOptions.IgnoreCase));
+            var namePair = Names.Heroes.FirstOrDefault(
+                x => Regex.IsMatch(Regex.Replace(x.Key, @"\s+", ""), tempName, RegexOptions.IgnoreCase));
 
             if (string.IsNullOrEmpty(namePair.Key))
             {
@@ -360,7 +349,5 @@
             Drawing.OnPostReset -= Drawing_OnPostReset;
             Drawing.OnEndScene -= Drawing_OnEndScene;
         }
-
-        #endregion
     }
 }

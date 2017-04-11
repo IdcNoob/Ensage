@@ -8,8 +8,6 @@
 
     internal class SonicWave : LinearProjectile
     {
-        #region Constructors and Destructors
-
         public SonicWave(Ability ability)
             : base(ability)
         {
@@ -29,15 +27,9 @@
             CounterAbilities.AddRange(Invis);
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetCastRange()
         {
             return base.GetCastRange() + GetEndRadius();
         }
-
-        #endregion
     }
 }

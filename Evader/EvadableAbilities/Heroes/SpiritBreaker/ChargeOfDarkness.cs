@@ -12,8 +12,6 @@
 
     internal class ChargeOfDarkness : EvadableAbility, IModifier
     {
-        #region Constructors and Destructors
-
         public ChargeOfDarkness(Ability ability)
             : base(ability)
         {
@@ -36,15 +34,7 @@
             Modifier.EnemyCounterAbilities.AddRange(DisableAbilityNames);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -58,7 +48,5 @@
         {
             return 0;
         }
-
-        #endregion
     }
 }

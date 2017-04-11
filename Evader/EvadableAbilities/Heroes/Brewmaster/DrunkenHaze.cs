@@ -12,8 +12,6 @@
 
     internal class DrunkenHaze : Projectile, IModifier
     {
-        #region Constructors and Destructors
-
         public DrunkenHaze(Ability ability)
             : base(ability)
         {
@@ -29,21 +27,11 @@
             Modifier.AllyCounterAbilities.Add(Eul);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override float GetProjectileSpeed()
         {
             return 1600;
         }
-
-        #endregion
     }
 }

@@ -11,8 +11,6 @@
 
     internal class FatesEdict : EvadableAbility, IModifier
     {
-        #region Constructors and Destructors
-
         public FatesEdict(Ability ability)
             : base(ability)
         {
@@ -23,15 +21,7 @@
             Modifier.AllyCounterAbilities.AddRange(AllyPurges);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -45,7 +35,5 @@
         {
             return 0;
         }
-
-        #endregion
     }
 }

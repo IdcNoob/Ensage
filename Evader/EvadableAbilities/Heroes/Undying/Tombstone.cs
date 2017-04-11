@@ -8,14 +8,10 @@
 
     internal class Tombstone : NoObstacleAbility
     {
-        #region Constructors and Destructors
-
         public Tombstone(Ability ability)
             : base(ability)
         {
             DisableAbilities.AddRange(DisableAbilityNames);
         }
-
-        #endregion
     }
 }

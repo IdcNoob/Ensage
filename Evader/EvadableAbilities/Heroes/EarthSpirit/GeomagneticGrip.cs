@@ -15,8 +15,6 @@
 
     internal class GeomagneticGrip : LinearProjectile, IModifier, IParticle
     {
-        #region Constructors and Destructors
-
         public GeomagneticGrip(Ability ability)
             : base(ability)
         {
@@ -43,30 +41,23 @@
             Modifier.AllyCounterAbilities.AddRange(Invul);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
             StartCast = Game.RawGameTime;
             DelayAction.Add(
                 1,
-                () => {
-                    var start = particleArgs.ParticleEffect.GetControlPoint(0);
-                    var end = particleArgs.ParticleEffect.GetControlPoint(1);
-                    var distance = start.Distance2D(end);
-                    StartPosition = start;
-                    EndPosition = start.Extend(end, distance);
-                    EndCast = StartCast + distance / GetProjectileSpeed();
-                    Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
-                });
+                () =>
+                    {
+                        var start = particleArgs.ParticleEffect.GetControlPoint(0);
+                        var end = particleArgs.ParticleEffect.GetControlPoint(1);
+                        var distance = start.Distance2D(end);
+                        StartPosition = start;
+                        EndPosition = start.Extend(end, distance);
+                        EndCast = StartCast + distance / GetProjectileSpeed();
+                        Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
+                    });
         }
 
         public override bool CanBeStopped()
@@ -99,7 +90,5 @@
 
             AbilityDrawer.UpdateCirclePosition(GetProjectilePosition());
         }
-
-        #endregion
     }
 }

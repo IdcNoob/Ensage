@@ -11,8 +11,6 @@
 
     internal class Overgrowth : AOE, IModifier
     {
-        #region Constructors and Destructors
-
         public Overgrowth(Ability ability)
             : base(ability)
         {
@@ -34,12 +32,6 @@
             Modifier.AllyCounterAbilities.AddRange(AllyPurges);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

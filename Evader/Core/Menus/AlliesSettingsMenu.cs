@@ -7,13 +7,7 @@
 
     internal class AlliesSettingsMenu
     {
-        #region Fields
-
         private readonly Dictionary<string, bool> allyToggler = new Dictionary<string, bool>();
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public AlliesSettingsMenu(Menu rootMenu)
         {
@@ -26,28 +20,21 @@
 
             menu.AddItem(new AllyHeroesToggler("enabledAllies", "Allies", allyToggler));
 
-            var multiIntersection =
-                new MenuItem("multiIntersectionDisable", "Multi intersection disable").SetValue(false)
-                    .SetTooltip(
-                        "Will disable enemy who's using AOE disable which will hit multiple allies (priority settings will be ignored)");
+            var multiIntersection = new MenuItem("multiIntersectionDisable", "Multi intersection disable")
+                .SetValue(false)
+                .SetTooltip(
+                    "Will disable enemy who's using AOE disable which will hit multiple allies (priority settings will be ignored)");
             menu.AddItem(multiIntersection);
-            multiIntersection.ValueChanged += (sender, args) => MultiIntersectionEnemyDisable = args.GetNewValue<bool>();
+            multiIntersection.ValueChanged +=
+                (sender, args) => MultiIntersectionEnemyDisable = args.GetNewValue<bool>();
             MultiIntersectionEnemyDisable = multiIntersection.IsActive();
 
             rootMenu.AddSubMenu(menu);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public bool HelpAllies { get; private set; }
 
         public bool MultiIntersectionEnemyDisable { get; private set; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public bool Enabled(string heroName)
         {
@@ -55,7 +42,5 @@
             allyToggler.TryGetValue(heroName, out enabled);
             return enabled;
         }
-
-        #endregion
     }
 }

@@ -16,13 +16,7 @@
 
     internal abstract class UsableAbility
     {
-        #region Fields
-
         protected Sleeper Sleeper;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         protected UsableAbility(Ability ability, AbilityType type, AbilityCastTarget target)
         {
@@ -40,7 +34,7 @@
             Name = ability.Name;
             Handle = ability.Handle;
             IsItem = ability is Item;
-            ClassID = ability.ClassID;
+            ClassId = ability.ClassId;
             IgnoresLinkensSphere = ability.IsAbilityBehavior(AbilityBehavior.NoTarget)
                                    || ability.IsAbilityBehavior(AbilityBehavior.AreaOfEffect);
             PiercesMagicImmunity = ability.PiercesMagicImmunity();
@@ -57,15 +51,11 @@
             Debugger.WriteLine("// Can be used on enemy: " + CanBeUsedOnEnemy);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public bool CanBeUsedOnAlly { get; }
 
         public bool CanBeUsedOnEnemy { get; }
 
-        public ClassID ClassID { get; }
+        public ClassId ClassId { get; }
 
         public uint Handle { get; protected set; }
 
@@ -77,10 +67,6 @@
 
         public AbilityType Type { get; protected set; }
 
-        #endregion
-
-        #region Properties
-
         protected static Team HeroTeam => Variables.HeroTeam;
 
         protected Ability Ability { get; }
@@ -90,10 +76,6 @@
         protected Hero Hero => Variables.Hero;
 
         protected bool PiercesMagicImmunity { get; set; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public virtual bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
@@ -112,16 +94,11 @@
             return false;
         }
 
-        #endregion
-
-        #region Methods
-
         protected virtual bool CheckEnemy(Unit unit)
         {
-            return !unit.IsInvul()
-                   && (CanBeUsedOnAlly || unit.Equals(Hero)
-                       || ((PiercesMagicImmunity || !unit.IsMagicImmune())
-                           && (IgnoresLinkensSphere || !unit.IsLinkensProtected())));
+            return !unit.IsInvul() && (CanBeUsedOnAlly || unit.Equals(Hero)
+                                       || ((PiercesMagicImmunity || !unit.IsMagicImmune())
+                                           && (IgnoresLinkensSphere || !unit.IsLinkensProtected())));
         }
 
         protected virtual float GetCastRange()
@@ -133,7 +110,5 @@
         {
             Sleeper.Sleep(time);
         }
-
-        #endregion
     }
 }

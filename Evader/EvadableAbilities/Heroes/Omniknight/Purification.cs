@@ -8,8 +8,6 @@
 
     internal class Purification : LinearAOE
     {
-        #region Constructors and Destructors
-
         public Purification(Ability ability)
             : base(ability)
         {
@@ -26,15 +24,9 @@
             CounterAbilities.Add(Bloodstone);
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetCastRange()
         {
             return base.GetCastRange() + 200;
         }
-
-        #endregion
     }
 }

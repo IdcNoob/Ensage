@@ -11,8 +11,6 @@
 
     internal class Maledict : LinearAOE, IModifier
     {
-        #region Constructors and Destructors
-
         public Maledict(Ability ability)
             : base(ability)
         {
@@ -27,12 +25,6 @@
             CounterAbilities.AddRange(VsMagic);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

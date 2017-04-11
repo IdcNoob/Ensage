@@ -5,16 +5,10 @@
 
     internal class TideBringer : IAbility
     {
-        #region Constructors and Destructors
-
         public TideBringer(Ability ability)
         {
             Ability = ability;
         }
-
-        #endregion
-
-        #region Public Properties
 
         public Ability Ability { get; }
 
@@ -26,15 +20,9 @@
 
         public uint ManaCost { get; } = 0;
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public void UseAbility(Unit target, bool queue)
         {
             Ability.UseAbility(target, queue);
         }
-
-        #endregion
     }
 }

@@ -16,8 +16,6 @@
 
     internal class Predictions
     {
-        #region Fields
-
         private readonly List<CreepWave> creepWaves = new List<CreepWave>();
 
         private readonly MenuManager menuManager = new MenuManager();
@@ -31,10 +29,6 @@
         private MultiSleeper sleeper;
 
         private Font textFont;
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void DrawingOnEndScene()
         {
@@ -86,8 +80,8 @@
                 {
                     var alive = wave.Creeps.Where(x => x.IsValid && x.IsAlive).ToList();
 
-                    var middleCreep =
-                        alive.OrderByDescending(x => x.Distance2D(wave.NextPoint)).ElementAtOrDefault(alive.Count / 2);
+                    var middleCreep = alive.OrderByDescending(x => x.Distance2D(wave.NextPoint))
+                        .ElementAtOrDefault(alive.Count / 2);
 
                     wave.Time = gameTime;
 
@@ -178,7 +172,7 @@
         {
             var creep = args.Entity as Creep;
 
-            if (creep == null || creep.ClassID != ClassID.CDOTA_BaseNPC_Creep_Lane || creep.Team == heroTeam)
+            if (creep == null || creep.ClassId != ClassId.CDOTA_BaseNPC_Creep_Lane || creep.Team == heroTeam)
             {
                 return;
             }
@@ -210,19 +204,16 @@
                 return;
             }
 
-            var remove =
-                creepWaves.Where(
-                    wave =>
-                        (wave.Creeps.Any() && wave.Creeps.All(x => !x.IsValid || !x.IsAlive))
-                        || wave.CurrentPosition.Distance2D(wave.LaneData.Points.Last()) < 100
-                        || (!wave.Creeps.Any()
-                            && Heroes.GetByTeam(heroTeam).Any(x => wave.CurrentPosition.Distance2D(x) < 500))).ToList();
+            var remove = creepWaves.Where(
+                    wave => (wave.Creeps.Any() && wave.Creeps.All(x => !x.IsValid || !x.IsAlive))
+                            || wave.CurrentPosition.Distance2D(wave.LaneData.Points.Last()) < 100
+                            || (!wave.Creeps.Any() && Heroes.GetByTeam(heroTeam)
+                                    .Any(x => wave.CurrentPosition.Distance2D(x) < 500)))
+                .ToList();
 
-            var canBeMerged =
-                creepWaves.FirstOrDefault(
-                    x =>
-                        creepWaves.Where(z => !z.Equals(x))
-                            .Any(z => z.CurrentPosition.Distance2D(x.CurrentPosition) < 500));
+            var canBeMerged = creepWaves.FirstOrDefault(
+                x => creepWaves.Where(z => !z.Equals(x))
+                    .Any(z => z.CurrentPosition.Distance2D(x.CurrentPosition) < 500));
 
             if (canBeMerged != null)
             {
@@ -231,12 +222,10 @@
 
             creepWaves.RemoveAll(x => remove.Contains(x));
 
-            foreach (var creep in
-                ObjectManager.GetEntities<Creep>()
-                    .Where(
-                        x =>
-                            x.IsSpawned && x.IsAlive && x.Team != heroTeam && !x.IsNeutral
-                            && !creepWaves.SelectMany(z => z.Creeps).Contains(x)))
+            foreach (var creep in ObjectManager.GetEntities<Creep>()
+                .Where(
+                    x => x.IsSpawned && x.IsAlive && x.Team != heroTeam && !x.IsNeutral
+                         && !creepWaves.SelectMany(z => z.Creeps).Contains(x)))
             {
                 creepWaves.FirstOrDefault(x => x.CurrentPosition.Distance2D(creep) < 1000)?.Creeps.Add(creep);
             }
@@ -253,10 +242,6 @@
             }
         }
 
-        #endregion
-
-        #region Methods
-
         private static bool IsPointOnLine(Vector3 point, Vector3 start, Vector3 end, float radius)
         {
             var endDistance = end.Distance2D(point);
@@ -265,7 +250,5 @@
 
             return Math.Abs(endDistance + startDistance - distance) < radius;
         }
-
-        #endregion
     }
 }

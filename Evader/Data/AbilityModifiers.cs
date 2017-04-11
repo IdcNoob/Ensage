@@ -8,8 +8,6 @@
 
     internal class AbilityModifiers
     {
-        #region Fields
-
         private readonly Dictionary<string, string> fixedAbilityModifiers = new Dictionary<string, string>
         {
             { "modifier_phantom_assassin_stiflingdagger", "phantom_assassin_stifling_dagger" },
@@ -49,10 +47,6 @@
             "_disarm"
         };
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public string GetAbilityName(Modifier modifier)
         {
             string abilityName;
@@ -89,7 +83,5 @@
 
             return abilityName;
         }
-
-        #endregion
     }
 }

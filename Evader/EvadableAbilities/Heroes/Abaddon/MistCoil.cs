@@ -8,8 +8,6 @@
 
     internal class MistCoil : Projectile
     {
-        #region Constructors and Destructors
-
         public MistCoil(Ability ability)
             : base(ability)
         {
@@ -22,7 +20,5 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Lotus);
         }
-
-        #endregion
     }
 }

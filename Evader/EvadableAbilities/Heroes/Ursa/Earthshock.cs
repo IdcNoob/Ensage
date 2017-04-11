@@ -11,8 +11,6 @@
 
     internal class Earthshock : AOE, IModifier
     {
-        #region Constructors and Destructors
-
         public Earthshock(Ability ability)
             : base(ability)
         {
@@ -32,12 +30,6 @@
             CounterAbilities.Add(Bloodstone);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

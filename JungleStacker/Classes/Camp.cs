@@ -12,24 +12,15 @@
 
     internal class Camp : JungleCamp
     {
-        #region Constants
-
         private const uint WmMousewheel = 0x020A;
 
-        #endregion
-
-        #region Static Fields
-
-        private static readonly DotaTexture DecreaseArrow = Textures.GetTexture("materials/ensage_ui/other/arrow_usual");
+        private static readonly DotaTexture DecreaseArrow =
+            Textures.GetTexture("materials/ensage_ui/other/arrow_usual");
 
         private static readonly DotaTexture IncreaseArrow =
             Textures.GetTexture("materials/ensage_ui/other/arrow_usual_left");
 
         private static readonly Vector2 OverlaySize = new Vector2(174, 80);
-
-        #endregion
-
-        #region Fields
 
         private Vector2 arrowRectangleSize;
 
@@ -45,10 +36,6 @@
 
         private Vector2 stacksTextSize;
 
-        #endregion
-
-        #region Constructors and Destructors
-
         public Camp()
         {
             requiredStacksTextSize = Drawing.MeasureText("Required stacks:", "Arial", new Vector2(15), FontFlags.None)
@@ -60,10 +47,6 @@
             Drawing.OnDraw += Drawing_OnDraw;
             Game.OnWndProc += Game_OnWndProc;
         }
-
-        #endregion
-
-        #region Public Properties
 
         public static bool Debug { set; get; }
 
@@ -95,10 +78,6 @@
 
         public double TimeAdjustment { get; set; }
 
-        #endregion
-
-        #region Properties
-
         private float GetCampNamePosition
         {
             get
@@ -106,43 +85,34 @@
                 if (campNameTextPosition <= 0)
                 {
                     campNameTextPosition = (OverlaySize.X
-                                            - Drawing.MeasureText(Name, "Arial", new Vector2(15), FontFlags.None).X) / 2;
+                                            - Drawing.MeasureText(Name, "Arial", new Vector2(15), FontFlags.None).X)
+                                           / 2;
                 }
 
                 return campNameTextPosition;
             }
         }
 
-        private bool IsUnderBox
-            =>
-                Utils.IsUnderRectangle(
-                    Game.MouseScreenPosition,
-                    position.X - 32,
-                    position.Y - 12,
-                    OverlaySize.X + 1,
-                    OverlaySize.Y + 1);
+        private bool IsUnderBox => Utils.IsUnderRectangle(
+            Game.MouseScreenPosition,
+            position.X - 32,
+            position.Y - 12,
+            OverlaySize.X + 1,
+            OverlaySize.Y + 1);
 
-        private bool IsUnderDecreaseArrow
-            =>
-                Utils.IsUnderRectangle(
-                    Game.MouseScreenPosition,
-                    position.X + requiredStacksTextSize.X + 5,
-                    position.Y + 38,
-                    arrowRectangleSize.X,
-                    arrowRectangleSize.Y);
+        private bool IsUnderDecreaseArrow => Utils.IsUnderRectangle(
+            Game.MouseScreenPosition,
+            position.X + requiredStacksTextSize.X + 5,
+            position.Y + 38,
+            arrowRectangleSize.X,
+            arrowRectangleSize.Y);
 
-        private bool IsUnderIncreaseArrow
-            =>
-                Utils.IsUnderRectangle(
-                    Game.MouseScreenPosition,
-                    position.X + requiredStacksTextSize.X + countTextSize.X + arrowRectangleSize.X + 19,
-                    position.Y + 38,
-                    arrowRectangleSize.X,
-                    arrowRectangleSize.Y);
-
-        #endregion
-
-        #region Public Methods and Operators
+        private bool IsUnderIncreaseArrow => Utils.IsUnderRectangle(
+            Game.MouseScreenPosition,
+            position.X + requiredStacksTextSize.X + countTextSize.X + arrowRectangleSize.X + 19,
+            position.Y + 38,
+            arrowRectangleSize.X,
+            arrowRectangleSize.Y);
 
         public void OnClose()
         {
@@ -161,10 +131,6 @@
             requiredStacksCount = 1;
         }
 
-        #endregion
-
-        #region Methods
-
         private void Drawing_OnDraw(EventArgs args)
         {
             if (!DisplayOverlay)
@@ -181,7 +147,9 @@
 
             position -= new Vector2(28, 85);
             var nameColor = requiredStacksCount > 1
-                                ? requiredStacksCount > CurrentStacksCount ? Color.Yellow : Color.LightGreen
+                                ? requiredStacksCount > CurrentStacksCount
+                                      ? Color.Yellow
+                                      : Color.LightGreen
                                 : Color.White;
 
             if (!IsUnderBox)
@@ -337,7 +305,5 @@
                 RequiredStacksCount--;
             }
         }
-
-        #endregion
     }
 }

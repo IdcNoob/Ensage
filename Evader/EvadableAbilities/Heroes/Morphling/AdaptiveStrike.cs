@@ -12,8 +12,6 @@
 
     internal class AdaptiveStrike : Projectile, IModifier
     {
-        #region Constructors and Destructors
-
         public AdaptiveStrike(Ability ability)
             : base(ability)
         {
@@ -37,12 +35,6 @@
             Modifier.AllyCounterAbilities.AddRange(Invul);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

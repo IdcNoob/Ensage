@@ -9,8 +9,6 @@
 
     internal static class Utils
     {
-        #region Public Methods and Operators
-
         public static Vector3 GetBlinkPosition(this Unit unit, Vector3 direction, float remainingTime)
         {
             var angle = (float)(Math.Max(remainingTime, 0) * unit.GetTurnRate() / 0.03);
@@ -103,7 +101,5 @@
             var cooldownLength = ability.CooldownLength;
             return cooldownLength <= 0 ? float.MaxValue : cooldownLength - ability.Cooldown;
         }
-
-        #endregion
     }
 }

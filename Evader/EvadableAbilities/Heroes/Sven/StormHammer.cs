@@ -18,17 +18,11 @@
 
     internal class StormHammer : Projectile, IModifier
     {
-        #region Fields
-
         private readonly float stunRadius;
 
         private Vector3 lastProjectilePosition;
 
         private bool obstacleToAOE;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public StormHammer(Ability ability)
             : base(ability)
@@ -58,15 +52,7 @@
             stunRadius = Ability.GetRadius() + 100;
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -97,7 +83,7 @@
                 {
                     EndPosition = AbilityOwner.InFront(GetCastRange());
                     Pathfinder.UpdateObstacle(Obstacle.Value, StartPosition, EndPosition);
-                    AbilityDrawer.UpdateRectaglePosition(StartPosition, EndPosition, GetRadius());
+                    AbilityDrawer.UpdateRectanglePosition(StartPosition, EndPosition, GetRadius());
                 }
                 else if (ProjectileTarget != null)
                 {
@@ -111,8 +97,8 @@
                     lastProjectilePosition = projectilePosition;
 
                     AbilityDrawer.Dispose(AbilityDrawer.Type.Rectangle);
-                    EndCast = Game.RawGameTime
-                              + (ProjectileTarget.Distance2D(projectilePosition) - 20) / GetProjectileSpeed();
+                    EndCast = Game.RawGameTime + (ProjectileTarget.Distance2D(projectilePosition) - 20)
+                              / GetProjectileSpeed();
 
                     if (!obstacleToAOE)
                     {
@@ -138,7 +124,5 @@
 
             obstacleToAOE = false;
         }
-
-        #endregion
     }
 }

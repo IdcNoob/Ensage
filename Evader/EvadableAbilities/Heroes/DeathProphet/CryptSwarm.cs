@@ -8,8 +8,6 @@
 
     internal class CryptSwarm : LinearProjectile
     {
-        #region Constructors and Destructors
-
         public CryptSwarm(Ability ability)
             : base(ability)
         {
@@ -21,15 +19,9 @@
             CounterAbilities.Add(Bloodstone);
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetCastRange()
         {
             return base.GetCastRange() + GetEndRadius();
         }
-
-        #endregion
     }
 }

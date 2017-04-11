@@ -14,17 +14,11 @@
 
     internal sealed class PoisonNova : AOE, IParticle, IModifier
     {
-        #region Fields
-
         private readonly float projectileSize;
 
         private readonly float speed;
 
         private readonly float tavelTime;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public PoisonNova(Ability ability)
             : base(ability)
@@ -48,15 +42,7 @@
             projectileSize = Ability.AbilitySpecialData.First(x => x.Name == "start_radius").Value + 60;
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
@@ -99,7 +85,5 @@
             return StartCast + (hero.NetworkPosition.Distance2D(StartPosition) - projectileSize) / speed
                    - Game.RawGameTime;
         }
-
-        #endregion
     }
 }

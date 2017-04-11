@@ -11,8 +11,6 @@
 
     internal class StatusDrawer
     {
-        #region Constants
-
         private const string EvaderText = "Evader";
 
         private const string Font = "Arial";
@@ -20,10 +18,6 @@
         private const string MovementBlockedText = "Movement Blocked";
 
         private const string PathfinderText = "Pathfinder";
-
-        #endregion
-
-        #region Fields
 
         private readonly Vector2 evaderTextPosition;
 
@@ -34,10 +28,6 @@
         private readonly Color textColor;
 
         private readonly Vector2 textSize;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public StatusDrawer()
         {
@@ -58,17 +48,9 @@
                 movementBlockedText.Y + pathfinderTextPosition.Y);
         }
 
-        #endregion
-
-        #region Properties
-
         private static HotkeysMenu Menu => Variables.Menu.Hotkeys;
 
         private MultiSleeper sleeper => Variables.Sleeper;
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void Draw()
         {
@@ -101,7 +83,5 @@
                     FontFlags.None);
             }
         }
-
-        #endregion
     }
 }

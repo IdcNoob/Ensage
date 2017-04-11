@@ -13,8 +13,6 @@
 
     internal class LastWord : EvadableAbility, IModifier
     {
-        #region Constructors and Destructors
-
         public LastWord(Ability ability)
             : base(ability)
         {
@@ -31,15 +29,7 @@
             AdditionalDelay = ability.AbilitySpecialData.First(x => x.Name == "debuff_duration").Value;
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -53,7 +43,5 @@
         {
             return 0;
         }
-
-        #endregion
     }
 }

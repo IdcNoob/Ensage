@@ -11,8 +11,6 @@
 
     internal class Epicenter : NoObstacleAbility, IModifier
     {
-        #region Constructors and Destructors
-
         public Epicenter(Ability ability)
             : base(ability)
         {
@@ -33,15 +31,7 @@
             AdditionalDelay = Ability.GetChannelTime(0);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -61,7 +51,5 @@
         {
             return GetRemainingTime() - 0.1f;
         }
-
-        #endregion
     }
 }

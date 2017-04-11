@@ -18,15 +18,9 @@
 
     internal class TimberChain : LinearProjectile
     {
-        #region Fields
-
         private readonly List<Tree> allTrees;
 
         private readonly float[] projectileSpeed = new float[4];
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public TimberChain(Ability ability)
             : base(ability)
@@ -46,10 +40,6 @@
                 projectileSpeed[i] = Ability.AbilitySpecialData.First(x => x.Name == "speed").GetValue(i);
             }
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -120,10 +110,6 @@
                    - Game.RawGameTime;
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetCastRange()
         {
             return base.GetCastRange() + 100;
@@ -140,19 +126,15 @@
 
         private Tree ChainTreePosition(Vector3 endPosition)
         {
-            return
-                allTrees.Where(
-                        x =>
-                            x.Distance2D(AbilityOwner) <= GetCastRange()
-                            && NavMesh.GetCellFlags(x.Position).HasFlag(NavMeshCellFlags.Tree)
-                            && Math.Abs(
-                                endPosition.Distance2D(x.Position) + AbilityOwner.Distance2D(x.Position)
-                                - AbilityOwner.Distance2D(endPosition)) < 20)
-                    .OrderBy(x => AbilityOwner.Distance2D(x.Position))
-                    .ThenBy(x => AbilityOwner.FindRelativeAngle(x.Position))
-                    .FirstOrDefault();
+            return allTrees
+                .Where(
+                    x => x.Distance2D(AbilityOwner) <= GetCastRange()
+                         && NavMesh.GetCellFlags(x.Position).HasFlag(NavMeshCellFlags.Tree) && Math.Abs(
+                             endPosition.Distance2D(x.Position) + AbilityOwner.Distance2D(x.Position)
+                             - AbilityOwner.Distance2D(endPosition)) < 20)
+                .OrderBy(x => AbilityOwner.Distance2D(x.Position))
+                .ThenBy(x => AbilityOwner.FindRelativeAngle(x.Position))
+                .FirstOrDefault();
         }
-
-        #endregion
     }
 }

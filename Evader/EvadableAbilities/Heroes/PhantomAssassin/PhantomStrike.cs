@@ -11,8 +11,6 @@
 
     internal class PhantomStrike : EvadableAbility, IModifier
     {
-        #region Constructors and Destructors
-
         public PhantomStrike(Ability ability)
             : base(ability)
         {
@@ -31,15 +29,7 @@
             Modifier.EnemyCounterAbilities.Add(FortunesEnd);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -53,7 +43,5 @@
         {
             return 0;
         }
-
-        #endregion
     }
 }

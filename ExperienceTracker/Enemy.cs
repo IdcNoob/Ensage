@@ -7,17 +7,11 @@
 
     internal class Enemy
     {
-        #region Fields
-
         private readonly float bonusXp;
 
         private readonly Ability xpTalent;
 
         private float timeToShowWarning;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Enemy(Hero enemy)
         {
@@ -31,10 +25,6 @@
             }
         }
 
-        #endregion
-
-        #region Public Properties
-
         public int EnemiesWarning { get; private set; }
 
         public uint Handle { get; }
@@ -44,10 +34,6 @@
         public int NewExperience { get; private set; }
 
         public int OldExperience { get; private set; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public int CalculateGainedExperience(int exp)
         {
@@ -92,7 +78,5 @@
         {
             return Hero.IsVisible && timeToShowWarning >= Game.RawGameTime;
         }
-
-        #endregion
     }
 }

@@ -8,15 +8,9 @@
 
     internal class Target
     {
-        #region Fields
-
         private float lastVisible;
 
-        #endregion
-
-        #region Public Properties
-
-        public ClassID ClassID { get; private set; }
+        public ClassId ClassId { get; private set; }
 
         public uint Handle { get; private set; }
 
@@ -33,10 +27,6 @@
         public Vector3 Position => Hero.NetworkPosition;
 
         public float RotationRad => Hero.RotationRad;
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public double FindAngle(Vector3 position)
         {
@@ -95,14 +85,12 @@
             }
 
             Handle = target.Handle;
-            ClassID = target.ClassID;
+            ClassId = target.ClassId;
         }
 
         public Vector3 Vector3FromPolarAngle()
         {
             return Hero.Vector3FromPolarAngle();
         }
-
-        #endregion
     }
 }

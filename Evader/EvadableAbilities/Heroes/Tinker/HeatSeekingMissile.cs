@@ -8,8 +8,6 @@
 
     internal class HeatSeekingMissile : Projectile
     {
-        #region Constructors and Destructors
-
         //todo fix multi targets ?
         public HeatSeekingMissile(Ability ability)
             : base(ability)
@@ -22,7 +20,5 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
         }
-
-        #endregion
     }
 }

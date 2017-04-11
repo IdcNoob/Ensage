@@ -8,8 +8,6 @@
 
     internal class CrystalNova : LinearAOE
     {
-        #region Constructors and Destructors
-
         public CrystalNova(Ability ability)
             : base(ability)
         {
@@ -21,7 +19,5 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
         }
-
-        #endregion
     }
 }

@@ -9,13 +9,7 @@
 
     internal class WarStomp : AOE
     {
-        #region Fields
-
         private readonly float radius;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public WarStomp(Ability ability)
             : base(ability)
@@ -30,15 +24,9 @@
             radius = ability.GetRadius() + 100;
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetRadius()
         {
             return radius;
         }
-
-        #endregion
     }
 }

@@ -12,8 +12,6 @@
 
     internal class WraithfireBlast : Projectile, IModifier
     {
-        #region Constructors and Destructors
-
         public WraithfireBlast(Ability ability)
             : base(ability)
         {
@@ -39,12 +37,6 @@
             Modifier.AllyCounterAbilities.AddRange(VsPhys);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

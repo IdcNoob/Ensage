@@ -8,8 +8,6 @@
 
     internal class Disruption : LinearTarget
     {
-        #region Constructors and Destructors
-
         public Disruption(Ability ability)
             : base(ability)
         {
@@ -19,7 +17,5 @@
             CounterAbilities.Add(SleightOfFist);
             CounterAbilities.Add(Lotus);
         }
-
-        #endregion
     }
 }

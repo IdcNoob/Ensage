@@ -8,8 +8,6 @@
 
     internal class Skewer : LinearProjectile
     {
-        #region Constructors and Destructors
-
         public Skewer(Ability ability)
             : base(ability)
         {
@@ -19,7 +17,5 @@
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);
         }
-
-        #endregion
     }
 }

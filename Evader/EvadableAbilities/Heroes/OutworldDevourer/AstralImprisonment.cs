@@ -8,8 +8,6 @@
 
     internal class AstralImprisonment : LinearTarget
     {
-        #region Constructors and Destructors
-
         public AstralImprisonment(Ability ability)
             : base(ability)
         {
@@ -19,7 +17,5 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Lotus);
         }
-
-        #endregion
     }
 }

@@ -16,17 +16,11 @@
 
     internal class Glimpse : EvadableAbility, IParticle
     {
-        #region Fields
-
         private Vector3 endPosition;
 
         private Vector3 heroPosition;
 
         private Vector3 startPosition;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Glimpse(Ability ability)
             : base(ability)
@@ -49,23 +43,20 @@
             CounterAbilities.Add(PhaseShift);
         }
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
             StartCast = Game.RawGameTime;
 
             DelayAction.Add(
                 1,
-                () => {
-                    startPosition = particleArgs.ParticleEffect.GetControlPoint(0);
-                    endPosition = particleArgs.ParticleEffect.GetControlPoint(1);
-                    heroPosition = startPosition;
-                    Obstacle = Pathfinder.AddObstacle(startPosition, 200, Obstacle, 256);
-                    EndCast = StartCast + GetRemainingTime();
-                });
+                () =>
+                    {
+                        startPosition = particleArgs.ParticleEffect.GetControlPoint(0);
+                        endPosition = particleArgs.ParticleEffect.GetControlPoint(1);
+                        heroPosition = startPosition;
+                        Obstacle = Pathfinder.AddObstacle(startPosition, 200, Obstacle, 256);
+                        EndCast = StartCast + GetRemainingTime();
+                    });
         }
 
         public override bool CanBeStopped()
@@ -81,14 +72,12 @@
             }
             else if (Obstacle != null)
             {
-                var hero =
-                    ObjectManager.GetEntitiesParallel<Hero>()
-                        .Where(
-                            x =>
-                                x.IsValid && x.Team == HeroTeam && x.IsAlive && !x.IsMagicImmune()
-                                && x.Distance2D(heroPosition) < 75)
-                        .OrderBy(x => x.Distance2D(startPosition))
-                        .FirstOrDefault();
+                var hero = ObjectManager.GetEntitiesParallel<Hero>()
+                    .Where(
+                        x => x.IsValid && x.Team == HeroTeam && x.IsAlive && !x.IsMagicImmune()
+                             && x.Distance2D(heroPosition) < 75)
+                    .OrderBy(x => x.Distance2D(startPosition))
+                    .FirstOrDefault();
 
                 if (hero != null)
                 {
@@ -115,7 +104,5 @@
         {
             return Math.Min(1.8f, startPosition.Distance2D(endPosition) / 600) - (Game.RawGameTime - StartCast);
         }
-
-        #endregion
     }
 }

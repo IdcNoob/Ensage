@@ -8,18 +8,12 @@
 
     internal class Tower : IKillable
     {
-        #region Constructors and Destructors
-
         public Tower(Unit tower)
         {
             Unit = tower;
             Handle = tower.Handle;
             HpBarSize = HUDInfo.GetHPBarSizeX(tower);
         }
-
-        #endregion
-
-        #region Public Properties
 
         public bool DamageCalculated { get; set; }
 
@@ -37,10 +31,6 @@
 
         public Unit Unit { get; }
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public float Distance(Hero hero)
         {
             return Unit.Distance2D(hero);
@@ -50,7 +40,5 @@
         {
             GetSavedDamage[handle] = damage;
         }
-
-        #endregion
     }
 }

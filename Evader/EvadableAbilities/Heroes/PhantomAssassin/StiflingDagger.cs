@@ -12,8 +12,6 @@
 
     internal class StiflingDagger : Projectile, IModifier
     {
-        #region Constructors and Destructors
-
         public StiflingDagger(Ability ability)
             : base(ability)
         {
@@ -35,12 +33,6 @@
             Modifier.AllyCounterAbilities.Add(Lotus);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

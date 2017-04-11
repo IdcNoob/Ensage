@@ -15,8 +15,6 @@
 
     internal class Illuminate : LinearProjectile, IParticle
     {
-        #region Constructors and Destructors
-
         public Illuminate(Ability ability)
             : base(ability)
         {
@@ -27,10 +25,6 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
@@ -45,12 +39,13 @@
 
                 DelayAction.Add(
                     1,
-                    () => {
-                        var position = particleArgs.ParticleEffect.GetControlPoint(0).SetZ(350);
-                        StartPosition = StartPosition.Extend(position, 150);
-                        EndPosition = position.Extend(StartPosition, GetCastRange());
-                        Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
-                    });
+                    () =>
+                        {
+                            var position = particleArgs.ParticleEffect.GetControlPoint(0).SetZ(350);
+                            StartPosition = StartPosition.Extend(position, 150);
+                            EndPosition = position.Extend(StartPosition, GetCastRange());
+                            Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
+                        });
             }
         }
 
@@ -99,14 +94,9 @@
                 return StartCast + CastPoint + AdditionalDelay - Game.RawGameTime;
             }
 
-            return StartCast
-                   + (position.Distance2D(StartPosition) - GetProjectileRadius(position)) / GetProjectileSpeed()
-                   - Game.RawGameTime;
+            return StartCast + (position.Distance2D(StartPosition) - GetProjectileRadius(position))
+                   / GetProjectileSpeed() - Game.RawGameTime;
         }
-
-        #endregion
-
-        #region Methods
 
         protected override Vector3 GetProjectilePosition(bool ignoreCastPoint = false)
         {
@@ -117,7 +107,5 @@
         {
             return base.GetRadius() + 50;
         }
-
-        #endregion
     }
 }

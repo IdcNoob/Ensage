@@ -8,8 +8,6 @@
 
     internal class NetherSwap : LinearTarget
     {
-        #region Constructors and Destructors
-
         public NetherSwap(Ability ability)
             : base(ability)
         {
@@ -23,7 +21,5 @@
             CounterAbilities.AddRange(Invis);
             CounterAbilities.Add(Armlet);
         }
-
-        #endregion
     }
 }

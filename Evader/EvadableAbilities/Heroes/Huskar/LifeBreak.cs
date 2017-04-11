@@ -12,8 +12,6 @@
 
     internal class LifeBreak : Projectile, IModifier
     {
-        #region Constructors and Destructors
-
         public LifeBreak(Ability ability)
             : base(ability)
         {
@@ -44,12 +42,6 @@
             Modifier.AllyCounterAbilities.AddRange(VsPhys);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

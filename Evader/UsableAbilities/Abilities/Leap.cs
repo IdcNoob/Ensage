@@ -14,16 +14,10 @@
 
     internal class Leap : BlinkAbility
     {
-        #region Constructors and Destructors
-
         public Leap(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
             : base(ability, type, target)
         {
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override float GetRequiredTime(EvadableAbility ability, Unit unit, float remainingTime)
         {
@@ -44,7 +38,5 @@
 
             Sleep();
         }
-
-        #endregion
     }
 }

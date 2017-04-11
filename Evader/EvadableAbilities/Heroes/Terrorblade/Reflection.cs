@@ -11,8 +11,6 @@
 
     internal class Reflection : AOE, IModifier
     {
-        #region Constructors and Destructors
-
         public Reflection(Ability ability)
             : base(ability)
         {
@@ -26,12 +24,6 @@
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

@@ -7,8 +7,6 @@
 
     internal abstract class Ward : IUnit, IUpdatable
     {
-        #region Constructors and Destructors
-
         protected Ward(Unit unit, string abilityName)
         {
             Unit = unit;
@@ -35,9 +33,9 @@
             }
         }
 
-        #endregion
+        protected static MenuManager Menu => Variables.Menu;
 
-        #region Public Properties
+        protected Unit Unit { get; set; }
 
         public float Duration { get; protected set; }
 
@@ -53,8 +51,6 @@
 
         public float Radius { get; protected set; }
 
-        public bool RequiresUpdate { get; private set; }
-
         public bool ShowTexture => RequiresUpdate || !Unit.IsVisible;
 
         public virtual bool ShowTimer => RequiresUpdate || !Unit.IsVisible;
@@ -63,26 +59,11 @@
 
         public Vector2 TextureSize { get; set; }
 
-        #endregion
-
-        #region Properties
-
-        protected static MenuManager Menu => Variables.Menu;
-
-        protected Unit Unit { get; set; }
-
-        #endregion
-
-        #region Public Methods and Operators
+        public bool RequiresUpdate { get; private set; }
 
         public float Distance(Entity unit)
         {
             return Position.Distance2D(unit);
-        }
-
-        public float Distance(Vector3 position)
-        {
-            return Unit?.Distance2D(position) ?? Position.Distance2D(position);
         }
 
         public virtual void UpdateData(Unit unit)
@@ -95,6 +76,9 @@
             Handle = unit.Handle;
         }
 
-        #endregion
+        public float Distance(Vector3 position)
+        {
+            return Unit?.Distance2D(position) ?? Position.Distance2D(position);
+        }
     }
 }

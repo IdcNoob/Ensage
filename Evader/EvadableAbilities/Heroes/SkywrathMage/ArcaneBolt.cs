@@ -8,8 +8,6 @@
 
     internal class ArcaneBolt : Projectile
     {
-        #region Constructors and Destructors
-
         public ArcaneBolt(Ability ability)
             : base(ability)
         {
@@ -26,7 +24,5 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
         }
-
-        #endregion
     }
 }

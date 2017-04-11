@@ -11,7 +11,16 @@
 
     internal class EvadableModifier
     {
-        #region Constructors and Destructors
+        public enum GetHeroType
+        {
+            ModifierSource,
+
+            LowestHealth,
+
+            LowestHealthPct,
+
+            ClosestToSource,
+        }
 
         public EvadableModifier(
             Team team,
@@ -29,25 +38,6 @@
             MaximumDistanceToSource = maxDistanceToSource;
         }
 
-        #endregion
-
-        #region Enums
-
-        public enum GetHeroType
-        {
-            ModifierSource,
-
-            LowestHealth,
-
-            LowestHealthPct,
-
-            ClosestToSource,
-        }
-
-        #endregion
-
-        #region Public Properties
-
         public float AddedTime { get; set; }
 
         public List<string> AllyCounterAbilities { get; } = new List<string>();
@@ -57,10 +47,6 @@
         public uint Handle { get; protected set; }
 
         public bool IgnoreRemainingTime { get; protected set; }
-
-        #endregion
-
-        #region Properties
 
         protected Hero Hero => Variables.Hero;
 
@@ -79,10 +65,6 @@
         protected Team Team { get; set; }
 
         protected GetHeroType Type { get; set; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public virtual void Add(Modifier modifier, Hero hero)
         {
@@ -131,22 +113,19 @@
                 case GetHeroType.ModifierSource:
                     return allies.FirstOrDefault(x => x.Equals(Source));
                 case GetHeroType.LowestHealthPct:
-                    return
-                        allies.Where(x => x.HasModifier(Modifier.Name))
-                            .OrderByDescending(x => x.Equals(Hero))
-                            .ThenBy(x => x.Health / x.MaximumHealth)
-                            .FirstOrDefault();
+                    return allies.Where(x => x.HasModifier(Modifier.Name))
+                        .OrderByDescending(x => x.Equals(Hero))
+                        .ThenBy(x => x.Health / x.MaximumHealth)
+                        .FirstOrDefault();
                 case GetHeroType.LowestHealth:
-                    return
-                        allies.Where(x => x.HasModifier(Modifier.Name))
-                            .OrderByDescending(x => x.Equals(Hero))
-                            .ThenBy(x => x.Health)
-                            .FirstOrDefault();
+                    return allies.Where(x => x.HasModifier(Modifier.Name))
+                        .OrderByDescending(x => x.Equals(Hero))
+                        .ThenBy(x => x.Health)
+                        .FirstOrDefault();
                 case GetHeroType.ClosestToSource:
-                    return
-                        allies.Where(x => x.Distance2D(Source) <= MaximumDistanceToSource)
-                            .OrderBy(x => x.Distance2D(Source))
-                            .FirstOrDefault();
+                    return allies.Where(x => x.Distance2D(Source) <= MaximumDistanceToSource)
+                        .OrderBy(x => x.Distance2D(Source))
+                        .FirstOrDefault();
             }
 
             return null;
@@ -183,7 +162,5 @@
             Modifier = null;
             Source = null;
         }
-
-        #endregion
     }
 }

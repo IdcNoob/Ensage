@@ -13,17 +13,11 @@
 
     internal abstract class LinearProjectile : LinearAOE
     {
-        #region Fields
-
         private readonly float endRadius;
 
         private readonly float speed;
 
         private readonly float startRadius;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         protected LinearProjectile(Ability ability)
             : base(ability)
@@ -62,10 +56,6 @@
             Debugger.WriteLine("// StartRadius: " + startRadius);
             Debugger.WriteLine("// EndRadius: " + endRadius);
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -143,10 +133,6 @@
                    - Game.RawGameTime;
         }
 
-        #endregion
-
-        #region Methods
-
         protected virtual float GetEndRadius()
         {
             return endRadius;
@@ -165,7 +151,5 @@
         {
             return startRadius;
         }
-
-        #endregion
     }
 }

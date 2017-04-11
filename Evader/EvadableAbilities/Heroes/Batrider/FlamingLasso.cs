@@ -11,8 +11,6 @@
 
     internal class FlamingLasso : LinearTarget, IModifier
     {
-        #region Constructors and Destructors
-
         public FlamingLasso(Ability ability)
             : base(ability)
         {
@@ -41,12 +39,6 @@
             Modifier.EnemyCounterAbilities.AddRange(Invul);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

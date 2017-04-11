@@ -14,15 +14,9 @@
 
     internal class Tornado : LinearProjectile, IUnit
     {
-        #region Fields
-
         private readonly Ability wex;
 
         private Unit abilityUnit;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Tornado(Ability ability)
             : base(ability)
@@ -40,10 +34,6 @@
 
             wex = AbilityOwner.FindSpell("invoker_wex");
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddUnit(Unit unit)
         {
@@ -106,10 +96,6 @@
             return 0;
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetCastRange()
         {
             return (400 + (wex?.Level ?? 8) * 400) * 1.2f;
@@ -119,7 +105,5 @@
         {
             return abilityUnit != null && abilityUnit.IsValid;
         }
-
-        #endregion
     }
 }

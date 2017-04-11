@@ -11,95 +11,87 @@
 
     internal class SettingsMenu
     {
-        #region Fields
-
         private readonly MenuItem defaultPriority;
 
         private readonly MenuItem defaultToggler;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public SettingsMenu(Menu rootMenu)
         {
             var menu = new Menu("Settings", "settings");
 
-            defaultPriority =
-                new MenuItem("defaultPriorityFix", "Default priority").SetValue(
-                    new PriorityChanger(
-                        new List<string>
-                        {
-                            "item_sheepstick",
-                            "item_cyclone",
-                            "item_blink",
-                            "centaur_stampede"
-                        },
-                        "defaultPriorityChangerFix"));
+            defaultPriority = new MenuItem("defaultPriorityFix", "Default priority").SetValue(
+                new PriorityChanger(
+                    new List<string>
+                    {
+                        "item_sheepstick",
+                        "item_cyclone",
+                        "item_blink",
+                        "centaur_stampede"
+                    },
+                    "defaultPriorityChangerFix"));
             menu.AddItem(defaultPriority);
             defaultPriority.ValueChanged += DefaultPriorityOnValueChanged;
 
-            defaultToggler =
-                new MenuItem("defaultTogglerFix", "Enabled priority").SetValue(
-                    new AbilityToggler(
-                        new Dictionary<string, bool>
-                        {
-                            { "item_sheepstick", false },
-                            { "item_cyclone", true },
-                            { "item_blink", true },
-                            { "centaur_stampede", true }
-                        }));
+            defaultToggler = new MenuItem("defaultTogglerFix", "Enabled priority").SetValue(
+                new AbilityToggler(
+                    new Dictionary<string, bool>
+                    {
+                        { "item_sheepstick", false },
+                        { "item_cyclone", true },
+                        { "item_blink", true },
+                        { "centaur_stampede", true }
+                    }));
             menu.AddItem(defaultToggler);
             defaultToggler.ValueChanged += DefaultTogglerOnValueChanged;
 
-            var modifierAllyCounter =
-                new MenuItem("modifierAllyCounter", "Modifier ally counter").SetValue(true)
-                    .SetTooltip("Will use abilities (shields, heals...) on allies");
+            var modifierAllyCounter = new MenuItem("modifierAllyCounter", "Modifier ally counter").SetValue(true)
+                .SetTooltip("Will use abilities (shields, heals...) on allies");
             menu.AddItem(modifierAllyCounter);
             modifierAllyCounter.ValueChanged += (sender, args) => ModifierAllyCounter = args.GetNewValue<bool>();
             ModifierAllyCounter = modifierAllyCounter.IsActive();
 
-            var modifierEnemyCounter =
-                new MenuItem("modifierEnemyCounter", "Modifier enemy counter").SetValue(true)
-                    .SetTooltip("Will use abilities (euls, purges, stuns...) on enemies");
+            var modifierEnemyCounter = new MenuItem("modifierEnemyCounter", "Modifier enemy counter").SetValue(true)
+                .SetTooltip("Will use abilities (euls, purges, stuns...) on enemies");
             menu.AddItem(modifierEnemyCounter);
             modifierEnemyCounter.ValueChanged += (sender, args) => ModifierEnemyCounter = args.GetNewValue<bool>();
             ModifierEnemyCounter = modifierEnemyCounter.IsActive();
 
-            var pathfinderEffect =
-                new MenuItem("pathfinderEffect", "Pathfinder effect").SetValue(true)
-                    .SetTooltip("Show particle effect when your hero is controlled by pathfinder");
+            var pathfinderEffect = new MenuItem("pathfinderEffect", "Pathfinder effect").SetValue(true)
+                .SetTooltip("Show particle effect when your hero is controlled by pathfinder");
             menu.AddItem(pathfinderEffect);
             pathfinderEffect.ValueChanged += (sender, args) => PathfinderEffect = args.GetNewValue<bool>();
             PathfinderEffect = pathfinderEffect.IsActive();
 
-            var blockAbilityUsage =
-                new MenuItem("blockPlayerAbilities", "Block ability usage").SetValue(true)
-                    .SetTooltip("Abilities will be blocked while evading");
+            var blockAbilityUsage = new MenuItem("blockPlayerAbilities", "Block ability usage").SetValue(true)
+                .SetTooltip("Abilities will be blocked while evading");
             menu.AddItem(blockAbilityUsage);
             blockAbilityUsage.ValueChanged += (sender, args) => BlockAbilityUsage = args.GetNewValue<bool>();
             BlockAbilityUsage = blockAbilityUsage.IsActive();
 
-            var invisIgnore =
-                new MenuItem("invisIgnore", "Ignore counter if invisible").SetValue(false)
-                    .SetTooltip("Don't counter enemy abilities if your hero is invisible");
+            var blockOnlyPlayerInput = new MenuItem("blockPlayerInput", "Block only player input").SetValue(false)
+                .SetTooltip(
+                    "If disabled input will be blocked from all assemblies when avoiding, otherwise only from player");
+            menu.AddItem(blockOnlyPlayerInput);
+            blockOnlyPlayerInput.ValueChanged += (sender, args) => BlockOnlyPlayerInput = args.GetNewValue<bool>();
+            BlockOnlyPlayerInput = blockOnlyPlayerInput.IsActive();
+
+            var invisIgnore = new MenuItem("invisIgnore", "Ignore counter if invisible").SetValue(false)
+                .SetTooltip("Don't counter enemy abilities if your hero is invisible");
             menu.AddItem(invisIgnore);
             invisIgnore.ValueChanged += (sender, args) => InvisIgnore = args.GetNewValue<bool>();
             InvisIgnore = invisIgnore.IsActive();
 
-            var cancelAnimation =
-                new MenuItem("cancelAnimation", "Cancel animation").SetValue(true)
-                    .SetTooltip("Cancel cast animation to evade stun ability");
+            var cancelAnimation = new MenuItem("cancelAnimation", "Cancel animation").SetValue(true)
+                .SetTooltip("Cancel cast animation to evade stun ability");
             menu.AddItem(cancelAnimation);
             cancelAnimation.ValueChanged += (sender, args) => CancelAnimation = args.GetNewValue<bool>();
             CancelAnimation = cancelAnimation.IsActive();
 
             var changer = defaultPriority.GetValue<PriorityChanger>();
 
-            foreach (var priority in
-                changer.Dictionary.OrderByDescending(x => x.Value)
-                    .Select(x => x.Key)
-                    .Where(x => defaultToggler.GetValue<AbilityToggler>().IsEnabled(x)))
+            foreach (var priority in changer.Dictionary.OrderByDescending(x => x.Value)
+                .Select(x => x.Key)
+                .Where(x => defaultToggler.GetValue<AbilityToggler>().IsEnabled(x)))
             {
                 switch (priority)
                 {
@@ -128,11 +120,9 @@
             rootMenu.AddSubMenu(menu);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public bool BlockAbilityUsage { get; private set; }
+
+        public bool BlockOnlyPlayerInput { get; private set; }
 
         public bool CancelAnimation { get; private set; }
 
@@ -148,19 +138,14 @@
 
         public bool PathfinderEffect { get; private set; }
 
-        #endregion
-
-        #region Methods
-
         private void DefaultPriorityOnValueChanged(object sender, OnValueChangeEventArgs args)
         {
             var changer = args.GetNewValue<PriorityChanger>();
             DefaultPriority.Clear();
 
-            foreach (var item in
-                changer.Dictionary.OrderByDescending(x => x.Value)
-                    .Select(x => x.Key)
-                    .Where(x => defaultToggler.GetValue<AbilityToggler>().IsEnabled(x)))
+            foreach (var item in changer.Dictionary.OrderByDescending(x => x.Value)
+                .Select(x => x.Key)
+                .Where(x => defaultToggler.GetValue<AbilityToggler>().IsEnabled(x)))
             {
                 switch (item)
                 {
@@ -198,10 +183,9 @@
             var changer = defaultPriority.GetValue<PriorityChanger>();
             DefaultPriority.Clear();
 
-            foreach (var item in
-                changer.Dictionary.OrderByDescending(x => x.Value)
-                    .Select(x => x.Key)
-                    .Where(x => args.GetNewValue<AbilityToggler>().IsEnabled(x)))
+            foreach (var item in changer.Dictionary.OrderByDescending(x => x.Value)
+                .Select(x => x.Key)
+                .Where(x => args.GetNewValue<AbilityToggler>().IsEnabled(x)))
             {
                 switch (item)
                 {
@@ -233,8 +217,6 @@
 
             Debugger.WriteLine(showType: false);
         }
-
-        #endregion
 
         //private readonly MenuItem mouseEmulation;
     }

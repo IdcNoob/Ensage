@@ -12,8 +12,6 @@
 
     internal class PoisonTouch : Projectile, IModifier
     {
-        #region Constructors and Destructors
-
         public PoisonTouch(Ability ability)
             : base(ability)
         {
@@ -28,12 +26,6 @@
             Modifier.AllyCounterAbilities.Add(FortunesEnd);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

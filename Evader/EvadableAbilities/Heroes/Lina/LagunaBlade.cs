@@ -10,8 +10,6 @@
 
     internal class LagunaBlade : LinearTarget
     {
-        #region Constructors and Destructors
-
         public LagunaBlade(Ability ability)
             : base(ability)
         {
@@ -37,15 +35,9 @@
             AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "damage_delay").Value + 0.05f;
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetCastRange()
         {
             return base.GetCastRange() + 150;
         }
-
-        #endregion
     }
 }

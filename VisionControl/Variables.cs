@@ -11,8 +11,6 @@
 
     internal static class Variables
     {
-        #region Static Fields
-
         public static readonly Dictionary<string, string> UnitAbilityNames = new Dictionary<string, string>
         {
             { "npc_dota_techies_land_mine", "techies_land_mines" },
@@ -50,12 +48,6 @@
             { "item_ward_observer", x => new ObserverWard(x) },
         };
 
-        #endregion
-
-        #region Public Properties
-
         public static MenuManager Menu { get; set; }
-
-        #endregion
     }
 }

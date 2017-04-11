@@ -25,35 +25,11 @@
 
     internal class ArmletOfMordiggian : UsableAbility, IDisposable
     {
-        #region Constructors and Destructors
-
-        public ArmletOfMordiggian(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
-            : base(ability, type, target)
-        {
-            armletEnabled = Hero.Modifiers.Any(x => x.Name == ArmletModifierName);
-
-            Game.OnUpdate += OnUpdate;
-            Player.OnExecuteOrder += OnExecuteOrder;
-            Drawing.OnDraw += OnDraw;
-            ObjectManager.OnRemoveEntity += OnRemoveEntity;
-            Entity.OnAnimationChanged += OnAnimationChanged;
-            Unit.OnModifierAdded += OnModifierAdded;
-            Unit.OnModifierRemoved += OnModifierRemoved;
-        }
-
-        #endregion
-
-        #region Constants
-
         private const float ArmletFullEnableTime = 0.8f;
 
         private const int ArmletHpGain = 475;
 
         private const string ArmletModifierName = "modifier_item_armlet_unholy_strength";
-
-        #endregion
-
-        #region Fields
 
         private readonly Dictionary<Unit, double> attacks = new Dictionary<Unit, double>();
 
@@ -147,17 +123,23 @@
 
         private bool manualDisable;
 
-        #endregion
+        public ArmletOfMordiggian(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
+            : base(ability, type, target)
+        {
+            armletEnabled = Hero.Modifiers.Any(x => x.Name == ArmletModifierName);
 
-        #region Properties
+            Game.OnUpdate += OnUpdate;
+            Player.OnExecuteOrder += OnExecuteOrder;
+            Drawing.OnDraw += OnDraw;
+            ObjectManager.OnRemoveEntity += OnRemoveEntity;
+            Entity.OnAnimationChanged += OnAnimationChanged;
+            Unit.OnModifierAdded += OnModifierAdded;
+            Unit.OnModifierRemoved += OnModifierRemoved;
+        }
 
         private static DebugMenu DebugMenu => Variables.Menu.Debug;
 
         private static UsableAbilitiesMenu Menu => Variables.Menu.UsableAbilities;
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
@@ -242,10 +224,6 @@
             return true;
         }
 
-        #endregion
-
-        #region Methods
-
         private static float HpRestored(float time)
         {
             time -= Game.Ping / 1000;
@@ -283,10 +261,8 @@
                 }
             }
 
-            foreach (var unit in
-                ObjectManager.GetEntitiesParallel<Unit>()
-                    .Where(
-                        x => x.IsValid && x.IsAlive && x.IsSpawned && x.Team != HeroTeam && x.Distance2D(Hero) < 1325))
+            foreach (var unit in ObjectManager.GetEntitiesParallel<Unit>()
+                .Where(x => x.IsValid && x.IsAlive && x.IsSpawned && x.Team != HeroTeam && x.Distance2D(Hero) < 1325))
             {
                 foreach (var modifier in unit.Modifiers.Where(x => !x.IsHidden))
                 {
@@ -318,8 +294,8 @@
 
         private void OnAnimationChanged(Entity sender, EventArgs args)
         {
-            if (sender.Team == HeroTeam
-                || !sender.Animation.Name.Contains("attack") && sender.Animation.Name != "radiant_tower002")
+            if (sender.Team == HeroTeam || !sender.Animation.Name.Contains("attack")
+                && sender.Animation.Name != "radiant_tower002")
             {
                 return;
             }
@@ -351,9 +327,8 @@
                     FontFlags.None);
             }
 
-            foreach (var source in
-                ObjectManager.GetEntities<Unit>()
-                    .Where(x => x.IsAlive && x.Distance2D(Hero) < 1000 && x.IsAttacking() && !x.Equals(Hero)))
+            foreach (var source in ObjectManager.GetEntities<Unit>()
+                .Where(x => x.IsAlive && x.Distance2D(Hero) < 1000 && x.IsAttacking() && !x.Equals(Hero)))
             {
                 Drawing.DrawText(
                     "Attacking " + source.AttackPoint().ToString("0.##") + " / "
@@ -368,8 +343,8 @@
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!Menu.ArmletAutoToggle || !args.Entities.Contains(Hero) || args.Order != Order.ToggleAbility
-                || args.Ability?.ClassID != ClassID.CDOTA_Item_Armlet)
+            if (!Menu.ArmletAutoToggle || !args.IsPlayerInput || !args.Entities.Contains(Hero)
+                || args.OrderId != OrderId.ToggleAbility || args.Ability?.ClassId != ClassId.CDOTA_Item_Armlet)
             {
                 return;
             }
@@ -440,7 +415,7 @@
                 return;
             }
 
-            delay.Sleep(Menu.ArmetCheckDelay);
+            delay.Sleep(Menu.ArmletCheckDelay);
 
             if (!Game.IsInGame || Game.IsPaused || !Menu.ArmletAutoToggle)
             {
@@ -467,38 +442,35 @@
                     continue;
                 }
 
-                var hpRestored =
-                    HpRestored(
-                        Math.Max(projectile.Position.Distance2D(position) - Hero.RingRadius, 0) / projectile.Speed
-                        - 0.20f);
+                var hpRestored = HpRestored(
+                    Math.Max(projectile.Position.Distance2D(position) - Hero.RingRadius, 0) / projectile.Speed - 0.20f);
 
                 var damage = Hero.DamageTaken(unit.MaximumDamage + unit.BonusDamage, DamageType.Physical, unit);
 
-                switch (unit.ClassID)
+                switch (unit.ClassId)
                 {
-                    case ClassID.CDOTA_Unit_Hero_Silencer:
+                    case ClassId.CDOTA_Unit_Hero_Silencer:
                         if (!Hero.IsMagicImmune())
                         {
                             damage += ((Hero)unit).TotalIntelligence
                                       * (0.2f + (float)unit.Spellbook.SpellW.Level * 15 / 100);
                         }
                         break;
-                    case ClassID.CDOTA_Unit_Hero_Obsidian_Destroyer:
+                    case ClassId.CDOTA_Unit_Hero_Obsidian_Destroyer:
                         if (!Hero.IsMagicImmune())
                         {
                             damage += unit.MaximumMana * (0.05f + (float)unit.Spellbook.SpellQ.Level / 100);
                         }
                         break;
-                    case ClassID.CDOTA_Unit_Hero_Clinkz:
+                    case ClassId.CDOTA_Unit_Hero_Clinkz:
                         damage += Hero.DamageTaken(20 + unit.Spellbook.SpellW.Level * 10, DamageType.Physical, unit);
                         break;
                 }
 
                 if (Hero.HasModifier("modifier_invoker_cold_snap"))
                 {
-                    var quas =
-                        ObjectManager.GetEntitiesParallel<Ability>()
-                            .FirstOrDefault(x => x.AbilityId == AbilityId.invoker_quas);
+                    var quas = ObjectManager.GetEntitiesParallel<Ability>()
+                        .FirstOrDefault(x => x.Id == AbilityId.invoker_quas);
                     if (quas != null)
                     {
                         damage += Hero.DamageTaken(quas.Level * 7, DamageType.Magical, unit);
@@ -513,12 +485,10 @@
             }
 
             var noAutoAttacks = true;
-            foreach (var attack in
-                attacks.Where(
-                    x =>
-                        x.Key.IsAlive && x.Key.Distance2D(Hero) <= x.Key.GetAttackRange() + 200
-                        && x.Key.FindRelativeAngle(Hero.Position) < 0.5
-                        && (x.Key.IsMelee || x.Key.Distance2D(Hero) < 400 /*|| x.Key.AttackPoint() < 0.15*/)))
+            foreach (var attack in attacks.Where(
+                x => x.Key.IsAlive && x.Key.Distance2D(Hero) <= x.Key.GetAttackRange() + 200
+                     && x.Key.FindRelativeAngle(Hero.Position) < 0.5
+                     && (x.Key.IsMelee || x.Key.Distance2D(Hero) < 400 /*|| x.Key.AttackPoint() < 0.15*/)))
             {
                 var unit = attack.Key;
                 var attackStart = attack.Value - Game.Ping / 1000;
@@ -536,8 +506,7 @@
 
                 if (time <= damageTime + 0.075 && (attackPoint < 0.35 || time + attackPoint * 0.6 > damageTime)
                     || attackPoint < 0.25 && time > damageTime + unit.AttackBackswing() * 0.8
-                    && time <= attackStart + secondsPerAttack + 0.075
-                    || echoSabre != null && unit.IsMelee
+                    && time <= attackStart + secondsPerAttack + 0.075 || echoSabre != null && unit.IsMelee
                     && echoSabre.CooldownLength - echoSabre.Cooldown <= attackPoint * 2)
                 {
                     noAutoAttacks = false;
@@ -552,17 +521,14 @@
                 return;
             }
 
-            var nearEnemies =
-                ObjectManager.GetEntitiesParallel<Unit>()
-                    .Any(x => x.IsValid && x.Team != HeroTeam && x.IsAlive && x.IsSpawned && x.Distance2D(Hero) < 1000);
+            var nearEnemies = ObjectManager.GetEntitiesParallel<Unit>()
+                .Any(x => x.IsValid && x.Team != HeroTeam && x.IsAlive && x.IsSpawned && x.Distance2D(Hero) < 1000);
 
-            if (Hero.Health < Menu.ArmetHpThreshold && canToggle
+            if (Hero.Health < Menu.ArmletHpThreshold && canToggle
                 && (nearEnemies || !Menu.ArmletEnemiesCheck && !manualDisable))
             {
                 Use(null, null);
             }
         }
-
-        #endregion
     }
 }

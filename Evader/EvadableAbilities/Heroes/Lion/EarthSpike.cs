@@ -12,8 +12,6 @@
 
     internal class EarthSpike : LinearProjectile, IModifier
     {
-        #region Constructors and Destructors
-
         public EarthSpike(Ability ability)
             : base(ability)
         {
@@ -39,21 +37,11 @@
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Methods
 
         protected override float GetCastRange()
         {
             return base.GetCastRange() + 300;
         }
-
-        #endregion
     }
 }

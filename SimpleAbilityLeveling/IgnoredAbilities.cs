@@ -4,8 +4,6 @@
 
     internal class IgnoredAbilities
     {
-        #region Static Fields
-
         public static readonly List<string> List = new List<string>
         {
             "doom_bringer_empty1",
@@ -36,7 +34,5 @@
             "monkey_king_primal_spring",
             "monkey_king_mischief"
         };
-
-        #endregion
     }
 }

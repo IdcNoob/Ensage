@@ -8,18 +8,12 @@
 
     internal class Creep : IKillable
     {
-        #region Constructors and Destructors
-
         public Creep(Unit unit)
         {
             Unit = unit;
             Handle = unit.Handle;
             HpBarSize = HUDInfo.GetHPBarSizeX(unit);
         }
-
-        #endregion
-
-        #region Public Properties
 
         public bool DamageCalculated { get; set; }
 
@@ -37,10 +31,6 @@
 
         public Unit Unit { get; }
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public float Distance(Hero hero)
         {
             return Unit.Distance2D(hero);
@@ -50,7 +40,5 @@
         {
             GetSavedDamage[handle] = damage;
         }
-
-        #endregion
     }
 }

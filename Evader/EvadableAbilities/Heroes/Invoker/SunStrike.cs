@@ -12,8 +12,6 @@
 
     internal class SunStrike : AOE, IModifierObstacle
     {
-        #region Constructors and Destructors
-
         public SunStrike(Ability ability)
             : base(ability)
         {
@@ -29,21 +27,18 @@
             AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "delay").Value;
         }
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public void AddModifierObstacle(Modifier mod, Unit unit)
         {
             StartCast = Game.RawGameTime;
 
             DelayAction.Add(
                 1,
-                () => {
-                    StartPosition = unit.Position;
-                    EndCast = StartCast + AdditionalDelay;
-                    Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
-                });
+                () =>
+                    {
+                        StartPosition = unit.Position;
+                        EndCast = StartCast + AdditionalDelay;
+                        Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
+                    });
         }
 
         public override bool CanBeStopped()
@@ -63,7 +58,5 @@
         {
             return EndCast - Game.RawGameTime;
         }
-
-        #endregion
     }
 }

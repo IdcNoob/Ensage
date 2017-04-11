@@ -16,17 +16,11 @@
 
     internal class PrimalSpring : AOE, IParticle, IModifierObstacle
     {
-        #region Fields
-
         private readonly float channelTime;
 
         private readonly float speed;
 
         private Vector3 initialPosition;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public PrimalSpring(Ability ability)
             : base(ability)
@@ -40,27 +34,23 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
 
-            speed =
-                Ability.GetAbilityDataByName("monkey_king_tree_dance")
-                    .AbilitySpecialData.First(x => x.Name == "spring_leap_speed")
-                    .Value;
+            speed = Ability.GetAbilityDataByName("monkey_king_tree_dance")
+                .AbilitySpecialData.First(x => x.Name == "spring_leap_speed")
+                .Value;
             channelTime = ability.GetChannelTime(0);
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddModifierObstacle(Modifier modifier, Unit unit)
         {
             DelayAction.Add(
                 5,
-                () => {
-                    StartPosition = unit.Position;
-                    EndCast = StartCast + (channelTime - modifier.ElapsedTime)
-                              + StartPosition.Distance2D(initialPosition) / speed;
-                    Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
-                });
+                () =>
+                    {
+                        StartPosition = unit.Position;
+                        EndCast = StartCast + (channelTime - modifier.ElapsedTime)
+                                  + StartPosition.Distance2D(initialPosition) / speed;
+                        Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
+                    });
         }
 
         public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
@@ -98,7 +88,5 @@
         {
             return EndCast - Game.RawGameTime;
         }
-
-        #endregion
     }
 }

@@ -12,13 +12,7 @@
 
     internal class SparkWraith : Projectile
     {
-        #region Fields
-
         private Vector3 lastProjectilePosition;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public SparkWraith(Ability ability)
             : base(ability)
@@ -35,10 +29,6 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override bool CanBeStopped()
         {
@@ -75,8 +65,8 @@
 
                 lastProjectilePosition = projectilePosition;
 
-                EndCast = Game.RawGameTime
-                          + (ProjectileTarget.Distance2D(projectilePosition) - 20) / GetProjectileSpeed();
+                EndCast = Game.RawGameTime + (ProjectileTarget.Distance2D(projectilePosition) - 20)
+                          / GetProjectileSpeed();
                 EndPosition = StartPosition.Extend(
                     ProjectileTarget.Position,
                     ProjectileTarget.Distance2D(StartPosition) + GetRadius());
@@ -103,7 +93,5 @@
 
             return position.Distance2D(GetProjectilePosition()) / GetProjectileSpeed() - 0.2f;
         }
-
-        #endregion
     }
 }

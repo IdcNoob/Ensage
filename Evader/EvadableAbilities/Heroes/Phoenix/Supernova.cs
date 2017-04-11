@@ -14,13 +14,7 @@
 
     internal class Supernova : AOE, IModifier, IParticle
     {
-        #region Fields
-
         private readonly float radius;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Supernova(Ability ability)
             : base(ability)
@@ -48,15 +42,7 @@
             radius = Ability.AbilitySpecialData.First(x => x.Name == "aura_radius").Value;
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
@@ -64,11 +50,12 @@
 
             DelayAction.Add(
                 1,
-                () => {
-                    StartPosition = particleArgs.ParticleEffect.GetControlPoint(0);
-                    EndCast = StartCast + AdditionalDelay + 0.05f;
-                    Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
-                });
+                () =>
+                    {
+                        StartPosition = particleArgs.ParticleEffect.GetControlPoint(0);
+                        EndCast = StartCast + AdditionalDelay + 0.05f;
+                        Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
+                    });
         }
 
         public override bool CanBeStopped()
@@ -94,15 +81,9 @@
             return EndCast - Game.RawGameTime;
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetRadius()
         {
             return radius;
         }
-
-        #endregion
     }
 }

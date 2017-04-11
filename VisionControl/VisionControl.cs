@@ -21,8 +21,6 @@
 
     internal class VisionControl
     {
-        #region Fields
-
         private readonly List<EnemyHero> enemyHeroes = new List<EnemyHero>();
 
         private readonly List<IUnit> units = new List<IUnit>();
@@ -37,15 +35,7 @@
 
         private Font textFont;
 
-        #endregion
-
-        #region Properties
-
         private static MenuManager Menu => Variables.Menu;
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void DrawingOnEndScene()
         {
@@ -87,12 +77,12 @@
             Func<Unit, IUnit> func;
             if (Variables.Units.TryGetValue(abilityName, out func))
             {
-                if (unit.ClassID == ClassID.CDOTA_NPC_Observer_Ward && UpdateData<ObserverWard>(unit))
+                if (unit.ClassId == ClassId.CDOTA_NPC_Observer_Ward && UpdateData<ObserverWard>(unit))
                 {
                     return;
                 }
 
-                if (unit.ClassID == ClassID.CDOTA_NPC_Observer_Ward_TrueSight && UpdateData<SentryWard>(unit))
+                if (unit.ClassId == ClassId.CDOTA_NPC_Observer_Ward_TrueSight && UpdateData<SentryWard>(unit))
                 {
                     return;
                 }
@@ -189,39 +179,40 @@
         {
             DelayAction.Add(
                 1000,
-                () => {
-                    if (args.Name.Contains("techies_remote_mine_plant"))
+                () =>
                     {
-                        if (!Menu.IsEnabled("techies_remote_mines") || sender.Team == heroTeam)
+                        if (args.Name.Contains("techies_remote_mine_plant"))
                         {
-                            return;
+                            if (!Menu.IsEnabled("techies_remote_mines") || sender.Team == heroTeam)
+                            {
+                                return;
+                            }
+
+                            var position = args.ParticleEffect.GetControlPoint(1);
+
+                            if (position.IsZero
+                                || units.Any(x => x is RemoteMine && x.Position.Distance2D(position) < 10))
+                            {
+                                return;
+                            }
+
+                            units.Add(new RemoteMine(position));
                         }
 
-                        var position = args.ParticleEffect.GetControlPoint(1);
-
-                        if (position.IsZero || units.Any(x => x is RemoteMine && x.Position.Distance2D(position) < 10))
+                        if (args.Name.Contains("techies_remote_mines_detonate"))
                         {
-                            return;
+                            var remote =
+                                units.FirstOrDefault(
+                                    x => x is RemoteMine
+                                         && x.Position.Distance2D(args.ParticleEffect.GetControlPoint(0)) < 10);
+
+                            if (remote != null)
+                            {
+                                remote.ParticleEffect?.Dispose();
+                                units.Remove(remote);
+                            }
                         }
-
-                        units.Add(new RemoteMine(position));
-                    }
-
-                    if (args.Name.Contains("techies_remote_mines_detonate"))
-                    {
-                        var remote =
-                            units.FirstOrDefault(
-                                x =>
-                                    x is RemoteMine
-                                    && x.Position.Distance2D(args.ParticleEffect.GetControlPoint(0)) < 10);
-
-                        if (remote != null)
-                        {
-                            remote.ParticleEffect?.Dispose();
-                            units.Remove(remote);
-                        }
-                    }
-                });
+                    });
         }
 
         public void OnPostReset()
@@ -261,9 +252,8 @@
 
             if (!sleeper.Sleeping(enemyHeroes))
             {
-                foreach (var enemy in
-                    Ensage.Common.Objects.Heroes.GetByTeam(enemyTeam)
-                        .Where(x => x.IsValid && !x.IsIllusion && !enemyHeroes.Exists(z => z.Handle == x.Handle)))
+                foreach (var enemy in Ensage.Common.Objects.Heroes.GetByTeam(enemyTeam)
+                    .Where(x => x.IsValid && !x.IsIllusion && !enemyHeroes.Exists(z => z.Handle == x.Handle)))
                 {
                     enemyHeroes.Add(new EnemyHero(enemy));
                 }
@@ -279,12 +269,12 @@
                     continue;
                 }
 
-                if (PlacedWard(enemy, ClassID.CDOTA_Item_ObserverWard))
+                if (PlacedWard(enemy, ClassId.CDOTA_Item_ObserverWard))
                 {
                     AddWard<ObserverWard>(enemy);
                 }
 
-                if (PlacedWard(enemy, ClassID.CDOTA_Item_SentryWard))
+                if (PlacedWard(enemy, ClassId.CDOTA_Item_SentryWard))
                 {
                     AddWard<SentryWard>(enemy);
                 }
@@ -304,16 +294,13 @@
             sleeper.Sleep(100, this);
         }
 
-        #endregion
-
-        #region Methods
-
         [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
-        private void AddWard<T>(EnemyHero enemy) where T : Ward
+        private void AddWard<T>(EnemyHero enemy)
+            where T : Ward
         {
             var wardPosition = enemy.WardPosition();
-            var wardExists =
-                units.OfType<T>().Any(x => !x.RequiresUpdate && x.Distance(wardPosition) <= 400 && enemy.Angle(x) < 0.5);
+            var wardExists = units.OfType<T>()
+                .Any(x => !x.RequiresUpdate && x.Distance(wardPosition) <= 400 && enemy.Angle(x) < 0.5);
 
             if (wardExists)
             {
@@ -332,14 +319,12 @@
 
         private bool GaveWard(EnemyHero enemy)
         {
-            return
-                enemyHeroes.Any(
-                    x =>
-                        x.IsValid && !x.Equals(enemy) && x.IsAlive && x.Distance(enemy) <= 600
-                        && x.ObserversCount + x.SentryCount < x.CountObservers() + x.CountSentries());
+            return enemyHeroes.Any(
+                x => x.IsValid && !x.Equals(enemy) && x.IsAlive && x.Distance(enemy) <= 600
+                     && x.ObserversCount + x.SentryCount < x.CountObservers() + x.CountSentries());
         }
 
-        private bool PlacedWard(EnemyHero enemy, ClassID id)
+        private bool PlacedWard(EnemyHero enemy, ClassId id)
         {
             var count = enemy.CountWards(id);
 
@@ -362,14 +347,13 @@
 
         private bool TookWard(EnemyHero enemy)
         {
-            return
-                enemyHeroes.Any(
-                    x =>
-                        x.IsValid && !x.Equals(enemy) && x.IsAlive && x.Distance(enemy) <= 600
-                        && x.ObserversCount + x.SentryCount > x.CountObservers() + x.CountSentries());
+            return enemyHeroes.Any(
+                x => x.IsValid && !x.Equals(enemy) && x.IsAlive && x.Distance(enemy) <= 600
+                     && x.ObserversCount + x.SentryCount > x.CountObservers() + x.CountSentries());
         }
 
-        private bool UpdateData<T>(Unit unit, float maxDistance = 400) where T : IUpdatable
+        private bool UpdateData<T>(Unit unit, float maxDistance = 400)
+            where T : IUpdatable
         {
             if (unit == null || !unit.IsValid)
             {
@@ -386,7 +370,5 @@
             updatable.UpdateData(unit);
             return true;
         }
-
-        #endregion
     }
 }

@@ -8,8 +8,6 @@
 
     internal class ShurikenToss : Projectile
     {
-        #region Constructors and Destructors
-
         public ShurikenToss(Ability ability)
             : base(ability)
         {
@@ -24,7 +22,5 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Lotus);
         }
-
-        #endregion
     }
 }

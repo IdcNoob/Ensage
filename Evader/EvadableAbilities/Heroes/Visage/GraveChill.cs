@@ -11,8 +11,6 @@
 
     internal class GraveChill : LinearTarget, IModifier
     {
-        #region Constructors and Destructors
-
         public GraveChill(Ability ability)
             : base(ability)
         {
@@ -25,12 +23,6 @@
             CounterAbilities.Add(PhaseShift);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

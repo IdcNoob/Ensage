@@ -27,10 +27,35 @@
             Unit.OnModifierRemoved += OnModifierRemoved;
         }
 
+        public override bool CanBeCasted(EvadableAbility ability, Unit unit)
+        {
+            return false;
+        }
+
         public void Dispose()
         {
             Unit.OnModifierAdded -= OnModifierAdded;
             Unit.OnModifierRemoved -= OnModifierRemoved;
+        }
+
+        public override float GetRequiredTime(EvadableAbility ability, Unit unit, float remainingTime)
+        {
+            return 0;
+        }
+
+        public override void Use(EvadableAbility ability, Unit target)
+        {
+        }
+
+        private void OnModifierAdded(Unit sender, ModifierChangedEventArgs args)
+        {
+            SetState(sender, args.Modifier.Name, true);
+
+            if (bladeMailActive && callActive && taunted && Ability.IsAutoCastEnabled)
+            {
+                Ability.ToggleAutocastAbility();
+                reenableOrb = true;
+            }
         }
 
         private void OnModifierRemoved(Unit sender, ModifierChangedEventArgs args)
@@ -53,7 +78,7 @@
             switch (modifierName)
             {
                 case "modifier_axe_berserkers_call_armor":
-                    if (sender.ClassID == ClassID.CDOTA_Unit_Hero_Axe && sender.Team != HeroTeam)
+                    if (sender.ClassId == ClassId.CDOTA_Unit_Hero_Axe && sender.Team != HeroTeam)
                     {
                         callActive = added;
                     }
@@ -65,37 +90,12 @@
                     }
                     break;
                 case "modifier_item_blade_mail_reflect":
-                    if (sender.ClassID == ClassID.CDOTA_Unit_Hero_Axe && sender.Team != HeroTeam)
+                    if (sender.ClassId == ClassId.CDOTA_Unit_Hero_Axe && sender.Team != HeroTeam)
                     {
                         bladeMailActive = added;
                     }
                     break;
             }
-        }
-
-        private void OnModifierAdded(Unit sender, ModifierChangedEventArgs args)
-        {
-            SetState(sender, args.Modifier.Name, true);
-
-            if (bladeMailActive && callActive && taunted && Ability.IsAutoCastEnabled)
-            {
-                Ability.ToggleAutocastAbility();
-                reenableOrb = true;
-            }
-        }
-
-        public override bool CanBeCasted(EvadableAbility ability, Unit unit)
-        {
-            return false;
-        }
-
-        public override float GetRequiredTime(EvadableAbility ability, Unit unit, float remainingTime)
-        {
-            return 0;
-        }
-
-        public override void Use(EvadableAbility ability, Unit target)
-        {
         }
     }
 }

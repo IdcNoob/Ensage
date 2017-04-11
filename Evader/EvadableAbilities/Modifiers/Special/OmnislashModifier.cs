@@ -6,15 +6,9 @@
 
     internal class OmnislashModifier : EvadableModifier
     {
-        #region Fields
-
         private readonly float[] modifierDuration = new float[3];
 
         private readonly Ability omnislash;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public OmnislashModifier(
             Team team,
@@ -30,21 +24,14 @@
             var interval = omnislash.AbilitySpecialData.First(x => x.Name == "omni_slash_bounce_tick").Value;
             for (var i = 0u; i < 3; i++)
             {
-                modifierDuration[i] = interval
-                                      * (omnislash.AbilitySpecialData.First(x => x.Name == "omni_slash_jumps")
-                                             .GetValue(i) - 1);
+                modifierDuration[i] = interval * (omnislash.AbilitySpecialData.First(x => x.Name == "omni_slash_jumps")
+                                                      .GetValue(i) - 1);
             }
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override float GetRemainingTime()
         {
             return modifierDuration[omnislash.Level - 1] - Modifier.ElapsedTime;
         }
-
-        #endregion
     }
 }

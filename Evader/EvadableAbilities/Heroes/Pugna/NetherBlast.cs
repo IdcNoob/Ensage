@@ -10,8 +10,6 @@
 
     internal class NetherBlast : LinearAOE
     {
-        #region Constructors and Destructors
-
         public NetherBlast(Ability ability)
             : base(ability)
         {
@@ -28,15 +26,9 @@
             AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "delay").Value;
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetCastRange()
         {
             return base.GetCastRange() + 350;
         }
-
-        #endregion
     }
 }

@@ -5,13 +5,7 @@
 
     internal class ChargeOfDarknessModifier : EvadableModifier
     {
-        #region Fields
-
         private readonly Hero spiritBreaker;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public ChargeOfDarknessModifier(
             Team team,
@@ -25,10 +19,6 @@
         {
             spiritBreaker = (Hero)abilityOwner;
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override bool CanBeCountered()
         {
@@ -44,7 +34,5 @@
         {
             return spiritBreaker;
         }
-
-        #endregion
     }
 }

@@ -18,85 +18,6 @@
 
     internal class Controllable
     {
-        #region Fields
-
-        public readonly List<Camp> BlockedCamps = new List<Camp>();
-
-        private readonly float attackAnimationPoint;
-
-        private readonly uint attackRange;
-
-        private readonly float attackRate;
-
-        private readonly bool isRanged;
-
-        private readonly double projectileSpeed;
-
-        private readonly Sleeper sleeper;
-
-        private float attackTime;
-
-        private bool campAvailable;
-
-        private Vector2 campNameTextPosition;
-
-        private float hPBarSizeX;
-
-        private uint lastHealth;
-
-        private float pause;
-
-        private bool registered;
-
-        private Vector3 targetPosition;
-
-        #endregion
-
-        #region Constructors and Destructors
-
-        public Controllable(Unit unit, bool isHero = false)
-        {
-            Handle = unit.Handle;
-            Unit = unit;
-            IsHero = isHero;
-            sleeper = new Sleeper();
-
-            if (Unit.AttackCapability == AttackCapability.Ranged)
-            {
-                isRanged = true;
-                projectileSpeed =
-                    Game.FindKeyValues(
-                        unit.Name + "/ProjectileSpeed",
-                        unit is Hero ? KeyValueSource.Hero : KeyValueSource.Unit).IntValue;
-                attackAnimationPoint =
-                    Game.FindKeyValues(
-                        unit.Name + "/AttackAnimationPoint",
-                        unit is Hero ? KeyValueSource.Hero : KeyValueSource.Unit).FloatValue;
-                attackRate =
-                    Game.FindKeyValues(
-                        unit.Name + "/AttackRate",
-                        unit is Hero ? KeyValueSource.Hero : KeyValueSource.Unit).FloatValue;
-                if (attackRate <= 0)
-                {
-                    attackRate =
-                        Game.FindKeyValues(
-                            unit.Name + "/AttackRate",
-                            unit is Hero ? KeyValueSource.Hero : KeyValueSource.Unit).IntValue;
-                }
-                attackRange = unit.AttackRange;
-            }
-        }
-
-        #endregion
-
-        #region Public Events
-
-        public event EventHandler OnCampChange;
-
-        #endregion
-
-        #region Enums
-
         public enum Status
         {
             Idle,
@@ -124,9 +45,68 @@
             Done
         }
 
-        #endregion
+        private readonly float attackAnimationPoint;
 
-        #region Public Properties
+        private readonly uint attackRange;
+
+        private readonly float attackRate;
+
+        public readonly List<Camp> BlockedCamps = new List<Camp>();
+
+        private readonly bool isRanged;
+
+        private readonly double projectileSpeed;
+
+        private readonly Sleeper sleeper;
+
+        private float attackTime;
+
+        private bool campAvailable;
+
+        private Vector2 campNameTextPosition;
+
+        private float hPBarSizeX;
+
+        private uint lastHealth;
+
+        private float pause;
+
+        private bool registered;
+
+        private Vector3 targetPosition;
+
+        public Controllable(Unit unit, bool isHero = false)
+        {
+            Handle = unit.Handle;
+            Unit = unit;
+            IsHero = isHero;
+            sleeper = new Sleeper();
+
+            if (Unit.AttackCapability == AttackCapability.Ranged)
+            {
+                isRanged = true;
+                projectileSpeed = Game.FindKeyValues(
+                        unit.Name + "/ProjectileSpeed",
+                        unit is Hero ? KeyValueSource.Hero : KeyValueSource.Unit)
+                    .IntValue;
+                attackAnimationPoint = Game.FindKeyValues(
+                        unit.Name + "/AttackAnimationPoint",
+                        unit is Hero ? KeyValueSource.Hero : KeyValueSource.Unit)
+                    .FloatValue;
+                attackRate = Game.FindKeyValues(
+                        unit.Name + "/AttackRate",
+                        unit is Hero ? KeyValueSource.Hero : KeyValueSource.Unit)
+                    .FloatValue;
+                if (attackRate <= 0)
+                {
+                    attackRate = Game.FindKeyValues(
+                            unit.Name + "/AttackRate",
+                            unit is Hero ? KeyValueSource.Hero : KeyValueSource.Unit)
+                        .IntValue;
+                }
+                attackRange = unit.AttackRange;
+            }
+        }
 
         public static bool Debug { set; get; }
 
@@ -158,10 +138,6 @@
 
         public Unit Unit { get; }
 
-        #endregion
-
-        #region Properties
-
         private float GetHpBarSizeX
         {
             get
@@ -174,21 +150,20 @@
             }
         }
 
-        private bool IsUnderCampNameText
-            =>
-                Utils.IsUnderRectangle(
-                    Game.MouseScreenPosition,
-                    campNameTextPosition.X,
-                    campNameTextPosition.Y,
-                    MeasureCampNameTextSize.X,
-                    MeasureCampNameTextSize.Y);
+        private bool IsUnderCampNameText => Utils.IsUnderRectangle(
+            Game.MouseScreenPosition,
+            campNameTextPosition.X,
+            campNameTextPosition.Y,
+            MeasureCampNameTextSize.X,
+            MeasureCampNameTextSize.Y);
 
-        private Vector2 MeasureCampNameTextSize
-            => Drawing.MeasureText(CurrentCamp.Name, "Arial", new Vector2(16), FontFlags.None);
+        private Vector2 MeasureCampNameTextSize => Drawing.MeasureText(
+            CurrentCamp.Name,
+            "Arial",
+            new Vector2(16),
+            FontFlags.None);
 
-        #endregion
-
-        #region Public Methods and Operators
+        public event EventHandler OnCampChange;
 
         public void OnClose()
         {
@@ -223,10 +198,6 @@
                 registered = true;
             }
         }
-
-        #endregion
-
-        #region Methods
 
         private void ChangeCamp()
         {
@@ -351,12 +322,10 @@
                         return;
                     }
 
-                    var target =
-                        Creeps.All.OrderBy(x => x.Distance2D(Unit))
-                            .FirstOrDefault(
-                                x =>
-                                    x.Distance2D(Unit) <= 600 && x.IsSpawned && x.IsAlive && x.IsNeutral
-                                    && !x.Equals(Unit));
+                    var target = Creeps.All.OrderBy(x => x.Distance2D(Unit))
+                        .FirstOrDefault(
+                            x => x.Distance2D(Unit) <= 600 && x.IsSpawned && x.IsAlive && x.IsNeutral
+                                 && !x.Equals(Unit));
 
                     var attackTarget = isRanged && target != null;
                     targetPosition = target?.Position.Extend(Unit.Position, 50) ?? CurrentCamp.CampPosition;
@@ -451,11 +420,12 @@
                 case Status.TryingToCheckStacks:
                     if (Unit.Distance2D(CurrentCamp.WaitPosition) < 50)
                     {
-                        CurrentCamp.CurrentStacksCount =
-                            Creeps.All.Where(
-                                x =>
-                                    x.Distance2D(CurrentCamp.CampPosition) < 800 && x.IsSpawned && x.IsNeutral
-                                    && !x.Equals(Unit)).ToList().CountStacks();
+                        CurrentCamp.CurrentStacksCount = Creeps.All
+                            .Where(
+                                x => x.Distance2D(CurrentCamp.CampPosition) < 800 && x.IsSpawned && x.IsNeutral
+                                     && !x.Equals(Unit))
+                            .ToList()
+                            .CountStacks();
 
                         if (CurrentCamp.CurrentStacksCount >= CurrentCamp.RequiredStacksCount)
                         {
@@ -496,7 +466,5 @@
         {
             return attackAnimationPoint / (1 + (Unit.AttacksPerSecond * attackRate / 0.01 - 100) / 100);
         }
-
-        #endregion
     }
 }

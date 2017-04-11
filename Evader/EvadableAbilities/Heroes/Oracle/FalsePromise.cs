@@ -11,8 +11,6 @@
 
     internal class FalsePromise : NoObstacleAbility, IModifier
     {
-        #region Constructors and Destructors
-
         public FalsePromise(Ability ability)
             : base(ability)
         {
@@ -25,12 +23,6 @@
             Modifier.EnemyCounterAbilities.AddRange(DisableAbilityNames);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

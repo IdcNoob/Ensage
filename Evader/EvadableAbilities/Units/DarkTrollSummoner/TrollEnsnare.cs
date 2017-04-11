@@ -11,8 +11,6 @@ namespace Evader.EvadableAbilities.Units.DarkTrollSummoner
 
     internal class TrollEnsnare : LinearTarget, IModifier
     {
-        #region Constructors and Destructors
-
         public TrollEnsnare(Ability ability)
             : base(ability)
         {
@@ -31,12 +29,6 @@ namespace Evader.EvadableAbilities.Units.DarkTrollSummoner
             Modifier.AllyCounterAbilities.AddRange(AllyPurges);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

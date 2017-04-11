@@ -13,8 +13,6 @@
 
     internal class VenomousGale : LinearProjectile, IParticle, IModifier
     {
-        #region Constructors and Destructors
-
         public VenomousGale(Ability ability)
             : base(ability)
         {
@@ -29,15 +27,7 @@
             CounterAbilities.AddRange(VsMagic);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
@@ -87,15 +77,9 @@
                    - Game.RawGameTime;
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetCastRange()
         {
             return base.GetCastRange() + 100;
         }
-
-        #endregion
     }
 }

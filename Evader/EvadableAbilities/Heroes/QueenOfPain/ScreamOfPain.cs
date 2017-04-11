@@ -8,8 +8,6 @@
 
     internal class ScreamOfPain : Projectile
     {
-        #region Constructors and Destructors
-
         public ScreamOfPain(Ability ability)
             : base(ability)
         {
@@ -24,7 +22,5 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
         }
-
-        #endregion
     }
 }

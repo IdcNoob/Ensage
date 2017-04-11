@@ -415,9 +415,8 @@
 
         private async Task AddAbilities(Hero hero)
         {
-            foreach (var ability in
-                hero.Spellbook.Spells.Where(
-                    x => !x.IsHidden && !x.Name.Contains("special_bonus") && !x.Name.Contains("empty")))
+            foreach (var ability in hero.Spellbook.Spells.Where(
+                x => !x.IsHidden && !x.Name.Contains("special_bonus") && !x.Name.Contains("empty")))
             {
                 await AddMenuItem(hero, ability);
             }

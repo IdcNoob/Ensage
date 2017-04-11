@@ -5,13 +5,7 @@
 
     internal abstract class LinearTarget : LinearAOE
     {
-        #region Fields
-
         private readonly float radius;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         protected LinearTarget(Ability ability)
             : base(ability)
@@ -19,10 +13,6 @@
             DisablePathfinder = true;
             radius = 75;
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -38,7 +28,7 @@
             {
                 EndPosition = AbilityOwner.InFront(GetCastRange());
                 Pathfinder.UpdateObstacle(Obstacle.Value, StartPosition, EndPosition);
-                AbilityDrawer.UpdateRectaglePosition(StartPosition, EndPosition, GetRadius());
+                AbilityDrawer.UpdateRectanglePosition(StartPosition, EndPosition, GetRadius());
             }
             else if (StartCast > 0 && Game.RawGameTime > EndCast)
             {
@@ -57,15 +47,9 @@
             AbilityDrawer.DrawRectangle(StartPosition, EndPosition, GetRadius());
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetRadius()
         {
             return radius;
         }
-
-        #endregion
     }
 }

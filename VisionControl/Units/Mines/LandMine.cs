@@ -8,13 +8,7 @@
 
     internal class LandMine : Mine
     {
-        #region Constants
-
         private const string AbilityName = "techies_land_mines";
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public LandMine(Unit unit)
             : base(unit, AbilityName)
@@ -29,12 +23,6 @@
             }
         }
 
-        #endregion
-
-        #region Public Properties
-
         public override bool ShowTimer { get; } = false;
-
-        #endregion
     }
 }

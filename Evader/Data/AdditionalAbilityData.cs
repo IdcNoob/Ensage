@@ -4,8 +4,6 @@ namespace Evader.Data
 
     internal static class AdditionalAbilityData
     {
-        #region Public Properties
-
         public static Dictionary<string, string> Modifiers { get; } = new Dictionary<string, string>
         {
             { "modifier_invoker_sun_strike", "invoker_sun_strike" },
@@ -79,7 +77,5 @@ namespace Evader.Data
             { "lich_chain_frost", 800 },
             { "razor_plasma_field", 800 }, // unit has name
         };
-
-        #endregion
     }
 }

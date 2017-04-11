@@ -7,22 +7,12 @@
 
     internal class Bootstrap
     {
-        #region Fields
-
         private readonly InformationPinger pinger = new InformationPinger();
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void Initialize()
         {
             Events.OnLoad += OnLoad;
         }
-
-        #endregion
-
-        #region Methods
 
         private void Game_OnUpdate(EventArgs args)
         {
@@ -42,7 +32,5 @@
             Events.OnClose += OnClose;
             Game.OnIngameUpdate += Game_OnUpdate;
         }
-
-        #endregion
     }
 }

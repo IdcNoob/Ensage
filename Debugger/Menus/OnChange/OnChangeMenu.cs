@@ -4,8 +4,6 @@
 
     internal class OnChangeMenu
     {
-        #region Constructors and Destructors
-
         public OnChangeMenu(Menu mainMenu)
         {
             var menu = new Menu("On change", "onChange");
@@ -21,10 +19,6 @@
             mainMenu.AddSubMenu(menu);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public Animations Animations { get; }
 
         public Bools Bools { get; }
@@ -38,7 +32,5 @@
         public Int64 Int64 { get; }
 
         public Strings Strings { get; }
-
-        #endregion
     }
 }

@@ -8,8 +8,6 @@
 
     internal class Poof : AOE
     {
-        #region Constructors and Destructors
-
         public Poof(Ability ability)
             : base(ability)
         {
@@ -22,7 +20,5 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
         }
-
-        #endregion
     }
 }

@@ -2,16 +2,16 @@
 {
     internal static class AbilityNames
     {
-        #region Public Properties
-
-        public static string[] AllyPurges { get; } = {
+        public static string[] AllyPurges { get; } =
+        {
             "legion_commander_press_the_attack",
             "abaddon_aphotic_shield",
             "omniknight_repel",
             "oracle_fortunes_end",
         };
 
-        public static string[] AllyShields { get; } = {
+        public static string[] AllyShields { get; } =
+        {
             "legion_commander_press_the_attack",
             "abaddon_aphotic_shield",
             "omniknight_repel",
@@ -29,7 +29,8 @@
 
         public static string BladeMail { get; } = "item_blade_mail";
 
-        public static string[] BlinkAbilityNames { get; } = {
+        public static string[] BlinkAbilityNames { get; } =
+        {
             "item_blink",
             "mirana_leap",
             "slark_pounce",
@@ -63,7 +64,8 @@
 
         public static string[] Diffusal { get; } = { "item_diffusal_blade", "item_diffusal_blade_2", };
 
-        public static string[] DisableAbilityNames { get; } = {
+        public static string[] DisableAbilityNames { get; } =
+        {
             "item_sheepstick",
             "item_orchid",
             "item_bloodthorn",
@@ -140,7 +142,8 @@
 
         public static string Greaves { get; } = "item_guardian_greaves";
 
-        public static string[] Invis { get; } = {
+        public static string[] Invis { get; } =
+        {
             "bounty_hunter_wind_walk",
             "invoker_ghost_walk",
             "clinkz_wind_walk",
@@ -153,7 +156,8 @@
             "nyx_assassin_vendetta"
         };
 
-        public static string[] Invul { get; } = {
+        public static string[] Invul { get; } =
+        {
             "shadow_demon_disruption",
             "obsidian_destroyer_astral_imprisonment",
             "bane_nightmare",
@@ -175,7 +179,8 @@
 
         public static string StoneGaze { get; } = "medusa_stone_gaze";
 
-        public static string[] StrongDefUltimates { get; } = {
+        public static string[] StrongDefUltimates { get; } =
+        {
             "medusa_stone_gaze",
             "phoenix_supernova",
             "abyssal_underlord_dark_rift",
@@ -187,7 +192,8 @@
 
         public static string TricksOfTheTrade { get; } = "riki_tricks_of_the_trade";
 
-        public static string[] VsDamage { get; } = {
+        public static string[] VsDamage { get; } =
+        {
             "nyx_assassin_spiked_carapace",
             "templar_assassin_refraction",
             "treant_living_armor",
@@ -196,7 +202,8 @@
             "item_blade_mail",
         };
 
-        public static string[] VsDisable { get; } = {
+        public static string[] VsDisable { get; } =
+        {
             "slark_dark_pact",
             "slark_shadow_dance",
             "juggernaut_blade_fury",
@@ -212,7 +219,8 @@
             "bane_nightmare"
         };
 
-        public static string[] VsLowDisable { get; } = {
+        public static string[] VsLowDisable { get; } =
+        {
             "slark_dark_pact",
             "juggernaut_blade_fury",
             "life_stealer_rage",
@@ -221,14 +229,16 @@
             "item_sphere",
         };
 
-        public static string[] VsLowPureMagic { get; } = {
+        public static string[] VsLowPureMagic { get; } =
+        {
             "life_stealer_rage",
             "juggernaut_blade_fury",
             "omniknight_repel",
             "pugna_nether_ward"
         };
 
-        public static string[] VsMagic { get; } = {
+        public static string[] VsMagic { get; } =
+        {
             "item_glimmer_cape",
             "oracle_fates_edict",
             "ember_spirit_flame_guard",
@@ -239,7 +249,8 @@
             "item_hood_of_defiance",
         };
 
-        public static string[] VsPhys { get; } = {
+        public static string[] VsPhys { get; } =
+        {
             "item_ghost",
             "necrolyte_sadist",
             "pugna_decrepify",
@@ -261,7 +272,5 @@
             "lich_frost_armor",
             "bane_enfeeble",
         };
-
-        #endregion
     }
 }

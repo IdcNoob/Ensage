@@ -15,15 +15,9 @@
 
     internal class Torrent : AOE, IModifierObstacle, IModifier
     {
-        #region Fields
-
         private readonly float bonusRadius;
 
         private readonly Ability talent;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Torrent(Ability ability)
             : base(ability)
@@ -58,15 +52,7 @@
             }
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddModifierObstacle(Modifier mod, Unit unit)
         {
@@ -74,11 +60,12 @@
 
             DelayAction.Add(
                 1,
-                () => {
-                    StartPosition = unit.Position;
-                    EndCast = StartCast + AdditionalDelay;
-                    Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
-                });
+                () =>
+                    {
+                        StartPosition = unit.Position;
+                        EndCast = StartCast + AdditionalDelay;
+                        Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
+                    });
         }
 
         public override bool CanBeStopped()
@@ -99,15 +86,9 @@
             return EndCast - Game.RawGameTime;
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetRadius()
         {
             return base.GetRadius() + (talent?.Level > 0 ? bonusRadius : 0);
         }
-
-        #endregion
     }
 }

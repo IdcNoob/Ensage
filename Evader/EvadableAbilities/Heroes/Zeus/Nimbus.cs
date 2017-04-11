@@ -15,15 +15,9 @@
 
     internal class Nimbus : AOE, IParticle
     {
-        #region Fields
-
         private readonly float duration;
 
         private Unit cloud;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Nimbus(Ability ability)
             : base(ability)
@@ -39,21 +33,18 @@
             duration = Ability.AbilitySpecialData.First(x => x.Name == "cloud_duration").Value;
         }
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
             StartCast = Game.RawGameTime;
 
             DelayAction.Add(
                 1,
-                () => {
-                    StartPosition = particleArgs.ParticleEffect.GetControlPoint(0).SetZ(AbilityOwner.Position.Z);
-                    EndCast = StartCast + duration;
-                    Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
-                });
+                () =>
+                    {
+                        StartPosition = particleArgs.ParticleEffect.GetControlPoint(0).SetZ(AbilityOwner.Position.Z);
+                        EndCast = StartCast + duration;
+                        Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
+                    });
         }
 
         public override bool CanBeStopped()
@@ -70,9 +61,8 @@
 
             if (cloud == null)
             {
-                cloud =
-                    ObjectManager.GetEntitiesFast<Unit>()
-                        .FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Unit_ZeusCloud && x.Team == AbilityOwner.Team);
+                cloud = ObjectManager.GetEntitiesFast<Unit>()
+                    .FirstOrDefault(x => x.ClassId == ClassId.CDOTA_Unit_ZeusCloud && x.Team == AbilityOwner.Team);
             }
 
             if (Obstacle != null && (Game.RawGameTime > EndCast || cloud != null && cloud.IsValid && !cloud.IsAlive))
@@ -101,7 +91,5 @@
         {
             return true;
         }
-
-        #endregion
     }
 }

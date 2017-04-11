@@ -7,14 +7,6 @@
 
     internal class ChatWheel
     {
-        #region Fields
-
-        private readonly Random random = new Random();
-
-        #endregion
-
-        #region Enums
-
         public enum Phrase
         {
             NeedWards = 3,
@@ -28,9 +20,7 @@
             CheckRunes = 58,
         }
 
-        #endregion
-
-        #region Public Methods and Operators
+        private readonly Random random = new Random();
 
         public void Say(Phrase say, bool sayTime = false)
         {
@@ -46,7 +36,5 @@
                 Variables.Sleeper.Sleep(random.Next(1111, 1333), "CanPing");
             }
         }
-
-        #endregion
     }
 }

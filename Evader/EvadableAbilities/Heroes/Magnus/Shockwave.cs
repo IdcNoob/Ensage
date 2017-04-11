@@ -8,8 +8,6 @@
 
     internal class Shockwave : LinearProjectile
     {
-        #region Constructors and Destructors
-
         public Shockwave(Ability ability)
             : base(ability)
         {
@@ -21,10 +19,6 @@
             CounterAbilities.Add(Bloodstone);
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetEndRadius()
         {
             return base.GetRadius() + 60;
@@ -34,7 +28,5 @@
         {
             return base.GetRadius() + 60;
         }
-
-        #endregion
     }
 }

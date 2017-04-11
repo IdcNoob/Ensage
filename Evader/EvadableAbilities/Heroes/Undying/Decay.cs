@@ -8,8 +8,6 @@
 
     internal class Decay : LinearAOE
     {
-        #region Constructors and Destructors
-
         public Decay(Ability ability)
             : base(ability)
         {
@@ -20,7 +18,5 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
         }
-
-        #endregion
     }
 }

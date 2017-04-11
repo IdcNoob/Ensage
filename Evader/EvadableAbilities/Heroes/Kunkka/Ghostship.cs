@@ -15,8 +15,6 @@
 
     internal class Ghostship : AOE, IModifier, IUnit
     {
-        #region Fields
-
         private readonly float additionalAghanimDelay;
 
         private readonly float castRange;
@@ -26,10 +24,6 @@
         private bool aghanimState;
 
         private bool fowCast;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Ghostship(Ability ability)
             : base(ability)
@@ -63,15 +57,7 @@
             additionalAghanimDelay = 1.6f;
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Properties
 
         private bool AghanimState
         {
@@ -85,10 +71,6 @@
                 return aghanimState;
             }
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddUnit(Unit unit)
         {
@@ -160,10 +142,6 @@
             return StartCast + (fowCast ? 0 : CastPoint) + GetDelay() - Game.RawGameTime;
         }
 
-        #endregion
-
-        #region Methods
-
         private float GetDelay()
         {
             return AghanimState ? additionalAghanimDelay : AdditionalDelay;
@@ -178,7 +156,5 @@
         {
             return abilityUnit != null && abilityUnit.IsValid;
         }
-
-        #endregion
     }
 }

@@ -8,8 +8,6 @@
 
     internal class OverwhelmingOdds : LinearAOE
     {
-        #region Constructors and Destructors
-
         public OverwhelmingOdds(Ability ability)
             : base(ability)
         {
@@ -23,7 +21,5 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
         }
-
-        #endregion
     }
 }

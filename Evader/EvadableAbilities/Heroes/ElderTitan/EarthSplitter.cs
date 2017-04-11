@@ -13,8 +13,6 @@
 
     internal class EarthSplitter : LinearAOE, IModifier
     {
-        #region Constructors and Destructors
-
         public EarthSplitter(Ability ability)
             : base(ability)
         {
@@ -43,12 +41,6 @@
             AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "crack_time").Value;
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

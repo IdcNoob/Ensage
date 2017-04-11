@@ -6,8 +6,6 @@
 
     internal interface IKillable
     {
-        #region Public Properties
-
         Dictionary<uint, float> GetSavedDamage { get; }
 
         uint Handle { get; }
@@ -20,16 +18,10 @@
 
         Unit Unit { get; }
 
-        #endregion
-
-        #region Public Methods and Operators
-
-        float Distance(Hero hero);
-
         float HeroDamage { get; set; }
 
         bool DamageCalculated { get; set; }
 
-        #endregion
+        float Distance(Hero hero);
     }
 }

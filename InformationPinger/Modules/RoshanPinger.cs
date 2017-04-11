@@ -7,13 +7,7 @@
 
     internal class RoshanPinger
     {
-        #region Fields
-
         private readonly Random random;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public RoshanPinger()
         {
@@ -21,15 +15,7 @@
             random = new Random();
         }
 
-        #endregion
-
-        #region Public Properties
-
         public bool RoshanKilled { get; set; }
-
-        #endregion
-
-        #region Methods
 
         private void Game_OnFireEvent(FireEventEventArgs args)
         {
@@ -38,7 +24,5 @@
                 DelayAction.Add(random.Next(500, 2500), () => RoshanKilled = true);
             }
         }
-
-        #endregion
     }
 }

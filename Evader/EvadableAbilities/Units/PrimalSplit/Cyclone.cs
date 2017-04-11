@@ -8,8 +8,6 @@
 
     internal class Cyclone : LinearTarget
     {
-        #region Constructors and Destructors
-
         public Cyclone(Ability ability)
             : base(ability)
         {
@@ -22,7 +20,5 @@
             CounterAbilities.Add(SnowBall);
             CounterAbilities.Add(Lotus);
         }
-
-        #endregion
     }
 }

@@ -13,13 +13,7 @@
 
     internal class DeathWard : LinearAOE
     {
-        #region Fields
-
         private readonly float duration;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public DeathWard(Ability ability)
             : base(ability)
@@ -40,10 +34,6 @@
 
             duration = Ability.GetChannelTime(0);
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -78,7 +68,5 @@
         {
             return Ability.IsChanneling;
         }
-
-        #endregion
     }
 }

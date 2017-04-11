@@ -18,17 +18,11 @@
 
     internal class SacredArrow : LinearProjectile, IModifier, IUnit
     {
-        #region Fields
-
         private readonly Ability talent;
 
         private Unit abilityUnit;
 
         private bool fowCast;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public SacredArrow(Ability ability)
             : base(ability)
@@ -55,15 +49,7 @@
             talent = AbilityOwner.FindSpell("special_bonus_unique_mirana_2");
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddUnit(Unit unit)
         {
@@ -115,9 +101,9 @@
                 EndPosition = AbilityOwner.InFront(GetCastRange() + GetRadius() / 2);
                 Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), GetEndRadius(), Obstacle);
             }
-            else if (StartCast > 0
-                     && (Game.RawGameTime > EndCast
-                         || (Game.RawGameTime > StartCast + (fowCast ? 0 : CastPoint) + 0.1f && !IsAbilityUnitValid())))
+            else if (StartCast > 0 && (Game.RawGameTime > EndCast
+                                       || (Game.RawGameTime > StartCast + (fowCast ? 0 : CastPoint) + 0.1f
+                                           && !IsAbilityUnitValid())))
             {
                 End();
             }
@@ -162,18 +148,14 @@
                 return StartCast + CastPoint - Game.RawGameTime;
             }
 
-            return StartCast + (fowCast ? 0 : CastPoint)
-                   + (position.Distance2D(StartPosition) - GetRadius()) / GetProjectileSpeed() - Game.RawGameTime;
+            return StartCast + (fowCast ? 0 : CastPoint) + (position.Distance2D(StartPosition) - GetRadius())
+                   / GetProjectileSpeed() - Game.RawGameTime;
         }
 
         public override bool IsStopped()
         {
             return StartCast > 0 && !IsInPhase && CanBeStopped();
         }
-
-        #endregion
-
-        #region Methods
 
         protected override float GetEndRadius()
         {
@@ -189,7 +171,5 @@
         {
             return abilityUnit != null && abilityUnit.IsValid;
         }
-
-        #endregion
     }
 }

@@ -11,8 +11,6 @@
 
     internal class PrimalRoar : LinearTarget, IModifier
     {
-        #region Constructors and Destructors
-
         public PrimalRoar(Ability ability)
             : base(ability)
         {
@@ -37,12 +35,6 @@
             Modifier.AllyCounterAbilities.AddRange(VsPhys);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

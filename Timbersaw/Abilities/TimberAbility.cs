@@ -6,13 +6,7 @@
 
     internal abstract class TimberAbility
     {
-        #region Fields
-
         protected Sleeper Sleeper;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         protected TimberAbility(Ability ability)
         {
@@ -22,10 +16,6 @@
             Sleeper = new Sleeper();
         }
 
-        #endregion
-
-        #region Public Properties
-
         public Ability Ability { get; }
 
         public float CastPoint { get; }
@@ -34,15 +24,7 @@
 
         public bool IsSleeping => Sleeper.Sleeping;
 
-        #endregion
-
-        #region Properties
-
         protected string Name { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public virtual bool CanBeCasted()
         {
@@ -53,7 +35,5 @@
         {
             return Ability.GetCastRange() + 50;
         }
-
-        #endregion
     }
 }

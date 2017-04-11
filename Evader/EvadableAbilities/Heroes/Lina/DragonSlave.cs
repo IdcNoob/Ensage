@@ -8,8 +8,6 @@
 
     internal class DragonSlave : LinearProjectile
     {
-        #region Constructors and Destructors
-
         public DragonSlave(Ability ability)
             : base(ability)
         {
@@ -21,15 +19,9 @@
             CounterAbilities.Add(Bloodstone);
         }
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public override float GetProjectileSpeed()
         {
             return base.GetProjectileSpeed() + 400;
         }
-
-        #endregion
     }
 }

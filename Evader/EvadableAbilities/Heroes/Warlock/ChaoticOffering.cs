@@ -11,8 +11,6 @@
 
     internal class ChaoticOffering : LinearAOE, IModifier
     {
-        #region Constructors and Destructors
-
         public ChaoticOffering(Ability ability)
             : base(ability)
         {
@@ -41,12 +39,6 @@
             CounterAbilities.Add(Bloodstone);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

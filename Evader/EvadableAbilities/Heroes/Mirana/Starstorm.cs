@@ -8,8 +8,6 @@
 
     internal class Starstorm : AOE
     {
-        #region Constructors and Destructors
-
         public Starstorm(Ability ability)
             : base(ability)
         {
@@ -21,7 +19,5 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
         }
-
-        #endregion
     }
 }

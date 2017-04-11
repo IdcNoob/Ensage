@@ -8,8 +8,6 @@
 
     internal class LucentBeam : LinearTarget
     {
-        #region Constructors and Destructors
-
         public LucentBeam(Ability ability)
             : base(ability)
         {
@@ -25,7 +23,5 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Lotus);
         }
-
-        #endregion
     }
 }

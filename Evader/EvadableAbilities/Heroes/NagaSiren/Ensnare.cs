@@ -12,8 +12,6 @@
 
     internal class Ensnare : Projectile, IModifier
     {
-        #region Constructors and Destructors
-
         public Ensnare(Ability ability)
             : base(ability)
         {
@@ -32,12 +30,6 @@
             Modifier.AllyCounterAbilities.AddRange(AllyPurges);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

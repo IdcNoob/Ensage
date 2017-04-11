@@ -30,7 +30,8 @@
 
         private readonly Dictionary<Creep, ParticleEffect> creeps = new Dictionary<Creep, ParticleEffect>();
 
-        private readonly Dictionary<Hero, List<AbilityDraw>> drawedAbilities = new Dictionary<Hero, List<AbilityDraw>>();
+        private readonly Dictionary<Hero, List<AbilityDraw>> drawedAbilities =
+            new Dictionary<Hero, List<AbilityDraw>>();
 
         private bool delay;
 
@@ -66,8 +67,8 @@
                     var unit = drawedAbilityPair.Key;
                     drawedAbility.ParticleEffect?.SetControlPoint(
                         0,
-                        unit.Position
-                        + (Vector3)(VectorExtensions.FromPolarAngle(unit.RotationRad) * drawedAbility.Range));
+                        unit.Position + (Vector3)(VectorExtensions.FromPolarAngle(unit.RotationRad)
+                                                  * drawedAbility.Range));
                 }
             }
         }
@@ -221,16 +222,14 @@
                         }
                     }
 
-                    foreach (var drawedAbility in
-                        drawedAbilities.Where(x => x.Key.Equals(hero))
-                            .SelectMany(x => x.Value)
-                            .Where(x => (x.ParticleEffect != null || !x.IsValid) && !x.Disabled && x.Level > 0))
+                    foreach (var drawedAbility in drawedAbilities.Where(x => x.Key.Equals(hero))
+                        .SelectMany(x => x.Value)
+                        .Where(x => (x.ParticleEffect != null || !x.IsValid) && !x.Disabled && x.Level > 0))
                     {
                         switch (drawedAbility.CustomRange)
                         {
                             case CustomRange.Expiriece:
-                            case CustomRange.Aggro:
-                                continue;
+                            case CustomRange.Aggro: continue;
                             case CustomRange.Attack:
                                 if (Math.Abs(drawedAbility.Range - hero.GetAttackRange()) > 10)
                                 {
@@ -256,13 +255,14 @@
                             drawedAbility.ParticleEffect.Dispose();
                             drawedAbility.ParticleEffect = null;
                         }
-                        else if ((newAbility
-                                  || (drawedAbility.ParticleEffect != null
-                                      && (Math.Abs(drawedAbility.RealCastRange - drawedAbility.Ability.GetRealCastRange())
-                                          > 5
-                                          || drawedAbility.RadiusOnly
-                                          && Math.Abs(drawedAbility.Radius - drawedAbility.Ability.GetRadius() - 35) > 5)))
-                                 && !drawedAbility.Disabled)
+                        else if ((newAbility || (drawedAbility.ParticleEffect != null
+                                                 && (Math.Abs(
+                                                         drawedAbility.RealCastRange
+                                                         - drawedAbility.Ability.GetRealCastRange()) > 5
+                                                     || drawedAbility.RadiusOnly
+                                                     && Math.Abs(
+                                                         drawedAbility.Radius - drawedAbility.Ability.GetRadius() - 35)
+                                                     > 5))) && !drawedAbility.Disabled)
                         {
                             Redraw(drawedAbility);
                         }

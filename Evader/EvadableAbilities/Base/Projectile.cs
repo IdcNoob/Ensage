@@ -14,13 +14,7 @@
 
     internal abstract class Projectile : LinearProjectile
     {
-        #region Fields
-
         private readonly float radius;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         protected Projectile(Ability ability)
             : base(ability)
@@ -30,15 +24,7 @@
             DisablePathfinder = true;
         }
 
-        #endregion
-
-        #region Public Properties
-
         public bool IsDisjointable { get; protected set; }
-
-        #endregion
-
-        #region Properties
 
         protected bool FowCast { get; set; }
 
@@ -49,10 +35,6 @@
         protected Vector3 ProjectilePostion { get; set; }
 
         protected Hero ProjectileTarget { get; set; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -83,7 +65,7 @@
                 {
                     EndPosition = AbilityOwner.InFront(GetCastRange());
                     Pathfinder.UpdateObstacle(Obstacle.Value, StartPosition, EndPosition);
-                    AbilityDrawer.UpdateRectaglePosition(StartPosition, EndPosition, GetRadius());
+                    AbilityDrawer.UpdateRectanglePosition(StartPosition, EndPosition, GetRadius());
                 }
                 else if (ProjectileTarget != null)
                 {
@@ -192,10 +174,6 @@
             ProjectilePostion = position;
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetEndRadius()
         {
             return radius;
@@ -210,7 +188,5 @@
         {
             return radius;
         }
-
-        #endregion
     }
 }

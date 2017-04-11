@@ -8,33 +8,21 @@
 
     internal class Tombstone : IUnit
     {
-        #region Constants
-
         private const string AbilityName = "undying_tombstone";
 
-        #endregion
-
-        #region Fields
-
         private readonly Unit unit;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Tombstone(Unit unit)
         {
             this.unit = unit;
             PositionCorrection = new Vector2(25);
             var level = (uint)char.GetNumericValue(unit.Name.Last());
-            Radius =
-                Ability.GetAbilityDataByName(AbilityName)
-                    .AbilitySpecialData.First(x => x.Name == "radius")
-                    .GetValue(level - 1);
-            Duration =
-                Ability.GetAbilityDataByName(AbilityName)
-                    .AbilitySpecialData.First(x => x.Name == "duration")
-                    .GetValue(level - 1);
+            Radius = Ability.GetAbilityDataByName(AbilityName)
+                .AbilitySpecialData.First(x => x.Name == "radius")
+                .GetValue(level - 1);
+            Duration = Ability.GetAbilityDataByName(AbilityName)
+                .AbilitySpecialData.First(x => x.Name == "duration")
+                .GetValue(level - 1);
             Position = unit.Position;
             Texture = Drawing.GetTexture("materials/ensage_ui/other/tombstone");
             Handle = unit.Handle;
@@ -50,17 +38,15 @@
             }
         }
 
-        #endregion
+        public bool IsVisible => unit.IsVisible;
 
-        #region Public Properties
+        private static MenuManager Menu => Variables.Menu;
 
         public float Duration { get; }
 
         public float EndTime { get; }
 
         public uint Handle { get; }
-
-        public bool IsVisible => unit.IsVisible;
 
         public ParticleEffect ParticleEffect { get; }
 
@@ -77,13 +63,5 @@
         public DotaTexture Texture { get; }
 
         public Vector2 TextureSize { get; set; }
-
-        #endregion
-
-        #region Properties
-
-        private static MenuManager Menu => Variables.Menu;
-
-        #endregion
     }
 }

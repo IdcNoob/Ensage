@@ -11,8 +11,6 @@
 
     internal class WhirlingDeath : EvadableAbility, IModifier
     {
-        #region Constructors and Destructors
-
         public WhirlingDeath(Ability ability)
             : base(ability)
         {
@@ -22,15 +20,7 @@
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -44,7 +34,5 @@
         {
             return 0;
         }
-
-        #endregion
     }
 }

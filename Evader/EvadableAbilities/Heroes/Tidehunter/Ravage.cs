@@ -12,17 +12,11 @@
 
     internal sealed class Ravage : AOE, IModifier
     {
-        #region Fields
-
         private readonly float projectileSpeed;
 
         private readonly float tavelTime;
 
         private readonly float width;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Ravage(Ability ability)
             : base(ability)
@@ -52,15 +46,7 @@
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -94,7 +80,5 @@
             return StartCast + CastPoint + (hero.NetworkPosition.Distance2D(StartPosition) - width) / projectileSpeed
                    - Game.RawGameTime;
         }
-
-        #endregion
     }
 }

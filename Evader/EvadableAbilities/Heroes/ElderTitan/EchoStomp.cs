@@ -11,13 +11,7 @@
 
     internal class EchoStomp : AOE, IModifier
     {
-        #region Fields
-
         private readonly float channelTime;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public EchoStomp(Ability ability)
             : base(ability)
@@ -45,15 +39,7 @@
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -79,7 +65,5 @@
         {
             return EndCast + channelTime - Game.RawGameTime;
         }
-
-        #endregion
     }
 }

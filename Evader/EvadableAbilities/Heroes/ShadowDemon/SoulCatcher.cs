@@ -11,8 +11,6 @@
 
     internal class SoulCatcher : LinearAOE, IModifier
     {
-        #region Constructors and Destructors
-
         public SoulCatcher(Ability ability)
             : base(ability)
         {
@@ -28,21 +26,11 @@
             Modifier.AllyCounterAbilities.Add(Eul);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Methods
 
         protected override float GetCastRange()
         {
             return base.GetCastRange() + GetRadius();
         }
-
-        #endregion
     }
 }

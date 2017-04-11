@@ -9,8 +9,6 @@
 
     internal class Shadowraze : AOE
     {
-        #region Constructors and Destructors
-
         public Shadowraze(Ability ability)
             : base(ability)
         {
@@ -23,10 +21,6 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -42,7 +36,5 @@
                 End();
             }
         }
-
-        #endregion
     }
 }

@@ -8,8 +8,6 @@ namespace Evader.EvadableAbilities.Units.HellbearSmasher
 
     internal class HellbearThunderClap : AOE
     {
-        #region Constructors and Destructors
-
         public HellbearThunderClap(Ability ability)
             : base(ability)
         {
@@ -17,7 +15,5 @@ namespace Evader.EvadableAbilities.Units.HellbearSmasher
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
         }
-
-        #endregion
     }
 }

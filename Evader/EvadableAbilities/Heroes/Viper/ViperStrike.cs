@@ -12,8 +12,6 @@
 
     internal class ViperStrike : Projectile, IModifier
     {
-        #region Constructors and Destructors
-
         public ViperStrike(Ability ability)
             : base(ability)
         {
@@ -34,12 +32,6 @@
             CounterAbilities.Add(Lotus);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

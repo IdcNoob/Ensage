@@ -12,13 +12,7 @@
 
     internal class Sprout : AOE, IParticle
     {
-        #region Fields
-
         private readonly float[] duration = new float[4];
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Sprout(Ability ability)
             : base(ability)
@@ -37,21 +31,18 @@
             }
         }
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
             StartCast = Game.RawGameTime;
 
             DelayAction.Add(
                 1,
-                () => {
-                    StartPosition = particleArgs.ParticleEffect.GetControlPoint(0);
-                    EndCast = StartCast + GetDuration();
-                    Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
-                });
+                () =>
+                    {
+                        StartPosition = particleArgs.ParticleEffect.GetControlPoint(0);
+                        EndCast = StartCast + GetDuration();
+                        Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
+                    });
         }
 
         public override bool CanBeStopped()
@@ -82,10 +73,6 @@
             return true;
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetRadius()
         {
             return 250;
@@ -95,7 +82,5 @@
         {
             return duration[Ability.Level - 1];
         }
-
-        #endregion
     }
 }

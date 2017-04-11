@@ -13,15 +13,9 @@
 
     internal class RocketFlare : AOE, IParticle
     {
-        #region Fields
-
         private readonly float projectileSpeed;
 
         private Vector3 initialPosition;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public RocketFlare(Ability ability)
             : base(ability)
@@ -39,10 +33,6 @@
             projectileSpeed = ability.GetProjectileSpeed();
         }
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
             if (particleArgs.Name.Contains("illumination"))
@@ -54,12 +44,13 @@
 
             DelayAction.Add(
                 1,
-                () => {
-                    StartPosition = particleArgs.ParticleEffect.GetControlPoint(1);
-                    initialPosition = particleArgs.ParticleEffect.GetControlPoint(0);
-                    EndCast = StartCast + StartPosition.Distance2D(initialPosition) / projectileSpeed;
-                    Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
-                });
+                () =>
+                    {
+                        StartPosition = particleArgs.ParticleEffect.GetControlPoint(1);
+                        initialPosition = particleArgs.ParticleEffect.GetControlPoint(0);
+                        EndCast = StartCast + StartPosition.Distance2D(initialPosition) / projectileSpeed;
+                        Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
+                    });
         }
 
         public override bool CanBeStopped()
@@ -84,7 +75,5 @@
         {
             return EndCast - Game.RawGameTime;
         }
-
-        #endregion
     }
 }

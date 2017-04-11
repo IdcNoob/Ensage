@@ -10,27 +10,17 @@
 
     internal class CreepWave
     {
-        #region Constants
-
         private const int Speed = 325;
 
         private const int SpeedMax = 406;
 
         private const int SpeedMin = 243;
 
-        #endregion
-
-        #region Fields
+        private readonly float timeAdded;
 
         public List<Creep> Creeps = new List<Creep>();
 
-        private readonly float timeAdded;
-
         private bool speedUpdated;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public CreepWave(LaneData laneData)
         {
@@ -44,10 +34,6 @@
                 speedUpdated = true;
             }
         }
-
-        #endregion
-
-        #region Public Properties
 
         public Vector3 CurrentPosition { get; set; }
 
@@ -64,10 +50,6 @@
         public float Time { get; set; }
 
         public bool WasVisible { get; set; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public int GetSpeed()
         {
@@ -107,7 +89,5 @@
                        ? Creeps.Any() && Creeps.All(x => x.IsValid && x.IsVisible)
                        : Creeps.Any(x => x.IsValid && x.IsVisible);
         }
-
-        #endregion
     }
 }

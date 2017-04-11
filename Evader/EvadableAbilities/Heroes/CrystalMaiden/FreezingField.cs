@@ -12,13 +12,7 @@
 
     internal class FreezingField : AOE
     {
-        #region Fields
-
         private readonly float duration;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public FreezingField(Ability ability)
             : base(ability)
@@ -34,10 +28,6 @@
 
             duration = ability.AbilitySpecialData.First(x => x.Name == "duration_tooltip").Value;
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -68,7 +58,5 @@
         {
             return Ability.IsChanneling;
         }
-
-        #endregion
     }
 }

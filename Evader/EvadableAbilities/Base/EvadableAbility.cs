@@ -18,8 +18,6 @@
 
     internal abstract class EvadableAbility
     {
-        #region Constructors and Destructors
-
         protected EvadableAbility(Ability ability)
         {
             AbilityOwner = (Unit)ability.Owner;
@@ -28,7 +26,7 @@
             Ability = ability;
             CastPoint = (float)ability.FindCastPoint();
             Name = ability.Name;
-            OwnerClassID = AbilityOwner.ClassID;
+            OwnerClassId = AbilityOwner.ClassId;
             IsDisable = ability.IsDisable() || ability.IsSilence();
             PiercesMagicImmunity = ability.PiercesMagicImmunity();
             CreateTime = Game.RawGameTime;
@@ -44,10 +42,6 @@
             Debugger.WriteLine("// Is disable: " + IsDisable);
             Debugger.WriteLine("// Pierces Magic Immunity: " + PiercesMagicImmunity);
         }
-
-        #endregion
-
-        #region Public Properties
 
         public Ability Ability { get; }
 
@@ -93,7 +87,7 @@
 
         public bool ObstacleStays { get; protected set; }
 
-        public ClassID OwnerClassID { get; }
+        public ClassId OwnerClassId { get; }
 
         public uint OwnerHandle { get; }
 
@@ -104,10 +98,6 @@
         public float StartCast { get; protected set; }
 
         public bool UseCustomPriority { get; set; }
-
-        #endregion
-
-        #region Properties
 
         protected AbilityDrawer AbilityDrawer { get; set; } = new AbilityDrawer();
 
@@ -120,10 +110,6 @@
         protected Team HeroTeam => Variables.HeroTeam;
 
         protected Pathfinder Pathfinder => Variables.Pathfinder;
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public virtual bool CanBeStopped()
         {
@@ -185,7 +171,5 @@
             var cooldownLength = Ability.CooldownLength;
             return cooldownLength <= 0 ? float.MaxValue : cooldownLength - Ability.Cooldown;
         }
-
-        #endregion
     }
 }

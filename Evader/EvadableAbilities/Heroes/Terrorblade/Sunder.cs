@@ -8,8 +8,6 @@
 
     internal class Sunder : LinearTarget
     {
-        #region Constructors and Destructors
-
         public Sunder(Ability ability)
             : base(ability)
         {
@@ -25,7 +23,5 @@
             CounterAbilities.Add(TricksOfTheTrade);
             CounterAbilities.AddRange(Invul);
         }
-
-        #endregion
     }
 }

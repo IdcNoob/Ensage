@@ -8,8 +8,6 @@
 
     internal class LightningBolt : LinearAOE
     {
-        #region Constructors and Destructors
-
         public LightningBolt(Ability ability)
             : base(ability)
         {
@@ -31,7 +29,5 @@
             CounterAbilities.Add(NetherWard);
             CounterAbilities.AddRange(Invis);
         }
-
-        #endregion
     }
 }

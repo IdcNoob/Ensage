@@ -9,13 +9,7 @@
 
     internal class Torrent : IAbility
     {
-        #region Fields
-
         private readonly Sleeper sleeper = new Sleeper();
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Torrent(Ability ability)
         {
@@ -25,19 +19,7 @@
             Radius = ability.GetRadius() + 25;
         }
 
-        #endregion
-
-        #region Public Properties
-
-        public Ability Ability { get; }
-
         public double AdditionalDelay { get; }
-
-        public bool CanBeCasted => !sleeper.Sleeping && Ability.CanBeCasted();
-
-        public bool Casted => Ability.Cooldown > 5;
-
-        public float CastPoint { get; }
 
         public float CastRange => Ability.GetCastRange() + 100;
 
@@ -47,13 +29,17 @@
 
         public double HitTime { get; private set; }
 
-        public uint ManaCost => Ability.ManaCost;
-
         public float Radius { get; }
 
-        #endregion
+        public Ability Ability { get; }
 
-        #region Public Methods and Operators
+        public bool CanBeCasted => !sleeper.Sleeping && Ability.CanBeCasted();
+
+        public bool Casted => Ability.Cooldown > 5;
+
+        public float CastPoint { get; }
+
+        public uint ManaCost => Ability.ManaCost;
 
         public void CalculateHitTime()
         {
@@ -71,7 +57,5 @@
             Ability.UseAbility(targetPosition);
             sleeper.Sleep(GetSleepTime + 300);
         }
-
-        #endregion
     }
 }

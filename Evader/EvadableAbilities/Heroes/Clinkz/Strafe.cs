@@ -11,8 +11,6 @@
 
     internal class Strafe : EvadableAbility, IModifier
     {
-        #region Constructors and Destructors
-
         public Strafe(Ability ability)
             : base(ability)
         {
@@ -30,15 +28,7 @@
             Modifier.EnemyCounterAbilities.AddRange(Invul);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -52,7 +42,5 @@
         {
             return 0;
         }
-
-        #endregion
     }
 }

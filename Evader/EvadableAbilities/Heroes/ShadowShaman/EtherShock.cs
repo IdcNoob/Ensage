@@ -8,8 +8,6 @@
 
     internal class EtherShock : LinearAOE
     {
-        #region Constructors and Destructors
-
         public EtherShock(Ability ability)
             : base(ability)
         {
@@ -20,7 +18,5 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Lotus);
         }
-
-        #endregion
     }
 }

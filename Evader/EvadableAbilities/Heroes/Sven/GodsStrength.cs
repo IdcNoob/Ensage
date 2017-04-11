@@ -11,8 +11,6 @@
 
     internal class GodsStrength : NoObstacleAbility, IModifier
     {
-        #region Constructors and Destructors
-
         public GodsStrength(Ability ability)
             : base(ability)
         {
@@ -31,12 +29,6 @@
             Modifier.EnemyCounterAbilities.AddRange(VsPhys);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

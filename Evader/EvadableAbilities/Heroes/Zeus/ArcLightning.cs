@@ -8,8 +8,6 @@
 
     internal class ArcLightning : LinearAOE
     {
-        #region Constructors and Destructors
-
         public ArcLightning(Ability ability)
             : base(ability)
         {
@@ -17,7 +15,5 @@
 
             CounterAbilities.Add(PhaseShift);
         }
-
-        #endregion
     }
 }

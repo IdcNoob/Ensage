@@ -11,8 +11,6 @@
 
     internal class CripplingFear : LinearTarget, IModifier
     {
-        #region Constructors and Destructors
-
         public CripplingFear(Ability ability)
             : base(ability)
         {
@@ -30,12 +28,6 @@
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

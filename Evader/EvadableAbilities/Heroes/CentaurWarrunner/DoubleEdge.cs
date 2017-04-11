@@ -8,8 +8,6 @@
 
     internal class DoubleEdge : LinearTarget
     {
-        #region Constructors and Destructors
-
         public DoubleEdge(Ability ability)
             : base(ability)
         {
@@ -20,7 +18,5 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Lotus);
         }
-
-        #endregion
     }
 }

@@ -15,13 +15,7 @@
 
     internal class SleightOfFist : AOE, IParticle
     {
-        #region Fields
-
         private readonly float jumpTime;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public SleightOfFist(Ability ability)
             : base(ability)
@@ -41,10 +35,6 @@
             CounterAbilities.Remove("tusk_frozen_sigil");
         }
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
             if (particleArgs.Name.Contains("caster"))
@@ -56,17 +46,16 @@
 
             DelayAction.Add(
                 1,
-                () => {
-                    StartPosition = particleArgs.ParticleEffect.GetControlPoint(0);
-                    var units =
-                        ObjectManager.GetEntities<Unit>()
+                () =>
+                    {
+                        StartPosition = particleArgs.ParticleEffect.GetControlPoint(0);
+                        var units = ObjectManager.GetEntities<Unit>()
                             .Count(
-                                x =>
-                                    x.IsValid && !(x is Building) && x.IsAlive && x.Team == HeroTeam && x.IsSpawned
-                                    && x.Distance2D(StartPosition) < GetRadius());
-                    EndCast = StartCast + units * jumpTime;
-                    Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
-                });
+                                x => x.IsValid && !(x is Building) && x.IsAlive && x.Team == HeroTeam && x.IsSpawned
+                                     && x.Distance2D(StartPosition) < GetRadius());
+                        EndCast = StartCast + units * jumpTime;
+                        Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
+                    });
         }
 
         public override bool CanBeStopped()
@@ -96,7 +85,5 @@
         {
             return true;
         }
-
-        #endregion
     }
 }

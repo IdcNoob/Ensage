@@ -14,16 +14,10 @@
 
     internal class ForceStaff : BlinkAbility
     {
-        #region Constructors and Destructors
-
         public ForceStaff(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
             : base(ability, type, target)
         {
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Use(EvadableAbility ability, Unit target)
         {
@@ -39,7 +33,5 @@
 
             Sleep();
         }
-
-        #endregion
     }
 }

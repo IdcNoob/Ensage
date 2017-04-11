@@ -4,8 +4,6 @@
 
     internal class OnAddRemoveMenu
     {
-        #region Constructors and Destructors
-
         public OnAddRemoveMenu(Menu mainMenu)
         {
             var menu = new Menu("On add/remove", "onAddRemove");
@@ -19,10 +17,6 @@
             mainMenu.AddSubMenu(menu);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public Abilities Abilities { get; }
 
         public Modifiers Modifiers { get; }
@@ -32,7 +26,5 @@
         public Projectiles Projectiles { get; }
 
         public Units Units { get; }
-
-        #endregion
     }
 }

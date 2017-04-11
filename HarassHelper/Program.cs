@@ -13,8 +13,6 @@
 
     internal class Program
     {
-        #region Static Fields
-
         private static MenuItem aggro;
 
         private static MenuItem aggroMove;
@@ -55,17 +53,12 @@
 
         private static MenuItem unaggroMove;
 
-        #endregion
-
-        #region Methods
-
         private static void Aggro()
         {
-            var enemy =
-                ObjectManager.GetEntitiesParallel<Hero>()
-                    .Where(x => x.IsValid && x.IsAlive && !x.IsInvul() && x.Team != heroTeam)
-                    .OrderBy(x => hero.FindRelativeAngle(x.Position))
-                    .FirstOrDefault();
+            var enemy = ObjectManager.GetEntitiesParallel<Hero>()
+                .Where(x => x.IsValid && x.IsAlive && !x.IsInvul() && x.Team != heroTeam)
+                .OrderBy(x => hero.FindRelativeAngle(x.Position))
+                .FirstOrDefault();
 
             if (enemy == null)
             {
@@ -142,22 +135,18 @@
 
             if (enabledTowerUnnagro.IsActive() && hero.Health < towerUnnagroHp.GetValue<Slider>().Value)
             {
-                var tower =
-                    ObjectManager.GetEntitiesParallel<Tower>()
-                        .FirstOrDefault(
-                            x =>
-                                x.IsValid && x.IsAlive && x.Team != heroTeam && x.AttackTarget is Hero
-                                && x.AttackTarget.Equals(hero));
+                var tower = ObjectManager.GetEntitiesParallel<Tower>()
+                    .FirstOrDefault(
+                        x => x.IsValid && x.IsAlive && x.Team != heroTeam && x.AttackTarget is Hero
+                             && x.AttackTarget.Equals(hero));
 
                 if (tower != null && !(lastTarget is Hero))
                 {
-                    var otherUnits =
-                        ObjectManager.GetEntitiesParallel<Unit>()
-                            .Any(
-                                x =>
-                                    x.IsValid && !x.Equals(hero) && x.IsAlive && x.IsSpawned && x.Team == heroTeam
-                                    && x.ClassID != ClassID.CDOTA_BaseNPC_Creep_Siege
-                                    && x.Distance2D(tower) < tower.AttackRange);
+                    var otherUnits = ObjectManager.GetEntitiesParallel<Unit>()
+                        .Any(
+                            x => x.IsValid && !x.Equals(hero) && x.IsAlive && x.IsSpawned && x.Team == heroTeam
+                                 && x.ClassId != ClassId.CDOTA_BaseNPC_Creep_Siege
+                                 && x.Distance2D(tower) < tower.AttackRange);
 
                     if (otherUnits)
                     {
@@ -214,23 +203,22 @@
                 enabledHarras = new MenuItem("enabled", "Enabled").SetValue(new KeyBind('Z', KeyBindType.Toggle)));
             menu.AddItem(showText = new MenuItem("showText", "Show active text").SetValue(true));
             menu.AddItem(
-                textX = new MenuItem("textX", "Text position X").SetValue(new Slider(10, 0, (int)HUDInfo.ScreenSizeX())));
+                textX =
+                    new MenuItem("textX", "Text position X").SetValue(new Slider(10, 0, (int)HUDInfo.ScreenSizeX())));
             menu.AddItem(
-                textY =
-                    new MenuItem("textY", "Text position Y").SetValue(
-                        new Slider((int)(HUDInfo.ScreenSizeY() * 0.70), 0, (int)HUDInfo.ScreenSizeY())));
+                textY = new MenuItem("textY", "Text position Y").SetValue(
+                    new Slider((int)(HUDInfo.ScreenSizeY() * 0.70), 0, (int)HUDInfo.ScreenSizeY())));
 
             menu.AddItem(aggro = new MenuItem("aggro", "Aggro key").SetValue(new KeyBind(107, KeyBindType.Press)));
-            menu.AddItem(unaggro = new MenuItem("unaggro", "Unaggro key").SetValue(new KeyBind(109, KeyBindType.Press)));
+            menu.AddItem(
+                unaggro = new MenuItem("unaggro", "Unaggro key").SetValue(new KeyBind(109, KeyBindType.Press)));
 
             menu.AddItem(
-                aggroMove =
-                    new MenuItem("aggroMove", "Aggro move").SetValue(false)
-                        .SetTooltip("Move to mouse position when using aggro"));
+                aggroMove = new MenuItem("aggroMove", "Aggro move").SetValue(false)
+                    .SetTooltip("Move to mouse position when using aggro"));
             menu.AddItem(
-                unaggroMove =
-                    new MenuItem("unaggroMove", "Unaggro move").SetValue(false)
-                        .SetTooltip("Move to mouse position when using unaggro"));
+                unaggroMove = new MenuItem("unaggroMove", "Unaggro move").SetValue(false)
+                    .SetTooltip("Move to mouse position when using unaggro"));
 
             menu.AddItem(
                 enabledTowerUnnagro =
@@ -278,9 +266,9 @@
             lastAttackPosition = new Vector3();
             lastMovePosition = new Vector3();
 
-            switch (args.Order)
+            switch (args.OrderId)
             {
-                case Order.AttackTarget:
+                case OrderId.AttackTarget:
                     lastTarget = args.Target as Unit;
 
                     if (!enabledHarras.IsActive())
@@ -306,10 +294,10 @@
                         sleeper.Sleep(0);
                     }
                     break;
-                case Order.AttackLocation:
+                case OrderId.AttackLocation:
                     lastAttackPosition = args.TargetPosition;
                     break;
-                case Order.MoveLocation:
+                case OrderId.MoveLocation:
                     lastMovePosition = args.TargetPosition;
                     break;
             }
@@ -317,11 +305,10 @@
 
         private static void UnAggro(bool towerUnnagro = false)
         {
-            var ally =
-                ObjectManager.GetEntitiesParallel<Creep>()
-                    .Where(x => x.IsValid && x.IsAlive && x.IsSpawned && x.Team == heroTeam)
-                    .OrderBy(x => hero.FindRelativeAngle(x.Position))
-                    .FirstOrDefault();
+            var ally = ObjectManager.GetEntitiesParallel<Creep>()
+                .Where(x => x.IsValid && x.IsAlive && x.IsSpawned && x.Team == heroTeam)
+                .OrderBy(x => hero.FindRelativeAngle(x.Position))
+                .FirstOrDefault();
 
             if (ally == null)
             {
@@ -345,7 +332,5 @@
                 hero.Stop();
             }
         }
-
-        #endregion
     }
 }

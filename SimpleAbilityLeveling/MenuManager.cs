@@ -7,8 +7,6 @@
 
     internal class MenuManager
     {
-        #region Fields
-
         private readonly Dictionary<string, MenuItem> abilityItems = new Dictionary<string, MenuItem>();
 
         private readonly MenuItem abilityPriority;
@@ -24,10 +22,6 @@
         private readonly Menu menu;
 
         private readonly MenuItem showAutoBuild;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public MenuManager(List<string> abilties, string name)
         {
@@ -69,22 +63,22 @@
 
             menu = new Menu("Ability Leveling", "simpleAbilityLeveling", true, "attribute_bonus", true);
             menu.AddItem(
-                    enabledAuto =
-                        new MenuItem("enabledAuto", "Enabled auto mode", true).SetValue(false)
-                            .SetTooltip(
-                                "Abilities will be leveled by biggest win rate build on dotabuff.com (all settings will be ignored)"))
-                .ValueChanged += (sender, args) => {
-                if (args.GetNewValue<bool>())
+                    enabledAuto = new MenuItem("enabledAuto", "Enabled auto mode", true).SetValue(false)
+                        .SetTooltip(
+                            "Abilities will be leveled by biggest win rate build on dotabuff.com (all settings will be ignored)"))
+                .ValueChanged += (sender, args) =>
                 {
-                    enabledManual.SetValue(false);
-                }
-            };
+                    if (args.GetNewValue<bool>())
+                    {
+                        enabledManual.SetValue(false);
+                    }
+                };
 
             menu.AddItem(
-                    enabledManual =
-                        new MenuItem("enabledManual", "Enabled manual mode", true).SetValue(false)
-                            .SetTooltip("Abilties will be leveled by selected order and settings")).ValueChanged +=
-                (sender, args) => {
+                    enabledManual = new MenuItem("enabledManual", "Enabled manual mode", true).SetValue(false)
+                        .SetTooltip("Abilties will be leveled by selected order and settings"))
+                .ValueChanged += (sender, args) =>
+                {
                     if (args.GetNewValue<bool>())
                     {
                         enabledAuto.SetValue(false);
@@ -94,10 +88,9 @@
             menu.AddItem(showAutoBuild = new MenuItem("showAutoBuild", "Show auto build preview", true).SetValue(true));
 
             menu.AddItem(
-                heroLevel =
-                    new MenuItem("heroLevel", "Required hero level", true).SetValue(
-                            new StringList(levels.Skip(1).ToArray()))
-                        .SetTooltip("Will start leveling abilities only when your hero will reach selected level"));
+                heroLevel = new MenuItem("heroLevel", "Required hero level", true)
+                    .SetValue(new StringList(levels.Skip(1).ToArray()))
+                    .SetTooltip("Will start leveling abilities only when your hero will reach selected level"));
 
             menu.AddItem(
                 abilityToggler =
@@ -112,10 +105,6 @@
             menu.AddToMainMenu();
         }
 
-        #endregion
-
-        #region Public Properties
-
         public bool IsEnabledAuto => enabledAuto.IsActive();
 
         public bool IsEnabledManual => enabledManual.IsActive();
@@ -123,10 +112,6 @@
         public bool IsOpen => menu.IsOpen;
 
         public bool ShowAutoBuild => showAutoBuild.IsActive();
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public bool AbilityActive(string abilityName)
         {
@@ -169,7 +154,5 @@
         {
             menu.RemoveFromMainMenu();
         }
-
-        #endregion
     }
 }

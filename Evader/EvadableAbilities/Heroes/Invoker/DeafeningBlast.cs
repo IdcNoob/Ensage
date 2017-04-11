@@ -9,13 +9,7 @@
 
     internal class DeafeningBlast : LinearProjectile
     {
-        #region Fields
-
         private readonly Ability talent;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public DeafeningBlast(Ability ability)
             : base(ability)
@@ -32,10 +26,6 @@
 
             talent = AbilityOwner.FindSpell("special_bonus_unique_invoker_2");
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override bool CanBeStopped()
         {
@@ -87,15 +77,9 @@
             }
         }
 
-        #endregion
-
-        #region Methods
-
         private bool IsAOE()
         {
             return talent?.Level > 0;
         }
-
-        #endregion
     }
 }

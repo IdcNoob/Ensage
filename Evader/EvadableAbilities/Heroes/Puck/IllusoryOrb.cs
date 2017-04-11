@@ -11,15 +11,9 @@
 
     internal class IllusoryOrb : LinearProjectile
     {
-        #region Fields
-
         private readonly float bonus;
 
         private readonly Ability talent;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public IllusoryOrb(Ability ability)
             : base(ability)
@@ -39,24 +33,14 @@
             }
         }
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public override float GetProjectileSpeed()
         {
             return base.GetProjectileSpeed() * (talent?.Level > 0 ? bonus : 1);
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetCastRange()
         {
             return base.GetCastRange() * (talent?.Level > 0 ? bonus : 1);
         }
-
-        #endregion
     }
 }

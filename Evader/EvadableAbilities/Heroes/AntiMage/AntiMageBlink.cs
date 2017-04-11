@@ -8,14 +8,10 @@
 
     internal class AntiMageBlink : NoObstacleAbility
     {
-        #region Constructors and Destructors
-
         public AntiMageBlink(Ability ability)
             : base(ability)
         {
             DisableAbilities.AddRange(DisableAbilityNames);
         }
-
-        #endregion
     }
 }

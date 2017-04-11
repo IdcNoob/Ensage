@@ -14,8 +14,6 @@
 
     internal static class TimberPrediction
     {
-        #region Static Fields
-
         private static readonly Dictionary<float, float> LastRotRDictionary = new Dictionary<float, float>();
 
         private static readonly Dictionary<float, double> RotSpeedDictionary = new Dictionary<float, double>();
@@ -27,10 +25,6 @@
         private static readonly List<Prediction> TrackTable = new List<Prediction>();
 
         private static List<Hero> playerList = new List<Hero>();
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public static bool IsIdle(Unit unit)
         {
@@ -78,8 +72,8 @@
             }
 
             LastRotRDictionary[target.Handle] = target.RotationRad;
-            if ((target.ClassID == ClassID.CDOTA_Unit_Hero_StormSpirit
-                 || target.ClassID == ClassID.CDOTA_Unit_Hero_Rubick)
+            if ((target.ClassId == ClassId.CDOTA_Unit_Hero_StormSpirit
+                 || target.ClassId == ClassId.CDOTA_Unit_Hero_Rubick)
                 && target.HasModifier("modifier_storm_spirit_ball_lightning"))
             {
                 var ballLightning = target.FindSpell("storm_spirit_ball_lightning", true);
@@ -124,14 +118,13 @@
             var tempTable = new List<Prediction>(TrackTable);
             foreach (var unit in playerList.Where(x => x.IsValid))
             {
-                var data =
-                    tempTable.FirstOrDefault(
-                        unitData => unitData.UnitName == unit.StoredName() || unitData.UnitClassId == unit.ClassID);
+                var data = tempTable.FirstOrDefault(
+                    unitData => unitData.UnitName == unit.StoredName() || unitData.UnitClassId == unit.ClassId);
                 if (data == null && unit.IsAlive && unit.IsVisible)
                 {
                     data = new Prediction(
                         unit.StoredName(),
-                        unit.ClassID,
+                        unit.ClassId,
                         new Vector3(0, 0, 0),
                         0,
                         new Vector3(0, 0, 0),
@@ -217,7 +210,5 @@
 
             return (Environment.TickCount & int.MaxValue) - RotTimeDictionary[unit.Handle] + Game.Ping;
         }
-
-        #endregion
     }
 }

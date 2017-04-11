@@ -16,19 +16,9 @@
 
     internal class GoldSpender
     {
-        #region Fields
-
         private readonly Sleeper sleeper = new Sleeper();
 
-        #endregion
-
-        #region Properties
-
         private static Hero Hero => Variables.Hero;
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public bool ShouldSpendGold(EvadableAbility ability)
         {
@@ -65,7 +55,5 @@
             Utils.Sleep(1000, "GoldSpender.ForceSpend");
             sleeper.Sleep(1000);
         }
-
-        #endregion
     }
 }

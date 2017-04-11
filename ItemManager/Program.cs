@@ -8,13 +8,7 @@
 
     internal class Program
     {
-        #region Static Fields
-
-        private static readonly ItemManager ItemManager = new ItemManager();
-
-        #endregion
-
-        #region Methods
+        private static readonly Bootstrap Bootstrap = new Bootstrap();
 
         private static void Main()
         {
@@ -24,14 +18,12 @@
 
         private static void OnClose(object sender, EventArgs eventArgs)
         {
-            ItemManager.OnClose();
+            Bootstrap.OnClose();
         }
 
         private static void OnLoad(object sender, EventArgs eventArgs)
         {
-            ItemManager.OnLoad();
+            Bootstrap.OnLoad();
         }
-
-        #endregion
     }
 }

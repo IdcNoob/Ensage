@@ -11,8 +11,6 @@
 
     internal class Desecrate : AOE, IModifier
     {
-        #region Constructors and Destructors
-
         public Desecrate(Ability ability)
             : base(ability)
         {
@@ -31,12 +29,6 @@
             Modifier.AllyCounterAbilities.AddRange(AllyPurges);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

@@ -7,23 +7,13 @@
 
     internal class Bootstrap
     {
-        #region Fields
-
         private readonly JungleStacker jungleStacker;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Bootstrap()
         {
             jungleStacker = new JungleStacker();
             Events.OnLoad += Events_OnLoad;
         }
-
-        #endregion
-
-        #region Methods
 
         private void Events_OnClose(object sender, EventArgs e)
         {
@@ -63,7 +53,5 @@
         {
             jungleStacker.OnExecuteAction(args);
         }
-
-        #endregion
     }
 }

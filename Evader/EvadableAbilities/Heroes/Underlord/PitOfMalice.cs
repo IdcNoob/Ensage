@@ -11,8 +11,6 @@
 
     internal class PitOfMalice : LinearAOE, IModifier
     {
-        #region Constructors and Destructors
-
         public PitOfMalice(Ability ability)
             : base(ability)
         {
@@ -27,12 +25,6 @@
             Modifier.AllyCounterAbilities.AddRange(AllyPurges);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

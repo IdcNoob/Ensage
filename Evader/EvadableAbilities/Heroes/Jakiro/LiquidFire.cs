@@ -13,13 +13,7 @@
 
     internal class LiquidFire : Projectile, IModifier
     {
-        #region Fields
-
         private readonly float projectileSpeed;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public LiquidFire(Ability ability)
             : base(ability)
@@ -36,15 +30,7 @@
             projectileSpeed = (float)AbilityOwner.ProjectileSpeed();
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override float GetProjectileSpeed()
         {
@@ -62,7 +48,5 @@
 
             return position.Distance2D(GetProjectilePosition()) / GetProjectileSpeed();
         }
-
-        #endregion
     }
 }

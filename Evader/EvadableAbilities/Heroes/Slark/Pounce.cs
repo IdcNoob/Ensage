@@ -15,8 +15,6 @@
 
     internal class Pounce : LinearProjectile, IParticle, IModifier
     {
-        #region Constructors and Destructors
-
         public Pounce(Ability ability)
             : base(ability)
         {
@@ -39,15 +37,7 @@
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
@@ -58,8 +48,8 @@
 
             StartCast = Game.RawGameTime;
             StartPosition = AbilityOwner.NetworkPosition;
-            EndPosition = StartPosition
-                          + (Vector3)(VectorExtensions.FromPolarAngle(AbilityOwner.RotationRad) * GetCastRange());
+            EndPosition = StartPosition + (Vector3)(VectorExtensions.FromPolarAngle(AbilityOwner.RotationRad)
+                                                    * GetCastRange());
             EndCast = StartCast + GetCastRange() / GetProjectileSpeed();
             Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
         }
@@ -76,7 +66,5 @@
                 End();
             }
         }
-
-        #endregion
     }
 }

@@ -14,13 +14,7 @@
 
     internal class CallDown : AOE, IParticle, IModifier
     {
-        #region Fields
-
         private bool second;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public CallDown(Ability ability)
             : base(ability)
@@ -45,15 +39,7 @@
             AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "slow_duration_first").Value;
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
@@ -61,11 +47,12 @@
 
             DelayAction.Add(
                 1,
-                () => {
-                    StartPosition = particleArgs.ParticleEffect.GetControlPoint(1);
-                    EndCast = StartCast + AdditionalDelay;
-                    Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
-                });
+                () =>
+                    {
+                        StartPosition = particleArgs.ParticleEffect.GetControlPoint(1);
+                        EndCast = StartCast + AdditionalDelay;
+                        Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
+                    });
         }
 
         public override bool CanBeStopped()
@@ -103,7 +90,5 @@
         {
             return EndCast - Game.RawGameTime;
         }
-
-        #endregion
     }
 }

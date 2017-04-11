@@ -20,24 +20,14 @@
 
     internal class BlinkAbility : UsableAbility
     {
-        #region Constructors and Destructors
-
         public BlinkAbility(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
             : base(ability, type, target)
         {
         }
 
-        #endregion
-
-        #region Properties
-
         protected Vector3 BlinkPosition { get; set; }
 
         protected Pathfinder Pathfinder => Variables.Pathfinder;
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
@@ -75,8 +65,8 @@
             if (obtsacles.Any())
             {
                 bool success;
-                BlinkPosition =
-                    Pathfinder.CalculatePathFromObstacle(BlinkPosition, BlinkPosition, 5, out success).LastOrDefault();
+                BlinkPosition = Pathfinder.CalculatePathFromObstacle(BlinkPosition, BlinkPosition, 5, out success)
+                    .LastOrDefault();
 
                 if (!success)
                 {
@@ -94,7 +84,5 @@
             Ability.UseAbility(BlinkPosition);
             Sleep();
         }
-
-        #endregion
     }
 }

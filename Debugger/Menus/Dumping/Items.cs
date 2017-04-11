@@ -8,8 +8,6 @@
 
     internal class Items
     {
-        #region Constructors and Destructors
-
         public Items(Menu mainMenu)
         {
             var menu = new Menu("Items", "itemsDumpMenu");
@@ -63,16 +61,6 @@
             mainMenu.AddSubMenu(menu);
         }
 
-        #endregion
-
-        #region Public Events
-
-        public event EventHandler OnDump;
-
-        #endregion
-
-        #region Public Properties
-
         public bool ShowBackpackItems { get; private set; }
 
         public bool ShowBehavior { get; private set; }
@@ -89,6 +77,6 @@
 
         public bool ShowTargetType { get; private set; }
 
-        #endregion
+        public event EventHandler OnDump;
     }
 }

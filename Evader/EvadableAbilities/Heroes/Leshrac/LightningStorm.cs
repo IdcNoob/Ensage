@@ -8,8 +8,6 @@
 
     internal class LightningStorm : LinearAOE
     {
-        #region Constructors and Destructors
-
         public LightningStorm(Ability ability)
             : base(ability)
         {
@@ -19,7 +17,5 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
         }
-
-        #endregion
     }
 }

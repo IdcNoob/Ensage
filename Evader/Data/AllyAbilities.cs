@@ -11,10 +11,8 @@ namespace Evader.Data
 
     internal class AllyAbilities
     {
-        #region Public Properties
-
-        public Dictionary<string, Func<Ability, UsableAbility>> BlinkAbilities { get; } = new Dictionary
-            <string, Func<Ability, UsableAbility>>
+        public Dictionary<string, Func<Ability, UsableAbility>> BlinkAbilities { get; } =
+            new Dictionary<string, Func<Ability, UsableAbility>>
             {
                 { "ember_spirit_activate_fire_remnant", ability => new FireRemnant(ability, AbilityType.Blink) },
                 { "morphling_morph_replicate", ability => new Replicate(ability, AbilityType.Blink) },
@@ -35,8 +33,8 @@ namespace Evader.Data
                 { "item_force_staff", ability => new ForceStaff(ability, AbilityType.Blink) }
             };
 
-        public Dictionary<string, Func<Ability, UsableAbility>> CounterAbilities { get; } = new Dictionary
-            <string, Func<Ability, UsableAbility>>
+        public Dictionary<string, Func<Ability, UsableAbility>> CounterAbilities { get; } =
+            new Dictionary<string, Func<Ability, UsableAbility>>
             {
                 { "storm_spirit_ball_lightning", ability => new BallLightning(ability, AbilityType.Counter) },
                 { "ursa_enrage", ability => new Enrage(ability, AbilityType.Counter) },
@@ -52,8 +50,10 @@ namespace Evader.Data
                 },
                 {
                     "oracle_fortunes_end",
-                    ability =>
-                        new FortunesEnd(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                    ability => new FortunesEnd(
+                        ability,
+                        AbilityType.Counter,
+                        AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 { "phoenix_supernova", ability => new Supernova(ability, AbilityType.Counter) },
                 { "tusk_snowball", ability => new Snowball(ability, AbilityType.Counter, AbilityCastTarget.Ally) },
@@ -101,33 +101,45 @@ namespace Evader.Data
                 { "razor_static_link", ability => new Targetable(ability, AbilityType.Counter) },
                 {
                     "item_ethereal_blade",
-                    ability =>
-                        new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                    ability => new Targetable(
+                        ability,
+                        AbilityType.Counter,
+                        AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 {
                     "pugna_decrepify",
-                    ability =>
-                        new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                    ability => new Targetable(
+                        ability,
+                        AbilityType.Counter,
+                        AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 {
                     "obsidian_destroyer_astral_imprisonment",
-                    ability =>
-                        new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                    ability => new Targetable(
+                        ability,
+                        AbilityType.Counter,
+                        AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 {
                     "shadow_demon_disruption",
-                    ability =>
-                        new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                    ability => new Targetable(
+                        ability,
+                        AbilityType.Counter,
+                        AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 {
                     "bane_nightmare",
-                    ability =>
-                        new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                    ability => new Targetable(
+                        ability,
+                        AbilityType.Counter,
+                        AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 {
                     "oracle_fates_edict",
-                    ability =>
-                        new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
+                    ability => new Targetable(
+                        ability,
+                        AbilityType.Counter,
+                        AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 {
                     "item_diffusal_blade",
@@ -163,7 +175,8 @@ namespace Evader.Data
                 { "lich_frost_armor", ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally) },
                 { "sven_warcry", ability => new NotTargetable(ability, AbilityType.Counter, AbilityCastTarget.Ally) },
                 {
-                    "treant_living_armor", ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally)
+                    "treant_living_armor",
+                    ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally)
                 },
                 {
                     "tusk_frozen_sigil",
@@ -196,17 +209,20 @@ namespace Evader.Data
                     "winter_wyvern_cold_embrace",
                     ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally)
                 },
-                { "item_glimmer_cape", ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally) },
+                {
+                    "item_glimmer_cape", ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally)
+                },
                 { "item_lotus_orb", ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Ally) },
                 {
-                    "item_quelling_blade", ability => new TargetTree(ability, AbilityType.Counter, AbilityCastTarget.Ally)
+                    "item_quelling_blade",
+                    ability => new TargetTree(ability, AbilityType.Counter, AbilityCastTarget.Ally)
                 },
                 { "item_iron_talon", ability => new TargetTree(ability, AbilityType.Counter, AbilityCastTarget.Ally) },
                 { "item_bfury", ability => new TargetTree(ability, AbilityType.Counter, AbilityCastTarget.Ally) }
             };
 
-        public Dictionary<string, Func<Ability, UsableAbility>> DisableAbilities { get; } = new Dictionary
-            <string, Func<Ability, UsableAbility>>
+        public Dictionary<string, Func<Ability, UsableAbility>> DisableAbilities { get; } =
+            new Dictionary<string, Func<Ability, UsableAbility>>
             {
                 { "earthshaker_echo_slam", ability => new EchoSlam(ability, AbilityType.Disable) },
                 { "ember_spirit_searing_chains", ability => new SearingChains(ability, AbilityType.Disable) },
@@ -269,7 +285,5 @@ namespace Evader.Data
                 { "silencer_global_silence", ability => new NotTargetable(ability, AbilityType.Disable) },
                 { "slardar_slithereen_crush", ability => new NotTargetable(ability, AbilityType.Disable) }
             };
-
-        #endregion
     }
 }

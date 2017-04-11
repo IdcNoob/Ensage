@@ -12,8 +12,6 @@
 
     internal class Laser : LinearTarget, IModifier
     {
-        #region Constructors and Destructors
-
         public Laser(Ability ability)
             : base(ability)
         {
@@ -32,15 +30,7 @@
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Methods
 
         protected override float GetCastRange()
         {
@@ -51,7 +41,5 @@
         {
             return AbilityOwner.AghanimState() ? 400 : base.GetRadius();
         }
-
-        #endregion
     }
 }

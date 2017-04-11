@@ -8,8 +8,6 @@
 
     internal static class DrawingUtils
     {
-        #region Public Methods and Operators
-
         public static void RoundedRectangle(float x, float y, float w, float h, int iSmooth, Color color)
         {
             var pt = new Vector2[4];
@@ -48,7 +46,5 @@
                 fDegree += (float)(Math.PI * 2) / 4; // quarter circle offset 
             }
         }
-
-        #endregion
     }
 }

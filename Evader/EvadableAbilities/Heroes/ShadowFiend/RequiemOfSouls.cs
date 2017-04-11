@@ -14,15 +14,9 @@
 
     internal class RequiemOfSouls : AOE, IModifier
     {
-        #region Fields
-
         private readonly float projectileSpeed;
 
         private readonly float width;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public RequiemOfSouls(Ability ability)
             : base(ability)
@@ -48,15 +42,7 @@
             width = ability.AbilitySpecialData.First(x => x.Name == "requiem_line_width_end").Value;
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -91,15 +77,9 @@
                    - Game.RawGameTime;
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetRadius()
         {
             return base.GetRadius() + width;
         }
-
-        #endregion
     }
 }

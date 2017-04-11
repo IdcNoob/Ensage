@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ItemManager</RootNamespace>
     <AssemblyName>ItemManager</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -39,28 +40,64 @@
     <Reference Include="Ensage.Common">
       <HintPath>C:\BanIsComing\References\Ensage.Common.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX">
-      <HintPath>C:\BanIsComing\References\SharpDX.dll</HintPath>
+    <Reference Include="SharpDX.Mathematics">
+      <HintPath>C:\BanIsComing\References\SharpDX.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Bootstrap.cs" />
+    <Compile Include="Core\Modules\CourierHelper\CourierHelper.cs" />
     <Compile Include="Core\ItemManager.cs" />
-    <Compile Include="Core\Items.cs" />
-    <Compile Include="Core\ItemSwapper.cs" />
-    <Compile Include="Menus\ItemSwap\Auto.cs" />
-    <Compile Include="Menus\ItemSwap\Backpack.cs" />
-    <Compile Include="Menus\ItemSwap\Stash.cs" />
-    <Compile Include="Menus\ItemSwap\ItemSwapMenu.cs" />
+    <Compile Include="Core\Modules\GoldSpender\GoldSpender.cs" />
+    <Compile Include="Core\Modules\HpMpAbuse\HpMpAbuse.cs" />
+    <Compile Include="Core\Modules\HpMpAbuse\Helpers\AbilityUpdater.cs" />
+    <Compile Include="Core\Modules\HpMpAbuse\Helpers\Fountain.cs" />
+    <Compile Include="Core\Modules\HpMpAbuse\Items\ArcaneBoots.cs" />
+    <Compile Include="Core\Modules\HpMpAbuse\Items\Bottle.cs" />
+    <Compile Include="Core\Modules\HpMpAbuse\Items\GuardianGreaves.cs" />
+    <Compile Include="Core\Modules\HpMpAbuse\Items\ItemManager.cs" />
+    <Compile Include="Core\Modules\HpMpAbuse\Items\MagicStick.cs" />
+    <Compile Include="Core\Modules\HpMpAbuse\Items\Mekansm.cs" />
+    <Compile Include="Core\Modules\HpMpAbuse\Items\PowerTreads.cs" />
+    <Compile Include="Core\Modules\HpMpAbuse\Items\Shrine.cs" />
+    <Compile Include="Core\Modules\HpMpAbuse\Items\SoulRing.cs" />
+    <Compile Include="Core\Modules\HpMpAbuse\Items\StashBottle.cs" />
+    <Compile Include="Core\Modules\HpMpAbuse\Items\TranquilBoots.cs" />
+    <Compile Include="Core\Modules\HpMpAbuse\Items\UrnOfShadows.cs" />
+    <Compile Include="Core\Modules\HpMpAbuse\Items\UsableItem.cs" />
+    <Compile Include="Core\Modules\ItemSwapper\ItemSwapper.cs" />
+    <Compile Include="Core\Modules\ShrineHelper\ShrineHelper.cs" />
+    <Compile Include="Core\Modules\Snatcher\Controllables\Controllable.cs" />
+    <Compile Include="Core\Modules\Snatcher\Controllables\MeepoClone.cs" />
+    <Compile Include="Core\Modules\Snatcher\Controllables\MyHero.cs" />
+    <Compile Include="Core\Modules\Snatcher\Controllables\SpiritBear.cs" />
+    <Compile Include="Core\Modules\Snatcher\Snatcher.cs" />
+    <Compile Include="Menus\Modules\CourierHelper\CourierHelperMenu.cs" />
+    <Compile Include="Menus\Modules\GoldSpender\GoldSpenderMenu.cs" />
+    <Compile Include="Menus\Modules\ItemSwap\Auto.cs" />
+    <Compile Include="Menus\Modules\ItemSwap\Backpack.cs" />
+    <Compile Include="Menus\Modules\ItemSwap\Courier.cs" />
+    <Compile Include="Menus\Modules\ItemSwap\Stash.cs" />
+    <Compile Include="Menus\Modules\ItemSwap\ItemSwapMenu.cs" />
     <Compile Include="Menus\MenuManager.cs" />
+    <Compile Include="Menus\Modules\PowerTreadsSwitcher\PowerTreadsSwitcherMenu.cs" />
+    <Compile Include="Menus\Modules\Recovery\RecoveryMenu.cs" />
+    <Compile Include="Menus\Modules\ShrineHelper\ShrineHelperMenu.cs" />
+    <Compile Include="Menus\Modules\Snatcher\SnatcherMenu.cs" />
+    <Compile Include="Menus\Modules\SoulRing\SoulRingMenu.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\CourierUtils.cs" />
+    <Compile Include="Utils\InventoryUtils.cs" />
+    <Compile Include="Utils\ItemUtils.cs" />
+    <Compile Include="Utils\HeroUtils.cs" />
+    <Compile Include="Utils\ModifierUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

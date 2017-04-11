@@ -16,15 +16,9 @@
 
     internal class StaticStorm : AOE, IModifierObstacle
     {
-        #region Fields
-
         private readonly float duration, durationAghanim;
 
         private Modifier modifierThinker;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public StaticStorm(Ability ability)
             : base(ability)
@@ -41,10 +35,6 @@
             duration = Ability.AbilitySpecialData.First(x => x.Name == "duration").Value;
             durationAghanim = Ability.AbilitySpecialData.First(x => x.Name == "duration_scepter").Value;
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddModifierObstacle(Modifier mod, Unit unit)
         {
@@ -99,15 +89,9 @@
             return ability.Type != AbilityType.Disable && modifierThinker != null;
         }
 
-        #endregion
-
-        #region Methods
-
         private float GetDuration()
         {
             return AbilityOwner.AghanimState() ? durationAghanim : duration;
         }
-
-        #endregion
     }
 }

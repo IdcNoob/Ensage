@@ -13,13 +13,7 @@
 
     internal class Waveform : LinearProjectile, IModifierObstacle
     {
-        #region Fields
-
         private Modifier waveModifier;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Waveform(Ability ability)
             : base(ability)
@@ -32,10 +26,6 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddModifierObstacle(Modifier modifier, Unit unit)
         {
@@ -70,7 +60,5 @@
             base.End();
             waveModifier = null;
         }
-
-        #endregion
     }
 }

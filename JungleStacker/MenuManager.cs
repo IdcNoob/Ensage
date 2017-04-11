@@ -8,30 +8,16 @@
 
     internal class MenuArgs : EventArgs
     {
-        #region Public Properties
-
         public bool Enabled { get; set; }
-
-        #endregion
     }
 
     internal class MenuManager
     {
-        #region Static Fields
-
         private static MenuItem debug;
 
         private static MenuItem enabled;
 
-        #endregion
-
-        #region Fields
-
         private readonly Menu menu = new Menu("Jungle Stacker", "jungleStacker", true);
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public MenuManager()
         {
@@ -44,7 +30,8 @@
             menu.AddItem(new MenuItem("heroStack", "Stack with hero").SetValue(new KeyBind('K', KeyBindType.Press)))
                 .SetTooltip("Will stack closest camp with your hero")
                 .ValueChanged += OnHeroStackEabled;
-            menu.AddItem(
+            menu
+                .AddItem(
                     new MenuItem("forceAdd", "Force add/remove unit").SetValue(new KeyBind('L', KeyBindType.Press)))
                 .SetTooltip(
                     "Will add/remove selected unit to/from controllables. Useful for ally dominated creep with shared control")
@@ -56,9 +43,9 @@
             menu.AddToMainMenu();
         }
 
-        #endregion
+        public bool IsDebugEnabled => debug.IsActive();
 
-        #region Public Events
+        public bool IsEnabled => enabled.IsActive();
 
         public event EventHandler OnForceAdd;
 
@@ -67,18 +54,6 @@
         public event EventHandler<MenuArgs> OnProgramStateChange;
 
         public event EventHandler OnStacksReset;
-
-        #endregion
-
-        #region Public Properties
-
-        public bool IsDebugEnabled => debug.IsActive();
-
-        public bool IsEnabled => enabled.IsActive();
-
-        #endregion
-
-        #region Methods
 
         private static void OnDebugChange(object sender, OnValueChangeEventArgs arg)
         {
@@ -118,7 +93,5 @@
                 OnStacksReset?.Invoke(this, EventArgs.Empty);
             }
         }
-
-        #endregion
     }
 }

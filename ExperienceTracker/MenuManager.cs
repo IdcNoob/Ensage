@@ -4,8 +4,6 @@
 
     internal class MenuManager
     {
-        #region Fields
-
         private readonly MenuItem enabled;
 
         private readonly Menu menu;
@@ -25,10 +23,6 @@
         private readonly MenuItem warningX;
 
         private readonly MenuItem warningY;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public MenuManager()
         {
@@ -50,10 +44,6 @@
             menu.AddToMainMenu();
         }
 
-        #endregion
-
-        #region Public Properties
-
         public bool Enabled => enabled.IsActive();
 
         public bool SimplifiedWarning => simplified.IsActive();
@@ -72,15 +62,9 @@
 
         public int WarningY => warningY.GetValue<Slider>().Value;
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public void OnClose()
         {
             menu.RemoveFromMainMenu();
         }
-
-        #endregion
     }
 }

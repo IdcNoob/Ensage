@@ -8,14 +8,10 @@
 
     internal class ReplicateTeleport : NoObstacleAbility
     {
-        #region Constructors and Destructors
-
         public ReplicateTeleport(Ability ability)
             : base(ability)
         {
             DisableAbilities.AddRange(DisableAbilityNames);
         }
-
-        #endregion
     }
 }

@@ -8,8 +8,6 @@
 
     internal class HurlBoulder : Projectile
     {
-        #region Constructors and Destructors
-
         public HurlBoulder(Ability ability)
             : base(ability)
         {
@@ -21,7 +19,5 @@
             CounterAbilities.AddRange(VsLowDisable);
             CounterAbilities.AddRange(Invis);
         }
-
-        #endregion
     }
 }

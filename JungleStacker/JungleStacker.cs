@@ -15,11 +15,9 @@
 
     internal class JungleStacker
     {
-        #region Fields
-
         private readonly List<Controllable> controllableUnits = new List<Controllable>();
 
-        private readonly List<ClassID> ignoredUnits = new List<ClassID>();
+        private readonly List<ClassId> ignoredUnits = new List<ClassId>();
 
         private readonly MenuManager menu = new MenuManager();
 
@@ -33,10 +31,6 @@
 
         private Sleeper sleeper;
 
-        #endregion
-
-        #region Constructors and Destructors
-
         public JungleStacker()
         {
             menu.OnProgramStateChange += OnProgramStateChange;
@@ -44,22 +38,18 @@
             menu.OnForceAdd += OnForceAdd;
             menu.OnStacksReset += OnStacksReset;
 
-            ignoredUnits.Add(ClassID.CDOTA_Unit_Brewmaster_PrimalEarth);
-            ignoredUnits.Add(ClassID.CDOTA_Unit_Brewmaster_PrimalFire);
-            ignoredUnits.Add(ClassID.CDOTA_Unit_Brewmaster_PrimalStorm);
+            ignoredUnits.Add(ClassId.CDOTA_Unit_Brewmaster_PrimalEarth);
+            ignoredUnits.Add(ClassId.CDOTA_Unit_Brewmaster_PrimalFire);
+            ignoredUnits.Add(ClassId.CDOTA_Unit_Brewmaster_PrimalStorm);
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void OnAddEntity(EntityEventArgs args)
         {
             var unit = args.Entity as Unit;
 
             if (unit == null || !unit.IsValid || !unit.IsControllable || unit.Team != heroTeam
-                || (unit.IsIllusion && unit.ClassID != hero.ClassID) || unit.AttackCapability == AttackCapability.None
-                || ignoredUnits.Contains(unit.ClassID) || unit.Equals(hero))
+                || (unit.IsIllusion && unit.ClassId != hero.ClassId) || unit.AttackCapability == AttackCapability.None
+                || ignoredUnits.Contains(unit.ClassId) || unit.Equals(hero))
             {
                 return;
             }
@@ -85,9 +75,9 @@
 
         public void OnExecuteAction(ExecuteOrderEventArgs args)
         {
-            var order = args.Order;
+            var order = args.OrderId;
 
-            if (order == Order.Hold || order == Order.MoveLocation)
+            if (order == OrderId.Hold || order == OrderId.MoveLocation)
             {
                 foreach (var entity in args.Entities)
                 {
@@ -115,8 +105,8 @@
             }
 
             if (ability.StoredName() == "item_helm_of_the_dominator"
-                || ability.ClassID == ClassID.CDOTA_Ability_Chen_HolyPersuasion
-                || ability.ClassID == ClassID.CDOTA_Ability_Enchantress_Enchant)
+                || ability.ClassId == ClassId.CDOTA_Ability_Chen_HolyPersuasion
+                || ability.ClassId == ClassId.CDOTA_Ability_Enchantress_Enchant)
             {
                 delayedUnit = target;
             }
@@ -186,10 +176,9 @@
                 delayedUnit = null;
             }
 
-            foreach (var camp in
-                jungleCamps.GetCamps.Where(
-                        x => x.RequiredStacksCount > 1 && x.CurrentStacksCount < x.RequiredStacksCount && !x.IsStacking)
-                    .OrderByDescending(x => x.Ancients))
+            foreach (var camp in jungleCamps.GetCamps
+                .Where(x => x.RequiredStacksCount > 1 && x.CurrentStacksCount < x.RequiredStacksCount && !x.IsStacking)
+                .OrderByDescending(x => x.Ancients))
             {
                 var unit = controllableUnits.FirstOrDefault(x => x.IsValid && !x.IsStacking && !x.IsHero);
 
@@ -201,20 +190,15 @@
                 unit.Stack(camp);
             }
 
-            foreach (var camp in
-                jungleCamps.GetCamps.Where(
-                    x =>
-                        !controllableUnits.Any(
-                            z =>
-                                z.CurrentCamp == x
-                                && (z.CurrentStatus == Controllable.Status.MovingToStackPosition
-                                    || z.CurrentStatus == Controllable.Status.WaitingOnStackPosition
-                                    || z.CurrentStatus == Controllable.Status.TryingToCheckStacks))))
+            foreach (var camp in jungleCamps.GetCamps.Where(
+                x => !controllableUnits.Any(
+                         z => z.CurrentCamp == x && (z.CurrentStatus == Controllable.Status.MovingToStackPosition
+                                                     || z.CurrentStatus == Controllable.Status.WaitingOnStackPosition
+                                                     || z.CurrentStatus == Controllable.Status.TryingToCheckStacks))))
             {
-                var campCreeps =
-                    ObjectManager.GetEntitiesParallel<Creep>()
-                        .Where(x => x.IsValid && x.Distance2D(camp.CampPosition) < 600 && x.IsNeutral)
-                        .ToList();
+                var campCreeps = ObjectManager.GetEntitiesParallel<Creep>()
+                    .Where(x => x.IsValid && x.Distance2D(camp.CampPosition) < 600 && x.IsNeutral)
+                    .ToList();
 
                 var aliveCampCreeps = campCreeps.Where(x => x.IsSpawned && x.IsAlive).ToList();
 
@@ -238,10 +222,6 @@
             sleeper.Sleep(500);
         }
 
-        #endregion
-
-        #region Methods
-
         private void ChangeCamp(Controllable controllable, Camp camp)
         {
             if (camp.IsStacking)
@@ -262,10 +242,9 @@
                 return;
             }
 
-            var allCamps =
-                jungleCamps.GetCamps.Where(
-                        x => x.RequiredStacksCount > 1 && x.CurrentStacksCount < x.RequiredStacksCount)
-                    .OrderByDescending(x => x.Ancients);
+            var allCamps = jungleCamps.GetCamps
+                .Where(x => x.RequiredStacksCount > 1 && x.CurrentStacksCount < x.RequiredStacksCount)
+                .OrderByDescending(x => x.Ancients);
 
             var nextCamp = allCamps.FirstOrDefault(x => !contrallable.BlockedCamps.Contains(x));
 
@@ -337,7 +316,5 @@
         {
             jungleCamps.GetCamps.ForEach(x => x.ResetStacks());
         }
-
-        #endregion
     }
 }

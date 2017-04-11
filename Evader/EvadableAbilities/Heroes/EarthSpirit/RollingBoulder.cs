@@ -16,13 +16,7 @@
 
     internal class RollingBoulder : LinearProjectile, IParticle
     {
-        #region Fields
-
         private float noStoneSpeed;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public RollingBoulder(Ability ability)
             : base(ability)
@@ -32,10 +26,6 @@
 
             CounterAbilities.Add(PhaseShift);
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
@@ -48,12 +38,15 @@
 
             DelayAction.Add(
                 1,
-                () => {
-                    StartPosition = particleArgs.ParticleEffect.GetControlPoint(0);
-                    EndPosition = StartPosition.Extend(particleArgs.ParticleEffect.GetControlPoint(1), GetCastRange());
-                    EndCast = StartCast + GetCastRange() / GetProjectileSpeed();
-                    Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
-                });
+                () =>
+                    {
+                        StartPosition = particleArgs.ParticleEffect.GetControlPoint(0);
+                        EndPosition = StartPosition.Extend(
+                            particleArgs.ParticleEffect.GetControlPoint(1),
+                            GetCastRange());
+                        EndCast = StartCast + GetCastRange() / GetProjectileSpeed();
+                        Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
+                    });
         }
 
         public override bool CanBeStopped()
@@ -78,17 +71,11 @@
             return base.GetRemainingTime(hero) - AdditionalDelay;
         }
 
-        #endregion
-
-        #region Methods
-
         protected override Vector3 GetProjectilePosition(bool ignoreCastPoint = false)
         {
             return StartCast > Game.RawGameTime
                        ? StartPosition
                        : StartPosition.Extend(EndPosition, (Game.RawGameTime - StartCast) * GetProjectileSpeed());
         }
-
-        #endregion
     }
 }

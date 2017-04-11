@@ -8,8 +8,6 @@
 
     internal class Nightmare : LinearTarget
     {
-        #region Constructors and Destructors
-
         public Nightmare(Ability ability)
             : base(ability)
         {
@@ -25,7 +23,5 @@
             CounterAbilities.Add(Lotus);
             CounterAbilities.Add(NetherWard);
         }
-
-        #endregion
     }
 }

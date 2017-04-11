@@ -11,8 +11,6 @@
 
     internal class LifeDrain : LinearTarget, IModifier
     {
-        #region Constructors and Destructors
-
         public LifeDrain(Ability ability)
             : base(ability)
         {
@@ -34,12 +32,6 @@
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

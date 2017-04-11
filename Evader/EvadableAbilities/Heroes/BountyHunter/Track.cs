@@ -11,8 +11,6 @@
 
     internal class Track : EvadableAbility, IModifier
     {
-        #region Constructors and Destructors
-
         public Track(Ability ability)
             : base(ability)
         {
@@ -22,15 +20,7 @@
             Modifier.AllyCounterAbilities.Add(AphoticShield);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -44,7 +34,5 @@
         {
             return 0;
         }
-
-        #endregion
     }
 }

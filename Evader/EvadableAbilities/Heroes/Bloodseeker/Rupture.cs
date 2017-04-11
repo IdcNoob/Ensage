@@ -8,8 +8,6 @@
 
     internal class Rupture : LinearTarget
     {
-        #region Constructors and Destructors
-
         public Rupture(Ability ability)
             : base(ability)
         {
@@ -36,7 +34,5 @@
             BlinkAbilities.Remove("item_force_staff");
             BlinkAbilities.Remove("item_hurricane_pike");
         }
-
-        #endregion
     }
 }

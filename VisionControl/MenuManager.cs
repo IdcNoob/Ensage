@@ -8,8 +8,6 @@
 
     internal class MenuManager
     {
-        #region Fields
-
         private readonly MenuItem enabled;
 
         private readonly MenuItem enabledRanges;
@@ -17,10 +15,6 @@
         private readonly MenuItem enabledTimers;
 
         private readonly Menu menu;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public MenuManager()
         {
@@ -56,18 +50,14 @@
             menu.AddToMainMenu();
         }
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public bool IsEnabled(string name)
         {
             return enabled.GetValue<AbilityToggler>().IsEnabled(name);
         }
 
-        public bool IsEnabled(ClassID id)
+        public bool IsEnabled(ClassId id)
         {
-            var name = id == ClassID.CDOTA_NPC_Observer_Ward ? "item_ward_observer" : "item_ward_sentry";
+            var name = id == ClassId.CDOTA_NPC_Observer_Ward ? "item_ward_observer" : "item_ward_sentry";
             return IsEnabled(name);
         }
 
@@ -85,7 +75,5 @@
         {
             return enabledTimers.GetValue<AbilityToggler>().IsEnabled(name);
         }
-
-        #endregion
     }
 }

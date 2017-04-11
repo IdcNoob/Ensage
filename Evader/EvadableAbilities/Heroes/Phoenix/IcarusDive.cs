@@ -10,17 +10,11 @@
 
     internal class IcarusDive : NoObstacleAbility
     {
-        #region Constructors and Destructors
-
         public IcarusDive(Ability ability)
             : base(ability)
         {
             DisableAbilities.AddRange(DisableAbilityNames);
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -45,7 +39,5 @@
         {
             return Game.RawGameTime < StartCast + 1;
         }
-
-        #endregion
     }
 }

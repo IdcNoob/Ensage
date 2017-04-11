@@ -6,8 +6,6 @@
 
     internal class Units
     {
-        #region Constructors and Destructors
-
         public Units(Menu mainMenu)
         {
             var menu = new Menu("Units", "unitsDumpMenu");
@@ -19,12 +17,6 @@
             mainMenu.AddSubMenu(menu);
         }
 
-        #endregion
-
-        #region Public Events
-
         public event EventHandler OnDump;
-
-        #endregion
     }
 }

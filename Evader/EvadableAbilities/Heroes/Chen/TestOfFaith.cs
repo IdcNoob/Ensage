@@ -8,8 +8,6 @@
 
     internal class TestOfFaith : LinearTarget
     {
-        #region Constructors and Destructors
-
         public TestOfFaith(Ability ability)
             : base(ability)
         {
@@ -20,7 +18,5 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
         }
-
-        #endregion
     }
 }

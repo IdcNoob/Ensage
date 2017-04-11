@@ -23,15 +23,9 @@
 
     internal class Gush : Projectile, IModifier
     {
-        #region Fields
-
         private readonly float aghanimProjectileRadius;
 
         private readonly float aghanimProjectileSpeed;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Gush(Ability ability)
             : base(ability)
@@ -53,15 +47,7 @@
             aghanimProjectileRadius = ability.AbilitySpecialData.First(x => x.Name == "aoe_scepter").Value + 50;
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -76,7 +62,12 @@
                 {
                     StartPosition = AbilityOwner.NetworkPosition;
                     EndPosition = AbilityOwner.InFront(GetCastRange() + GetRadius() / 2);
-                    Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), GetEndRadius(), Obstacle);
+                    Obstacle = Pathfinder.AddObstacle(
+                        StartPosition,
+                        EndPosition,
+                        GetRadius(),
+                        GetEndRadius(),
+                        Obstacle);
                 }
                 else if (StartCast > 0 && Game.RawGameTime > EndCast)
                 {
@@ -116,7 +107,7 @@
                     {
                         EndPosition = AbilityOwner.InFront(GetCastRange());
                         Pathfinder.UpdateObstacle(Obstacle.Value, StartPosition, EndPosition);
-                        AbilityDrawer.UpdateRectaglePosition(StartPosition, EndPosition, GetRadius());
+                        AbilityDrawer.UpdateRectanglePosition(StartPosition, EndPosition, GetRadius());
                     }
                     else if (ProjectileTarget != null)
                     {
@@ -165,8 +156,7 @@
 
             if (AbilityOwner.AghanimState())
             {
-                return StartCast + CastPoint
-                       + (position.Distance2D(StartPosition) - GetProjectileRadius(position) - 60)
+                return StartCast + CastPoint + (position.Distance2D(StartPosition) - GetProjectileRadius(position) - 60)
                        / GetProjectileSpeed() - Game.RawGameTime;
             }
 
@@ -179,10 +169,6 @@
         {
             return !AbilityOwner.AghanimState() && base.IgnoreRemainingTime(ability, remainingTime);
         }
-
-        #endregion
-
-        #region Methods
 
         protected override float GetEndRadius()
         {
@@ -197,7 +183,8 @@
                            ? StartPosition
                            : StartPosition.Extend(
                                EndPosition,
-                               (Game.RawGameTime - StartCast - (ignoreCastPoint ? 0 : CastPoint)) * GetProjectileSpeed());
+                               (Game.RawGameTime - StartCast - (ignoreCastPoint ? 0 : CastPoint))
+                               * GetProjectileSpeed());
             }
 
             return ProjectileAdded ? ProjectilePostion : StartPosition;
@@ -207,7 +194,5 @@
         {
             return AbilityOwner.AghanimState() ? aghanimProjectileRadius : base.GetRadius();
         }
-
-        #endregion
     }
 }

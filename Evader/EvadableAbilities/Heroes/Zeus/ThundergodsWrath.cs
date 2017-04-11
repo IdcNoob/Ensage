@@ -8,8 +8,6 @@
 
     internal class ThundergodsWrath : NoObstacleAbility
     {
-        #region Constructors and Destructors
-
         public ThundergodsWrath(Ability ability)
             : base(ability)
         {
@@ -26,7 +24,5 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.AddRange(Invis);
         }
-
-        #endregion
     }
 }

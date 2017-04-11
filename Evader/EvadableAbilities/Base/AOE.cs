@@ -9,13 +9,7 @@
 
     internal abstract class AOE : EvadableAbility
     {
-        #region Fields
-
         private readonly float radius;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         protected AOE(Ability ability)
             : base(ability)
@@ -24,15 +18,7 @@
             Debugger.WriteLine("// Radius: " + radius);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public Vector3 StartPosition { get; protected set; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -65,15 +51,9 @@
             return StartCast + CastPoint + AdditionalDelay - Game.RawGameTime;
         }
 
-        #endregion
-
-        #region Methods
-
         protected virtual float GetRadius()
         {
             return radius;
         }
-
-        #endregion
     }
 }

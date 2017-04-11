@@ -5,8 +5,6 @@
 
     internal class Ability
     {
-        #region Constructors and Destructors
-
         public Ability(Ensage.Ability ability)
         {
             Source = ability;
@@ -21,10 +19,6 @@
                 TowerDamageReduction = towerDamageReduction;
             }
         }
-
-        #endregion
-
-        #region Public Properties
 
         public bool CanBeCasted => Level > 0 && Source.CanBeCasted();
 
@@ -41,7 +35,5 @@
         public DotaTexture Texture { get; }
 
         public int TowerDamageReduction { get; }
-
-        #endregion
     }
 }

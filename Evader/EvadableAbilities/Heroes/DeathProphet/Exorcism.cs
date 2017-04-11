@@ -12,8 +12,6 @@
 
     internal class Exorcism : NoObstacleAbility, IModifier
     {
-        #region Constructors and Destructors
-
         public Exorcism(Ability ability)
             : base(ability)
         {
@@ -31,12 +29,6 @@
             Modifier.AllyCounterAbilities.AddRange(VsPhys);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

@@ -18,15 +18,9 @@
 
     internal class Hookshot : LinearProjectile, IParticle, IModifier
     {
-        #region Fields
-
         private bool particleAdded;
 
         private ParticleEffect particleEffect;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Hookshot(Ability ability)
             : base(ability)
@@ -46,15 +40,7 @@
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
@@ -126,18 +112,14 @@
                 return StartCast + CastPoint - Game.RawGameTime;
             }
 
-            return StartCast + CastPoint
-                   + (position.Distance2D(StartPosition) - GetRadius() - 60) / GetProjectileSpeed() - Game.RawGameTime;
+            return StartCast + CastPoint + (position.Distance2D(StartPosition) - GetRadius() - 60)
+                   / GetProjectileSpeed() - Game.RawGameTime;
         }
 
         public override bool IsStopped()
         {
             return !particleAdded && base.IsStopped();
         }
-
-        #endregion
-
-        #region Methods
 
         protected override float GetCastRange()
         {
@@ -154,7 +136,5 @@
         {
             return base.GetRadius() + 60;
         }
-
-        #endregion
     }
 }

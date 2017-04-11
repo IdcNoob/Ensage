@@ -8,14 +8,10 @@
 
     internal class BlinkStrike : NoObstacleAbility
     {
-        #region Constructors and Destructors
-
         public BlinkStrike(Ability ability)
             : base(ability)
         {
             DisableAbilities.AddRange(DisableAbilityNames);
         }
-
-        #endregion
     }
 }

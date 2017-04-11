@@ -4,8 +4,6 @@
 
     internal class XmarkModifier : EvadableModifier
     {
-        #region Constructors and Destructors
-
         public XmarkModifier(
             Team team,
             GetHeroType type,
@@ -16,15 +14,9 @@
         {
         }
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public override bool CanBeCountered()
         {
             return false;
         }
-
-        #endregion
     }
 }

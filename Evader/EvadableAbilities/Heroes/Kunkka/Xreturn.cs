@@ -14,8 +14,6 @@
 
     internal class Xreturn : AOE, IModifier
     {
-        #region Constructors and Destructors
-
         public Xreturn(Ability ability)
             : base(ability)
         {
@@ -42,15 +40,7 @@
             CounterAbilities.Add(SnowBall);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -125,7 +115,5 @@
 
             return false;
         }
-
-        #endregion
     }
 }

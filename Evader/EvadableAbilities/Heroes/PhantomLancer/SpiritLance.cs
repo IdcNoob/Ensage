@@ -12,8 +12,6 @@
 
     internal class SpiritLance : Projectile, IModifier
     {
-        #region Constructors and Destructors
-
         public SpiritLance(Ability ability)
             : base(ability)
         {
@@ -34,12 +32,6 @@
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

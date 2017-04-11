@@ -8,22 +8,15 @@
 
     internal class StasisTrap : Mine
     {
-        #region Constants
-
         private const string AbilityName = "techies_stasis_trap";
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public StasisTrap(Unit unit)
             : base(unit, AbilityName)
         {
             PositionCorrection = new Vector2(25);
-            Radius =
-                Ability.GetAbilityDataByName(AbilityName)
-                    .AbilitySpecialData.First(x => x.Name == "activation_radius")
-                    .Value;
+            Radius = Ability.GetAbilityDataByName(AbilityName)
+                .AbilitySpecialData.First(x => x.Name == "activation_radius")
+                .Value;
 
             if (ParticleEffect != null)
             {
@@ -32,12 +25,6 @@
             }
         }
 
-        #endregion
-
-        #region Public Properties
-
         public override bool ShowTimer { get; } = false;
-
-        #endregion
     }
 }

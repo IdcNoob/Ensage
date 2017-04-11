@@ -6,13 +6,7 @@
 
     internal class Program
     {
-        #region Static Fields
-
         private static readonly Debugger Debugger = new Debugger();
-
-        #endregion
-
-        #region Methods
 
         private static void Main()
         {
@@ -29,7 +23,5 @@
         {
             Debugger.OnLoad();
         }
-
-        #endregion
     }
 }

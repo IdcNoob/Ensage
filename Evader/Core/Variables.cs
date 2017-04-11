@@ -7,8 +7,6 @@
 
     internal static class Variables
     {
-        #region Public Properties
-
         public static Team EnemyTeam { get; set; }
 
         public static Hero Hero { get; set; }
@@ -20,7 +18,5 @@
         public static Pathfinder Pathfinder { get; set; }
 
         public static MultiSleeper Sleeper { get; set; }
-
-        #endregion
     }
 }

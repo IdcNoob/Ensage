@@ -8,8 +8,6 @@
 
     internal class WintersCurse : LinearAOE
     {
-        #region Constructors and Destructors
-
         public WintersCurse(Ability ability)
             : base(ability)
         {
@@ -24,7 +22,5 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Lotus);
         }
-
-        #endregion
     }
 }

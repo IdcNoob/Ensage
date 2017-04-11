@@ -8,13 +8,7 @@
 
     internal class Xmark : IAbility
     {
-        #region Fields
-
         private readonly Sleeper sleeper = new Sleeper();
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Xmark(Ability ability)
         {
@@ -22,9 +16,17 @@
             CastPoint = (float)ability.FindCastPoint();
         }
 
-        #endregion
+        public float CastRange => Ability.Level > 0 ? Ability.GetCastRange() + 200 : 0;
 
-        #region Public Properties
+        public float GetSleepTime => CastPoint * 1000 + Game.Ping;
+
+        public bool IsInPhase => Ability.IsInAbilityPhase;
+
+        public bool PhaseStarted { get; set; }
+
+        public Vector3 Position { get; set; }
+
+        public float TimeCasted { get; set; }
 
         public Ability Ability { get; }
 
@@ -34,23 +36,7 @@
 
         public float CastPoint { get; }
 
-        public float CastRange => Ability.Level > 0 ? Ability.GetCastRange() + 200 : 0;
-
-        public float GetSleepTime => CastPoint * 1000 + Game.Ping;
-
-        public bool IsInPhase => Ability.IsInAbilityPhase;
-
         public uint ManaCost => Ability.ManaCost;
-
-        public bool PhaseStarted { get; set; }
-
-        public Vector3 Position { get; set; }
-
-        public float TimeCasted { get; set; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void UseAbility(Hero target)
         {
@@ -58,7 +44,5 @@
             Ability.UseAbility(target);
             sleeper.Sleep(GetSleepTime + 300);
         }
-
-        #endregion
     }
 }

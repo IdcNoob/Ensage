@@ -10,27 +10,6 @@
 
     internal class AbilityDrawer
     {
-        #region Fields
-
-        private readonly ParticleEffect[] rectangle = new ParticleEffect[4];
-
-        private ParticleEffect circle;
-
-        #endregion
-
-        #region Constructors and Destructors
-
-        public AbilityDrawer()
-        {
-            TextColor = Color.White;
-            TextSize = new Vector2(20);
-            ParticleColor = new Vector3(255, 100, 50);
-        }
-
-        #endregion
-
-        #region Enums
-
         public enum Type
         {
             Any,
@@ -40,19 +19,22 @@
             Rectangle
         }
 
-        #endregion
+        private readonly ParticleEffect[] rectangle = new ParticleEffect[4];
 
-        #region Public Properties
+        private ParticleEffect circle;
+
+        public AbilityDrawer()
+        {
+            TextColor = Color.White;
+            TextSize = new Vector2(20);
+            ParticleColor = new Vector3(255, 100, 50);
+        }
 
         public Vector3 ParticleColor { get; set; }
 
         public Color TextColor { get; set; }
 
         public Vector2 TextSize { get; set; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void Dispose(Type figure = Type.Any)
         {
@@ -203,7 +185,7 @@
             circle?.SetControlPoint(0, position);
         }
 
-        public void UpdateRectaglePosition(
+        public void UpdateRectanglePosition(
             Vector3 startPosition,
             Vector3 endPosition,
             float startWidth,
@@ -246,10 +228,6 @@
             rectangle[3].SetControlPoint(2, rightEndPosition);
         }
 
-        #endregion
-
-        #region Methods
-
         private void DisposeCircle()
         {
             circle?.Dispose();
@@ -285,7 +263,5 @@
 
             return line;
         }
-
-        #endregion
     }
 }

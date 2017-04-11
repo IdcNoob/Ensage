@@ -12,8 +12,6 @@
 
     internal class ExperienceTracker
     {
-        #region Fields
-
         private readonly Dictionary<Creep, int> deadCreeps = new Dictionary<Creep, int>();
 
         private readonly List<Enemy> enemies = new List<Enemy>();
@@ -26,18 +24,10 @@
 
         private MultiSleeper sleeper;
 
-        #endregion
-
-        #region Constructors and Destructors
-
         public ExperienceTracker()
         {
             Events.OnLoad += EventsOnLoad;
         }
-
-        #endregion
-
-        #region Methods
 
         private void DrawingOnDraw(EventArgs args)
         {
@@ -127,9 +117,8 @@
 
                     foreach (var enemy in enemiesInExpRange)
                     {
-                        var totalExp =
-                            enemy.CalculateGainedExperience(
-                                deadCreeps.Where(x => enemy.IsInExperienceRange(x.Key)).Sum(x => x.Value));
+                        var totalExp = enemy.CalculateGainedExperience(
+                            deadCreeps.Where(x => enemy.IsInExperienceRange(x.Key)).Sum(x => x.Value));
                         if (enemy.OldExperience + totalExp / enemiesInExpRange.Count != enemy.NewExperience)
                         {
                             enemy.SetWarning(totalExp, enemiesInExpRange.Count, menu.WarningTime);
@@ -145,19 +134,15 @@
                 return;
             }
 
-            foreach (var enemy in
-                ObjectManager.GetEntitiesParallel<Hero>()
-                    .Where(
-                        x =>
-                            x.IsValid && !enemies.Exists(z => z.Handle == x.Handle) && x.Team != heroTeam
-                            && !x.IsIllusion))
+            foreach (var enemy in ObjectManager.GetEntitiesParallel<Hero>()
+                .Where(
+                    x => x.IsValid && !enemies.Exists(z => z.Handle == x.Handle) && x.Team != heroTeam
+                         && !x.IsIllusion))
             {
                 enemies.Add(new Enemy(enemy));
             }
 
             sleeper.Sleep(2000, enemies);
         }
-
-        #endregion
     }
 }

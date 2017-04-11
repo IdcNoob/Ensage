@@ -14,15 +14,9 @@
 
     internal class Debugger
     {
-        #region Fields
-
         private Logger logger;
 
         private MenuManager mainMenu;
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void OnClose()
         {
@@ -81,10 +75,6 @@
             mainMenu.DumpingMenu.Units.OnDump += UnitsOnDump;
         }
 
-        #endregion
-
-        #region Methods
-
         private void ItemsOnDump(object sender, EventArgs e)
         {
             var unit = ObjectManager.LocalPlayer.Selection.FirstOrDefault(x => x.IsValid) as Unit;
@@ -101,7 +91,7 @@
 
             logger.Write("Item dump", Type, Color, true);
             logger.Write("Unit name: " + unit.Name, Type, Color);
-            logger.Write("Unit classID: " + unit.ClassID, Type, Color);
+            logger.Write("Unit classID: " + unit.ClassId, Type, Color);
             logger.EmptyLine();
 
             if (!unit.HasInventory)
@@ -127,7 +117,7 @@
             foreach (var item in items)
             {
                 logger.Write("Name: " + item.Name, Type, Color);
-                logger.Write("ClassID: " + item.ClassID, Type, Color);
+                logger.Write("ClassID: " + item.ClassId, Type, Color);
 
                 if (menu.ShowManaCost)
                 {
@@ -177,7 +167,7 @@
 
             logger.Write("Modifier dump", Type, Color, true);
             logger.Write("Unit name: " + unit.Name, Type, Color);
-            logger.Write("Unit classID: " + unit.ClassID, Type, Color);
+            logger.Write("Unit classID: " + unit.ClassId, Type, Color);
             logger.EmptyLine();
 
             foreach (var modifier in unit.Modifiers)
@@ -222,7 +212,7 @@
 
             logger.Write("Animation changed", Type, Color, true);
             logger.Write("Sender name: " + sender.Name, Type, Color);
-            logger.Write("Sender classID: " + sender.ClassID, Type, Color);
+            logger.Write("Sender classID: " + sender.ClassId, Type, Color);
             logger.Write("Name: " + sender.Animation.Name, Type, Color);
             logger.EmptyLine();
         }
@@ -246,7 +236,7 @@
 
             logger.Write("Bool property changed", Type, Color, true);
             logger.Write("Sender name: " + sender.Name, Type, Color);
-            logger.Write("Sender classID: " + sender.ClassID, Type, Color);
+            logger.Write("Sender classID: " + sender.ClassId, Type, Color);
             logger.Write("Property name: " + args.PropertyName, Type, Color);
             logger.Write("Property values: " + args.OldValue + " => " + args.NewValue, Type, Color);
             logger.EmptyLine();
@@ -270,7 +260,7 @@
 
                 logger.Write("Unit added", Type, Color, true);
                 logger.Write("Name: " + unit.Name, Type, Color);
-                logger.Write("ClassID: " + unit.ClassID, Type, Color);
+                logger.Write("ClassID: " + unit.ClassId, Type, Color);
                 logger.Write("Position: " + unit.Position, Type, Color);
                 logger.Write("Attack capability: " + unit.AttackCapability, Type, Color);
                 logger.Write("Vision: " + unit.DayVision, Type, Color);
@@ -297,11 +287,11 @@
 
                 logger.Write("Ability added", Type, Color, true);
                 logger.Write("Name: " + ability.Name, Type, Color);
-                logger.Write("ClassID: " + ability.ClassID, Type, Color);
+                logger.Write("ClassID: " + ability.ClassId, Type, Color);
                 logger.Write("Is item: " + (ability is Item), Type, Color);
                 logger.Write("Level: " + ability.Level, Type, Color);
                 logger.Write("Owner name: " + ability.Owner?.Name, Type, Color);
-                logger.Write("Owner classID: " + ability.Owner?.ClassID, Type, Color);
+                logger.Write("Owner classID: " + ability.Owner?.ClassId, Type, Color);
                 logger.EmptyLine();
             }
         }
@@ -324,7 +314,7 @@
 
                 logger.Write("Unit removed", Type, Color, true);
                 logger.Write("Name: " + unit.Name, Type, Color);
-                logger.Write("ClassID: " + unit.ClassID, Type, Color);
+                logger.Write("ClassID: " + unit.ClassId, Type, Color);
                 logger.Write("Position: " + unit.Position, Type, Color);
                 logger.EmptyLine();
 
@@ -348,38 +338,38 @@
 
                 logger.Write("Ability removed", Type, Color, true);
                 logger.Write("Name: " + ability.Name, Type, Color);
-                logger.Write("ClassID: " + ability.ClassID, Type, Color);
+                logger.Write("ClassID: " + ability.ClassId, Type, Color);
                 logger.Write("Is item: " + (ability is Item), Type, Color);
                 logger.Write("Level: " + ability.Level, Type, Color);
                 logger.Write("Owner name: " + ability.Owner?.Name, Type, Color);
-                logger.Write("Owner classID: " + ability.Owner?.ClassID, Type, Color);
+                logger.Write("Owner classID: " + ability.Owner?.ClassId, Type, Color);
                 logger.EmptyLine();
             }
         }
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            switch (args.Order)
+            switch (args.OrderId)
             {
-                case Order.Ability:
-                case Order.AbilityLocation:
-                case Order.AbilityTarget:
-                case Order.AbilityTargetRune:
-                case Order.AbilityTargetTree:
-                case Order.ToggleAbility:
+                case OrderId.Ability:
+                case OrderId.AbilityLocation:
+                case OrderId.AbilityTarget:
+                case OrderId.AbilityTargetRune:
+                case OrderId.AbilityTargetTree:
+                case OrderId.ToggleAbility:
                     if (!mainMenu.OnExecuteOrderMenu.Abilities.Enabled)
                     {
                         return;
                     }
                     break;
-                case Order.AttackLocation:
-                case Order.AttackTarget:
-                case Order.MoveLocation:
-                case Order.MoveTarget:
-                case Order.Stop:
-                case Order.Hold:
-                case Order.Continue:
-                case Order.Patrol:
+                case OrderId.AttackLocation:
+                case OrderId.AttackTarget:
+                case OrderId.MoveLocation:
+                case OrderId.MoveTarget:
+                case OrderId.Stop:
+                case OrderId.Hold:
+                case OrderId.Continue:
+                case OrderId.Patrol:
                     if (!mainMenu.OnExecuteOrderMenu.AttackMove.Enabled)
                     {
                         return;
@@ -398,12 +388,12 @@
 
             logger.Write("Executed order", Type, Color, true);
             logger.Write("Sender name: " + args.Entities.FirstOrDefault()?.Name, Type, Color);
-            logger.Write("Sender classID: " + args.Entities.FirstOrDefault()?.ClassID, Type, Color);
-            logger.Write("Order: " + args.Order, Type, Color);
+            logger.Write("Sender classID: " + args.Entities.FirstOrDefault()?.ClassId, Type, Color);
+            logger.Write("Order: " + args.OrderId, Type, Color);
             if (args.Ability != null)
             {
                 logger.Write("Ability name: " + args.Ability?.Name, Type, Color);
-                logger.Write("Ability classID: " + args.Ability?.ClassID, Type, Color);
+                logger.Write("Ability classID: " + args.Ability?.ClassId, Type, Color);
             }
             if (!args.TargetPosition.IsZero)
             {
@@ -412,7 +402,7 @@
             if (args.Target != null)
             {
                 logger.Write("Target name: " + args.Target.Name, Type, Color);
-                logger.Write("Target classID: " + args.Target.ClassID, Type, Color);
+                logger.Write("Target classID: " + args.Target.ClassId, Type, Color);
             }
             logger.EmptyLine();
         }
@@ -437,7 +427,7 @@
 
             logger.Write("Float property changed", Type, Color, true);
             logger.Write("Sender name: " + sender.Name, Type, Color);
-            logger.Write("Sender classID: " + sender.ClassID, Type, Color);
+            logger.Write("Sender classID: " + sender.ClassId, Type, Color);
             logger.Write("Property name: " + args.PropertyName, Type, Color);
             logger.Write("Property values: " + args.OldValue + " => " + args.NewValue, Type, Color);
             logger.EmptyLine();
@@ -457,7 +447,7 @@
 
             logger.Write("Handle property changed", Type, Color, true);
             logger.Write("Sender name: " + sender.Name, Type, Color);
-            logger.Write("Sender classID: " + sender.ClassID, Type, Color);
+            logger.Write("Sender classID: " + sender.ClassId, Type, Color);
             logger.Write("Property name: " + args.PropertyName, Type, Color);
             logger.Write("Property value: " + args.OldValue?.Name, Type, Color);
             logger.EmptyLine();
@@ -483,7 +473,7 @@
 
             logger.Write("Int32 property changed", Type, Color, true);
             logger.Write("Sender name: " + sender.Name, Type, Color);
-            logger.Write("Sender classID: " + sender.ClassID, Type, Color);
+            logger.Write("Sender classID: " + sender.ClassId, Type, Color);
             logger.Write("Property name: " + args.PropertyName, Type, Color);
             logger.Write("Property values: " + args.OldValue + " => " + args.NewValue, Type, Color);
             logger.EmptyLine();
@@ -508,7 +498,7 @@
 
             logger.Write("Int64 property changed", Type, Color, true);
             logger.Write("Sender name: " + sender.Name, Type, Color);
-            logger.Write("Sender classID: " + sender.ClassID, Type, Color);
+            logger.Write("Sender classID: " + sender.ClassId, Type, Color);
             logger.Write("Property name: " + args.PropertyName, Type, Color);
             logger.Write("Property values: " + args.OldValue + " => " + args.NewValue, Type, Color);
             logger.EmptyLine();
@@ -527,25 +517,26 @@
 
             DelayAction.Add(
                 1,
-                () => {
-                    if (modifier == null || !modifier.IsValid
-                        || menu.IgnoreUseless && Data.IgnoredModifiers.Contains(modifier.Name))
+                () =>
                     {
-                        return;
-                    }
+                        if (modifier == null || !modifier.IsValid
+                            || menu.IgnoreUseless && Data.IgnoredModifiers.Contains(modifier.Name))
+                        {
+                            return;
+                        }
 
-                    const Color Color = Color.Green;
-                    const Logger.Type Type = Logger.Type.Modifier;
+                        const Color Color = Color.Green;
+                        const Logger.Type Type = Logger.Type.Modifier;
 
-                    logger.Write("Modifier added", Type, Color, true);
-                    logger.Write("Sender name: " + sender?.Name, Type, Color);
-                    logger.Write("Sender classID: " + sender?.ClassID, Type, Color);
-                    logger.Write("Name: " + modifier.Name, Type, Color);
-                    logger.Write("Texture name: " + modifier.TextureName, Type, Color);
-                    logger.Write("Elapsed time: " + modifier.ElapsedTime, Type, Color);
-                    logger.Write("Remaining time: " + modifier.RemainingTime, Type, Color);
-                    logger.EmptyLine();
-                });
+                        logger.Write("Modifier added", Type, Color, true);
+                        logger.Write("Sender name: " + sender?.Name, Type, Color);
+                        logger.Write("Sender classID: " + sender?.ClassId, Type, Color);
+                        logger.Write("Name: " + modifier.Name, Type, Color);
+                        logger.Write("Texture name: " + modifier.TextureName, Type, Color);
+                        logger.Write("Elapsed time: " + modifier.ElapsedTime, Type, Color);
+                        logger.Write("Remaining time: " + modifier.RemainingTime, Type, Color);
+                        logger.EmptyLine();
+                    });
         }
 
         private void OnModifierRemoved(Unit sender, ModifierChangedEventArgs args)
@@ -559,8 +550,8 @@
 
             var modifier = args.Modifier;
 
-            if (modifier == null || !modifier.IsValid
-                || menu.IgnoreUseless && Data.IgnoredModifiers.Contains(modifier.Name))
+            if (modifier == null || !modifier.IsValid || menu.IgnoreUseless
+                && Data.IgnoredModifiers.Contains(modifier.Name))
             {
                 return;
             }
@@ -570,7 +561,7 @@
 
             logger.Write("Modifier removed", Type, Color, true);
             logger.Write("Sender name: " + sender?.Name, Type, Color);
-            logger.Write("Sender classID: " + sender?.ClassID, Type, Color);
+            logger.Write("Sender classID: " + sender?.ClassId, Type, Color);
             logger.Write("Name: " + modifier.Name, Type, Color);
             logger.Write("Texture name: " + modifier.TextureName, Type, Color);
             logger.EmptyLine();
@@ -589,36 +580,37 @@
 
             DelayAction.Add(
                 1,
-                () => {
-                    if (particle == null || !particle.IsValid
-                        || menu.IgnoreUseless && Data.IgnoredParctiles.Any(args.Name.Contains))
+                () =>
                     {
-                        return;
-                    }
-
-                    const Color Color = Color.Green;
-                    const Logger.Type Type = Logger.Type.Partcile;
-
-                    logger.Write("Particle added", Type, Color, true);
-                    logger.Write("Name: " + args.Name, Type, Color);
-                    logger.Write("Highest control point: " + particle.HighestControlPoint, Type, Color);
-
-                    if (menu.ShowControlPointValues)
-                    {
-                        for (var i = 0u; i <= args.ParticleEffect.HighestControlPoint; i++)
+                        if (particle == null || !particle.IsValid
+                            || menu.IgnoreUseless && Data.IgnoredParctiles.Any(args.Name.Contains))
                         {
-                            var point = args.ParticleEffect.GetControlPoint(i);
-                            if (menu.IgnoreZeroControlPointValues && point.IsZero)
-                            {
-                                continue;
-                            }
-
-                            logger.Write("CP: " + i + " => " + point, Type, Color);
+                            return;
                         }
-                    }
 
-                    logger.EmptyLine();
-                });
+                        const Color Color = Color.Green;
+                        const Logger.Type Type = Logger.Type.Partcile;
+
+                        logger.Write("Particle added", Type, Color, true);
+                        logger.Write("Name: " + args.Name, Type, Color);
+                        logger.Write("Highest control point: " + particle.HighestControlPoint, Type, Color);
+
+                        if (menu.ShowControlPointValues)
+                        {
+                            for (var i = 0u; i <= args.ParticleEffect.HighestControlPoint; i++)
+                            {
+                                var point = args.ParticleEffect.GetControlPoint(i);
+                                if (menu.IgnoreZeroControlPointValues && point.IsZero)
+                                {
+                                    continue;
+                                }
+
+                                logger.Write("CP: " + i + " => " + point, Type, Color);
+                            }
+                        }
+
+                        logger.EmptyLine();
+                    });
         }
 
         private void OnStringPropertyChanged(Entity sender, StringPropertyChangeEventArgs args)
@@ -640,7 +632,7 @@
 
             logger.Write("String property changed", Type, Color, true);
             logger.Write("Sender name: " + sender.Name, Type, Color);
-            logger.Write("Sender classID: " + sender.ClassID, Type, Color);
+            logger.Write("Sender classID: " + sender.ClassId, Type, Color);
             logger.Write("Property name: " + args.PropertyName, Type, Color);
             logger.Write("Property values: " + args.OldValue + " => " + args.NewValue, Type, Color);
             logger.EmptyLine();
@@ -667,11 +659,11 @@
 
             logger.Write("Projectile added", Type, Color, true);
             logger.Write("Source name: " + projectile.Source.Name, Type, Color);
-            logger.Write("Source classID: " + projectile.Source.ClassID, Type, Color);
+            logger.Write("Source classID: " + projectile.Source.ClassId, Type, Color);
             logger.Write("Speed: " + projectile.Speed, Type, Color);
             logger.Write("Position: " + projectile.Position, Type, Color);
             logger.Write("Target name: " + projectile.Target?.Name, Type, Color);
-            logger.Write("Target classID: " + projectile.Target?.ClassID, Type, Color);
+            logger.Write("Target classID: " + projectile.Target?.ClassId, Type, Color);
             logger.Write("Target position: " + projectile.TargetPosition, Type, Color);
             logger.EmptyLine();
         }
@@ -697,11 +689,11 @@
 
             logger.Write("Projectile removed", Type, Color, true);
             logger.Write("Source name: " + projectile.Source.Name, Type, Color);
-            logger.Write("Source classID: " + projectile.Source.ClassID, Type, Color);
+            logger.Write("Source classID: " + projectile.Source.ClassId, Type, Color);
             logger.Write("Speed: " + projectile.Speed, Type, Color);
             logger.Write("Position: " + projectile.Position, Type, Color);
             logger.Write("Target name: " + projectile.Target?.Name, Type, Color);
-            logger.Write("Target classID: " + projectile.Target?.ClassID, Type, Color);
+            logger.Write("Target classID: " + projectile.Target?.ClassId, Type, Color);
             logger.Write("Target position: " + projectile.TargetPosition, Type, Color);
             logger.EmptyLine();
         }
@@ -722,7 +714,7 @@
 
             logger.Write("Spell dump", Type, Color, true);
             logger.Write("Unit name: " + unit.Name, Type, Color);
-            logger.Write("Unit classID: " + unit.ClassID, Type, Color);
+            logger.Write("Unit classID: " + unit.ClassId, Type, Color);
             logger.EmptyLine();
 
             foreach (var spell in unit.Spellbook.Spells)
@@ -738,7 +730,7 @@
                 }
 
                 logger.Write("Name: " + spell.Name, Type, Color);
-                logger.Write("ClassID: " + spell.ClassID, Type, Color);
+                logger.Write("ClassID: " + spell.ClassId, Type, Color);
 
                 if (menu.ShowLevels)
                 {
@@ -790,7 +782,7 @@
 
             logger.Write("Unit dump", Type, Color, true);
             logger.Write("Name: " + unit.Name, Type, Color);
-            logger.Write("ClassID: " + unit.ClassID, Type, Color);
+            logger.Write("ClassID: " + unit.ClassId, Type, Color);
             logger.Write("Level: " + unit.Level, Type, Color);
             logger.Write("Position: " + unit.Position, Type, Color);
             logger.Write("Team: " + unit.Team, Type, Color);
@@ -807,14 +799,12 @@
                 Type,
                 Color);
             logger.Write(
-                "  Active spells count: "
-                + unit.Spellbook.Spells.Count(
+                "  Active spells count: " + unit.Spellbook.Spells.Count(
                     x => !x.Name.StartsWith("special_") && x.AbilityBehavior != AbilityBehavior.Passive),
                 Type,
                 Color);
             logger.Write(
-                "  Passive spells count: "
-                + unit.Spellbook.Spells.Count(
+                "  Passive spells count: " + unit.Spellbook.Spells.Count(
                     x => !x.Name.StartsWith("special_") && x.AbilityBehavior == AbilityBehavior.Passive),
                 Type,
                 Color);
@@ -832,7 +822,5 @@
             logger.Write("  Hidden modifiers count: " + unit.Modifiers.Count(x => x.IsHidden), Type, Color);
             logger.EmptyLine();
         }
-
-        #endregion
     }
 }

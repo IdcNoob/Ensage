@@ -6,25 +6,15 @@
 
     internal class CourierPinger
     {
-        #region Fields
-
         private readonly Team team;
 
         private float lastPing;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public CourierPinger(Team heroTeam)
         {
             team = heroTeam;
             lastPing = float.MinValue;
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public bool ShouldRemind(int delay)
         {
@@ -56,7 +46,5 @@
 
             return false;
         }
-
-        #endregion
     }
 }

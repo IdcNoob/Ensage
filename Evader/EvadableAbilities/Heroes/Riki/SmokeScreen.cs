@@ -8,8 +8,6 @@
 
     internal class SmokeScreen : LinearAOE
     {
-        #region Constructors and Destructors
-
         public SmokeScreen(Ability ability)
             : base(ability)
         {
@@ -20,7 +18,5 @@
             CounterAbilities.AddRange(VsPhys);
             CounterAbilities.AddRange(Invis);
         }
-
-        #endregion
     }
 }

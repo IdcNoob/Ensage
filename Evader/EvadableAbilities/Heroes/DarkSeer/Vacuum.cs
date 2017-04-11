@@ -11,15 +11,9 @@
 
     internal class Vacuum : LinearAOE
     {
-        #region Fields
-
         private readonly Ability talent;
 
         private readonly float talentAOE;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Vacuum(Ability ability)
             : base(ability)
@@ -37,15 +31,9 @@
             talentAOE = talent?.AbilitySpecialData.First(x => x.Name == "value").Value ?? 0;
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetRadius()
         {
             return Ability.GetRadius() + (talent?.Level > 0 ? talentAOE : 0);
         }
-
-        #endregion
     }
 }

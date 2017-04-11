@@ -12,8 +12,6 @@
 
     internal class WaveOfSilence : LinearProjectile, IModifier
     {
-        #region Constructors and Destructors
-
         public WaveOfSilence(Ability ability)
             : base(ability)
         {
@@ -36,21 +34,11 @@
             Modifier.AllyCounterAbilities.AddRange(VsPhys);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Methods
 
         protected override float GetCastRange()
         {
             return base.GetCastRange() + 100;
         }
-
-        #endregion
     }
 }

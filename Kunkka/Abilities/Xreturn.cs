@@ -6,13 +6,7 @@
 
     internal class Xreturn : IAbility
     {
-        #region Fields
-
         private readonly Sleeper sleeper = new Sleeper();
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Xreturn(Ability ability)
         {
@@ -20,9 +14,7 @@
             CastPoint = (float)ability.FindCastPoint();
         }
 
-        #endregion
-
-        #region Public Properties
+        public float GetSleepTime => CastPoint * 1000 + Game.Ping;
 
         public Ability Ability { get; }
 
@@ -32,20 +24,12 @@
 
         public float CastPoint { get; }
 
-        public float GetSleepTime => CastPoint * 1000 + Game.Ping;
-
         public uint ManaCost { get; } = 0;
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void UseAbility()
         {
             Ability.UseAbility();
             sleeper.Sleep(GetSleepTime + 300);
         }
-
-        #endregion
     }
 }

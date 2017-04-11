@@ -16,17 +16,11 @@
 
     internal class Chronosphere : LinearAOE, IModifierObstacle
     {
-        #region Fields
-
         private readonly float[] duration = new float[3];
 
         private bool fowCast;
 
         private bool modifierAdded;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Chronosphere(Ability ability)
             : base(ability)
@@ -60,10 +54,6 @@
 
             ObstacleStays = true;
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddModifierObstacle(Modifier mod, Unit unit)
         {
@@ -142,10 +132,6 @@
             return StartCast + (fowCast ? 0 : CastPoint) - Game.RawGameTime;
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetRadius()
         {
             return base.GetRadius() + 50;
@@ -155,7 +141,5 @@
         {
             return duration[Ability.Level - 1];
         }
-
-        #endregion
     }
 }

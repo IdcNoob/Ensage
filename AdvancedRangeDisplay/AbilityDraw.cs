@@ -62,8 +62,8 @@
 
         public void FindAbility()
         {
-            Ability =
-                Hero.Spellbook.Spells.Concat(Hero.Inventory.Items).FirstOrDefault(x => x.StoredName().StartsWith(Name));
+            Ability = Hero.Spellbook.Spells.Concat(Hero.Inventory.Items)
+                .FirstOrDefault(x => x.StoredName().StartsWith(Name));
         }
 
         public void SaveSettings(int? red = null, int? green = null, int? blue = null, bool? radiusOnly = null)

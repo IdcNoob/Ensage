@@ -11,8 +11,6 @@
 
     internal class DarkPact : AOE, IModifierObstacle
     {
-        #region Constructors and Destructors
-
         public DarkPact(Ability ability)
             : base(ability)
         {
@@ -26,10 +24,6 @@
 
             AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "delay").Value;
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddModifierObstacle(Modifier modifier, Unit unit)
         {
@@ -70,7 +64,5 @@
 
             AbilityDrawer.UpdateCirclePosition(position);
         }
-
-        #endregion
     }
 }

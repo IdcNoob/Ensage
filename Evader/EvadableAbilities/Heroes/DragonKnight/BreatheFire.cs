@@ -13,8 +13,6 @@
 
     internal class BreatheFire : LinearProjectile, IModifier
     {
-        #region Constructors and Destructors
-
         public BreatheFire(Ability ability)
             : base(ability)
         {
@@ -34,15 +32,7 @@
             Modifier.AllyCounterAbilities.Add(Manta);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override bool CanBeStopped()
         {
@@ -74,15 +64,9 @@
             return base.GetProjectileSpeed() + 200;
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetCastRange()
         {
             return base.GetCastRange() + 300;
         }
-
-        #endregion
     }
 }

@@ -11,8 +11,6 @@
 
     internal class TestOfFaithTeleport : NoObstacleAbility, IModifier
     {
-        #region Constructors and Destructors
-
         public TestOfFaithTeleport(Ability ability)
             : base(ability)
         {
@@ -25,12 +23,6 @@
             Modifier.EnemyCounterAbilities.AddRange(Diffusal);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

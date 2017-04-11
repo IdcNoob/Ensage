@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    using AbilityLastHitMarker.Classes;
+    using Classes;
 
     using Ensage;
     using Ensage.Common;
@@ -14,14 +14,12 @@
 
     using SharpDX;
 
-    using Ability = AbilityLastHitMarker.Classes.Ability;
+    using Ability = Classes.Ability;
     using Creep = Ensage.Creep;
-    using Tower = AbilityLastHitMarker.Classes.Tower;
+    using Tower = Classes.Tower;
 
     internal class LastHitMarker
     {
-        #region Fields
-
         private readonly List<Ability> abilities = new List<Ability>();
 
         private readonly List<IKillable> killableList = new List<IKillable>();
@@ -38,21 +36,18 @@
 
         private bool pause;
 
-        #endregion
-
-        #region Public Methods and Operators
+        private Sleeper sleeper;
 
         public void OnAddEntity(EntityEventArgs args)
         {
             var creep = args.Entity as Creep;
 
-            if (creep == null || !creep.IsValid|| creep.Team == heroTeam)
+            if (creep == null || !creep.IsValid || creep.Team == heroTeam)
             {
                 return;
             }
 
             killableList.Add(new Classes.Creep(creep));
-
         }
 
         public void OnClose()
@@ -83,10 +78,9 @@
 
                 screenPos += new Vector2(0, yPos + (killable is Tower ? -50 : -25));
 
-                var savedDamages =
-                    killable.GetSavedDamage.OrderByDescending(x => x.Value)
-                        .Where(x => availableAbilities.Select(z => z.Handle).Contains(x.Key))
-                        .ToDictionary(x => x.Key, x => x.Value);
+                var savedDamages = killable.GetSavedDamage.OrderByDescending(x => x.Value)
+                    .Where(x => availableAbilities.Select(z => z.Handle).Contains(x.Key))
+                    .ToDictionary(x => x.Key, x => x.Value);
 
                 if (menuManager.SumEnabled && !savedDamages.Any(x => x.Value >= killable.Health))
                 {
@@ -103,12 +97,10 @@
                         }
 
                         savedDamages.TryGetValue(poof.Handle, out damage);
-                        var availableMeepos =
-                            Heroes.GetByTeam(heroTeam)
-                                .Count(
-                                    x =>
-                                    x.IsValid && !x.IsIllusion && x.ClassID == ClassID.CDOTA_Unit_Hero_Meepo
-                                    && x.IsAlive && x.CanCast() && x.FindSpell("meepo_poof").CanBeCasted());
+                        var availableMeepos = Heroes.GetByTeam(heroTeam)
+                            .Count(
+                                x => x.IsValid && !x.IsIllusion && x.ClassId == ClassId.CDOTA_Unit_Hero_Meepo
+                                     && x.IsAlive && x.CanCast() && x.FindSpell("meepo_poof").CanBeCasted());
 
                         for (var i = 1; i <= availableMeepos; i++)
                         {
@@ -155,23 +147,19 @@
                     continue;
                 }
 
-                var ability =
-                    availableAbilities.FirstOrDefault(
-                        x =>
-                        x.Handle
-                        == savedDamages.OrderBy(z => z.Value).FirstOrDefault(z => z.Value >= killable.Health).Key);
+                var ability = availableAbilities.FirstOrDefault(
+                    x => x.Handle == savedDamages.OrderBy(z => z.Value)
+                             .FirstOrDefault(z => z.Value >= killable.Health)
+                             .Key);
 
                 var drawBorder = false;
 
                 if (ability == null)
                 {
-                    ability =
-                        availableAbilities.FirstOrDefault(
-                            x =>
-                            x.Handle
-                            == savedDamages.OrderBy(z => z.Value)
-                                   .FirstOrDefault(z => z.Value + killable.HeroDamage >= killable.Health)
-                                   .Key);
+                    ability = availableAbilities.FirstOrDefault(
+                        x => x.Handle == savedDamages.OrderBy(z => z.Value)
+                                 .FirstOrDefault(z => z.Value + killable.HeroDamage >= killable.Health)
+                                 .Key);
 
                     if (ability == null)
                     {
@@ -231,15 +219,13 @@
         public void OnLoad()
         {
             hero = ObjectManager.LocalHero;
-            heroMeepo = hero.ClassID == ClassID.CDOTA_Unit_Hero_Meepo;
+            heroMeepo = hero.ClassId == ClassId.CDOTA_Unit_Hero_Meepo;
             heroTeam = hero.Team;
             sleeper = new Sleeper();
 
-            foreach (var ability in
-                hero.Spellbook.Spells.Where(
-                    x =>
-                    x.IsNuke() && !AbilityAdjustments.IgnoredAbilities.Contains(x.Name)
-                    || AbilityAdjustments.IncludedAbilities.Contains(x.Name)))
+            foreach (var ability in hero.Spellbook.Spells.Where(
+                x => x.IsNuke() && !AbilityAdjustments.IgnoredAbilities.Contains(x.Name)
+                     || AbilityAdjustments.IncludedAbilities.Contains(x.Name)))
             {
                 abilities.Add(new Ability(ability));
             }
@@ -267,10 +253,7 @@
             }
 
             killableList.Remove(remove);
-
         }
-
-        private Sleeper sleeper;
 
         public void OnUpdate()
         {
@@ -299,8 +282,8 @@
                 pause = false;
             }
 
-            availableAbilities =
-                abilities.Where(x => menuManager.AbilityActive(x.Name) && (x.CanBeCasted || heroMeepo)).ToList();
+            availableAbilities = abilities.Where(x => menuManager.AbilityActive(x.Name) && (x.CanBeCasted || heroMeepo))
+                .ToList();
 
             //debug
             //foreach (var creep in
@@ -318,8 +301,8 @@
             {
                 var autoAttackDamageDone = killable.Unit.DamageTaken(myAutoAttackDamage, DamageType.Physical, hero);
 
-                var siege = killable.Unit.ClassID == ClassID.CDOTA_BaseNPC_Tower
-                            || killable.Unit.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege;
+                var siege = killable.Unit.ClassId == ClassId.CDOTA_BaseNPC_Tower
+                            || killable.Unit.ClassId == ClassId.CDOTA_BaseNPC_Creep_Siege;
 
                 if (siege)
                 {
@@ -350,26 +333,24 @@
                                     var armor = new[] { 2, 4, 6, 8 };
                                     var bonusTemplar = new[] { 50, 100, 150, 200 };
 
-                                    damage =
-                                        killable.Unit.SpellDamageTaken(
-                                            myAutoAttackDamage + bonusTemplar[ability.Level - 1],
-                                            DamageType.Physical,
-                                            hero,
-                                            ability.Name,
-                                            true,
-                                            armor[ability.Level - 1]);
+                                    damage = killable.Unit.SpellDamageTaken(
+                                        myAutoAttackDamage + bonusTemplar[ability.Level - 1],
+                                        DamageType.Physical,
+                                        hero,
+                                        ability.Name,
+                                        true,
+                                        armor[ability.Level - 1]);
                                 }
                                 break;
                             case "clinkz_searing_arrows":
                                 var bonusClinkz = new[] { 30, 40, 50, 60 };
 
-                                var tempDamage =
-                                    killable.Unit.SpellDamageTaken(
-                                        myAutoAttackDamage + bonusClinkz[ability.Level - 1],
-                                        DamageType.Physical,
-                                        hero,
-                                        ability.Name,
-                                        true);
+                                var tempDamage = killable.Unit.SpellDamageTaken(
+                                    myAutoAttackDamage + bonusClinkz[ability.Level - 1],
+                                    DamageType.Physical,
+                                    hero,
+                                    ability.Name,
+                                    true);
                                 if (siege)
                                 {
                                     tempDamage /= 2;
@@ -395,7 +376,5 @@
                 killable.DamageCalculated = true;
             }
         }
-
-        #endregion
     }
 }

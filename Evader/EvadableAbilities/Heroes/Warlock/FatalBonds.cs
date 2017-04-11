@@ -11,8 +11,6 @@
 
     internal class FatalBonds : LinearAOE, IModifier
     {
-        #region Constructors and Destructors
-
         public FatalBonds(Ability ability)
             : base(ability)
         {
@@ -28,12 +26,6 @@
             CounterAbilities.Add(Eul);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

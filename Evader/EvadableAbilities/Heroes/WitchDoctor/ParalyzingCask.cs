@@ -8,8 +8,6 @@
 
     internal class ParalyzingCask : Projectile
     {
-        #region Constructors and Destructors
-
         public ParalyzingCask(Ability ability)
             : base(ability)
         {
@@ -26,7 +24,5 @@
             CounterAbilities.Add(Lotus);
             CounterAbilities.Add(Armlet);
         }
-
-        #endregion
     }
 }

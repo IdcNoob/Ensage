@@ -8,8 +8,6 @@
 
     internal class CullingBlade : LinearTarget
     {
-        #region Constructors and Destructors
-
         public CullingBlade(Ability ability)
             : base(ability)
         {
@@ -26,7 +24,5 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Lotus);
         }
-
-        #endregion
     }
 }

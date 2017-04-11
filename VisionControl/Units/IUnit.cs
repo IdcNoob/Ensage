@@ -6,8 +6,6 @@ namespace VisionControl.Units
 
     internal interface IUnit
     {
-        #region Public Properties
-
         float Duration { get; }
 
         float EndTime { get; }
@@ -29,7 +27,5 @@ namespace VisionControl.Units
         DotaTexture Texture { get; }
 
         Vector2 TextureSize { get; set; }
-
-        #endregion
     }
 }

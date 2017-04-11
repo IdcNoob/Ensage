@@ -14,8 +14,6 @@
 
     internal class Avalanche : LinearAOE, IModifier
     {
-        #region Constructors and Destructors
-
         public Avalanche(Ability ability)
             : base(ability)
         {
@@ -39,15 +37,7 @@
             AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "projectile_duration").Value;
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override bool CanBeStopped()
         {
@@ -75,15 +65,9 @@
             return 0;
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetCastRange()
         {
             return base.GetCastRange() + 300;
         }
-
-        #endregion
     }
 }

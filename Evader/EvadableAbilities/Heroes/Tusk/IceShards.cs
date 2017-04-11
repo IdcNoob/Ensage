@@ -13,13 +13,7 @@
 
     internal class IceShards : LinearProjectile, IUnit
     {
-        #region Fields
-
         private Unit abilityUnit;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public IceShards(Ability ability)
             : base(ability)
@@ -33,10 +27,6 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddUnit(Unit unit)
         {
@@ -56,9 +46,8 @@
                 EndPosition = AbilityOwner.InFront(GetCastRange() + GetRadius() / 2);
                 Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), GetEndRadius(), Obstacle);
             }
-            else if (StartCast > 0
-                     && (Game.RawGameTime > EndCast
-                         || (Game.RawGameTime > StartCast + CastPoint + 0.2 && !IsAbilityUnitValid())))
+            else if (StartCast > 0 && (Game.RawGameTime > EndCast
+                                       || (Game.RawGameTime > StartCast + CastPoint + 0.2 && !IsAbilityUnitValid())))
             {
                 End();
             }
@@ -68,15 +57,9 @@
             }
         }
 
-        #endregion
-
-        #region Methods
-
         private bool IsAbilityUnitValid()
         {
             return abilityUnit != null && abilityUnit.IsValid;
         }
-
-        #endregion
     }
 }

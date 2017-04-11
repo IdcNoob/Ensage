@@ -11,8 +11,6 @@
 
     internal class Burrowstrike : EvadableAbility, IModifier
     {
-        #region Constructors and Destructors
-
         public Burrowstrike(Ability ability)
             : base(ability)
         {
@@ -24,15 +22,7 @@
             Modifier.AllyCounterAbilities.AddRange(Invul);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -46,7 +36,5 @@
         {
             return 0;
         }
-
-        #endregion
     }
 }

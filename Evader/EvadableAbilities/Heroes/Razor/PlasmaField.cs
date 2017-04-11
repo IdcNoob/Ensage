@@ -10,13 +10,7 @@
 
     internal class PlasmaField : AOE, IUnit
     {
-        #region Fields
-
         private readonly float projectileSpeed;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public PlasmaField(Ability ability)
             : base(ability)
@@ -30,10 +24,6 @@
 
             projectileSpeed = Ability.GetProjectileSpeed();
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddUnit(Unit unit)
         {
@@ -86,15 +76,9 @@
                    - Game.RawGameTime;
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetRadius()
         {
             return base.GetRadius() + 150;
         }
-
-        #endregion
     }
 }

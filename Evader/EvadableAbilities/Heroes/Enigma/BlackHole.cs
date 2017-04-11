@@ -16,17 +16,11 @@
 
     internal class BlackHole : LinearAOE, IModifierObstacle
     {
-        #region Fields
-
         private readonly float channelTime;
 
         private bool fowCast;
 
         private bool modifierAdded;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public BlackHole(Ability ability)
             : base(ability)
@@ -48,10 +42,6 @@
 
             ObstacleStays = true;
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddModifierObstacle(Modifier modifier, Unit unit)
         {
@@ -89,7 +79,8 @@
                 EndPosition = AbilityOwner.InFront(GetCastRange() + GetRadius() * 0.8f);
                 Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
             }
-            else if (StartCast > 0 && (Game.RawGameTime > EndCast || !fowCast && !CanBeStopped() && !Ability.IsChanneling))
+            else if (StartCast > 0 && (Game.RawGameTime > EndCast
+                                       || !fowCast && !CanBeStopped() && !Ability.IsChanneling))
             {
                 End();
             }
@@ -136,7 +127,5 @@
 
             return Ability.IsChanneling || fowCast;
         }
-
-        #endregion
     }
 }

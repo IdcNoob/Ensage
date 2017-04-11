@@ -12,8 +12,6 @@
 
     internal class Chakram : LinearProjectile, IModifierObstacle, IModifier
     {
-        #region Constructors and Destructors
-
         public Chakram(Ability ability)
             : base(ability)
         {
@@ -33,15 +31,7 @@
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddModifierObstacle(Modifier modifier, Unit unit)
         {
@@ -50,7 +40,5 @@
                 End();
             }
         }
-
-        #endregion
     }
 }

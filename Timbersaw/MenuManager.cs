@@ -6,8 +6,6 @@
 
     internal class MenuManager
     {
-        #region Fields
-
         private readonly MenuItem centerHero;
 
         private readonly MenuItem enabled;
@@ -17,10 +15,6 @@
         private readonly Menu menu;
 
         private readonly MenuItem safeChain;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public MenuManager(string heroName)
         {
@@ -50,10 +44,6 @@
             menu.AddToMainMenu();
         }
 
-        #endregion
-
-        #region Public Properties
-
         public bool ChaseEnabled { get; private set; }
 
         public bool IsCenterCameraEnabled => centerHero.GetValue<bool>();
@@ -64,10 +54,6 @@
 
         public bool MoveEnabled { get; private set; }
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public bool IsItemEnabled(string itemName)
         {
             return items.GetValue<AbilityToggler>().IsEnabled(itemName);
@@ -77,7 +63,5 @@
         {
             menu.RemoveFromMainMenu();
         }
-
-        #endregion
     }
 }

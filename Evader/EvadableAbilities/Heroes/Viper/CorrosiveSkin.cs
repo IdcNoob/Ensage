@@ -11,8 +11,6 @@
 
     internal class CorrosiveSkin : EvadableAbility, IModifier
     {
-        #region Constructors and Destructors
-
         public CorrosiveSkin(Ability ability)
             : base(ability)
         {
@@ -25,15 +23,7 @@
             Modifier.AllyCounterAbilities.Add(FortunesEnd);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -47,7 +37,5 @@
         {
             return 0;
         }
-
-        #endregion
     }
 }

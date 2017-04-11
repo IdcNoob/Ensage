@@ -8,8 +8,6 @@
 
     internal class SoulAssumption : Projectile
     {
-        #region Constructors and Destructors
-
         public SoulAssumption(Ability ability)
             : base(ability)
         {
@@ -25,7 +23,5 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Lotus);
         }
-
-        #endregion
     }
 }

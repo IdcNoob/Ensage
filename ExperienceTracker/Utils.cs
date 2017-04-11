@@ -7,13 +7,7 @@
 
     internal static class Utils
     {
-        #region Static Fields
-
         private static readonly Dictionary<string, int> Experience = new Dictionary<string, int>();
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public static int GetGrantedExperience(this Creep creep)
         {
@@ -36,7 +30,5 @@
             Experience.Add(creep.Name, exp);
             return exp;
         }
-
-        #endregion
     }
 }

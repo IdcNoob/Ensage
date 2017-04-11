@@ -8,8 +8,6 @@
 
     internal class SpectralDagger : Projectile
     {
-        #region Constructors and Destructors
-
         public SpectralDagger(Ability ability)
             : base(ability)
         {
@@ -24,7 +22,5 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
         }
-
-        #endregion
     }
 }

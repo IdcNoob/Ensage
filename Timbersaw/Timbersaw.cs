@@ -15,8 +15,6 @@
 
     internal class Timbersaw
     {
-        #region Fields
-
         private readonly List<Chakram> chakrams = new List<Chakram>();
 
         private readonly Target target = new Target();
@@ -42,10 +40,6 @@
         private TreeFactory treeFactory;
 
         private WhirlingDeath whirlingDeath;
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void OnClose()
         {
@@ -100,19 +94,19 @@
 
         public void OnExecuteAbilitiy(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!menuManager.IsEnabled || !args.Entities.Contains(hero))
+            if (!menuManager.IsEnabled || !args.Entities.Contains(hero) || !args.IsPlayerInput)
             {
                 return;
             }
 
-            if (menuManager.ChaseEnabled && args.Order == Order.MoveLocation)
+            if (menuManager.ChaseEnabled && args.OrderId == OrderId.MoveLocation)
             {
                 sleeper.Sleep(500, orbwalker);
             }
 
             var ability = args.Ability;
 
-            if (ability == null || args.Order != Order.AbilityLocation)
+            if (ability == null || args.OrderId != OrderId.AbilityLocation)
             {
                 return;
             }
@@ -341,9 +335,8 @@
                     sleeper.Sleep(1000, shivasGuard);
                 }
 
-                if (whirlingDeath.CanBeCasted()
-                    && (distanceToEnemy <= whirlingDeath.Radius
-                        || (whirlingDeath.Combo && whirlingDeath.ComboDelayPassed)))
+                if (whirlingDeath.CanBeCasted() && (distanceToEnemy <= whirlingDeath.Radius
+                                                    || (whirlingDeath.Combo && whirlingDeath.ComboDelayPassed)))
                 {
                     whirlingDeath.UseAbility();
                     whirlingDeath.Combo = false;
@@ -361,8 +354,8 @@
                             hero,
                             target,
                             usableChakram.GetSleepTime + ping
-                            + target.GetDistance(heroPosition) / usableChakram.Speed * 1000
-                            + usableChakram.Radius / 2 / target.Hero.MovementSpeed * 1000);
+                            + target.GetDistance(heroPosition) / usableChakram.Speed * 1000 + usableChakram.Radius / 2
+                            / target.Hero.MovementSpeed * 1000);
 
                         usableChakram.UseAbility(predictedPosition, target.Hero, hero);
                         treeFactory.SetUnavailableTrees(hero.Position, predictedPosition, usableChakram);
@@ -423,7 +416,8 @@
                                 timberChain.UseAbility(chaseTree.Position);
 
                                 sleeper.Sleep(
-                                    timberChain.GetSleepTime + (float)hero.GetTurnTime(chaseTree.Position) * 1000 + ping,
+                                    timberChain.GetSleepTime + (float)hero.GetTurnTime(chaseTree.Position) * 1000
+                                    + ping,
                                     this);
                                 return;
                             }
@@ -440,8 +434,8 @@
                         hero,
                         target,
                         usableChakram.GetSleepTime + ping
-                        + target.GetDistance(heroPosition) / usableChakram.Speed * 1000
-                        + usableChakram.Radius / 2 / target.Hero.MovementSpeed * 1000);
+                        + target.GetDistance(heroPosition) / usableChakram.Speed * 1000 + usableChakram.Radius / 2
+                        / target.Hero.MovementSpeed * 1000);
 
                     usableChakram.UseAbility(predictedPosition, target.Hero, hero);
                     timberChain.ChakramCombo = false;
@@ -497,7 +491,5 @@
 
             treeFactory.ClearUnavailableTrees();
         }
-
-        #endregion
     }
 }

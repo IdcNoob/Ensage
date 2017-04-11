@@ -11,8 +11,6 @@
 
     internal class Rot : EvadableAbility, IModifier
     {
-        #region Constructors and Destructors
-
         public Rot(Ability ability)
             : base(ability)
         {
@@ -27,15 +25,7 @@
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -49,7 +39,5 @@
         {
             return 0;
         }
-
-        #endregion
     }
 }

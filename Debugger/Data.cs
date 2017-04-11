@@ -4,8 +4,6 @@
 
     internal static class Data
     {
-        #region Public Properties
-
         public static List<string> IgnoredAbilities { get; } = new List<string>
         {
             "special_",
@@ -60,7 +58,5 @@
         {
             "portrait_world_unit"
         };
-
-        #endregion
     }
 }

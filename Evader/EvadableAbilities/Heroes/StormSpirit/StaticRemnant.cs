@@ -12,8 +12,6 @@
 
     internal class StaticRemnant : AOE, IModifierObstacle
     {
-        #region Constructors and Destructors
-
         public StaticRemnant(Ability ability)
             : base(ability)
         {
@@ -28,20 +26,14 @@
             AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "static_remnant_delay").Value;
         }
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public void AddModifierObstacle(Modifier modifier, Unit unit)
         {
             StartPosition = unit.Position;
 
-            if (
-                !ObjectManager.GetEntities<Creep>()
+            if (!ObjectManager.GetEntities<Creep>()
                     .Any(
-                        x =>
-                            x.IsValid && x.Distance2D(StartPosition) < GetRadius() - 25 && x.Team == HeroTeam
-                            && x.IsAlive && x.IsSpawned))
+                        x => x.IsValid && x.Distance2D(StartPosition) < GetRadius() - 25 && x.Team == HeroTeam
+                             && x.IsAlive && x.IsSpawned))
             {
                 return;
             }
@@ -68,7 +60,5 @@
         {
             return 0;
         }
-
-        #endregion
     }
 }

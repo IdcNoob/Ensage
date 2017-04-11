@@ -15,13 +15,7 @@
 
     internal class ChaosMeteor : LinearProjectile, IParticle
     {
-        #region Fields
-
         private readonly Ability wex;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public ChaosMeteor(Ability ability)
             : base(ability)
@@ -40,24 +34,21 @@
             wex = AbilityOwner.FindSpell("invoker_wex");
         }
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
             StartCast = Game.RawGameTime + AdditionalDelay;
 
             DelayAction.Add(
                 1,
-                () => {
-                    var cp0 = particleArgs.ParticleEffect.GetControlPoint(0).SetZ(350);
-                    var cp1 = particleArgs.ParticleEffect.GetControlPoint(1).SetZ(350);
-                    StartPosition = cp1.Extend(cp0, GetRadius() / 2);
-                    EndPosition = cp0.Extend(StartPosition, GetCastRange() + cp0.Distance2D(cp1));
-                    EndCast = StartCast + AdditionalDelay + GetCastRange() / GetProjectileSpeed() - 0.5f;
-                    Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
-                });
+                () =>
+                    {
+                        var cp0 = particleArgs.ParticleEffect.GetControlPoint(0).SetZ(350);
+                        var cp1 = particleArgs.ParticleEffect.GetControlPoint(1).SetZ(350);
+                        StartPosition = cp1.Extend(cp0, GetRadius() / 2);
+                        EndPosition = cp0.Extend(StartPosition, GetCastRange() + cp0.Distance2D(cp1));
+                        EndCast = StartCast + AdditionalDelay + GetCastRange() / GetProjectileSpeed() - 0.5f;
+                        Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
+                    });
         }
 
         public override bool CanBeStopped()
@@ -87,15 +78,9 @@
             AbilityDrawer.UpdateCirclePosition(GetProjectilePosition());
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetCastRange()
         {
             return (350 + (wex?.Level ?? 8) * 155) * 1.2f;
         }
-
-        #endregion
     }
 }

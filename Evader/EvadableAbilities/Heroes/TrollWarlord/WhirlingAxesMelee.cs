@@ -15,15 +15,9 @@
 
     internal class WhirlingAxesMelee : AOE, IParticle, IModifier
     {
-        #region Fields
-
         private readonly float duration;
 
         private readonly float radius;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public WhirlingAxesMelee(Ability ability)
             : base(ability)
@@ -48,15 +42,7 @@
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
@@ -104,15 +90,9 @@
             return Obstacle != null;
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetRadius()
         {
             return radius;
         }
-
-        #endregion
     }
 }

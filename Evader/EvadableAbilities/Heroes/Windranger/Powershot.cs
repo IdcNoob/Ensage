@@ -16,8 +16,6 @@
 
     internal class Powershot : LinearProjectile, IParticle
     {
-        #region Fields
-
         private readonly float channelTime;
 
         private bool channelFix;
@@ -25,10 +23,6 @@
         private float channelingTime;
 
         private bool particleAdded;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Powershot(Ability ability)
             : base(ability)
@@ -43,10 +37,6 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
@@ -122,10 +112,6 @@
                    - Game.RawGameTime;
         }
 
-        #endregion
-
-        #region Methods
-
         protected override Vector3 GetProjectilePosition(bool ignoreCastPoint = false)
         {
             return Ability.IsChanneling
@@ -134,7 +120,5 @@
                            EndPosition,
                            (Game.RawGameTime - StartCast - channelingTime) * GetProjectileSpeed());
         }
-
-        #endregion
     }
 }

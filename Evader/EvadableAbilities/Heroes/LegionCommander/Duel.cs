@@ -15,8 +15,6 @@
 
     internal class Duel : LinearTarget, IModifier
     {
-        #region Constructors and Destructors
-
         public Duel(Ability ability)
             : base(ability)
         {
@@ -55,12 +53,6 @@
             Modifier.EnemyCounterAbilities.RemoveAll(x => Invul.Contains(x));
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

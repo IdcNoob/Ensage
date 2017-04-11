@@ -8,14 +8,10 @@
 
     internal class HandOfGod : NoObstacleAbility
     {
-        #region Constructors and Destructors
-
         public HandOfGod(Ability ability)
             : base(ability)
         {
             DisableAbilities.AddRange(DisableAbilityNames);
         }
-
-        #endregion
     }
 }

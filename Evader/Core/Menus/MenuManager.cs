@@ -6,13 +6,7 @@
 
     internal class MenuManager : IDisposable
     {
-        #region Fields
-
         private readonly Menu menu;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public MenuManager()
         {
@@ -29,10 +23,6 @@
             menu.AddToMainMenu();
         }
 
-        #endregion
-
-        #region Public Properties
-
         public AlliesSettingsMenu AlliesSettings { get; }
 
         public DebugMenu Debug { get; }
@@ -47,15 +37,9 @@
 
         public UsableAbilitiesMenu UsableAbilities { get; }
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public void Dispose()
         {
             menu.RemoveFromMainMenu();
         }
-
-        #endregion
     }
 }

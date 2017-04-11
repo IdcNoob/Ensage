@@ -9,15 +9,9 @@
 
     internal static class MapDrawer
     {
-        #region Properties
-
         private static Hero Hero => Variables.Hero;
 
         private static Pathfinder Pathfinder => Variables.Pathfinder;
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public static void Draw()
         {
@@ -78,7 +72,5 @@
             y += CellCount / 2;
             Drawing.DrawRect(new Vector2(x * 10, 50 + (CellCount - y - 1) * 10), new Vector2(9), Color.Blue, false);
         }
-
-        #endregion
     }
 }

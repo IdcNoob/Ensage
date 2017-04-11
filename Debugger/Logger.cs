@@ -6,8 +6,6 @@
 
     internal class Logger
     {
-        #region Enums
-
         public enum Type
         {
             Modifier,
@@ -41,10 +39,6 @@
             ExecuteOrder
         }
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public void EmptyLine()
         {
             Console.WriteLine();
@@ -67,7 +61,5 @@
 
             Console.WriteLine(text);
         }
-
-        #endregion
     }
 }

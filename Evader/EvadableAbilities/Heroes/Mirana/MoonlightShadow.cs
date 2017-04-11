@@ -8,14 +8,10 @@
 
     internal class MoonlightShadow : NoObstacleAbility
     {
-        #region Constructors and Destructors
-
         public MoonlightShadow(Ability ability)
             : base(ability)
         {
             DisableAbilities.AddRange(DisableAbilityNames);
         }
-
-        #endregion
     }
 }

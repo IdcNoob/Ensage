@@ -19,8 +19,6 @@
     internal class IceBlast : AOE, IModifier, IUnit, IParticle
 
     {
-        #region Fields
-
         private readonly float growRadius;
 
         private readonly float maxRadius;
@@ -32,10 +30,6 @@
         private bool flies;
 
         private Vector3 initialPosition;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public IceBlast(Ability ability)
             : base(ability)
@@ -62,15 +56,7 @@
             growRadius = Ability.AbilitySpecialData.First(x => x.Name == "radius_grow").Value;
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
@@ -121,10 +107,6 @@
             return Math.Min(2, StartPosition.Distance2D(initialPosition) / 750) * 0.7f - (Game.RawGameTime - EndCast);
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetRadius()
         {
             return Math.Min(maxRadius, Math.Max((EndCast - StartCast) * growRadius + minRadius, minRadius)) * 1.5f;
@@ -134,7 +116,5 @@
         {
             return abilityUnit != null && abilityUnit.IsValid;
         }
-
-        #endregion
     }
 }

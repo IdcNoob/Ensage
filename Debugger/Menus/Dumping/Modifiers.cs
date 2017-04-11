@@ -8,8 +8,6 @@
 
     internal class Modifiers
     {
-        #region Constructors and Destructors
-
         public Modifiers(Menu mainMenu)
         {
             var menu = new Menu("Modifiers", "modifiersDumpMenu");
@@ -43,16 +41,6 @@
             mainMenu.AddSubMenu(menu);
         }
 
-        #endregion
-
-        #region Public Events
-
-        public event EventHandler OnDump;
-
-        #endregion
-
-        #region Public Properties
-
         public bool ShowElapsedTime { get; private set; }
 
         public bool ShowHidden { get; private set; }
@@ -61,6 +49,6 @@
 
         public bool ShowTextureName { get; private set; }
 
-        #endregion
+        public event EventHandler OnDump;
     }
 }

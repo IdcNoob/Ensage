@@ -8,8 +8,6 @@
 
     internal class TricksOfTheTrade : AOE
     {
-        #region Constructors and Destructors
-
         public TricksOfTheTrade(Ability ability)
             : base(ability)
         {
@@ -21,7 +19,5 @@
             CounterAbilities.AddRange(VsPhys);
             CounterAbilities.AddRange(Invis);
         }
-
-        #endregion
     }
 }

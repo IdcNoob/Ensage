@@ -19,34 +19,20 @@
 
     internal class Meld : NotTargetable, IDisposable
     {
-        #region Fields
-
         private readonly Sleeper sleeper;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Meld(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
             : base(ability, type, target)
         {
             sleeper = new Sleeper();
-            Player.OnExecuteOrder += PlayerOnExecuteOrder;
+            Player.OnExecuteOrder += OnExecuteOrder;
         }
-
-        #endregion
-
-        #region Properties
 
         private static UsableAbilitiesMenu Menu => Variables.Menu.UsableAbilities;
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public void Dispose()
         {
-            Player.OnExecuteOrder -= PlayerOnExecuteOrder;
+            Player.OnExecuteOrder -= OnExecuteOrder;
         }
 
         public override void Use(EvadableAbility ability, Unit target)
@@ -58,35 +44,29 @@
             }
         }
 
-        #endregion
-
-        #region Methods
-
-        private void PlayerOnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
+        private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!sleeper.Sleeping || !args.Entities.Contains(Hero))
+            if (!sleeper.Sleeping || !args.Entities.Contains(Hero) || !args.IsPlayerInput)
             {
                 return;
             }
 
-            switch (args.Order)
+            switch (args.OrderId)
             {
-                case Order.AttackLocation:
-                case Order.AttackTarget:
-                case Order.Stop:
-                case Order.Hold:
-                case Order.MoveTarget:
-                case Order.MoveLocation:
+                case OrderId.AttackLocation:
+                case OrderId.AttackTarget:
+                case OrderId.Stop:
+                case OrderId.Hold:
+                case OrderId.MoveTarget:
+                case OrderId.MoveLocation:
                     args.Process = false;
                     break;
-                case Order.AbilityTarget:
-                case Order.AbilityLocation:
-                case Order.Ability:
+                case OrderId.AbilityTarget:
+                case OrderId.AbilityLocation:
+                case OrderId.Ability:
                     sleeper.Sleep(0);
                     break;
             }
         }
-
-        #endregion
     }
 }

@@ -11,15 +11,9 @@
 
     internal class Tidebringer : AOE
     {
-        #region Fields
-
         private readonly Sleeper attackSleeper;
 
         private readonly Hero kunkka;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Tidebringer(Ability ability)
             : base(ability)
@@ -33,10 +27,6 @@
             kunkka = (Hero)AbilityOwner;
             attackSleeper = new Sleeper();
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -71,7 +61,5 @@
 
             return isStopped;
         }
-
-        #endregion
     }
 }

@@ -9,25 +9,15 @@
 
     internal class RemoteMine : Mine, IUpdatable
     {
-        #region Constants
-
         private const string AbilityName = "techies_remote_mines";
 
-        #endregion
-
-        #region Fields
-
         private bool showTimer;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public RemoteMine(Unit unit)
             : base(unit, AbilityName)
         {
-            Duration = unit.FindModifier("modifier_techies_remote_mine")?.RemainingTime
-                       ?? Ability.GetAbilityDataByName(AbilityName)
+            Duration = unit.FindModifier("modifier_techies_remote_mine")?.RemainingTime ?? Ability
+                           .GetAbilityDataByName(AbilityName)
                            .AbilitySpecialData.First(x => x.Name == "duration")
                            .Value;
             if (Menu.RangeEnabled(AbilityName))
@@ -45,24 +35,17 @@
                 ParticleEffect = new ParticleEffect("particles/ui_mouseactions/drag_selected_ring.vpcf", position);
             }
             RequiresUpdate = true;
-            Duration =
-                Ability.GetAbilityDataByName(AbilityName).AbilitySpecialData.First(x => x.Name == "duration").Value;
+            Duration = Ability.GetAbilityDataByName(AbilityName)
+                .AbilitySpecialData.First(x => x.Name == "duration")
+                .Value;
             Initialize();
         }
-
-        #endregion
-
-        #region Public Properties
-
-        public bool RequiresUpdate { get; private set; }
 
         public override bool ShowTexture => RequiresUpdate || !Unit.IsVisible;
 
         public override bool ShowTimer => showTimer && (RequiresUpdate || !Unit.IsVisible);
 
-        #endregion
-
-        #region Public Methods and Operators
+        public bool RequiresUpdate { get; private set; }
 
         public float Distance(Entity unit)
         {
@@ -82,10 +65,6 @@
             Handle = unit.Handle;
         }
 
-        #endregion
-
-        #region Methods
-
         private void Initialize()
         {
             PositionCorrection = new Vector2(25);
@@ -101,7 +80,5 @@
                 ParticleEffect.SetControlPoint(2, new Vector3(Radius, 255, 0));
             }
         }
-
-        #endregion
     }
 }

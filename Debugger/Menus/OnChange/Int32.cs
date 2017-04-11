@@ -4,27 +4,26 @@
 
     internal class Int32
     {
-        #region Constructors and Destructors
-
         public Int32(Menu mainMenu)
         {
             var menu = new Menu("Int32 ", "int32");
 
-            var enabled =
-                new MenuItem("int32Enabled", "Enabled").SetValue(false).SetTooltip("Entity.OnInt32PropertyChange");
+            var enabled = new MenuItem("int32Enabled", "Enabled").SetValue(false)
+                .SetTooltip("Entity.OnInt32PropertyChange");
             menu.AddItem(enabled);
             enabled.ValueChanged += (sender, args) => Enabled = args.GetNewValue<bool>();
-            enabled.ValueChanged += (sender, args) => {
-                Enabled = args.GetNewValue<bool>();
-                if (Enabled)
+            enabled.ValueChanged += (sender, args) =>
                 {
-                    menu.DisplayName = menu.DisplayName += "*";
-                }
-                else
-                {
-                    menu.DisplayName = menu.DisplayName.TrimEnd('*');
-                }
-            };
+                    Enabled = args.GetNewValue<bool>();
+                    if (Enabled)
+                    {
+                        menu.DisplayName = menu.DisplayName += "*";
+                    }
+                    else
+                    {
+                        menu.DisplayName = menu.DisplayName.TrimEnd('*');
+                    }
+                };
             Enabled = enabled.IsActive();
             if (Enabled)
             {
@@ -44,16 +43,10 @@
             mainMenu.AddSubMenu(menu);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public bool Enabled { get; private set; }
 
         public bool HeroesOnly { get; private set; }
 
         public bool IgnoreUseless { get; private set; }
-
-        #endregion
     }
 }

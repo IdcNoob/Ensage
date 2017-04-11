@@ -15,32 +15,6 @@
 
     internal class Pathfinder : IDisposable
     {
-        #region Constants
-
-        private const int StaticZ = 256;
-
-        #endregion
-
-        #region Fields
-
-        private readonly MultiSleeper sleeper = new MultiSleeper();
-
-        private readonly Dictionary<Unit, uint> units = new Dictionary<Unit, uint>();
-
-        #endregion
-
-        #region Constructors and Destructors
-
-        public Pathfinder()
-        {
-            Pathfinding = new NavMeshPathfinding();
-            Game.OnUpdate += OnUpdate;
-        }
-
-        #endregion
-
-        #region Enums
-
         public enum EvadeMode
         {
             All,
@@ -50,21 +24,21 @@
             None
         }
 
-        #endregion
+        private const int StaticZ = 256;
 
-        #region Public Properties
+        private readonly MultiSleeper sleeper = new MultiSleeper();
+
+        private readonly Dictionary<Unit, uint> units = new Dictionary<Unit, uint>();
+
+        public Pathfinder()
+        {
+            Pathfinding = new NavMeshPathfinding();
+            Game.OnUpdate += OnUpdate;
+        }
 
         public NavMeshPathfinding Pathfinding { get; }
 
-        #endregion
-
-        #region Properties
-
         private static Hero Hero => Variables.Hero;
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public uint? AddObstacle(Vector3 position, float radius, uint? obstacle = null, int forceZ = StaticZ)
         {
@@ -226,17 +200,12 @@
             Pathfinding.UpdateObstacle(id, startPosition.SetZ(forceZ), endPosition.SetZ(forceZ));
         }
 
-        #endregion
-
-        #region Methods
-
         private void OnUpdate(EventArgs args)
         {
             if (!sleeper.Sleeping(units))
             {
-                foreach (var unit in
-                    ObjectManager.GetEntitiesParallel<Unit>()
-                        .Where(x => x.IsValid && !units.ContainsKey(x) && x.IsSpawned && x.IsAlive && !x.Equals(Hero)))
+                foreach (var unit in ObjectManager.GetEntitiesParallel<Unit>()
+                    .Where(x => x.IsValid && !units.ContainsKey(x) && x.IsSpawned && x.IsAlive && !x.Equals(Hero)))
                 {
                     var obstacle = AddObstacle(unit.NetworkPosition, unit.HullRadius);
                     if (obstacle != null)
@@ -274,7 +243,5 @@
                 sleeper.Sleep(100, Pathfinding);
             }
         }
-
-        #endregion
     }
 }

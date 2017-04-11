@@ -8,8 +8,6 @@
 
     internal class NetherStrike : LinearTarget
     {
-        #region Constructors and Destructors
-
         public NetherStrike(Ability ability)
             : base(ability)
         {
@@ -26,7 +24,5 @@
             CounterAbilities.Add(Lotus);
             CounterAbilities.AddRange(Invis);
         }
-
-        #endregion
     }
 }

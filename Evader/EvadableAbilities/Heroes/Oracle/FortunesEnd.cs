@@ -12,8 +12,6 @@
 
     internal class FortunesEnd : Projectile, IModifier
     {
-        #region Constructors and Destructors
-
         public FortunesEnd(Ability ability)
             : base(ability)
         {
@@ -33,12 +31,6 @@
             AdditionalDelay = Ability.GetChannelTime(0);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

@@ -8,8 +8,6 @@
 
     internal class EnchantTotem : AOE
     {
-        #region Constructors and Destructors
-
         public EnchantTotem(Ability ability)
             : base(ability)
         {
@@ -22,7 +20,5 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Remove("abaddon_aphotic_shield");
         }
-
-        #endregion
     }
 }

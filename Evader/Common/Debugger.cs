@@ -11,16 +11,6 @@
 
     internal static class Debugger
     {
-        #region Static Fields
-
-        private static ParticleEffect greenCirclePartcile;
-
-        private static ParticleEffect redCirclePartcile;
-
-        #endregion
-
-        #region Enums
-
         public enum Type
         {
             Information,
@@ -30,15 +20,11 @@
             Intersectons
         }
 
-        #endregion
+        private static ParticleEffect greenCirclePartcile;
 
-        #region Properties
+        private static ParticleEffect redCirclePartcile;
 
         private static DebugMenu Menu => Variables.Menu.Debug;
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public static void DeleteGreenCircle()
         {
@@ -144,7 +130,5 @@
                 Console.Write(text);
             }
         }
-
-        #endregion
     }
 }

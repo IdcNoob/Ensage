@@ -4,8 +4,6 @@
 
     internal interface IAbility
     {
-        #region Public Properties
-
         Ability Ability { get; }
 
         bool CanBeCasted { get; }
@@ -15,7 +13,5 @@
         float CastPoint { get; }
 
         uint ManaCost { get; }
-
-        #endregion
     }
 }

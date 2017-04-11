@@ -11,8 +11,6 @@
 
     internal class ShadowWord : LinearTarget, IModifier
     {
-        #region Constructors and Destructors
-
         public ShadowWord(Ability ability)
             : base(ability)
         {
@@ -26,12 +24,6 @@
             Modifier.AllyCounterAbilities.Add(Eul);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

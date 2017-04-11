@@ -12,8 +12,6 @@
 
     internal class RodOfAtos : Projectile, IModifier
     {
-        #region Constructors and Destructors
-
         public RodOfAtos(Ability ability)
             : base(ability)
         {
@@ -32,21 +30,11 @@
             Modifier.AllyCounterAbilities.AddRange(AllyPurges);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override float GetProjectileSpeed()
         {
             return 1500;
         }
-
-        #endregion
     }
 }

@@ -8,8 +8,6 @@
 
     internal class RealityRift : LinearTarget
     {
-        #region Constructors and Destructors
-
         public RealityRift(Ability ability)
             : base(ability)
         {
@@ -29,7 +27,5 @@
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Lotus);
         }
-
-        #endregion
     }
 }

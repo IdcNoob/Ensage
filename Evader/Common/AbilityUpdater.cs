@@ -23,8 +23,6 @@
 
     internal class AbilityUpdater : IDisposable
     {
-        #region Fields
-
         private readonly List<uint> addedAbilities = new List<uint>();
 
         private readonly AllyAbilities allyAbilitiesData;
@@ -34,10 +32,6 @@
         private readonly Sleeper sleeper;
 
         private bool processing;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public AbilityUpdater()
         {
@@ -60,29 +54,17 @@
             Entity.OnInt64PropertyChange += EntityOnOnInt64PropertyChange;
         }
 
-        #endregion
-
-        #region Public Properties
-
         public List<EvadableAbility> EvadableAbilities { get; } = new List<EvadableAbility>();
 
         public GoldSpender GoldSpender { get; } = new GoldSpender();
 
         public List<UsableAbility> UsableAbilities { get; } = new List<UsableAbility>();
 
-        #endregion
-
-        #region Properties
-
         private static Hero Hero => Variables.Hero;
 
         private static Team HeroTeam => Variables.HeroTeam;
 
         private static MenuManager Menu => Variables.Menu;
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void Dispose()
         {
@@ -116,20 +98,16 @@
 
             processing = true;
 
-            foreach (var unit in
-                ObjectManager.GetEntitiesParallel<Unit>()
-                    .Where(
-                        x =>
-                            !(x is Building) && x.IsValid && x.IsAlive && x.IsSpawned
-                            && (!x.IsIllusion
-                                || x.HasModifiers(
-                                    new[]
-                                    {
-                                        "modifier_arc_warden_tempest_double",
-                                        "modifier_vengefulspirit_hybrid_special",
-                                        "modifier_morph_hybrid_special"
-                                    },
-                                    false))))
+            foreach (var unit in ObjectManager.GetEntitiesParallel<Unit>()
+                .Where(
+                    x => !(x is Building) && x.IsValid && x.IsAlive && x.IsSpawned && (!x.IsIllusion || x.HasModifiers(
+                                                                                           new[]
+                                                                                           {
+                                                                                               "modifier_arc_warden_tempest_double",
+                                                                                               "modifier_vengefulspirit_hybrid_special",
+                                                                                               "modifier_morph_hybrid_special"
+                                                                                           },
+                                                                                           false))))
             {
                 var abilities = new List<Ability>();
 
@@ -147,8 +125,8 @@
                     continue;
                 }
 
-                foreach (var ability in
-                    abilities.Where(x => x.IsValid && !addedAbilities.Contains(x.Handle) && x.Level > 0))
+                foreach (var ability in abilities.Where(
+                    x => x.IsValid && !addedAbilities.Contains(x.Handle) && x.Level > 0))
                 {
                     if (unit.Equals(Hero))
                     {
@@ -171,7 +149,8 @@
                             UsableAbilities.Add(func.Invoke(ability));
                         }
                     }
-                    else if (unit.Team != HeroTeam || ability.ClassID == ClassID.CDOTA_Ability_FacelessVoid_Chronosphere)
+                    else if (unit.Team != HeroTeam || ability.ClassId
+                             == ClassId.CDOTA_Ability_FacelessVoid_Chronosphere)
                     {
                         Func<Ability, EvadableAbility> func;
                         if (enemyAbilitiesData.EvadableAbilities.TryGetValue(ability.Name, out func))
@@ -180,9 +159,9 @@
 
                             if (Menu.Debug.FastAbilityAdd)
                             {
-                                #pragma warning disable 4014
+#pragma warning disable 4014
                                 Menu.EnemiesSettings.AddAbility(evadableAbility);
-                                #pragma warning restore 4014
+#pragma warning restore 4014
                             }
                             else
                             {
@@ -201,10 +180,6 @@
             processing = false;
         }
 
-        #endregion
-
-        #region Methods
-
         private void EntityOnOnInt64PropertyChange(Entity sender, Int64PropertyChangeEventArgs args)
         {
             if (args.OldValue != 0 || args.NewValue != 1 || args.PropertyName != "m_iIsControllableByPlayer64")
@@ -217,7 +192,5 @@
                 EvadableAbilities.RemoveAll(x => x.OwnerHandle == sender.Handle);
             }
         }
-
-        #endregion
     }
 }

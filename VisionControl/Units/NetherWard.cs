@@ -8,29 +8,18 @@
 
     internal class NetherWard : IUnit
     {
-        #region Constants
-
         private const string AbilityName = "pugna_nether_ward";
 
-        #endregion
-
-        #region Fields
-
         private readonly Unit unit;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public NetherWard(Unit unit)
         {
             this.unit = unit;
             PositionCorrection = new Vector2(25);
             Radius = Ability.GetAbilityDataByName(AbilityName).AbilitySpecialData.First(x => x.Name == "radius").Value;
-            Duration =
-                Ability.GetAbilityDataByName(AbilityName)
-                    .AbilitySpecialData.First(x => x.Name == "ward_duration_tooltip")
-                    .Value;
+            Duration = Ability.GetAbilityDataByName(AbilityName)
+                .AbilitySpecialData.First(x => x.Name == "ward_duration_tooltip")
+                .Value;
             Position = unit.Position;
             Texture = Drawing.GetTexture("materials/ensage_ui/other/nether_ward");
             Handle = unit.Handle;
@@ -46,9 +35,7 @@
             }
         }
 
-        #endregion
-
-        #region Public Properties
+        private static MenuManager Menu => Variables.Menu;
 
         public float Duration { get; }
 
@@ -71,13 +58,5 @@
         public DotaTexture Texture { get; }
 
         public Vector2 TextureSize { get; set; }
-
-        #endregion
-
-        #region Properties
-
-        private static MenuManager Menu => Variables.Menu;
-
-        #endregion
     }
 }

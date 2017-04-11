@@ -13,8 +13,6 @@
 
     internal class AbilityLeveling
     {
-        #region Fields
-
         private IEnumerable<Ability> abilities;
 
         private AbilityBuilder abilitylBuilder;
@@ -26,10 +24,6 @@
         private Sleeper sleeper;
 
         private List<Ability> talents;
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void OnClose()
         {
@@ -44,12 +38,11 @@
             }
 
             var build = abilitylBuilder.GetBestBuild().ToList();
-            var uniqueAbilities =
-                build.GroupBy(x => x)
-                    .Select(x => x.First())
-                    .OrderBy(x => x.AbilitySlot)
-                    .Select(x => x.StoredName())
-                    .ToList();
+            var uniqueAbilities = build.GroupBy(x => x)
+                .Select(x => x.First())
+                .OrderBy(x => x.AbilitySlot)
+                .Select(x => x.StoredName())
+                .ToList();
 
             var ratio = HUDInfo.RatioPercentage();
             var xStart = HUDInfo.ScreenSizeX() * 0.35f;
@@ -149,11 +142,9 @@
         public void OnLoad()
         {
             hero = ObjectManager.LocalHero;
-            abilities =
-                hero.Spellbook.Spells.Where(
-                    x =>
-                        !x.IsHidden && !IgnoredAbilities.List.Contains(x.StoredName())
-                        && !x.Name.Contains("special_bonus"));
+            abilities = hero.Spellbook.Spells.Where(
+                x => !x.IsHidden && !IgnoredAbilities.List.Contains(x.StoredName())
+                     && !x.Name.Contains("special_bonus"));
             menuManager = new MenuManager(abilities.Select(x => x.StoredName()).ToList(), hero.Name);
             sleeper = new Sleeper();
             abilitylBuilder = new AbilityBuilder(hero);
@@ -194,11 +185,12 @@
             }
             else if (menuManager.IsEnabledManual && !menuManager.IsLevelIgnored(hero.Level))
             {
-                var learnableAbilities =
-                    abilities.OrderByDescending(x => menuManager.GetAbilityPriority(x.StoredName()))
-                        .Where(
-                            x => menuManager.AbilityActive(x.StoredName()) && IsLearnable(x) // x.IsLearnable
-                        ).ToList();
+                var learnableAbilities = abilities
+                    .OrderByDescending(x => menuManager.GetAbilityPriority(x.StoredName()))
+                    .Where(
+                        x => menuManager.AbilityActive(x.StoredName()) && IsLearnable(x) // x.IsLearnable
+                    )
+                    .ToList();
 
                 var upgrade = learnableAbilities.FirstOrDefault(ForceLearn)
                               ?? learnableAbilities.FirstOrDefault(x => !IsLocked(x, learnableAbilities));
@@ -206,10 +198,6 @@
                 Player.UpgradeAbility(hero, upgrade ?? learnableAbilities.FirstOrDefault());
             }
         }
-
-        #endregion
-
-        #region Methods
 
         private bool ForceLearn(Ability ability)
         {
@@ -235,9 +223,9 @@
                     {
                         return false;
                     }
-                    switch (hero.ClassID)
+                    switch (hero.ClassId)
                     {
-                        case ClassID.CDOTA_Unit_Hero_Meepo:
+                        case ClassId.CDOTA_Unit_Hero_Meepo:
                             switch (abilityLevel)
                             {
                                 case 0:
@@ -287,7 +275,7 @@
                     break;
                 default:
                     // ability.MaximumLevel
-                    var maxLevel = hero.ClassID == ClassID.CDOTA_Unit_Hero_Invoker ? 7 : 4;
+                    var maxLevel = hero.ClassId == ClassId.CDOTA_Unit_Hero_Invoker ? 7 : 4;
 
                     if (abilityLevel >= maxLevel || heroLevel <= abilityLevel * 2)
                     {
@@ -310,23 +298,19 @@
 
             var abilityLevel = ability.Level;
 
-            var otherNotLockedAbility =
-                learnableAbilities.Any(
-                    x =>
-                        !x.Equals(ability) && x.AbilityType != AbilityType.Attribute
-                        && (menuManager.AbilityLockLevel(x.StoredName()) == 0
-                            || menuManager.AbilityLockLevel(x.StoredName()) > x.Level)
-                        && !menuManager.AbilityFullyLocked(x.StoredName()));
+            var otherNotLockedAbility = learnableAbilities.Any(
+                x => !x.Equals(ability) && x.AbilityType != AbilityType.Attribute
+                     && (menuManager.AbilityLockLevel(x.StoredName()) == 0
+                         || menuManager.AbilityLockLevel(x.StoredName()) > x.Level)
+                     && !menuManager.AbilityFullyLocked(x.StoredName()));
 
-            return abilityLevel >= lockLevel
-                   && (otherNotLockedAbility || menuManager.AbilityFullyLocked(ability.StoredName()));
+            return abilityLevel >= lockLevel && (otherNotLockedAbility
+                                                 || menuManager.AbilityFullyLocked(ability.StoredName()));
         }
 
         private bool IsTalentLearned(uint level)
         {
             return Math.Max((int)level - 5, 1) / 5 == talents.Count(x => x.Level > 0);
         }
-
-        #endregion
     }
 }

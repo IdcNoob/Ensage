@@ -6,25 +6,15 @@
 
     internal class WardPinger
     {
-        #region Fields
-
         private readonly Team team;
 
         private float lastPing;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public WardPinger(Team heroTeam)
         {
             team = heroTeam;
             lastPing = float.MinValue;
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public bool ShouldRemind(int delay)
         {
@@ -44,9 +34,8 @@
 
             if (time > lastPing + delay * 60)
             {
-                if (
-                    ObjectManager.GetEntities<Unit>()
-                        .Any(x => x.ClassID == ClassID.CDOTA_NPC_Observer_Ward && x.Team == team))
+                if (ObjectManager.GetEntities<Unit>()
+                    .Any(x => x.ClassId == ClassId.CDOTA_NPC_Observer_Ward && x.Team == team))
                 {
                     return false;
                 }
@@ -58,7 +47,5 @@
 
             return false;
         }
-
-        #endregion
     }
 }

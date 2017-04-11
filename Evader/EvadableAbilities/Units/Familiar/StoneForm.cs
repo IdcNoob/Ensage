@@ -13,8 +13,6 @@
 
     internal class StoneForm : AOE, IModifier
     {
-        #region Constructors and Destructors
-
         public StoneForm(Ability ability)
             : base(ability)
         {
@@ -33,15 +31,7 @@
             AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "stun_delay").Value;
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override bool CanBeStopped()
         {
@@ -62,7 +52,5 @@
                 End();
             }
         }
-
-        #endregion
     }
 }

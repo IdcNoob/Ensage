@@ -11,8 +11,6 @@
 
     internal class Silence : LinearAOE, IModifier
     {
-        #region Constructors and Destructors
-
         public Silence(Ability ability)
             : base(ability)
         {
@@ -30,12 +28,6 @@
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

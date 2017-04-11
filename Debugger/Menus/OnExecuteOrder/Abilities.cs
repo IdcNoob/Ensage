@@ -4,26 +4,25 @@
 
     internal class Abilities
     {
-        #region Constructors and Destructors
-
         public Abilities(Menu mainMenu)
         {
             var menu = new Menu("Abilities ", "executeAbilities");
 
-            var enabled =
-                new MenuItem("executeAbilitiesEnabled", "Enabled").SetValue(false).SetTooltip("Player.OnExecuteOrder");
+            var enabled = new MenuItem("executeAbilitiesEnabled", "Enabled").SetValue(false)
+                .SetTooltip("Player.OnExecuteOrder");
             menu.AddItem(enabled);
-            enabled.ValueChanged += (sender, args) => {
-                Enabled = args.GetNewValue<bool>();
-                if (Enabled)
+            enabled.ValueChanged += (sender, args) =>
                 {
-                    menu.DisplayName = menu.DisplayName += "*";
-                }
-                else
-                {
-                    menu.DisplayName = menu.DisplayName.TrimEnd('*');
-                }
-            };
+                    Enabled = args.GetNewValue<bool>();
+                    if (Enabled)
+                    {
+                        menu.DisplayName = menu.DisplayName += "*";
+                    }
+                    else
+                    {
+                        menu.DisplayName = menu.DisplayName.TrimEnd('*');
+                    }
+                };
             Enabled = enabled.IsActive();
             if (Enabled)
             {
@@ -33,12 +32,6 @@
             mainMenu.AddSubMenu(menu);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public bool Enabled { get; private set; }
-
-        #endregion
     }
 }

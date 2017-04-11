@@ -16,17 +16,11 @@
 
     internal class IcePath : LinearAOE, IModifier
     {
-        #region Fields
-
         private readonly float bonusDuration;
 
         private readonly float[] duration = new float[4];
 
         private readonly Ability talent;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public IcePath(Ability ability)
             : base(ability)
@@ -65,15 +59,7 @@
             ObstacleStays = true;
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -94,15 +80,9 @@
             }
         }
 
-        #endregion
-
-        #region Methods
-
         private float GetDuration()
         {
             return duration[Ability.Level - 1] + (talent?.Level > 0 ? bonusDuration : 0);
         }
-
-        #endregion
     }
 }

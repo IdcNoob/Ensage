@@ -8,19 +8,9 @@
 
     internal class SentryWard : Ward
     {
-        #region Constants
-
         private const string AbilityName = "item_ward_sentry";
 
-        #endregion
-
-        #region Fields
-
         private bool showTimer;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public SentryWard(Unit unit)
             : base(unit, AbilityName)
@@ -32,20 +22,13 @@
             : base(position, AbilityName)
         {
             Initialize();
-            Duration =
-                Ability.GetAbilityDataByName(AbilityName).AbilitySpecialData.First(x => x.Name == "lifetime").Value;
+            Duration = Ability.GetAbilityDataByName(AbilityName)
+                .AbilitySpecialData.First(x => x.Name == "lifetime")
+                .Value;
             EndTime = Game.RawGameTime + Duration;
         }
 
-        #endregion
-
-        #region Public Properties
-
         public override bool ShowTimer => showTimer && base.ShowTimer;
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void UpdateData(Unit unit)
         {
@@ -53,10 +36,6 @@
             ParticleEffect?.Dispose();
             DrawRange();
         }
-
-        #endregion
-
-        #region Methods
 
         private void DrawRange()
         {
@@ -74,14 +53,11 @@
         {
             showTimer = Menu.TimerEnabled(AbilityName);
             PositionCorrection = new Vector2(25);
-            Radius =
-                Ability.GetAbilityDataByName(AbilityName)
-                    .AbilitySpecialData.First(x => x.Name == "true_sight_range")
-                    .Value;
+            Radius = Ability.GetAbilityDataByName(AbilityName)
+                .AbilitySpecialData.First(x => x.Name == "true_sight_range")
+                .Value;
             DrawRange();
             Texture = Drawing.GetTexture("materials/ensage_ui/other/item_ward_sentry");
         }
-
-        #endregion
     }
 }

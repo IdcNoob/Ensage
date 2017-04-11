@@ -8,8 +8,6 @@
 
     internal class DeathPulse : Projectile
     {
-        #region Constructors and Destructors
-
         public DeathPulse(Ability ability)
             : base(ability)
         {
@@ -25,7 +23,5 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
         }
-
-        #endregion
     }
 }

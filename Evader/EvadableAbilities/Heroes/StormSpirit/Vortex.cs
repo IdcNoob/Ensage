@@ -16,13 +16,7 @@
 
     internal class Vortex : LinearTarget, IModifier
     {
-        #region Fields
-
         private readonly float aghanimRadius;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Vortex(Ability ability)
             : base(ability)
@@ -51,15 +45,7 @@
             aghanimRadius = Ability.AbilitySpecialData.First(x => x.Name == "radius_scepter").Value + 50;
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -101,15 +87,9 @@
             }
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetRadius()
         {
             return AbilityOwner.AghanimState() ? aghanimRadius : base.GetRadius();
         }
-
-        #endregion
     }
 }

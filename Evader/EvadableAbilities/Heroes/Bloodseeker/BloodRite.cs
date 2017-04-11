@@ -15,15 +15,9 @@
 
     internal class BloodRite : LinearAOE, IModifierObstacle, IModifier
     {
-        #region Fields
-
         private bool fowCast;
 
         private bool modifierAdded;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public BloodRite(Ability ability)
             : base(ability)
@@ -55,15 +49,7 @@
             AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "delay").Value;
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddModifierObstacle(Modifier mod, Unit unit)
         {
@@ -119,7 +105,5 @@
         {
             return StartCast + (fowCast ? 0 : CastPoint) + AdditionalDelay - Game.RawGameTime;
         }
-
-        #endregion
     }
 }

@@ -7,22 +7,12 @@
 
     internal class Bootstrap
     {
-        #region Fields
-
         private readonly LastHitMarker lastHitMarker = new LastHitMarker();
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void Initialize()
         {
             Events.OnLoad += OnLoad;
         }
-
-        #endregion
-
-        #region Methods
 
         private void Drawing_OnDraw(EventArgs args)
         {
@@ -63,7 +53,5 @@
             ObjectManager.OnAddEntity += ObjectManager_OnAddEntity;
             ObjectManager.OnRemoveEntity += ObjectManager_OnRemoveEntity;
         }
-
-        #endregion
     }
 }

@@ -14,13 +14,7 @@
 
     internal class BoulderSmash : LinearProjectile, IModifier, IParticle
     {
-        #region Fields
-
         private float tempTime;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public BoulderSmash(Ability ability)
             : base(ability)
@@ -45,15 +39,7 @@
             Modifier.AllyCounterAbilities.AddRange(Invul);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public void AddParticle(ParticleEffectAddedEventArgs particleArgs)
         {
@@ -62,21 +48,22 @@
 
             DelayAction.Add(
                 1,
-                () => {
-                    if (caster)
+                () =>
                     {
-                        StartPosition = particleArgs.ParticleEffect.GetControlPoint(0);
-                    }
-                    else
-                    {
-                        StartCast = tempTime;
-                        EndPosition = StartPosition.Extend(
-                            particleArgs.ParticleEffect.GetControlPoint(1),
-                            GetCastRange());
-                        EndCast = StartCast + GetCastRange() / GetProjectileSpeed();
-                        Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
-                    }
-                });
+                        if (caster)
+                        {
+                            StartPosition = particleArgs.ParticleEffect.GetControlPoint(0);
+                        }
+                        else
+                        {
+                            StartCast = tempTime;
+                            EndPosition = StartPosition.Extend(
+                                particleArgs.ParticleEffect.GetControlPoint(1),
+                                GetCastRange());
+                            EndCast = StartCast + GetCastRange() / GetProjectileSpeed();
+                            Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
+                        }
+                    });
         }
 
         public override bool CanBeStopped()
@@ -95,7 +82,5 @@
                 Pathfinder.UpdateObstacle(Obstacle.Value, GetProjectilePosition(), GetRadius(), GetEndRadius());
             }
         }
-
-        #endregion
     }
 }

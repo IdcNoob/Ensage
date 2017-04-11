@@ -9,15 +9,9 @@
 
     internal class Chakram : TimberAbility
     {
-        #region Fields
-
         private readonly Ability returnAbility;
 
         private readonly Sleeper returnSleeper;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Chakram(Ability chakramAbility, Ability returnAbility)
             : base(chakramAbility)
@@ -27,10 +21,6 @@
             this.returnAbility = returnAbility;
             returnSleeper = new Sleeper();
         }
-
-        #endregion
-
-        #region Public Properties
 
         public bool CanReturn => !returnSleeper.Sleeping && Casted;
 
@@ -43,10 +33,6 @@
         public float Radius { get; }
 
         public float Speed { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override bool CanBeCasted()
         {
@@ -89,7 +75,5 @@
             Ability.UseAbility(position);
             Sleeper.Sleep(GetSleepTime + hero.Distance2D(position) / Speed * 1000);
         }
-
-        #endregion
     }
 }

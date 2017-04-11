@@ -13,8 +13,6 @@
 
     internal class DreamCoil : EvadableAbility, IModifier
     {
-        #region Constructors and Destructors
-
         public DreamCoil(Ability ability)
             : base(ability)
         {
@@ -27,15 +25,7 @@
             AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "coil_duration_scepter").Value;
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -49,7 +39,5 @@
         {
             return 0;
         }
-
-        #endregion
     }
 }

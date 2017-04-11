@@ -15,8 +15,6 @@
 
     internal class Impale : LinearProjectile, IModifier
     {
-        #region Constructors and Destructors
-
         public Impale(Ability ability)
             : base(ability)
         {
@@ -43,15 +41,7 @@
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -76,7 +66,5 @@
                 Pathfinder.UpdateObstacle(Obstacle.Value, GetProjectilePosition(), GetRadius(), GetEndRadius());
             }
         }
-
-        #endregion
     }
 }

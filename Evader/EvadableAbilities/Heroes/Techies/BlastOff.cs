@@ -13,8 +13,6 @@
 
     internal class BlastOff : LinearAOE, IModifier
     {
-        #region Constructors and Destructors
-
         public BlastOff(Ability ability)
             : base(ability)
         {
@@ -40,12 +38,6 @@
             AdditionalDelay = Ability.AbilitySpecialData.First(x => x.Name == "duration").Value;
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

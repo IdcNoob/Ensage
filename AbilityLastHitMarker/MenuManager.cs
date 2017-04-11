@@ -7,15 +7,9 @@
 
     internal class MenuManager
     {
-        #region Fields
-
         private readonly string heroName;
 
         private readonly Menu menu;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public MenuManager(List<string> abilties, string name)
         {
@@ -39,10 +33,6 @@
             menu.AddToMainMenu();
         }
 
-        #endregion
-
-        #region Public Properties
-
         public float AutoDisableTime => menu.Item("autoDisable").GetValue<Slider>().Value;
 
         public bool IsEnabled => menu.Item("enabled").IsActive();
@@ -53,14 +43,11 @@
 
         public float Yposition => menu.Item("yPosition").GetValue<Slider>().Value;
 
-        #endregion
-
-        #region Public Methods and Operators
-
         public bool AbilityActive(string abilityName)
         {
-            return
-                menu.Item(heroName + "enabledAbilitiesAbilityLastHit").GetValue<AbilityToggler>().IsEnabled(abilityName);
+            return menu.Item(heroName + "enabledAbilitiesAbilityLastHit")
+                .GetValue<AbilityToggler>()
+                .IsEnabled(abilityName);
         }
 
         public void Disable()
@@ -72,7 +59,5 @@
         {
             menu.RemoveFromMainMenu();
         }
-
-        #endregion
     }
 }

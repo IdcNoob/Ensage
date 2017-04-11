@@ -13,13 +13,7 @@
 
     internal class Macropyre : LinearAOE
     {
-        #region Fields
-
         private readonly float duration;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Macropyre(Ability ability)
             : base(ability)
@@ -34,10 +28,6 @@
 
             duration = ability.AbilitySpecialData.First(x => x.Name == "duration").Value;
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override void Check()
         {
@@ -57,7 +47,5 @@
                 End();
             }
         }
-
-        #endregion
     }
 }

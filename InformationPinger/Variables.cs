@@ -7,8 +7,6 @@
 
     internal class Variables
     {
-        #region Static Fields
-
         public static List<string> Abilities = new List<string>
         {
             "tidehunter_ravage",
@@ -38,12 +36,6 @@
 
         public static Hero Hero;
 
-        #endregion
-
-        #region Public Properties
-
         public static MultiSleeper Sleeper { get; set; }
-
-        #endregion
     }
 }

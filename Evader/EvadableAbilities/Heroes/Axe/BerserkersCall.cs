@@ -11,8 +11,6 @@
 
     internal class BerserkersCall : AOE, IModifier
     {
-        #region Constructors and Destructors
-
         public BerserkersCall(Ability ability)
             : base(ability)
         {
@@ -36,12 +34,6 @@
             Modifier.AllyCounterAbilities.Remove("item_glimmer_cape");
         }
 
-        #endregion
-
-        #region Public Properties
-
         public EvadableModifier Modifier { get; }
-
-        #endregion
     }
 }

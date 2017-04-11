@@ -11,13 +11,7 @@
 
     internal class Assassinate : Projectile
     {
-        #region Fields
-
         private readonly float aghanimRadius;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public Assassinate(Ability ability)
             : base(ability)
@@ -41,15 +35,9 @@
             aghanimRadius = Ability.AbilitySpecialData.First(x => x.Name == "scepter_radius").Value;
         }
 
-        #endregion
-
-        #region Methods
-
         protected override float GetRadius()
         {
             return AbilityOwner.AghanimState() ? aghanimRadius : base.GetRadius();
         }
-
-        #endregion
     }
 }

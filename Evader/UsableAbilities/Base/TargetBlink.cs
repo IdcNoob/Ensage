@@ -15,22 +15,12 @@
 
     internal class TargetBlink : UsableAbility
     {
-        #region Fields
-
         private Unit blinkUnit;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public TargetBlink(Ability ability, AbilityType type, AbilityCastTarget target = AbilityCastTarget.Self)
             : base(ability, type, target)
         {
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         public override bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
@@ -39,12 +29,10 @@
                 return false;
             }
 
-            blinkUnit =
-                ObjectManager.GetEntitiesFast<Unit>()
-                    .FirstOrDefault(
-                        x =>
-                            x.IsValid && x.IsAlive && (x is Creep || x is Hero) && !x.Equals(Hero) && x.Team == HeroTeam
-                            && x.Distance2D(Hero) < GetCastRange() && x.Distance2D(Hero) > 200);
+            blinkUnit = ObjectManager.GetEntitiesFast<Unit>()
+                .FirstOrDefault(
+                    x => x.IsValid && x.IsAlive && (x is Creep || x is Hero) && !x.Equals(Hero) && x.Team == HeroTeam
+                         && x.Distance2D(Hero) < GetCastRange() && x.Distance2D(Hero) > 200);
 
             return !Sleeper.Sleeping && blinkUnit != null && Ability.CanBeCasted() && Hero.CanCast();
         }
@@ -69,7 +57,5 @@
             Ability.UseAbility(blinkUnit);
             Sleep();
         }
-
-        #endregion
     }
 }
