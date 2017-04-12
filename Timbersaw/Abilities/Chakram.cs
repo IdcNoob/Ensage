@@ -71,8 +71,12 @@
 
         public void UseAbility(Vector3 position, Hero enemy, Hero hero)
         {
+            if (!Ability.UseAbility(position))
+            {
+                return;
+            }
+
             Position = position;
-            Ability.UseAbility(position);
             Sleeper.Sleep(GetSleepTime + hero.Distance2D(position) / Speed * 1000);
         }
     }

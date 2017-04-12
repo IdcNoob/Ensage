@@ -41,7 +41,11 @@
 
         public void UseAbility(Vector3 position, bool enemy = false)
         {
-            Ability.UseAbility(position);
+            if (!Ability.UseAbility(position))
+            {
+                return;
+            }
+
             CastedOnEnemy = enemy;
             Sleeper.Sleep(GetSleepTime + 1000);
         }

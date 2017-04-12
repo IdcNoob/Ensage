@@ -152,8 +152,7 @@
                 return;
             }
 
-            if (Game.IsPaused || !hero.IsAlive || hero.IsChanneling() || !menuManager.IsEnabled
-                || !Utils.SleepCheck("Evader.Avoiding"))
+            if (Game.IsPaused || !hero.IsAlive || hero.IsChanneling() || !menuManager.IsEnabled)
             {
                 return;
             }

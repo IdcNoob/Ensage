@@ -28,7 +28,11 @@
 
         public void UseAbility()
         {
-            Ability.UseAbility();
+            if (!Ability.UseAbility())
+            {
+                return;
+            }
+
             Sleeper.Sleep(1000);
         }
     }
