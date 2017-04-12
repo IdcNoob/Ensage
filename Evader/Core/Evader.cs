@@ -352,7 +352,8 @@
                         sleeper.Reset(ability);
                         sleeper.Reset("avoiding");
 
-                        if (!Hero.IsChanneling() && !Hero.IsInvul())
+                        if (!Hero.IsChanneling() && !Hero.IsInvul()
+                            && Hero.Spellbook.Spells.Any(x => x.IsInAbilityPhase))
                         {
                             Debugger.WriteLine("Hero stop", Debugger.Type.AbilityUsage);
                             Hero.Stop();
@@ -798,7 +799,15 @@
 
                                         if (success)
                                         {
-                                            Hero.Move(tempPath.Last(), true);
+                                            var last = tempPath.LastOrDefault();
+                                            if (!last.IsZero)
+                                            {
+                                                Hero.Move(last, true);
+                                            }
+                                            else
+                                            {
+                                                return false;
+                                            }
                                         }
 
                                         //  sleeper.Sleep(ability.ObstacleRemainingTime() * 1000, "avoiding");
@@ -907,7 +916,8 @@
                                     continue;
                                 }
 
-                                var requiredTime = blinkAbility.GetRequiredTime(ability, fountain, remainingTime);
+                                var requiredTime = blinkAbility.GetRequiredTime(ability, fountain, remainingTime)
+                                                   + 0.01f;
                                 var time = remainingTime - requiredTime;
                                 var ignoreRemainingTime = ability.IgnoreRemainingTime(blinkAbility, time);
 
@@ -978,7 +988,7 @@
                                 var requiredTime = counterAbility.GetRequiredTime(
                                                        ability,
                                                        targetEnemy ? abilityOwner : ally,
-                                                       remainingTime) + Game.Ping / 1000 + 0.05f;
+                                                       remainingTime) + Game.Ping / 1000 + 0.06f;
 
                                 var ignoreRemainingTime = false;
 
@@ -1072,7 +1082,7 @@
                                 var remainingDisableTime = ability.GetRemainingDisableTime();
                                 var requiredTime =
                                     disableAbility.GetRequiredTime(ability, abilityOwner, remainingDisableTime)
-                                    + Game.Ping / 1000;
+                                    + Game.Ping / 1000 + 0.01f;
 
                                 var ignoreRemainingTime =
                                     ability.IgnoreRemainingTime(disableAbility, remainingDisableTime);
