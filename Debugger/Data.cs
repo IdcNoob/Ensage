@@ -11,6 +11,11 @@
             "_hidden"
         };
 
+        public static List<string> IgnoredFireEvents { get; } = new List<string>
+        {
+            "dota_action_success"
+        };
+
         public static List<string> IgnoredFloats { get; } = new List<string>
         {
             "m_vecX",
@@ -45,7 +50,7 @@
             "modifier_tower_truesight_aura"
         };
 
-        public static List<string> IgnoredParctiles { get; } = new List<string>
+        public static List<string> IgnoredParticles { get; } = new List<string>
         {
             "ui_mouseactions",
             "generic_hit_blood",

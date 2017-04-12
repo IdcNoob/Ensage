@@ -60,6 +60,11 @@
     <Compile Include="Menus\Dumping\Modifiers.cs" />
     <Compile Include="Menus\Dumping\Spells.cs" />
     <Compile Include="Menus\Dumping\DumpingMenu.cs" />
+    <Compile Include="Menus\GameEvents\FireEvent.cs" />
+    <Compile Include="Menus\GameEvents\GameEventsMenu.cs" />
+    <Compile Include="Menus\GameEvents\GcMessage.cs" />
+    <Compile Include="Menus\GameEvents\Message.cs" />
+    <Compile Include="Menus\GameEvents\UiState.cs" />
     <Compile Include="Menus\MenuManager.cs" />
     <Compile Include="Menus\OnAddRemove\Abilities.cs" />
     <Compile Include="Menus\OnAddRemove\Modifiers.cs" />

@@ -61,6 +61,8 @@
             mainMenu.AddSubMenu(menu);
         }
 
+        public event EventHandler OnDump;
+
         public bool ShowBackpackItems { get; private set; }
 
         public bool ShowBehavior { get; private set; }
@@ -76,7 +78,5 @@
         public bool ShowStashItems { get; private set; }
 
         public bool ShowTargetType { get; private set; }
-
-        public event EventHandler OnDump;
     }
 }

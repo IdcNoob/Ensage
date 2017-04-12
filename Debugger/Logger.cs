@@ -36,7 +36,9 @@
 
             String,
 
-            ExecuteOrder
+            ExecuteOrder,
+
+            GameEvent
         }
 
         public void EmptyLine()

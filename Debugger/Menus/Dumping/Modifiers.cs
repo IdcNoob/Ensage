@@ -41,6 +41,8 @@
             mainMenu.AddSubMenu(menu);
         }
 
+        public event EventHandler OnDump;
+
         public bool ShowElapsedTime { get; private set; }
 
         public bool ShowHidden { get; private set; }
@@ -48,7 +50,5 @@
         public bool ShowRemainingTime { get; private set; }
 
         public bool ShowTextureName { get; private set; }
-
-        public event EventHandler OnDump;
     }
 }

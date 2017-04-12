@@ -38,6 +38,11 @@
 
             Player.OnExecuteOrder -= OnExecuteOrder;
 
+            Game.OnFireEvent -= OnFireEvent;
+            Game.OnGCMessageReceive -= OnGcMessageReceive;
+            Game.OnMessage -= OnMessage;
+            Game.OnUIStateChanged -= OnUiStateChanged;
+
             mainMenu.DumpingMenu.Spells.OnDump -= SpellsOnDump;
             mainMenu.DumpingMenu.Items.OnDump -= ItemsOnDump;
             mainMenu.DumpingMenu.Modifiers.OnDump -= ModifiersOnDump;
@@ -68,6 +73,11 @@
             Entity.OnStringPropertyChange += OnStringPropertyChanged;
 
             Player.OnExecuteOrder += OnExecuteOrder;
+
+            Game.OnFireEvent += OnFireEvent;
+            Game.OnGCMessageReceive += OnGcMessageReceive;
+            Game.OnMessage += OnMessage;
+            Game.OnUIStateChanged += OnUiStateChanged;
 
             mainMenu.DumpingMenu.Spells.OnDump += SpellsOnDump;
             mainMenu.DumpingMenu.Items.OnDump += ItemsOnDump;
@@ -407,6 +417,23 @@
             logger.EmptyLine();
         }
 
+        private void OnFireEvent(FireEventEventArgs args)
+        {
+            var menu = mainMenu.GameEventsMenu.FireEvent;
+
+            if (!menu.Enabled || menu.IgnoreUseless && Data.IgnoredFireEvents.Contains(args.GameEvent.Name))
+            {
+                return;
+            }
+
+            const Color Color = Color.DarkYellow;
+            const Logger.Type Type = Logger.Type.GameEvent;
+
+            logger.Write("Fire event", Type, Color, true);
+            logger.Write("Name: " + args.GameEvent.Name, Type, Color);
+            logger.EmptyLine();
+        }
+
         private void OnFloatPropertyChanged(Entity sender, FloatPropertyChangeEventArgs args)
         {
             if (args.OldValue.Equals(args.NewValue))
@@ -430,6 +457,23 @@
             logger.Write("Sender classID: " + sender.ClassId, Type, Color);
             logger.Write("Property name: " + args.PropertyName, Type, Color);
             logger.Write("Property values: " + args.OldValue + " => " + args.NewValue, Type, Color);
+            logger.EmptyLine();
+        }
+
+        private void OnGcMessageReceive(GCMessageEventArgs args)
+        {
+            var menu = mainMenu.GameEventsMenu.GcMessage;
+
+            if (!menu.Enabled)
+            {
+                return;
+            }
+
+            const Color Color = Color.DarkYellow;
+            const Logger.Type Type = Logger.Type.GameEvent;
+
+            logger.Write("Game client message", Type, Color, true);
+            logger.Write("Name: " + args.MessageID, Type, Color);
             logger.EmptyLine();
         }
 
@@ -501,6 +545,23 @@
             logger.Write("Sender classID: " + sender.ClassId, Type, Color);
             logger.Write("Property name: " + args.PropertyName, Type, Color);
             logger.Write("Property values: " + args.OldValue + " => " + args.NewValue, Type, Color);
+            logger.EmptyLine();
+        }
+
+        private void OnMessage(MessageEventArgs args)
+        {
+            var menu = mainMenu.GameEventsMenu.Message;
+
+            if (!menu.Enabled)
+            {
+                return;
+            }
+
+            const Color Color = Color.DarkYellow;
+            const Logger.Type Type = Logger.Type.GameEvent;
+
+            logger.Write("Message", Type, Color, true);
+            logger.Write("Text: " + args.Message, Type, Color);
             logger.EmptyLine();
         }
 
@@ -583,7 +644,7 @@
                 () =>
                     {
                         if (particle == null || !particle.IsValid
-                            || menu.IgnoreUseless && Data.IgnoredParctiles.Any(args.Name.Contains))
+                            || menu.IgnoreUseless && Data.IgnoredParticles.Any(args.Name.Contains))
                         {
                             return;
                         }
@@ -695,6 +756,23 @@
             logger.Write("Target name: " + projectile.Target?.Name, Type, Color);
             logger.Write("Target classID: " + projectile.Target?.ClassId, Type, Color);
             logger.Write("Target position: " + projectile.TargetPosition, Type, Color);
+            logger.EmptyLine();
+        }
+
+        private void OnUiStateChanged(UIStateChangedEventArgs args)
+        {
+            var menu = mainMenu.GameEventsMenu.UiState;
+
+            if (!menu.Enabled)
+            {
+                return;
+            }
+
+            const Color Color = Color.DarkYellow;
+            const Logger.Type Type = Logger.Type.GameEvent;
+
+            logger.Write("UI state change", Type, Color, true);
+            logger.Write("Name: " + args.UIState, Type, Color);
             logger.EmptyLine();
         }
 

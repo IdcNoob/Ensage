@@ -61,6 +61,8 @@
             mainMenu.AddSubMenu(menu);
         }
 
+        public event EventHandler OnDump;
+
         public bool ShowBehavior { get; private set; }
 
         public bool ShowCastRange { get; private set; }
@@ -76,7 +78,5 @@
         public bool ShowTalents { get; private set; }
 
         public bool ShowTargetType { get; private set; }
-
-        public event EventHandler OnDump;
     }
 }

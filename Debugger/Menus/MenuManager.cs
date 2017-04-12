@@ -4,6 +4,8 @@
 
     using Ensage.Common.Menu;
 
+    using GameEvents;
+
     using OnAddRemove;
 
     using OnChange;
@@ -25,12 +27,15 @@
             OnAddRemove = new OnAddRemoveMenu(menu);
             OnChangeMenu = new OnChangeMenu(menu);
             OnExecuteOrderMenu = new OnExecuteOrderMenu(menu);
+            GameEventsMenu = new GameEventsMenu(menu);
             DumpingMenu = new DumpingMenu(menu);
 
             menu.AddToMainMenu();
         }
 
         public DumpingMenu DumpingMenu { get; }
+
+        public GameEventsMenu GameEventsMenu { get; }
 
         public OnAddRemoveMenu OnAddRemove { get; }
 
