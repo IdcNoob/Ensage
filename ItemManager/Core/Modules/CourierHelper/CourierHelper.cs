@@ -1,40 +1,46 @@
 ﻿namespace ItemManager.Core.Modules.CourierHelper
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
     using Ensage;
     using Ensage.Common.Extensions;
 
+    using EventArgs;
+
     using Menus.Modules.CourierHelper;
 
     using Utils;
 
-    internal class CourierHelper
+    internal class CourierHelper : IDisposable
     {
-        private readonly Hero hero;
+        private readonly List<Courier> couriers = new List<Courier>();
 
-        private readonly ItemManager items;
+        private readonly Manager manager;
 
         private readonly CourierHelperMenu menu;
 
         private bool bottleAbuseActive;
 
-        public CourierHelper(Hero myHero, ItemManager itemManager, CourierHelperMenu courierHelperMenu)
+        public CourierHelper(Manager manager, CourierHelperMenu menu)
         {
-            hero = myHero;
-            items = itemManager;
-            menu = courierHelperMenu;
+            this.manager = manager;
+            this.menu = menu;
 
             Entity.OnInt32PropertyChange += OnInt32PropertyChange;
-            menu.OnBottleAbuse += OnBottleAbuse;
+            this.menu.OnBottleAbuse += OnBottleAbuse;
+
+            manager.OnUnitAdd += OnUnitAdd;
         }
 
-        public void OnClose()
+        public void Dispose()
         {
             Entity.OnInt32PropertyChange -= OnInt32PropertyChange;
             menu.OnBottleAbuse -= OnBottleAbuse;
+
+            couriers.Clear();
         }
 
         private async void OnBottleAbuse(object sender, EventArgs eventArgs)
@@ -44,15 +50,13 @@
                 return;
             }
 
-            var courier = ObjectManager.GetEntities<Courier>()
-                .FirstOrDefault(x => x.IsValid && x.Team == hero.Team && x.IsAlive);
-
+            var courier = couriers.FirstOrDefault(x => x.IsValid && x.IsAlive);
             if (courier == null)
             {
                 return;
             }
 
-            var myBottle = items.GetMyItems(ItemUtils.StoredPlace.Inventory | ItemUtils.StoredPlace.Backpack)
+            var myBottle = manager.GetMyItems(ItemUtils.StoredPlace.Inventory | ItemUtils.StoredPlace.Backpack)
                 .FirstOrDefault(x => x.Id == AbilityId.item_bottle);
 
             if (myBottle == null)
@@ -61,33 +65,33 @@
             }
 
             bottleAbuseActive = true;
-            courier.Follow(hero);
+            courier.Follow(manager.MyHero);
 
             while (bottleAbuseActive)
             {
-                if (!courier.IsAlive || !hero.IsAlive)
+                if (!courier.IsAlive || !manager.MyHero.IsAlive)
                 {
                     bottleAbuseActive = false;
                     return;
                 }
 
                 if (courier.Inventory.Items.All(
-                    x => x.Id != AbilityId.item_bottle || x.Purchaser?.Hero.Handle != hero.Handle))
+                    x => x.Id != AbilityId.item_bottle || x.Purchaser?.Hero.Handle != manager.MyHandle))
                 {
-                    if (courier.Distance2D(hero) > 250 || myBottle.CurrentCharges > 0)
+                    if (courier.Distance2D(manager.MyHero) > 250 || myBottle.CurrentCharges > 0)
                     {
                         await Task.Delay(200);
                         continue;
                     }
 
-                    hero.GiveItem(myBottle, courier);
+                    manager.MyHero.GiveItem(myBottle, courier);
                     await Task.Delay(300);
                 }
                 else
                 {
                     courier.Burst();
 
-                    if (items.GetMyItems(ItemUtils.StoredPlace.Stash).Any())
+                    if (manager.GetMyItems(ItemUtils.StoredPlace.Stash).Any())
                     {
                         courier.TakeAndDeliverItems();
                     }
@@ -115,13 +119,18 @@
                 return;
             }
 
-            var newState = (CourierState)args.NewValue;
-            var oldState = (CourierState)args.OldValue;
-
             if (bottleAbuseActive)
             {
                 bottleAbuseActive = false;
             }
+
+            if (!menu.AutoControl)
+            {
+                return;
+            }
+
+            var newState = (CourierState)args.NewValue;
+            var oldState = (CourierState)args.OldValue;
 
             if (oldState != CourierState.Deliver || newState != CourierState.BackToBase)
             {
@@ -129,21 +138,30 @@
             }
 
             var purchaser = courier.Inventory.Items.Select(x => x.Purchaser?.Hero)
-                .OrderByDescending(x => x?.Handle == hero.Handle)
-                .FirstOrDefault(x => x?.Team == courier.Team);
+                .OrderByDescending(x => x?.Handle == manager.MyHandle)
+                .FirstOrDefault(x => x?.Team == manager.MyTeam);
 
             if (purchaser == null)
             {
                 return;
             }
 
-            if (purchaser.Handle == hero.Handle)
+            if (purchaser.Handle == manager.MyHandle)
             {
                 courier.DeliverItems();
             }
             else
             {
                 courier.Resend(purchaser);
+            }
+        }
+
+        private void OnUnitAdd(object sender, UnitEventArgs unitEventArgs)
+        {
+            var courier = unitEventArgs.Unit as Courier;
+            if (courier != null && courier.Team == manager.MyTeam)
+            {
+                couriers.Add(courier);
             }
         }
     }

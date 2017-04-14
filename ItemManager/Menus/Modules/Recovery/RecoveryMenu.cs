@@ -1,66 +1,98 @@
 ﻿namespace ItemManager.Menus.Modules.Recovery
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
     using Ensage;
     using Ensage.Common.Menu;
 
+    using EventArgs;
+
+    using ItemSettings;
+
     internal class RecoveryMenu
     {
         private AbilityToggler abilityToggler;
 
+        private PriorityChanger priorityChanger;
+
+        private bool skipNextEvent;
+
         public RecoveryMenu(Menu mainMenu)
         {
-            var menu = new Menu("Recovery Abuse", "recoveryAbuse");
+            var menu = new Menu("Recovery abuse", "recoveryAbuse");
+
+            var enabled = new MenuItem("abuseEnabled", "Enabled").SetValue(true);
+            menu.AddItem(enabled);
+            enabled.ValueChanged += (sender, args) => IsEnabled = args.GetNewValue<bool>();
+            IsEnabled = enabled.IsActive();
 
             var key = new MenuItem("recoveryKey", "Hotkey").SetValue(new KeyBind('-', KeyBindType.Press));
             menu.AddItem(key);
-            key.ValueChanged += (sender, args) => IsActive = args.GetNewValue<KeyBind>().Active;
+            key.ValueChanged += (sender, args) =>
+                {
+                    if (skipNextEvent)
+                    {
+                        skipNextEvent = false;
+                        return;
+                    }
+
+                    IsActive = args.GetNewValue<KeyBind>().Active;
+                    OnAbuseChange?.Invoke(null, new BoolEventArgs(IsActive));
+                };
 
             menu.AddItem(
-                new MenuItem("itemsToggler", "Enabled items:").SetValue(
-                    abilityToggler = new AbilityToggler(ItemsToUse.ToDictionary(x => x.Key, x => true))));
+                new MenuItem("recoveryItemsToggler", "Enabled:").SetValue(
+                    abilityToggler = new AbilityToggler(ItemsToUse.ToDictionary(x => x.ToString(), x => true))));
 
-            var autoSelfBottle = new MenuItem("autoBottleSelf", "Auto self bottle").SetValue(true);
-            autoSelfBottle.SetTooltip("Auto bottle usage on you and your allies while at base");
-            menu.AddItem(autoSelfBottle);
-            autoSelfBottle.ValueChanged += (sender, args) => AutoSelfBottle = args.GetNewValue<bool>();
-            AutoSelfBottle = autoSelfBottle.IsActive();
+            menu.AddItem(
+                new MenuItem("recoveryItemsPriority", "Order:").SetValue(
+                    priorityChanger = new PriorityChanger(ItemsToUse.Select(x => x.ToString()).ToList())));
 
-            var autoAllyBottle = new MenuItem("autoBottleAlly", "Auto ally bottle").SetValue(true);
-            autoAllyBottle.SetTooltip("Auto bottle usage on you and your allies while at base");
-            menu.AddItem(autoAllyBottle);
-            autoAllyBottle.ValueChanged += (sender, args) => AutoAllyBottle = args.GetNewValue<bool>();
-            AutoAllyBottle = autoAllyBottle.IsActive();
-
-            var toBackpack = new MenuItem("toBackpack", "Move items to backpack").SetValue(true);
-            toBackpack.SetTooltip("Move items to backpack to disable them instead of dropping on the ground");
+            var toBackpack = new MenuItem("recoveryToBackpack", "Move items to backpack").SetValue(false);
+            toBackpack.SetTooltip("Move items to backpack to \"disable\" them instead of dropping on the ground");
             menu.AddItem(toBackpack);
             toBackpack.ValueChanged += (sender, args) => ItemsToBackpack = args.GetNewValue<bool>();
             ItemsToBackpack = toBackpack.IsActive();
 
+            ItemSettingsMenu = new SettingsMenu(menu);
+
             mainMenu.AddSubMenu(menu);
         }
 
-        public bool AutoAllyBottle { get; private set; }
-
-        public bool AutoSelfBottle { get; private set; }
+        public event EventHandler<BoolEventArgs> OnAbuseChange;
 
         public bool IsActive { get; private set; }
 
+        public bool IsEnabled { get; private set; }
+
+        public SettingsMenu ItemSettingsMenu { get; }
+
         public bool ItemsToBackpack { get; private set; }
 
-        public Dictionary<string, AbilityId> ItemsToUse { get; } = new Dictionary<string, AbilityId>
+        private IEnumerable<AbilityId> ItemsToUse { get; } = new List<AbilityId>
         {
-            { "item_arcane_boots", AbilityId.item_arcane_boots },
-            { "item_bottle", AbilityId.item_bottle },
-            { "item_guardian_greaves", AbilityId.item_guardian_greaves },
-            { "item_magic_stick", AbilityId.item_magic_stick },
-            { "item_mekansm", AbilityId.item_mekansm },
-            { "item_soul_ring", AbilityId.item_soul_ring },
-            { "item_urn_of_shadows", AbilityId.item_urn_of_shadows }
+            AbilityId.item_magic_wand,
+            AbilityId.item_magic_stick,
+            AbilityId.item_urn_of_shadows,
+            AbilityId.item_bottle,
+            AbilityId.item_guardian_greaves,
+            AbilityId.item_mekansm,
+            AbilityId.item_soul_ring,
+            AbilityId.item_arcane_boots
         };
+
+        public void ForceDisable()
+        {
+            IsActive = false;
+            skipNextEvent = true;
+        }
+
+        public uint GetAbilityPriority(string itemName)
+        {
+            return priorityChanger.GetPriority(itemName);
+        }
 
         public bool IsAbilityEnabled(string itemName)
         {

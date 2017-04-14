@@ -9,46 +9,51 @@
     using Ensage;
     using Ensage.Common.Objects.UtilityObjects;
 
+    using EventArgs;
+
     using Menus.Modules.Snatcher;
 
-    internal class Snatcher
+    internal class Snatcher : IDisposable
     {
         private readonly List<Controllable> controllables = new List<Controllable>();
 
         private readonly List<uint> ignoredItems = new List<uint>();
 
+        private readonly Manager manager;
+
         private readonly SnatcherMenu menu;
 
         private readonly MultiSleeper sleeper = new MultiSleeper();
 
-        private ItemManager items;
-
-        public Snatcher(Hero myHero, ItemManager itemManager, SnatcherMenu snatcherMenu)
+        public Snatcher(Manager manager, SnatcherMenu menu)
         {
-            items = itemManager;
-            menu = snatcherMenu;
+            this.manager = manager;
+            this.menu = menu;
 
-            controllables.Add(new MyHero(myHero));
+            controllables.Add(new MyHero(manager.MyHero));
 
-            if (menu.UseOtherUnits)
+            if (this.menu.UseOtherUnits)
             {
                 AddOtherUnits();
-                ObjectManager.OnAddEntity += OnAddEntity;
-                ObjectManager.OnRemoveEntity += OnRemoveEntity;
+
+                manager.OnUnitRemove += OnUnitRemove;
+                manager.OnUnitAdd += OnUnitAdd;
             }
 
             Game.OnUpdate += OnUpdate;
             Player.OnExecuteOrder += OnExecuteOrder;
-            menu.OnUseOtherUnitsChange += MenuOnUseOtherUnitsChange;
+
+            this.menu.OnUseOtherUnitsChange += OnUseOtherUnitsChange;
         }
 
-        public void OnClose()
+        public void Dispose()
         {
-            ObjectManager.OnAddEntity -= OnAddEntity;
-            ObjectManager.OnRemoveEntity -= OnRemoveEntity;
             Game.OnUpdate -= OnUpdate;
             Player.OnExecuteOrder -= OnExecuteOrder;
-            menu.OnUseOtherUnitsChange -= MenuOnUseOtherUnitsChange;
+            menu.OnUseOtherUnitsChange -= OnUseOtherUnitsChange;
+
+            manager.OnUnitAdd -= OnUnitAdd;
+            manager.OnUnitRemove -= OnUnitRemove;
 
             controllables.Clear();
             ignoredItems.Clear();
@@ -67,49 +72,9 @@
             }
 
             foreach (var meepo in controllableUnits.Where(
-                x => x.ClassId == ClassId.CDOTA_Unit_Hero_Meepo && x.Handle != ObjectManager.LocalHero.Handle))
+                x => x.ClassId == ClassId.CDOTA_Unit_Hero_Meepo && x.Handle != manager.MyHandle))
             {
                 controllables.Add(new MeepoClone(meepo));
-            }
-        }
-
-        private void MenuOnUseOtherUnitsChange(object sender, EventArgs eventArgs)
-        {
-            if (menu.UseOtherUnits)
-            {
-                AddOtherUnits();
-                ObjectManager.OnAddEntity += OnAddEntity;
-                ObjectManager.OnRemoveEntity += OnRemoveEntity;
-            }
-            else
-            {
-                controllables.RemoveAll(x => x.Handle != ObjectManager.LocalHero.Handle);
-                ObjectManager.OnAddEntity -= OnAddEntity;
-                ObjectManager.OnRemoveEntity -= OnRemoveEntity;
-            }
-        }
-
-        private void OnAddEntity(EntityEventArgs args)
-        {
-            var unit = args.Entity as Unit;
-            if (unit == null || unit.IsIllusion || !unit.IsControllable
-                || controllables.Any(x => x.Handle == unit.Handle))
-            {
-                return;
-            }
-
-            switch (unit.ClassId)
-            {
-                case ClassId.CDOTA_Unit_SpiritBear:
-                {
-                    controllables.Add(new SpiritBear(unit));
-                    break;
-                }
-                case ClassId.CDOTA_Unit_Hero_Meepo:
-                {
-                    controllables.Add(new MeepoClone(unit));
-                    break;
-                }
             }
         }
 
@@ -134,9 +99,32 @@
             }
         }
 
-        private void OnRemoveEntity(EntityEventArgs args)
+        private void OnUnitAdd(object sender, UnitEventArgs unitEventArgs)
         {
-            var controllable = controllables.FirstOrDefault(x => x.Handle == args.Entity.Handle);
+            var unit = unitEventArgs.Unit;
+            if (unit.IsIllusion || !unit.IsControllable || controllables.Any(x => x.Handle == unit.Handle))
+            {
+                return;
+            }
+
+            switch (unit.ClassId)
+            {
+                case ClassId.CDOTA_Unit_SpiritBear:
+                {
+                    controllables.Add(new SpiritBear(unit));
+                    break;
+                }
+                case ClassId.CDOTA_Unit_Hero_Meepo:
+                {
+                    controllables.Add(new MeepoClone(unit));
+                    break;
+                }
+            }
+        }
+
+        private void OnUnitRemove(object sender, UnitEventArgs unitEventArgs)
+        {
+            var controllable = controllables.FirstOrDefault(x => x.Handle == unitEventArgs.Unit.Handle);
             if (controllable != null)
             {
                 controllables.Remove(controllable);
@@ -191,6 +179,22 @@
                         break;
                     }
                 }
+            }
+        }
+
+        private void OnUseOtherUnitsChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (boolEventArgs.Enabled)
+            {
+                AddOtherUnits();
+                manager.OnUnitAdd += OnUnitAdd;
+                manager.OnUnitRemove += OnUnitRemove;
+            }
+            else
+            {
+                controllables.RemoveAll(x => x.Handle != manager.MyHandle);
+                manager.OnUnitAdd -= OnUnitAdd;
+                manager.OnUnitRemove -= OnUnitRemove;
             }
         }
     }

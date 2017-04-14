@@ -1,58 +1,54 @@
 ﻿namespace ItemManager.Core
 {
-    using Ensage;
+    using System;
+    using System.Collections.Generic;
 
     using Menus;
 
+    using Modules.AbilityHelper;
+    using Modules.AutoUsage;
     using Modules.CourierHelper;
     using Modules.GoldSpender;
-    using Modules.HpMpAbuse;
     using Modules.ItemSwapper;
+    using Modules.RecoveryAbuse;
     using Modules.ShrineHelper;
     using Modules.Snatcher;
 
     internal class Bootstrap
     {
-        private CourierHelper courierHelper;
-
-        private GoldSpender goldSpender;
-
-        private HpMpAbuse HpMpAbuse;
-
-        private ItemManager itemManager;
-
-        private ItemSwapper itemSwapper;
-
-        private MenuManager menu;
-
-        private ShrineHelper shrineHelper;
-
-        private Snatcher snatcher;
+        private readonly List<IDisposable> disposables = new List<IDisposable>();
 
         public void OnClose()
         {
-            menu.OnClose();
-            itemSwapper.OnClose();
-            courierHelper.OnClose();
-            snatcher.OnClose();
-            goldSpender.OnClose();
-            shrineHelper.OnClose();
-            itemManager.OnClose();
-            HpMpAbuse.OnClose();
+            foreach (var disposable in disposables)
+            {
+                disposable.Dispose();
+            }
+
+            disposables.Clear();
         }
 
         public void OnLoad()
         {
-            var hero = ObjectManager.LocalHero;
+            var manager = new Manager();
+            var menu = new MenuManager();
 
-            menu = new MenuManager();
-            itemManager = new ItemManager(hero, menu);
-            itemSwapper = new ItemSwapper(hero, itemManager, menu.ItemSwapMenu);
-            courierHelper = new CourierHelper(hero, itemManager, menu.CourierHelperMenu);
-            snatcher = new Snatcher(hero, itemManager, menu.SnatcherMenu);
-            goldSpender = new GoldSpender(hero, itemManager, menu.GoldSpenderMenu);
-            shrineHelper = new ShrineHelper(hero, menu.ShrineHelperMenu);
-            HpMpAbuse = new HpMpAbuse(hero, menu);
+            disposables.Add(manager);
+            disposables.Add(menu);
+
+            disposables.Add(new ItemSwapper(manager, menu.ItemSwapMenu));
+            disposables.Add(new CourierHelper(manager, menu.CourierHelperMenu));
+            disposables.Add(new Snatcher(manager, menu.SnatcherMenu));
+            disposables.Add(new GoldSpender(manager, menu.GoldSpenderMenu));
+            disposables.Add(new ShrineHelper(manager, menu.ShrineHelperMenu));
+            disposables.Add(new RecoveryAbuse(manager, menu.RecoveryMenu, menu.AbilityHelperMenu.Tranquil));
+            disposables.Add(new AutoSoulRing(manager, menu.AutoUsageMenu.SoulRing));
+            disposables.Add(new PowerTreadsSwitcher(manager, menu.AutoUsageMenu.PowerTreads, menu.RecoveryMenu));
+            disposables.Add(new AutoBottle(manager, menu.AutoUsageMenu.Bottle, menu.RecoveryMenu));
+            disposables.Add(new TranquilDrop(manager, menu.AbilityHelperMenu.Tranquil));
+            disposables.Add(new BlinkAdjustment(manager, menu.AbilityHelperMenu.Blink));
+            disposables.Add(new AutoArcaneBoots(manager, menu.AutoUsageMenu.ArcaneBoots));
+            disposables.Add(new AutoDewarding(manager, menu.AutoUsageMenu.Deward));
         }
     }
 }

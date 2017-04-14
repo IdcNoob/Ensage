@@ -1,17 +1,19 @@
 ﻿namespace ItemManager.Menus
 {
+    using System;
+
     using Ensage.Common.Menu;
 
+    using Modules.AbilityHelper;
+    using Modules.AutoUsage;
     using Modules.CourierHelper;
     using Modules.GoldSpender;
     using Modules.ItemSwap;
-    using Modules.PtSwitcher;
     using Modules.Recovery;
     using Modules.ShrineHelper;
     using Modules.Snatcher;
-    using Modules.SoulRing;
 
-    internal class MenuManager
+    internal class MenuManager : IDisposable
     {
         private readonly Menu mainMenu;
 
@@ -19,17 +21,21 @@
         {
             mainMenu = new Menu(" Item Manager", "itemManager", true, "courier_go_to_secretshop", true);
 
-            ItemSwapMenu = new ItemSwapMenu(mainMenu);
-            CourierHelperMenu = new CourierHelperMenu(mainMenu);
-            SnatcherMenu = new SnatcherMenu(mainMenu);
-            GoldSpenderMenu = new GoldSpenderMenu(mainMenu);
-            ShrineHelperMenu = new ShrineHelperMenu(mainMenu);
-            PowerTreadsSwitcherMenu = new PowerTreadsSwitcherMenu(mainMenu);
+            AutoUsageMenu = new AutoUsageMenu(mainMenu);
+            AbilityHelperMenu = new AbilityHelperMenu(mainMenu);
             RecoveryMenu = new RecoveryMenu(mainMenu);
-            SoulRingMenu = new SoulRingMenu(mainMenu);
+            GoldSpenderMenu = new GoldSpenderMenu(mainMenu);
+            SnatcherMenu = new SnatcherMenu(mainMenu);
+            ItemSwapMenu = new ItemSwapMenu(mainMenu);
+            ShrineHelperMenu = new ShrineHelperMenu(mainMenu);
+            CourierHelperMenu = new CourierHelperMenu(mainMenu);
 
             mainMenu.AddToMainMenu();
         }
+
+        public AbilityHelperMenu AbilityHelperMenu { get; }
+
+        public AutoUsageMenu AutoUsageMenu { get; }
 
         public CourierHelperMenu CourierHelperMenu { get; }
 
@@ -37,17 +43,13 @@
 
         public ItemSwapMenu ItemSwapMenu { get; }
 
-        public PowerTreadsSwitcherMenu PowerTreadsSwitcherMenu { get; }
-
         public RecoveryMenu RecoveryMenu { get; }
 
         public ShrineHelperMenu ShrineHelperMenu { get; }
 
         public SnatcherMenu SnatcherMenu { get; }
 
-        public SoulRingMenu SoulRingMenu { get; }
-
-        public void OnClose()
+        public void Dispose()
         {
             mainMenu.RemoveFromMainMenu();
         }

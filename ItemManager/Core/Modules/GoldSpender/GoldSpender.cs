@@ -9,36 +9,43 @@ namespace ItemManager.Core.Modules.GoldSpender
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
 
+    using EventArgs;
+
     using Menus.Modules.GoldSpender;
 
     using Utils;
 
-    internal class GoldSpender
+    internal class GoldSpender : IDisposable
     {
+        private readonly List<Courier> couriers = new List<Courier>();
+
         private readonly Team enemyTeam;
 
-        private readonly Hero hero;
+        private readonly List<Ability> invisAbilities = new List<Ability>();
 
-        private readonly ItemManager items;
+        private readonly Manager manager;
 
         private readonly GoldSpenderMenu menu;
 
         private readonly Sleeper sleeper = new Sleeper();
 
-        public GoldSpender(Hero myHero, ItemManager itemManager, GoldSpenderMenu goldSpenderMenu)
+        public GoldSpender(Manager manager, GoldSpenderMenu menu)
         {
-            hero = myHero;
-            menu = goldSpenderMenu;
-            items = itemManager;
-            enemyTeam = hero.GetEnemyTeam();
+            this.menu = menu;
+            this.manager = manager;
+            enemyTeam = manager.MyHero.GetEnemyTeam();
 
             Game.OnUpdate += OnUpdate;
+
+            manager.OnUnitAdd += OnUnitAdd;
+            manager.OnAbilityAdd += OnAbilityAdd;
+            manager.OnAbilityRemove += OnAbilityRemove;
         }
 
         public void BuyItems()
         {
-            var enabledItems = menu.ItemsToBuy.OrderByDescending(x => menu.ItemPriority(x.Key))
-                .Where(x => menu.ItemEnabled(x.Key))
+            var enabledItems = menu.ItemsToBuy.OrderByDescending(x => menu.GetAbilityPriority(x.Key))
+                .Where(x => menu.IsAbilityEnabled(x.Key))
                 .Select(x => x.Value)
                 .ToList();
 
@@ -56,16 +63,15 @@ namespace ItemManager.Core.Modules.GoldSpender
             int unreliableGold, reliableGold;
             GetAvailableGold(menu.SaveForBuyback, out reliableGold, out unreliableGold);
 
-            var courier = ObjectManager.GetEntitiesParallel<Courier>()
-                .FirstOrDefault(x => x.Team == hero.Team && x.IsAlive);
+            var courier = couriers.FirstOrDefault(x => x.IsValid && x.IsAlive);
 
             foreach (var item in enabledItems)
             {
                 Unit unit;
 
-                if (item.IsPurchasable(hero))
+                if (item.IsPurchasable(manager.MyHero))
                 {
-                    unit = hero;
+                    unit = manager.MyHero;
                 }
                 else if (item.IsPurchasable(courier))
                 {
@@ -79,40 +85,39 @@ namespace ItemManager.Core.Modules.GoldSpender
                 switch (item)
                 {
                     case AbilityId.item_dust:
-                        if (items.GetItemCharges(item) >= 2 || !ObjectManager.GetEntitiesParallel<Ability>()
-                                .Any(x => x.IsValid && x.Owner?.Team == enemyTeam && x.IsInvis()))
+                        if (manager.GetItemCharges(item) >= 2 || !invisAbilities.Any())
                         {
                             continue;
                         }
                         break;
                     case AbilityId.item_ward_observer:
                     case AbilityId.item_ward_sentry:
-                        if (items.GetItemCharges(item) >= 2)
+                        if (manager.GetItemCharges(item) >= 2)
                         {
                             continue;
                         }
                         break;
                     case AbilityId.item_tpscroll:
-                        if (items.GetItemCharges(item) >= 2 || items.AllItems.Any(
+                        if (manager.GetItemCharges(item) >= 2 || manager.MyItems.Any(
                                 x => x.Id == AbilityId.item_travel_boots || x.Id == AbilityId.item_travel_boots_2))
                         {
                             continue;
                         }
                         break;
                     case AbilityId.item_energy_booster:
-                        if (items.AllItems.Any(x => x.Id == AbilityId.item_arcane_boots))
+                        if (manager.MyItems.Any(x => x.Id == AbilityId.item_arcane_boots))
                         {
                             continue;
                         }
                         break;
                     case AbilityId.item_smoke_of_deceit:
-                        if (items.GetItemCharges(item) >= 1)
+                        if (manager.GetItemCharges(item) >= 1)
                         {
                             continue;
                         }
                         break;
                     case AbilityId.item_tome_of_knowledge:
-                        if (hero.Level >= 25)
+                        if (manager.MyHero.Level >= 25)
                         {
                             continue;
                         }
@@ -133,7 +138,8 @@ namespace ItemManager.Core.Modules.GoldSpender
                 }
             }
 
-            if (!itemsToBuy.Any() || unreliableGold > hero.GoldLossOnDeath(items) || !hero.IsAlive)
+            if (!itemsToBuy.Any() || unreliableGold > manager.MyHero.GoldLossOnDeath(manager)
+                || !manager.MyHero.IsAlive)
             {
                 return;
             }
@@ -142,22 +148,30 @@ namespace ItemManager.Core.Modules.GoldSpender
             sleeper.Sleep(20000);
         }
 
-        public void OnClose()
+        public void Dispose()
         {
             Game.OnUpdate -= OnUpdate;
+
+            manager.OnUnitAdd -= OnUnitAdd;
+            manager.OnAbilityAdd -= OnAbilityAdd;
+            manager.OnAbilityRemove -= OnAbilityRemove;
+
+            couriers.Clear();
+            invisAbilities.Clear();
         }
 
         private void GetAvailableGold(float time, out int reliable, out int unreliable)
         {
-            reliable = hero.Player.ReliableGold;
-            unreliable = hero.Player.UnreliableGold;
+            reliable = manager.MyHero.Player.ReliableGold;
+            unreliable = manager.MyHero.Player.UnreliableGold;
 
-            if (time <= 0 || Game.GameTime / 60 < time || hero.Player.BuybackCooldownTime >= hero.RespawnTime())
+            if (time <= 0 || Game.GameTime / 60 < time || manager.MyHero.Player.BuybackCooldownTime
+                >= manager.MyHero.RespawnTime())
             {
                 return;
             }
 
-            var requiredGold = hero.BuybackCost() + hero.GoldLossOnDeath(items);
+            var requiredGold = manager.MyHero.BuybackCost() + manager.MyHero.GoldLossOnDeath(manager);
 
             if (unreliable + reliable >= requiredGold)
             {
@@ -177,9 +191,45 @@ namespace ItemManager.Core.Modules.GoldSpender
             }
         }
 
+        private void OnAbilityAdd(object sender, AbilityEventArgs abilityEventArgs)
+        {
+            if (!abilityEventArgs.Ability.IsInvis())
+            {
+                return;
+            }
+
+            var item = abilityEventArgs.Ability as Item;
+            if (item != null && item.Purchaser.Team != manager.MyTeam)
+            {
+                invisAbilities.Add(item);
+                return;
+            }
+
+            var ability = abilityEventArgs.Ability;
+            if (ability.Owner?.Team != manager.MyTeam)
+            {
+                invisAbilities.Add(item);
+            }
+        }
+
+        private void OnAbilityRemove(object sender, AbilityEventArgs abilityEventArgs)
+        {
+            invisAbilities.Remove(abilityEventArgs.Ability);
+        }
+
+        private void OnUnitAdd(object sender, UnitEventArgs unitEventArgs)
+        {
+            var courier = unitEventArgs.Unit as Courier;
+            if (courier != null && courier.Team == manager.MyTeam)
+            {
+                couriers.Add(courier);
+            }
+        }
+
         private void OnUpdate(EventArgs args)
         {
-            if (sleeper.Sleeping || !menu.SpendGold || hero.GoldLossOnDeath(items) <= 20 || !hero.IsAlive)
+            if (sleeper.Sleeping || !menu.SpendGold || manager.MyHero.GoldLossOnDeath(manager) <= 20
+                || !manager.MyHero.IsAlive || Game.IsPaused)
             {
                 return;
             }
@@ -192,14 +242,15 @@ namespace ItemManager.Core.Modules.GoldSpender
                 return;
             }
 
-            if (hero.Health <= menu.HpThreshold || (float)hero.Health / hero.MaximumHealth * 100 <= menu.HpThresholdPct)
+            if (manager.MyHero.Health <= menu.HpThreshold
+                || (float)manager.MyHero.Health / manager.MyHero.MaximumHealth * 100 <= menu.HpThresholdPct)
             {
                 var distance = menu.EnemyDistance;
 
                 if (distance <= 0 || ObjectManager.GetEntitiesParallel<Hero>()
                         .Any(
                             x => x.IsValid && x.Team == enemyTeam && !x.IsIllusion && x.IsAlive
-                                 && x.Distance2D(hero) <= distance))
+                                 && x.Distance2D(manager.MyHero) <= distance))
                 {
                     BuyItems();
                 }

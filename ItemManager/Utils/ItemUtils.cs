@@ -119,7 +119,7 @@
             return true;
         }
 
-        public static Stats GetStats(Item item)
+        public static Stats GetItemStats(this Item item)
         {
             Stats stats;
             if (SavedStats.TryGetValue(item.Id, out stats))
@@ -155,6 +155,12 @@
         public static bool IsPurchasable(this AbilityId id, Unit unit)
         {
             if (unit == null)
+            {
+                return false;
+            }
+
+            var stockInfo = Game.StockInfo.FirstOrDefault(x => x.AbilityId == id && x.Team == unit.Team);
+            if (stockInfo != null && stockInfo.StockCount <= 0)
             {
                 return false;
             }

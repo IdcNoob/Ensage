@@ -7,6 +7,8 @@
     using Ensage;
     using Ensage.Common.Menu;
 
+    using EventArgs;
+
     internal class SnatcherMenu
     {
         private readonly Dictionary<string, AbilityId> items = new Dictionary<string, AbilityId>
@@ -49,17 +51,17 @@
                 args.GetNewValue<AbilityToggler>().Dictionary,
                 EnabledToggleItems);
 
-            var otherUnits = new MenuItem("otherUnits", "Use other units").SetValue(false)
+            var otherUnits = new MenuItem("snatcherOtherUnits", "Use other units").SetValue(false)
                 .SetTooltip("Like Spirit Bear, Meepo clones");
             menu.AddItem(otherUnits);
             otherUnits.ValueChanged += (sender, args) =>
                 {
                     UseOtherUnits = args.GetNewValue<bool>();
-                    OnUseOtherUnitsChange?.Invoke(this, EventArgs.Empty);
+                    OnUseOtherUnitsChange?.Invoke(null, new BoolEventArgs(UseOtherUnits));
                 };
             UseOtherUnits = otherUnits.IsActive();
 
-            var delay = new MenuItem("sleep", "Check delay").SetValue(new Slider(200, 0, 500));
+            var delay = new MenuItem("snatcherSleep", "Check delay").SetValue(new Slider(100, 0, 500));
             menu.AddItem(delay);
             delay.ValueChanged += (sender, args) => Delay = args.GetNewValue<Slider>().Value;
             Delay = delay.GetValue<Slider>().Value;
@@ -70,7 +72,7 @@
             mainMenu.AddSubMenu(menu);
         }
 
-        public event EventHandler OnUseOtherUnitsChange;
+        public event EventHandler<BoolEventArgs> OnUseOtherUnitsChange;
 
         public int Delay { get; private set; }
 

@@ -8,55 +8,64 @@
     using Ensage;
     using Ensage.Common.Extensions;
 
+    using EventArgs;
+
     using Menus.Modules.ItemSwap;
 
     using Utils;
 
     using Courier = Ensage.Courier;
 
-    internal class ItemSwapper
+    internal class ItemSwapper : IDisposable
     {
-        private readonly Hero hero;
+        private readonly List<Courier> couriers = new List<Courier>();
 
-        private readonly ItemManager items;
+        private readonly Manager manager;
 
         private readonly ItemSwapMenu menu;
 
-        private bool couierSwapActive;
+        private bool courierSwapActive;
 
-        public ItemSwapper(Hero myHero, ItemManager itemManager, ItemSwapMenu itemSwapMenu)
+        public ItemSwapper(Manager manager, ItemSwapMenu menu)
         {
-            hero = myHero;
-            menu = itemSwapMenu;
-            items = itemManager;
+            this.manager = manager;
+            this.menu = menu;
 
-            menu.Backpack.OnSwap += BackpackOnSwap;
-            menu.Stash.OnSwap += StashOnSwap;
-            menu.Courier.OnSwap += CourierOnSwap;
+            this.menu.Backpack.OnSwap += BackpackOnSwap;
+            this.menu.Stash.OnSwap += StashOnSwap;
+            this.menu.Courier.OnSwap += CourierOnSwap;
 
             Unit.OnModifierAdded += OnModifierAdded;
-            ObjectManager.OnRemoveEntity += OnRemoveEntity;
             Entity.OnInt32PropertyChange += OnInt32PropertyChange;
+
+            manager.OnItemAdd += OnItemAdd;
+            manager.OnItemRemove += OnItemRemove;
+            manager.OnUnitAdd += OnUnitAdd;
         }
 
-        public void OnClose()
+        public void Dispose()
         {
             menu.Backpack.OnSwap -= BackpackOnSwap;
             menu.Stash.OnSwap -= StashOnSwap;
             menu.Courier.OnSwap -= CourierOnSwap;
 
             Unit.OnModifierAdded -= OnModifierAdded;
-            ObjectManager.OnRemoveEntity -= OnRemoveEntity;
             Entity.OnInt32PropertyChange -= OnInt32PropertyChange;
+
+            manager.OnItemAdd -= OnItemAdd;
+            manager.OnItemRemove -= OnItemRemove;
+            manager.OnUnitAdd -= OnUnitAdd;
+
+            couriers.Clear();
         }
 
         private void BackpackOnSwap(object sender, EventArgs eventArgs)
         {
-            var inventoryItems = items.GetMyItems(ItemUtils.StoredPlace.Inventory)
+            var inventoryItems = manager.GetMyItems(ItemUtils.StoredPlace.Inventory)
                 .Where(x => menu.Backpack.ItemEnabled(x.Name) && x.CanBeMoved())
                 .ToList();
 
-            var backpackItems = items.GetMyItems(ItemUtils.StoredPlace.Backpack)
+            var backpackItems = manager.GetMyItems(ItemUtils.StoredPlace.Backpack)
                 .Where(x => menu.Backpack.ItemEnabled(x.Name))
                 .ToList();
 
@@ -66,32 +75,31 @@
 
         private async void CourierOnSwap(object sender, EventArgs eventArgs)
         {
-            if (couierSwapActive)
+            if (courierSwapActive)
             {
                 return;
             }
 
-            var courier = ObjectManager.GetEntities<Courier>()
-                .FirstOrDefault(x => x.IsValid && x.Team == hero.Team && x.IsAlive);
+            var courier = couriers.FirstOrDefault(x => x.IsValid && x.IsAlive);
             if (courier == null)
             {
                 return;
             }
 
-            var inventoryItems = items.GetMyItems(ItemUtils.StoredPlace.Inventory)
+            var inventoryItems = manager.GetMyItems(ItemUtils.StoredPlace.Inventory)
                 .Where(x => menu.Courier.ItemEnabled(x.Name) && x.CanBeMoved())
                 .ToList();
 
             var courierItems = courier.Inventory.Items.Where(x => menu.Courier.ItemEnabled(x.Name)).ToList();
 
-            couierSwapActive = true;
+            courierSwapActive = true;
 
-            courier.Follow(hero);
+            courier.Follow(manager.MyHero);
             await Task.Delay(200);
 
-            while (courier.Distance2D(hero) > 250)
+            while (courier.Distance2D(manager.MyHero) > 250)
             {
-                if (!couierSwapActive)
+                if (!courierSwapActive)
                 {
                     return;
                 }
@@ -99,20 +107,11 @@
                 await Task.Delay(200);
             }
 
-            MoveItem(hero, courier, inventoryItems);
+            MoveItems(manager.MyHero, courier, inventoryItems);
             await Task.Delay(300);
-            MoveItem(courier, hero, courierItems);
+            MoveItems(courier, manager.MyHero, courierItems);
 
-            couierSwapActive = false;
-        }
-
-        private void MoveItem(Unit source, Unit target, ICollection<Item> itemsToMove)
-        {
-            var count = Math.Min(target.Inventory.FreeInventorySlots.Count(), itemsToMove.Count);
-            for (var i = 0; i < count; i++)
-            {
-                source.GiveItem(itemsToMove.ElementAt(i), target, i != 0);
-            }
+            courierSwapActive = false;
         }
 
         private void MoveItem(
@@ -124,11 +123,11 @@
         {
             if (direction != ItemUtils.StoredPlace.Inventory)
             {
-                items.SaveItemSlot(item);
+                manager.SaveItemSlot(item);
             }
             else
             {
-                var savedSlot = items.GetSavedSlot(item);
+                var savedSlot = manager.GetSavedSlot(item);
                 if (savedSlot != null)
                 {
                     slot = savedSlot.Value;
@@ -140,6 +139,15 @@
             allSlots.Remove(slot);
         }
 
+        private void MoveItems(Unit source, Unit target, ICollection<Item> itemsToMove)
+        {
+            var count = Math.Min(target.Inventory.FreeInventorySlots.Count(), itemsToMove.Count);
+            for (var i = 0; i < count; i++)
+            {
+                source.GiveItem(itemsToMove.ElementAt(i), target, i != 0);
+            }
+        }
+
         private void MoveItems(IEnumerable<Item> from, ICollection<Item> to, ItemUtils.StoredPlace direction)
         {
             var freeSlots = new List<ItemSlot>();
@@ -149,20 +157,32 @@
             {
                 case ItemUtils.StoredPlace.Inventory:
                 {
-                    freeSlots.AddRange(hero.Inventory.FreeInventorySlots);
-                    allSlots.AddRange(InventoryUtils.InventorySlots);
+                    // ReSharper disable once LoopCanBeConvertedToQuery
+                    foreach (var itemSlot in Enum.GetValues(typeof(InventorySlot)).Cast<ItemSlot>())
+                    {
+                        allSlots.Add(itemSlot);
+                    }
+                    freeSlots.AddRange(manager.MyHero.Inventory.FreeInventorySlots);
                     break;
                 }
                 case ItemUtils.StoredPlace.Backpack:
                 {
-                    freeSlots.AddRange(hero.Inventory.FreeBackpackSlots);
-                    allSlots.AddRange(InventoryUtils.BackpackSlots);
+                    // ReSharper disable once LoopCanBeConvertedToQuery
+                    foreach (var itemSlot in Enum.GetValues(typeof(BackpackSlot)).Cast<ItemSlot>())
+                    {
+                        allSlots.Add(itemSlot);
+                    }
+                    freeSlots.AddRange(manager.MyHero.Inventory.FreeBackpackSlots);
                     break;
                 }
                 case ItemUtils.StoredPlace.Stash:
                 {
-                    freeSlots.AddRange(hero.Inventory.FreeStashSlots);
-                    allSlots.AddRange(InventoryUtils.StashSlots);
+                    // ReSharper disable once LoopCanBeConvertedToQuery
+                    foreach (var itemSlot in Enum.GetValues(typeof(StashSlot)).Cast<ItemSlot>())
+                    {
+                        allSlots.Add(itemSlot);
+                    }
+                    freeSlots.AddRange(manager.MyHero.Inventory.FreeStashSlots);
                     break;
                 }
             }
@@ -173,7 +193,7 @@
 
                 if (swapItem != null)
                 {
-                    var slot = items.GetSlot(swapItem.Id, direction);
+                    var slot = manager.GetSlot(swapItem.Handle, direction);
                     if (slot != null)
                     {
                         item.MoveItem(slot.Value);
@@ -197,7 +217,7 @@
 
         private void OnInt32PropertyChange(Entity sender, Int32PropertyChangeEventArgs args)
         {
-            if (!couierSwapActive || args.OldValue == args.NewValue || args.PropertyName != "m_nCourierState")
+            if (!courierSwapActive || args.OldValue == args.NewValue || args.PropertyName != "m_nCourierState")
             {
                 return;
             }
@@ -208,65 +228,88 @@
                 return;
             }
 
-            couierSwapActive = false;
+            courierSwapActive = false;
         }
 
-        private void OnModifierAdded(Unit sender, ModifierChangedEventArgs args)
+        private void OnItemAdd(object sender, ItemEventArgs itemEventArgs)
         {
-            if (!menu.Auto.SwapTpScroll || sender.Handle != hero.Handle || args.Modifier.TextureName != "item_tpscroll")
+            if (!itemEventArgs.IsMine || itemEventArgs.Item.IsRecipe)
             {
                 return;
             }
 
-            var backpackItem = items.GetBestBackpackItem();
+            menu.AddItem(itemEventArgs.Item.Name);
+        }
 
+        private void OnItemRemove(object sender, ItemEventArgs itemEventArgs)
+        {
+            var item = itemEventArgs.Item;
+
+            if (!itemEventArgs.IsMine || item.IsRecipe || manager.GetMyItems(ItemUtils.StoredPlace.Any)
+                    .Any(x => x.Id == item.Id))
+            {
+                return;
+            }
+
+            menu.RemoveItem(itemEventArgs.Item.Name);
+
+            if (!menu.Auto.SwapCheeseAegis || item.Id != AbilityId.item_cheese && item.Id != AbilityId.item_aegis)
+            {
+                return;
+            }
+
+            var freeSlots = manager.MyHero.Inventory.FreeInventorySlots.ToList();
+            if (!freeSlots.Any())
+            {
+                return;
+            }
+
+            var backpackItem = manager.GetBestBackpackItem();
+            backpackItem?.MoveItem(freeSlots.First());
+        }
+
+        private void OnModifierAdded(Unit sender, ModifierChangedEventArgs args)
+        {
+            if (!menu.Auto.SwapTpScroll || sender.Handle != manager.MyHandle
+                || args.Modifier.TextureName != "item_tpscroll")
+            {
+                return;
+            }
+
+            var backpackItem = manager.GetBestBackpackItem();
             if (backpackItem == null)
             {
                 return;
             }
 
-            var scrollSlot = items.GetSlot(AbilityId.item_tpscroll, ItemUtils.StoredPlace.Inventory);
+            var scrollSlot = manager.GetSlot(AbilityId.item_tpscroll, ItemUtils.StoredPlace.Inventory);
             if (scrollSlot != null)
             {
                 backpackItem.MoveItem(scrollSlot.Value);
             }
         }
 
-        private void OnRemoveEntity(EntityEventArgs args)
+        private void OnUnitAdd(object sender, UnitEventArgs unitEventArgs)
         {
-            if (!menu.Auto.SwapCheeseAegis || args.Entity.Owner?.Handle != hero.Handle)
+            var courier = unitEventArgs.Unit as Courier;
+            if (courier != null && courier.Team == manager.MyTeam)
             {
-                return;
+                couriers.Add(courier);
             }
-
-            var item = args.Entity as Item;
-            if (item == null || item.Id != AbilityId.item_cheese && item.Id != AbilityId.item_aegis)
-            {
-                return;
-            }
-
-            var freeSlots = hero.Inventory.FreeInventorySlots.ToList();
-            if (!freeSlots.Any())
-            {
-                return;
-            }
-
-            var backpackItem = items.GetBestBackpackItem();
-            backpackItem?.MoveItem(freeSlots.First());
         }
 
         private void StashOnSwap(object sender, EventArgs eventArgs)
         {
-            if (hero.ActiveShop != ShopType.Base)
+            if (manager.MyHero.ActiveShop != ShopType.Base)
             {
                 return;
             }
 
-            var inventoryItems = items.GetMyItems(ItemUtils.StoredPlace.Inventory)
+            var inventoryItems = manager.GetMyItems(ItemUtils.StoredPlace.Inventory)
                 .Where(x => menu.Stash.ItemEnabled(x.Name) && x.CanBeMoved())
                 .ToList();
 
-            var stashItems = items.GetMyItems(ItemUtils.StoredPlace.Stash)
+            var stashItems = manager.GetMyItems(ItemUtils.StoredPlace.Stash)
                 .Where(x => menu.Stash.ItemEnabled(x.Name))
                 .ToList();
 

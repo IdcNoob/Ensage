@@ -1,7 +1,5 @@
 ﻿namespace ItemManager
 {
-    using System;
-
     using Core;
 
     using Ensage.Common;
@@ -16,12 +14,12 @@
             Events.OnClose += OnClose;
         }
 
-        private static void OnClose(object sender, EventArgs eventArgs)
+        private static void OnClose(object sender, System.EventArgs eventArgs)
         {
             Bootstrap.OnClose();
         }
 
-        private static void OnLoad(object sender, EventArgs eventArgs)
+        private static void OnLoad(object sender, System.EventArgs eventArgs)
         {
             Bootstrap.OnLoad();
         }
