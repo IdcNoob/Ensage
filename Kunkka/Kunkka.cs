@@ -217,7 +217,7 @@
 
                     hero.Move(hero.Position.Extend(fountain.Position, 50));
                     xMark.UseAbility(hero);
-                    teleport.UseAbility(fountain, true);
+                    teleport.UseAbility(fountain.Position, true);
                     sleeper.Sleep(1000);
                     return;
                 }
