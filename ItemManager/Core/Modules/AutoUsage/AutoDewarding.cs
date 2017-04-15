@@ -1,7 +1,6 @@
 ﻿namespace ItemManager.Core.Modules.AutoUsage
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
 
     using Ensage;
@@ -15,7 +14,7 @@
 
     internal class AutoDewarding : IDisposable
     {
-        private readonly float castRangeOnWards;
+        private readonly float chopRange;
 
         private readonly Manager manager;
 
@@ -23,18 +22,12 @@
 
         private readonly Sleeper sleeper = new Sleeper();
 
-        private readonly List<ClassId> wards = new List<ClassId>
-        {
-            ClassId.CDOTA_NPC_Observer_Ward,
-            ClassId.CDOTA_NPC_Observer_Ward_TrueSight
-        };
-
         public AutoDewarding(Manager manager, Deward menu)
         {
             this.manager = manager;
             this.menu = menu;
 
-            castRangeOnWards = Ability.GetAbilityDataById(AbilityId.item_quelling_blade)
+            chopRange = Ability.GetAbilityDataById(AbilityId.item_quelling_blade)
                 .AbilitySpecialData.First(x => x.Name == "cast_range_ward")
                 .Value;
 
@@ -60,24 +53,25 @@
                 return;
             }
 
-            var ward = ObjectManager.GetEntitiesParallel<Unit>()
+            var destroyableUnit = ObjectManager.GetEntitiesParallel<Unit>()
                 .FirstOrDefault(
-                    x => x.IsValid && wards.Contains(x.ClassId) && x.IsAlive && x.Team != manager.MyTeam
-                         && x.Distance2D(manager.MyHero) <= castRangeOnWards);
+                    x => x.IsValid && (x.IsWard() || menu.DestroyMines && x.IsTechiesMine() && x.Health > 1)
+                         && x.IsAlive && x.Team != manager.MyTeam && x.Distance2D(manager.MyHero) <= chopRange);
 
-            if (ward == null)
+            if (destroyableUnit == null)
             {
                 return;
             }
 
             var item = manager.GetMyItems(ItemUtils.StoredPlace.Inventory)
                 .Where(
-                    x => (!x.IsTango() || manager.MyMissingHealth > menu.TangoHpThreshold)
-                         && menu.IsAbilityEnabled(x.StoredName()) && x.CanBeCasted())
+                    x => (!x.IsTango() || manager.MyMissingHealth >= menu.TangoHpThreshold
+                          && !destroyableUnit.IsTechiesMine()) && menu.IsAbilityEnabled(x.StoredName())
+                         && x.CanBeCasted())
                 .OrderByDescending(x => menu.GetAbilityPriority(x.StoredName()))
                 .FirstOrDefault();
 
-            item?.UseAbility(ward);
+            item?.UseAbility(destroyableUnit);
         }
     }
 }

@@ -22,9 +22,15 @@
             enabled.ValueChanged += (sender, args) => IsEnabled = args.GetNewValue<bool>();
             IsEnabled = enabled.IsActive();
 
+            var destroyMines = new MenuItem("dewardMines", "Destroy techies mines").SetValue(true);
+            destroyMines.SetTooltip("Auto use quelling blade, iron talon etc. on techies mines");
+            menu.AddItem(destroyMines);
+            destroyMines.ValueChanged += (sender, args) => DestroyMines = args.GetNewValue<bool>();
+            DestroyMines = destroyMines.IsActive();
+
             var tangoHpThreshold =
                 new MenuItem("dewardTangoHp", "Tango HP threshold").SetValue(new Slider(150, 0, 250));
-            tangoHpThreshold.SetTooltip("Use tango only if you have less hp");
+            tangoHpThreshold.SetTooltip("Use tango only if you are missing more hp");
             menu.AddItem(tangoHpThreshold);
             tangoHpThreshold.ValueChanged += (sender, args) => TangoHpThreshold = args.GetNewValue<Slider>().Value;
             TangoHpThreshold = tangoHpThreshold.GetValue<Slider>().Value;
@@ -39,6 +45,8 @@
 
             mainMenu.AddSubMenu(menu);
         }
+
+        public bool DestroyMines { get; private set; }
 
         public bool IsEnabled { get; private set; }
 

@@ -109,6 +109,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\CourierUtils.cs" />
+    <Compile Include="Utils\EntityUtils.cs" />
     <Compile Include="Utils\ItemUtils.cs" />
     <Compile Include="Utils\HeroUtils.cs" />
     <Compile Include="Utils\ModifierUtils.cs" />
