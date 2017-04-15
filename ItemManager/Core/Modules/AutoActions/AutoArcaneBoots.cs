@@ -1,7 +1,9 @@
-﻿namespace ItemManager.Core.Modules.AutoUsage
+﻿namespace ItemManager.Core.Modules.AutoActions
 {
     using System;
     using System.Linq;
+
+    using Abilities;
 
     using Ensage;
     using Ensage.Common;
@@ -10,23 +12,23 @@
 
     using EventArgs;
 
-    using Menus.Modules.AutoUsage;
+    using Menus.Modules.AutoActions.Actions;
 
     internal class AutoArcaneBoots : IDisposable
     {
         private readonly Manager manager;
 
-        private readonly ArcaneBoots menu;
+        private readonly AutoArcaneBootsMenu menu;
 
         private readonly Sleeper sleeper = new Sleeper();
 
-        private Abilities.ArcaneBoots arcaneBoots;
+        private ArcaneBoots arcaneBoots;
 
         private bool notified;
 
         private bool subscribed;
 
-        public AutoArcaneBoots(Manager manager, ArcaneBoots menu)
+        public AutoArcaneBoots(Manager manager, AutoArcaneBootsMenu menu)
         {
             this.manager = manager;
             this.menu = menu;
@@ -63,8 +65,7 @@
             }
 
             arcaneBoots =
-                manager.UsableAbilities.FirstOrDefault(
-                    x => x.Id == AbilityId.item_arcane_boots) as Abilities.ArcaneBoots;
+                manager.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_arcane_boots) as ArcaneBoots;
 
             if (arcaneBoots == null || subscribed)
             {
@@ -84,8 +85,7 @@
             }
 
             arcaneBoots =
-                manager.UsableAbilities.FirstOrDefault(
-                    x => x.Id == AbilityId.item_arcane_boots) as Abilities.ArcaneBoots;
+                manager.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_arcane_boots) as ArcaneBoots;
 
             if (arcaneBoots != null || !subscribed)
             {

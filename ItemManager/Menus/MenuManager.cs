@@ -5,7 +5,7 @@
     using Ensage.Common.Menu;
 
     using Modules.AbilityHelper;
-    using Modules.AutoUsage;
+    using Modules.AutoActions;
     using Modules.CourierHelper;
     using Modules.GoldSpender;
     using Modules.ItemSwap;
@@ -21,7 +21,7 @@
         {
             mainMenu = new Menu(" Item Manager", "itemManager", true, "courier_go_to_secretshop", true);
 
-            AutoUsageMenu = new AutoUsageMenu(mainMenu);
+            AutoActionsMenu = new AutoActionsMenu(mainMenu);
             AbilityHelperMenu = new AbilityHelperMenu(mainMenu);
             RecoveryMenu = new RecoveryMenu(mainMenu);
             GoldSpenderMenu = new GoldSpenderMenu(mainMenu);
@@ -35,7 +35,7 @@
 
         public AbilityHelperMenu AbilityHelperMenu { get; }
 
-        public AutoUsageMenu AutoUsageMenu { get; }
+        public AutoActionsMenu AutoActionsMenu { get; }
 
         public CourierHelperMenu CourierHelperMenu { get; }
 

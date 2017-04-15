@@ -1,4 +1,4 @@
-﻿namespace ItemManager.Menus.Modules.AutoUsage
+﻿namespace ItemManager.Menus.Modules.AutoActions.Actions
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -6,13 +6,13 @@
     using Ensage;
     using Ensage.Common.Menu;
 
-    internal class Deward
+    internal class DewardingMenu
     {
         private AbilityToggler abilityToggler;
 
         private PriorityChanger priorityChanger;
 
-        public Deward(Menu mainMenu)
+        public DewardingMenu(Menu mainMenu)
         {
             var menu = new Menu("Dewarding", "dewardMenu");
 
@@ -21,12 +21,6 @@
             menu.AddItem(enabled);
             enabled.ValueChanged += (sender, args) => IsEnabled = args.GetNewValue<bool>();
             IsEnabled = enabled.IsActive();
-
-            var destroyMines = new MenuItem("dewardMines", "Destroy techies mines").SetValue(true);
-            destroyMines.SetTooltip("Auto use quelling blade, iron talon etc. on techies mines");
-            menu.AddItem(destroyMines);
-            destroyMines.ValueChanged += (sender, args) => DestroyMines = args.GetNewValue<bool>();
-            DestroyMines = destroyMines.IsActive();
 
             var tangoHpThreshold =
                 new MenuItem("dewardTangoHp", "Tango HP threshold").SetValue(new Slider(150, 0, 250));
@@ -46,17 +40,15 @@
             mainMenu.AddSubMenu(menu);
         }
 
-        public bool DestroyMines { get; private set; }
-
         public bool IsEnabled { get; private set; }
 
         public List<AbilityId> ItemsToUse { get; } = new List<AbilityId>
         {
-            AbilityId.item_tango,
-            AbilityId.item_tango_single,
             AbilityId.item_iron_talon,
             AbilityId.item_quelling_blade,
-            AbilityId.item_bfury
+            AbilityId.item_bfury,
+            AbilityId.item_tango,
+            AbilityId.item_tango_single
         };
 
         public int TangoHpThreshold { get; private set; }

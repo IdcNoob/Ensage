@@ -1,4 +1,4 @@
-﻿namespace ItemManager.Core.Modules.AutoUsage
+﻿namespace ItemManager.Core.Modules.AutoActions
 {
     using Ensage;
 

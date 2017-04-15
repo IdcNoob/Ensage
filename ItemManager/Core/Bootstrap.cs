@@ -6,7 +6,7 @@
     using Menus;
 
     using Modules.AbilityHelper;
-    using Modules.AutoUsage;
+    using Modules.AutoActions;
     using Modules.CourierHelper;
     using Modules.GoldSpender;
     using Modules.ItemSwapper;
@@ -42,13 +42,14 @@
             disposables.Add(new GoldSpender(manager, menu.GoldSpenderMenu));
             disposables.Add(new ShrineHelper(manager, menu.ShrineHelperMenu));
             disposables.Add(new RecoveryAbuse(manager, menu.RecoveryMenu, menu.AbilityHelperMenu.Tranquil));
-            disposables.Add(new AutoSoulRing(manager, menu.AutoUsageMenu.SoulRing));
-            disposables.Add(new PowerTreadsSwitcher(manager, menu.AutoUsageMenu.PowerTreads, menu.RecoveryMenu));
-            disposables.Add(new AutoBottle(manager, menu.AutoUsageMenu.Bottle, menu.RecoveryMenu));
+            disposables.Add(new AutoSoulRing(manager, menu.AutoActionsMenu.SoulRingMenu));
+            disposables.Add(new PowerTreadsSwitcher(manager, menu.AutoActionsMenu.PowerTreadsMenu, menu.RecoveryMenu));
+            disposables.Add(new AutoBottle(manager, menu.AutoActionsMenu.AutoBottleMenu, menu.RecoveryMenu));
             disposables.Add(new TranquilDrop(manager, menu.AbilityHelperMenu.Tranquil));
             disposables.Add(new BlinkAdjustment(manager, menu.AbilityHelperMenu.Blink));
-            disposables.Add(new AutoArcaneBoots(manager, menu.AutoUsageMenu.ArcaneBoots));
-            disposables.Add(new AutoDewarding(manager, menu.AutoUsageMenu.Deward));
+            disposables.Add(new AutoArcaneBoots(manager, menu.AutoActionsMenu.AutoArcaneBootsMenu));
+            disposables.Add(new AutoDewarding(manager, menu.AutoActionsMenu.DewardingMenu));
+            disposables.Add(new TechiesMinesDestroyer(manager, menu.AutoActionsMenu.TechiesMinesDestroyerMenu));
         }
     }
 }

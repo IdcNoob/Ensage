@@ -1,7 +1,9 @@
-﻿namespace ItemManager.Core.Modules.AutoUsage
+﻿namespace ItemManager.Core.Modules.AutoActions
 {
     using System;
     using System.Linq;
+
+    using Abilities;
 
     using Ensage;
     using Ensage.Common.Extensions;
@@ -9,7 +11,7 @@
 
     using EventArgs;
 
-    using Menus.Modules.AutoUsage;
+    using Menus.Modules.AutoActions.Actions;
     using Menus.Modules.Recovery;
 
     using SharpDX;
@@ -22,17 +24,17 @@
 
         private readonly Manager manager;
 
-        private readonly Bottle menu;
+        private readonly AutoBottleMenu menu;
 
         private readonly RecoveryMenu recoveryMenu;
 
         private readonly MultiSleeper sleeper = new MultiSleeper();
 
-        private Abilities.Bottle bottle;
+        private Bottle bottle;
 
         private bool subscribed;
 
-        public AutoBottle(Manager manager, Bottle menu, RecoveryMenu recoveryMenu)
+        public AutoBottle(Manager manager, AutoBottleMenu menu, RecoveryMenu recoveryMenu)
         {
             this.manager = manager;
             this.menu = menu;
@@ -101,7 +103,7 @@
                 return;
             }
 
-            bottle = manager.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_bottle) as Abilities.Bottle;
+            bottle = manager.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_bottle) as Bottle;
 
             if (bottle == null)
             {
@@ -120,7 +122,7 @@
                 return;
             }
 
-            bottle = manager.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_bottle) as Abilities.Bottle;
+            bottle = manager.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_bottle) as Bottle;
 
             if (bottle != null)
             {

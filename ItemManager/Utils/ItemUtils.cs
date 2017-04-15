@@ -77,7 +77,7 @@
             { AbilityId.item_cloak, ShopFlags.Base | ShopFlags.Side }, //Cloak
             { AbilityId.item_talisman_of_evasion, ShopFlags.Secret }, //Talisman of Evasion
             { AbilityId.item_magic_stick, ShopFlags.Base | ShopFlags.Side }, //Magic Stick
-            { AbilityId.item_bottle, ShopFlags.Base | ShopFlags.Side }, //Bottle 
+            { AbilityId.item_bottle, ShopFlags.Base | ShopFlags.Side }, //Bottle
             { AbilityId.item_tpscroll, ShopFlags.Base | ShopFlags.Side }, //Town Portal Scroll
             { AbilityId.item_demon_edge, ShopFlags.Secret }, //Demon Edge
             { AbilityId.item_eagle, ShopFlags.Secret }, //Eaglesong

@@ -1,14 +1,14 @@
-﻿namespace ItemManager.Menus.Modules.AutoUsage
+﻿namespace ItemManager.Menus.Modules.AutoActions.Actions
 {
     using System.Collections.Generic;
 
     using Ensage.Common.Menu;
 
-    internal class PowerTreads
+    internal class PowerTreadsMenu
     {
         private AbilityToggler abilityToggler;
 
-        public PowerTreads(Menu mainMenu)
+        public PowerTreadsMenu(Menu mainMenu)
         {
             var menu = new Menu("Power treads", "ptSwitcherMenu");
 
@@ -26,7 +26,7 @@
             UniversalUseEnabled = universal.IsActive();
 
             var switchOnHeal = new MenuItem("ptSwitchOnHeal", "Switch when healing").SetValue(true);
-            switchOnHeal.SetTooltip("Bottle, flask, shrine");
+            switchOnHeal.SetTooltip("AutoBottleMenu, flask, shrine");
             menu.AddItem(switchOnHeal);
             switchOnHeal.ValueChanged += (sender, args) => SwitchOnHeal = args.GetNewValue<bool>();
             SwitchOnHeal = switchOnHeal.IsActive();

@@ -1,7 +1,9 @@
-﻿namespace ItemManager.Core.Modules.AutoUsage
+﻿namespace ItemManager.Core.Modules.AutoActions
 {
     using System;
     using System.Linq;
+
+    using Abilities;
 
     using Ensage;
     using Ensage.Common.Extensions;
@@ -9,21 +11,21 @@
 
     using EventArgs;
 
-    using Menus.Modules.AutoUsage;
+    using Menus.Modules.AutoActions.Actions;
 
     internal class AutoSoulRing : IDisposable
     {
         private readonly Manager manager;
 
-        private readonly SoulRing menu;
+        private readonly SoulRingMenu menu;
 
         private readonly Order order;
 
-        private Core.Abilities.SoulRing soulRing;
+        private SoulRing soulRing;
 
         private bool subscribed;
 
-        public AutoSoulRing(Manager manager, SoulRing menu)
+        public AutoSoulRing(Manager manager, SoulRingMenu menu)
         {
             this.manager = manager;
             this.menu = menu;
@@ -64,9 +66,7 @@
 
             if (abilityEventArgs.Ability.Id == AbilityId.item_soul_ring)
             {
-                soulRing =
-                    manager.UsableAbilities.FirstOrDefault(
-                        x => x.Id == AbilityId.item_soul_ring) as Core.Abilities.SoulRing;
+                soulRing = manager.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_soul_ring) as SoulRing;
 
                 if (soulRing != null && !subscribed)
                 {
@@ -90,9 +90,7 @@
 
             if (abilityEventArgs.Ability.Id == AbilityId.item_soul_ring)
             {
-                soulRing =
-                    manager.UsableAbilities.FirstOrDefault(
-                        x => x.Id == AbilityId.item_soul_ring) as Core.Abilities.SoulRing;
+                soulRing = manager.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_soul_ring) as SoulRing;
 
                 if (soulRing == null)
                 {

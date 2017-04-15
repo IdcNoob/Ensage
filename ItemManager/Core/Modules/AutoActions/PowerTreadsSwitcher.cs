@@ -1,8 +1,10 @@
-﻿namespace ItemManager.Core.Modules.AutoUsage
+﻿namespace ItemManager.Core.Modules.AutoActions
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
+
+    using Abilities;
 
     using Ensage;
     using Ensage.Common.AbilityInfo;
@@ -12,7 +14,7 @@
 
     using EventArgs;
 
-    using Menus.Modules.AutoUsage;
+    using Menus.Modules.AutoActions.Actions;
     using Menus.Modules.Recovery;
 
     using Attribute = Ensage.Attribute;
@@ -61,7 +63,7 @@
 
         private readonly Manager manager;
 
-        private readonly PowerTreads menu;
+        private readonly PowerTreadsMenu menu;
 
         private readonly Order order;
 
@@ -69,11 +71,11 @@
 
         private readonly MultiSleeper sleeper = new MultiSleeper();
 
-        private Core.Abilities.PowerTreads powerTreads;
+        private PowerTreads powerTreads;
 
         private bool subscribed;
 
-        public PowerTreadsSwitcher(Manager manager, PowerTreads menu, RecoveryMenu recoveryMenu)
+        public PowerTreadsSwitcher(Manager manager, PowerTreadsMenu menu, RecoveryMenu recoveryMenu)
         {
             this.manager = manager;
             this.menu = menu;
@@ -110,8 +112,7 @@
             if (abilityEventArgs.Ability.Id == AbilityId.item_power_treads)
             {
                 powerTreads =
-                    manager.UsableAbilities.FirstOrDefault(
-                        x => x.Id == AbilityId.item_power_treads) as Core.Abilities.PowerTreads;
+                    manager.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_power_treads) as PowerTreads;
 
                 if (powerTreads != null && !subscribed)
                 {
@@ -140,8 +141,7 @@
             if (abilityEventArgs.Ability.Id == AbilityId.item_power_treads)
             {
                 powerTreads =
-                    manager.UsableAbilities.FirstOrDefault(
-                        x => x.Id == AbilityId.item_power_treads) as Core.Abilities.PowerTreads;
+                    manager.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_power_treads) as PowerTreads;
 
                 if (powerTreads == null)
                 {

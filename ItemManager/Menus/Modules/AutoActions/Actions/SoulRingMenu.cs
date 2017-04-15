@@ -1,14 +1,14 @@
-﻿namespace ItemManager.Menus.Modules.AutoUsage
+﻿namespace ItemManager.Menus.Modules.AutoActions.Actions
 {
     using System.Collections.Generic;
 
     using Ensage.Common.Menu;
 
-    internal class SoulRing
+    internal class SoulRingMenu
     {
         private AbilityToggler abilityToggler;
 
-        public SoulRing(Menu mainMenu)
+        public SoulRingMenu(Menu mainMenu)
         {
             var menu = new Menu("Soul ring", "soulRing");
 

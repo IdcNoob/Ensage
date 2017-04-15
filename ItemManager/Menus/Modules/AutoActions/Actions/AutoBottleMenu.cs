@@ -1,12 +1,12 @@
-﻿namespace ItemManager.Menus.Modules.AutoUsage
+﻿namespace ItemManager.Menus.Modules.AutoActions.Actions
 {
     using Ensage.Common.Menu;
 
-    internal class Bottle
+    internal class AutoBottleMenu
     {
-        public Bottle(Menu mainMenu)
+        public AutoBottleMenu(Menu mainMenu)
         {
-            var menu = new Menu("Bottle", "bottle");
+            var menu = new Menu("AutoBottleMenu", "bottle");
 
             var autoSelfBottle = new MenuItem("autoBottleSelf", "Self bottle").SetValue(true);
             autoSelfBottle.SetTooltip("Auto bottle usage on self while at base");

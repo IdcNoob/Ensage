@@ -1,10 +1,10 @@
-﻿namespace ItemManager.Menus.Modules.AutoUsage
+﻿namespace ItemManager.Menus.Modules.AutoActions.Actions
 {
     using Ensage.Common.Menu;
 
-    internal class ArcaneBoots
+    internal class AutoArcaneBootsMenu
     {
-        public ArcaneBoots(Menu mainMenu)
+        public AutoArcaneBootsMenu(Menu mainMenu)
         {
             var menu = new Menu("Arcane boots", "autoArcaneBoots");
 
