@@ -1,9 +1,6 @@
 ﻿namespace ItemManager.Utils
 {
     using System;
-    using System.Linq;
-
-    using Core;
 
     using Ensage;
 
@@ -12,14 +9,6 @@
         public static int BuybackCost(this Hero hero)
         {
             return (int)(100 + Math.Pow(hero.Level, 2) * 1.5 + Game.GameTime / 60 * 15);
-        }
-
-        public static int GoldLossOnDeath(this Hero hero, Manager items)
-        {
-            return Math.Min(
-                hero.Player.UnreliableGold,
-                100 + (hero.Player.ReliableGold + hero.Player.UnreliableGold + items.MyItems.Sum(x => (int)x.Cost))
-                / 50);
         }
 
         public static bool IsAtBase(this Hero hero)

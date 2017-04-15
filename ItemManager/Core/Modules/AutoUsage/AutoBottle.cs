@@ -18,8 +18,6 @@
 
     internal class AutoBottle : IDisposable
     {
-        private const string FountainRegenerationModifier = "modifier_fountain_aura_buff";
-
         private readonly Vector3 fountain;
 
         private readonly Manager manager;
@@ -55,7 +53,7 @@
                 return true;
             }
 
-            if (!manager.MyHero.HasModifier(FountainRegenerationModifier))
+            if (!manager.MyHero.HasModifier(ModifierUtils.FountainRegeneration))
             {
                 return false;
             }
@@ -89,7 +87,6 @@
                 {
                     if (args.Ability.IsAbilityBehavior(AbilityBehavior.Channeled))
                     {
-                        Console.WriteLine("sleep");
                         sleeper.Sleep(500, this);
                     }
                     break;

@@ -305,15 +305,14 @@
 
         private void OnUpdate(EventArgs args)
         {
-            if (!menu.IsEnabled || sleeper.Sleeping(AbilityId.item_power_treads) || sleeper.Sleeping(this)
-                || Game.IsPaused)
+            if (sleeper.Sleeping(this) || Game.IsPaused)
             {
                 return;
             }
 
             sleeper.Sleep(200, this);
 
-            if (!manager.MyHeroCanUseItems())
+            if (!menu.IsEnabled || sleeper.Sleeping(AbilityId.item_power_treads) || !manager.MyHeroCanUseItems())
             {
                 return;
             }

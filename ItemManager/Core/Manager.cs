@@ -79,7 +79,7 @@
 
         public Team MyTeam { get; }
 
-        public List<Unit> Units { get; } = new List<Unit>();
+        //public List<Unit> Units { get; } = new List<Unit>();
 
         public List<UsableAbility> UsableAbilities { get; } = new List<UsableAbility>();
 
@@ -91,7 +91,7 @@
             MyAbilities.Clear();
             MyItems.Clear();
             addedEntities.Clear();
-            Units.Clear();
+            //Units.Clear();
             types.Clear();
             DroppedItems.Clear();
         }
@@ -301,7 +301,6 @@
 
             if (!items.Any())
             {
-                Console.WriteLine("no");
                 return 0;
             }
 
@@ -313,8 +312,6 @@
             {
                 if (MyHero.PickUpItem(physicalItem, true))
                 {
-                    Console.WriteLine("pick " + physicalItem.Item.Name);
-
                     DroppedItems.Remove(physicalItem.Item);
 
                     var slot = GetSavedSlot(physicalItem.Item);
@@ -458,7 +455,7 @@
             var unit = args.Entity as Unit;
             if (unit != null && unit.IsValid)
             {
-                //  Units.Remove(unit);
+                //Units.Remove(unit);
                 OnUnitRemove?.Invoke(null, new UnitEventArgs(unit));
             }
         }

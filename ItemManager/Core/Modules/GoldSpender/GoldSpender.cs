@@ -138,8 +138,7 @@ namespace ItemManager.Core.Modules.GoldSpender
                 }
             }
 
-            if (!itemsToBuy.Any() || unreliableGold > manager.MyHero.GoldLossOnDeath(manager)
-                || !manager.MyHero.IsAlive)
+            if (!itemsToBuy.Any() || unreliableGold > GoldLossOnDeath() || !manager.MyHero.IsAlive)
             {
                 return;
             }
@@ -171,7 +170,7 @@ namespace ItemManager.Core.Modules.GoldSpender
                 return;
             }
 
-            var requiredGold = manager.MyHero.BuybackCost() + manager.MyHero.GoldLossOnDeath(manager);
+            var requiredGold = manager.MyHero.BuybackCost() + GoldLossOnDeath();
 
             if (unreliable + reliable >= requiredGold)
             {
@@ -189,6 +188,14 @@ namespace ItemManager.Core.Modules.GoldSpender
                     reliable -= requiredGold;
                 }
             }
+        }
+
+        private int GoldLossOnDeath()
+        {
+            return Math.Min(
+                manager.MyHero.Player.UnreliableGold,
+                100 + (manager.MyHero.Player.ReliableGold + manager.MyHero.Player.UnreliableGold
+                       + manager.MyItems.Sum(x => (int)x.Cost)) / 50);
         }
 
         private void OnAbilityAdd(object sender, AbilityEventArgs abilityEventArgs)
@@ -228,13 +235,17 @@ namespace ItemManager.Core.Modules.GoldSpender
 
         private void OnUpdate(EventArgs args)
         {
-            if (sleeper.Sleeping || !menu.SpendGold || manager.MyHero.GoldLossOnDeath(manager) <= 20
-                || !manager.MyHero.IsAlive || Game.IsPaused)
+            if (sleeper.Sleeping || Game.IsPaused)
             {
                 return;
             }
 
             sleeper.Sleep(100);
+
+            if (!menu.SpendGold || !manager.MyHero.IsAlive)
+            {
+                return;
+            }
 
             if (!Utils.SleepCheck("GoldSpender.ForceSpend"))
             {
@@ -242,18 +253,18 @@ namespace ItemManager.Core.Modules.GoldSpender
                 return;
             }
 
-            if (manager.MyHero.Health <= menu.HpThreshold
-                || (float)manager.MyHero.Health / manager.MyHero.MaximumHealth * 100 <= menu.HpThresholdPct)
+            if (manager.MyHero.Health > menu.HpThreshold && manager.MyHealthPercentage > menu.HpThresholdPct)
             {
-                var distance = menu.EnemyDistance;
+                return;
+            }
 
-                if (distance <= 0 || ObjectManager.GetEntitiesParallel<Hero>()
-                        .Any(
-                            x => x.IsValid && x.Team == enemyTeam && !x.IsIllusion && x.IsAlive
-                                 && x.Distance2D(manager.MyHero) <= distance))
-                {
-                    BuyItems();
-                }
+            var distance = menu.EnemyDistance;
+            if (distance <= 0 || ObjectManager.GetEntitiesParallel<Hero>()
+                    .Any(
+                        x => x.IsValid && x.Team == enemyTeam && !x.IsIllusion && x.IsAlive
+                             && x.Distance2D(manager.MyHero) <= distance))
+            {
+                BuyItems();
             }
         }
     }

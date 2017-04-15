@@ -113,8 +113,8 @@
                     var mpRestore = usableRecoveryAbilities.Sum(x => x.ManaRestore);
                     var hpRestore = usableRecoveryAbilities.Sum(x => x.HealthRestore);
 
-                    var missingHp = (float)manager.MyHero.MaximumHealth - manager.MyHero.Health;
-                    var missingMp = manager.MyHero.MaximumMana - manager.MyHero.Mana;
+                    var missingHp = manager.MyMissingHealth;
+                    var missingMp = manager.MyMissingMana;
 
                     var powerTreads =
                         manager.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_power_treads) as PowerTreads;
@@ -307,7 +307,7 @@
         {
             if (ObjectManager.GetEntitiesParallel<Hero>()
                 .Any(
-                    x => x.IsValid && x.IsValid && x.IsAlive && x.Team != manager.MyTeam
+                    x => x.IsValid && x.IsVisible && x.IsAlive && x.Team != manager.MyTeam
                          && x.Distance2D(manager.MyHero) < 800))
             {
                 return true;

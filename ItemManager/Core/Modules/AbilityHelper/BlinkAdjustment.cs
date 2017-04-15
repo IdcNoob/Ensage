@@ -20,7 +20,6 @@
             this.manager = manager;
             this.menu = menu;
 
-            Console.WriteLine("reg");
             Player.OnExecuteOrder += OnExecuteOrder;
         }
 

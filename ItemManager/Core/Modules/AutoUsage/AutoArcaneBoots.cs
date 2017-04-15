@@ -99,14 +99,14 @@
 
         private void OnUpdate(EventArgs args)
         {
-            if (sleeper.Sleeping || Game.IsPaused || !menu.AutoUse)
+            if (sleeper.Sleeping || Game.IsPaused)
             {
                 return;
             }
 
             sleeper.Sleep(500);
 
-            if (!manager.MyHeroCanUseItems() || !arcaneBoots.CanBeCasted()
+            if (!menu.AutoUse || !manager.MyHeroCanUseItems() || !arcaneBoots.CanBeCasted()
                 || manager.MyMissingMana < arcaneBoots.ManaRestore)
             {
                 return;

@@ -23,12 +23,6 @@
 
         private readonly Sleeper sleeper = new Sleeper();
 
-        private readonly List<AbilityId> tangos = new List<AbilityId>
-        {
-            AbilityId.item_tango,
-            AbilityId.item_tango_single
-        };
-
         private readonly List<ClassId> wards = new List<ClassId>
         {
             ClassId.CDOTA_NPC_Observer_Ward,
@@ -66,27 +60,24 @@
                 return;
             }
 
-            var item = manager.GetMyItems(ItemUtils.StoredPlace.Inventory)
-                .Where(
-                    x => (!tangos.Contains(x.Id) || manager.MyMissingHealth > menu.TangoHpThreshold)
-                         && menu.IsAbilityEnabled(x.StoredName()) && x.CanBeCasted())
-                .OrderByDescending(x => menu.GetAbilityPriority(x.StoredName()))
-                .FirstOrDefault();
-
-            if (item == null)
-            {
-                return;
-            }
-
             var ward = ObjectManager.GetEntitiesParallel<Unit>()
                 .FirstOrDefault(
                     x => x.IsValid && wards.Contains(x.ClassId) && x.IsAlive && x.Team != manager.MyTeam
                          && x.Distance2D(manager.MyHero) <= castRangeOnWards);
 
-            if (ward != null)
+            if (ward == null)
             {
-                item.UseAbility(ward);
+                return;
             }
+
+            var item = manager.GetMyItems(ItemUtils.StoredPlace.Inventory)
+                .Where(
+                    x => (!x.IsTango() || manager.MyMissingHealth > menu.TangoHpThreshold)
+                         && menu.IsAbilityEnabled(x.StoredName()) && x.CanBeCasted())
+                .OrderByDescending(x => menu.GetAbilityPriority(x.StoredName()))
+                .FirstOrDefault();
+
+            item?.UseAbility(ward);
         }
     }
 }

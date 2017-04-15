@@ -195,5 +195,10 @@
 
             return itemFlags.HasFlag(shopFlags);
         }
+
+        public static bool IsTango(this Item item)
+        {
+            return item.Id == AbilityId.item_tango_single || item.Id == AbilityId.item_tango;
+        }
     }
 }
