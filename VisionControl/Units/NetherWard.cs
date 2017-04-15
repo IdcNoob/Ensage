@@ -35,8 +35,6 @@
             }
         }
 
-        private static MenuManager Menu => Variables.Menu;
-
         public float Duration { get; }
 
         public float EndTime { get; }
@@ -58,5 +56,7 @@
         public DotaTexture Texture { get; }
 
         public Vector2 TextureSize { get; set; }
+
+        private static MenuManager Menu => Variables.Menu;
     }
 }

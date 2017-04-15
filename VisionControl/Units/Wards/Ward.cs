@@ -33,10 +33,6 @@
             }
         }
 
-        protected static MenuManager Menu => Variables.Menu;
-
-        protected Unit Unit { get; set; }
-
         public float Duration { get; protected set; }
 
         public float EndTime { get; protected set; }
@@ -51,6 +47,8 @@
 
         public float Radius { get; protected set; }
 
+        public bool RequiresUpdate { get; private set; }
+
         public bool ShowTexture => RequiresUpdate || !Unit.IsVisible;
 
         public virtual bool ShowTimer => RequiresUpdate || !Unit.IsVisible;
@@ -59,11 +57,18 @@
 
         public Vector2 TextureSize { get; set; }
 
-        public bool RequiresUpdate { get; private set; }
+        protected static MenuManager Menu => Variables.Menu;
+
+        protected Unit Unit { get; set; }
 
         public float Distance(Entity unit)
         {
             return Position.Distance2D(unit);
+        }
+
+        public float Distance(Vector3 position)
+        {
+            return Unit?.Distance2D(position) ?? Position.Distance2D(position);
         }
 
         public virtual void UpdateData(Unit unit)
@@ -74,11 +79,6 @@
             EndTime = Game.RawGameTime + Duration;
             RequiresUpdate = false;
             Handle = unit.Handle;
-        }
-
-        public float Distance(Vector3 position)
-        {
-            return Unit?.Distance2D(position) ?? Position.Distance2D(position);
         }
     }
 }

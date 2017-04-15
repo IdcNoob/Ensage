@@ -27,10 +27,6 @@
             Texture = Drawing.GetTexture("materials/ensage_ui/other/npc_dota_techies_remote_mine");
         }
 
-        protected static MenuManager Menu => Variables.Menu;
-
-        protected Unit Unit { get; set; }
-
         public float Duration { get; protected set; }
 
         public float EndTime { get; protected set; }
@@ -52,5 +48,9 @@
         public DotaTexture Texture { get; protected set; }
 
         public Vector2 TextureSize { get; set; }
+
+        protected static MenuManager Menu => Variables.Menu;
+
+        protected Unit Unit { get; set; }
     }
 }

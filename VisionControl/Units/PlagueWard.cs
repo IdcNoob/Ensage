@@ -35,15 +35,13 @@
             }
         }
 
-        public bool IsVisible => unit.IsVisible;
-
-        private static MenuManager Menu => Variables.Menu;
-
         public float Duration { get; }
 
         public float EndTime { get; }
 
         public uint Handle { get; }
+
+        public bool IsVisible => unit.IsVisible;
 
         public ParticleEffect ParticleEffect { get; }
 
@@ -60,5 +58,7 @@
         public DotaTexture Texture { get; }
 
         public Vector2 TextureSize { get; set; }
+
+        private static MenuManager Menu => Variables.Menu;
     }
 }

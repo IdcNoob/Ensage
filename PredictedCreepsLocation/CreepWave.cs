@@ -16,9 +16,9 @@
 
         private const int SpeedMin = 243;
 
-        private readonly float timeAdded;
-
         public List<Creep> Creeps = new List<Creep>();
+
+        private readonly float timeAdded;
 
         private bool speedUpdated;
 

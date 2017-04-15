@@ -32,10 +32,11 @@
 
         public void DrawingOnEndScene()
         {
-            if (!menuManager.ShowOnMinimapEnabled)
+            if (Drawing.Direct3DDevice9 == null || !menuManager.ShowOnMinimapEnabled)
             {
                 return;
             }
+
             foreach (var wave in creepWaves.Where(x => !x.IsVisible()))
             {
                 var minimapSize = menuManager.ShowOnMinimapSize;
@@ -140,22 +141,26 @@
         {
             hero = ObjectManager.LocalHero;
             heroTeam = hero.Team;
-            textFont = new Font(
-                Drawing.Direct3DDevice9,
-                new FontDescription
-                {
-                    FaceName = "Tahoma",
-                    Height = menuManager.ShowOnMinimapSize,
-                    OutputPrecision = FontPrecision.Raster,
-                    Quality = FontQuality.ClearTypeNatural,
-                    CharacterSet = FontCharacterSet.Hangul,
-                    MipLevels = 3,
-                    PitchAndFamily = FontPitchAndFamily.Modern,
-                    Weight = FontWeight.Medium,
-                    Width = menuManager.ShowOnMinimapSize / 2
-                });
             creepsData = new CreepsData(heroTeam);
             sleeper = new MultiSleeper();
+
+            if (Drawing.RenderMode == RenderMode.Dx9)
+            {
+                textFont = new Font(
+                    Drawing.Direct3DDevice9,
+                    new FontDescription
+                    {
+                        FaceName = "Tahoma",
+                        Height = menuManager.ShowOnMinimapSize,
+                        OutputPrecision = FontPrecision.Raster,
+                        Quality = FontQuality.ClearTypeNatural,
+                        CharacterSet = FontCharacterSet.Hangul,
+                        MipLevels = 3,
+                        PitchAndFamily = FontPitchAndFamily.Modern,
+                        Weight = FontWeight.Medium,
+                        Width = menuManager.ShowOnMinimapSize / 2
+                    });
+            }
         }
 
         public void OnPostReset()

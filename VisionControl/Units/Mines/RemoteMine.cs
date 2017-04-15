@@ -41,11 +41,11 @@
             Initialize();
         }
 
+        public bool RequiresUpdate { get; private set; }
+
         public override bool ShowTexture => RequiresUpdate || !Unit.IsVisible;
 
         public override bool ShowTimer => showTimer && (RequiresUpdate || !Unit.IsVisible);
-
-        public bool RequiresUpdate { get; private set; }
 
         public float Distance(Entity unit)
         {
