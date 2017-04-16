@@ -35,7 +35,7 @@
             if (time > lastPing + delay * 60)
             {
                 if (ObjectManager.GetEntities<Unit>()
-                    .Any(x => (x.ClassId == ClassId.CDOTA_NPC_Observer_Ward && x.Team == team) || (x.ClassId == ClassId.CDOTA_NPC_Treant_EyesInTheForest && x.Team == team)))
+                    .Any(x => x.ClassId == ClassId.CDOTA_NPC_Observer_Ward && x.Team == team || x.ClassId == ClassId.CDOTA_NPC_Treant_EyesInTheForest && x.Team == team))
                 {
                     return false;
                 }
