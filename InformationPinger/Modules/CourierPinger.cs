@@ -34,7 +34,7 @@
 
             if (time > lastPing + delay * 60)
             {
-                if (ObjectManager.GetEntities<Courier>().Any(x => x.IsFlying && x.Team == team))
+                if (ObjectManager.GetEntitiesParallel<Courier>().Any(x => x.IsFlying && x.Team == team))
                 {
                     return false;
                 }

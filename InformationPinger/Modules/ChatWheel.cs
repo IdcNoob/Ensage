@@ -7,28 +7,15 @@
 
     internal class ChatWheel
     {
-        public enum Phrase
-        {
-            NeedWards = 3,
-
-            UpgradeCourier = 40,
-
-            Roshan = 53,
-
-            CurrentTime = 57,
-
-            CheckRunes = 58,
-        }
-
         private readonly Random random = new Random();
 
-        public void Say(Phrase say, bool sayTime = false)
+        public void Say(ChatWheelMessage message, bool sayTime = false)
         {
-            Game.ExecuteCommand("chatwheel_say " + (int)say);
+            Network.ChatWheel(message);
 
             if (sayTime)
             {
-                DelayAction.Add(250, () => Game.ExecuteCommand("chatwheel_say " + (int)Phrase.CurrentTime));
+                DelayAction.Add(250, () => Network.ChatWheel(ChatWheelMessage.Current_Time));
                 Variables.Sleeper.Sleep(random.Next(3111, 3333), "CanPing");
             }
             else

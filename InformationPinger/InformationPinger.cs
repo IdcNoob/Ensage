@@ -129,7 +129,7 @@
 
             if (roshanPinger.RoshanKilled && menu.RoshanKillTimeEnabled)
             {
-                chatWheel.Say(ChatWheel.Phrase.Roshan, true);
+                chatWheel.Say(ChatWheelMessage.Roshan, true);
                 roshanPinger.RoshanKilled = false;
                 return;
             }
@@ -138,19 +138,19 @@
                 && (menu.RuneAutoDisableTime == 0 || Game.GameTime / 60 <= menu.RuneAutoDisableTime)
                 && runePinger.TimeToSpawn(menu.RuneReminderTime))
             {
-                chatWheel.Say(ChatWheel.Phrase.CheckRunes, true);
+                chatWheel.Say(ChatWheelMessage.Check_Runes, true);
                 return;
             }
 
             if (wardPinger.ShouldRemind(menu.WardsDelay) && menu.WardsReminderEnabled)
             {
-                chatWheel.Say(ChatWheel.Phrase.NeedWards);
+                chatWheel.Say(ChatWheelMessage.NeedWards);
                 return;
             }
 
             if (courierPinger.ShouldRemind(menu.CourierUpgradeDelay) && menu.CourierUpgradeReminder)
             {
-                chatWheel.Say(ChatWheel.Phrase.UpgradeCourier);
+                chatWheel.Say(ChatWheelMessage.Upgrade_Courier);
                 return;
             }
         }

@@ -34,8 +34,14 @@
 
             if (time > lastPing + delay * 60)
             {
-                if (ObjectManager.GetEntities<Unit>()
+                if (ObjectManager.GetEntitiesParallel<Unit>()
                     .Any(x => x.ClassId == ClassId.CDOTA_NPC_Observer_Ward && x.Team == team))
+                {
+                    return false;
+                }
+
+                if (ObjectManager.GetEntitiesParallel<Unit>()
+                        .Count(x => x.ClassId == ClassId.CDOTA_NPC_Treant_EyesInTheForest && x.Team == team) >= 5)
                 {
                     return false;
                 }
