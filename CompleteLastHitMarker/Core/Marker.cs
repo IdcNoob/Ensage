@@ -82,12 +82,12 @@
 
         private void OnAddEntity(EntityEventArgs args)
         {
-            var creep = args.Entity as Creep;
-            if (creep != null && creep.IsValid && killableUnits.All(x => x.Handle != args.Entity.Handle))
-            {
-                killableUnits.Add(new KillableCreep(creep));
-                return;
-            }
+            //var creep = args.Entity as Creep;
+            //if (creep != null && creep.IsValid && killableUnits.All(x => x.Handle != args.Entity.Handle))
+            //{
+            //    killableUnits.Add(new KillableCreep(creep));
+            //    return;
+            //}
 
             var item = args.Entity as Item;
             if (item != null && item.IsValid && item.Purchaser?.Hero?.Handle == hero.Handle)
@@ -273,11 +273,18 @@
                 return;
             }
 
-            sleeper.Sleep(1000);
+            sleeper.Sleep(750);
 
             if (!menu.IsEnabled || !hero.IsAlive)
             {
                 return;
+            }
+
+            //temp fix
+            foreach (var creep in ObjectManager.GetEntitiesParallel<Creep>()
+                .Where(x => x.IsValid && x.IsAlive && x.IsSpawned && killableUnits.All(z => z.Handle != x.Handle)))
+            {
+                killableUnits.Add(new KillableCreep(creep));
             }
 
             foreach (var unit in killableUnits.Where(x => x.IsValid() && x.Distance(hero) < 2000))
