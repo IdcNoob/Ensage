@@ -1,4 +1,4 @@
-﻿namespace ItemManager.Menus.Modules.AutoActions.Actions
+﻿namespace ItemManager.Menus.Modules.AutoActions.HpMpRestore
 {
     using Ensage.Common.Menu;
 
@@ -6,7 +6,7 @@
     {
         public AutoBottleMenu(Menu mainMenu)
         {
-            var menu = new Menu("AutoBottleMenu", "bottle");
+            var menu = new Menu("Bottle", "bottle");
 
             var autoSelfBottle = new MenuItem("autoBottleSelf", "Self bottle").SetValue(true);
             autoSelfBottle.SetTooltip("Auto bottle usage on self while at base");

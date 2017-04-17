@@ -13,17 +13,11 @@
             AutoHealsMenu = new AutoHealsMenu(menu);
             SoulRingMenu = new SoulRingMenu(menu);
             PowerTreadsMenu = new PowerTreadsMenu(menu);
-            AutoBottleMenu = new AutoBottleMenu(menu);
-            AutoArcaneBootsMenu = new AutoArcaneBootsMenu(menu);
             DewardingMenu = new DewardingMenu(menu);
             TechiesMinesDestroyerMenu = new TechiesMinesDestroyerMenu(menu);
 
             mainMenu.AddSubMenu(menu);
         }
-
-        public AutoArcaneBootsMenu AutoArcaneBootsMenu { get; }
-
-        public AutoBottleMenu AutoBottleMenu { get; }
 
         public AutoHealsMenu AutoHealsMenu { get; }
 

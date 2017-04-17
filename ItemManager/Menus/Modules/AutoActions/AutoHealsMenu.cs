@@ -2,18 +2,24 @@
 {
     using Ensage.Common.Menu;
 
-    using Heals;
+    using HpMpRestore;
 
     internal class AutoHealsMenu
     {
         public AutoHealsMenu(Menu rootMenu)
         {
-            var menu = new Menu("Heals", "autoHealUsage");
+            var menu = new Menu("HP/MP restore", "autoHealUsage");
 
+            AutoBottleMenu = new AutoBottleMenu(menu);
+            AutoArcaneBootsMenu = new AutoArcaneBootsMenu(menu);
             LivingArmorMenu = new LivingArmorMenu(menu);
 
             rootMenu.AddSubMenu(menu);
         }
+
+        public AutoArcaneBootsMenu AutoArcaneBootsMenu { get; }
+
+        public AutoBottleMenu AutoBottleMenu { get; }
 
         public LivingArmorMenu LivingArmorMenu { get; }
     }

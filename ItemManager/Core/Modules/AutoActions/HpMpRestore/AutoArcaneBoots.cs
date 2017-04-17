@@ -1,4 +1,4 @@
-﻿namespace ItemManager.Core.Modules.AutoActions
+﻿namespace ItemManager.Core.Modules.AutoActions.HpMpRestore
 {
     using System;
     using System.Linq;
@@ -15,7 +15,7 @@
     using EventArgs;
 
     using Menus;
-    using Menus.Modules.AutoActions.Actions;
+    using Menus.Modules.AutoActions.HpMpRestore;
 
     [Module]
     internal class AutoArcaneBoots : IDisposable
@@ -35,7 +35,7 @@
         public AutoArcaneBoots(Manager manager, MenuManager menu)
         {
             this.manager = manager;
-            this.menu = menu.AutoActionsMenu.AutoArcaneBootsMenu;
+            this.menu = menu.AutoActionsMenu.AutoHealsMenu.AutoArcaneBootsMenu;
 
             manager.OnItemAdd += OnItemAdd;
             manager.OnItemRemove += OnItemRemove;

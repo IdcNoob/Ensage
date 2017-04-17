@@ -1,4 +1,4 @@
-﻿namespace ItemManager.Core.Modules.AutoActions
+﻿namespace ItemManager.Core.Modules.AutoActions.HpMpRestore
 {
     using System;
     using System.Linq;
@@ -14,7 +14,7 @@
     using EventArgs;
 
     using Menus;
-    using Menus.Modules.AutoActions.Actions;
+    using Menus.Modules.AutoActions.HpMpRestore;
     using Menus.Modules.Recovery;
 
     using SharpDX;
@@ -41,7 +41,7 @@
         public AutoBottle(Manager manager, MenuManager menu)
         {
             this.manager = manager;
-            this.menu = menu.AutoActionsMenu.AutoBottleMenu;
+            this.menu = menu.AutoActionsMenu.AutoHealsMenu.AutoBottleMenu;
             recoveryMenu = menu.RecoveryMenu;
 
             fountain = ObjectManager.GetEntities<Unit>()
@@ -93,7 +93,7 @@
                 {
                     if (args.Ability.IsAbilityBehavior(AbilityBehavior.Channeled))
                     {
-                        sleeper.Sleep(500, this);
+                        sleeper.Sleep(1000, this);
                     }
                     break;
                 }

@@ -1,4 +1,4 @@
-﻿namespace ItemManager.Menus.Modules.AutoActions.Heals
+﻿namespace ItemManager.Menus.Modules.AutoActions.HpMpRestore
 {
     using Ensage.Common.Menu;
 

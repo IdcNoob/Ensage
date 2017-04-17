@@ -1,4 +1,4 @@
-﻿namespace ItemManager.Core.Modules.AutoActions.AutoHeals
+﻿namespace ItemManager.Core.Modules.AutoActions.HpMpRestore
 {
     using System;
     using System.Linq;
@@ -12,7 +12,7 @@
     using EventArgs;
 
     using Menus;
-    using Menus.Modules.AutoActions.Heals;
+    using Menus.Modules.AutoActions.HpMpRestore;
 
     using Utils;
 
