@@ -98,7 +98,7 @@
                                 x => x.IsAlive && !x.IsIllusion && x.Distance2D(hero) <= menu.HeroEnemySearchRange
                                      && x.Team != manager.MyTeam && !x.HasModifier(LivingArmorModifier)))
                     {
-                        PrintMessage(hero.GetRealName());
+                        PrintMessage(hero);
                         livingArmor.UseAbility(hero);
                         sleeper.Sleep(1000);
                         return;
@@ -116,7 +116,7 @@
 
                 if (tower != null)
                 {
-                    PrintMessage(tower.Name);
+                    PrintMessage(tower);
                     livingArmor.UseAbility(tower);
                     sleeper.Sleep(1000);
                     return;
@@ -138,7 +138,7 @@
 
                     if (creep != null)
                     {
-                        PrintMessage(creep.Name);
+                        PrintMessage(creep);
                         livingArmor.UseAbility(creep);
                         sleeper.Sleep(1000);
                         return;
@@ -154,20 +154,20 @@
 
                 if (lowHpCreep != null)
                 {
-                    PrintMessage(lowHpCreep.Name);
+                    PrintMessage(lowHpCreep);
                     livingArmor.UseAbility(lowHpCreep);
                     sleeper.Sleep(1000);
                 }
             }
         }
 
-        private void PrintMessage(string name)
+        private void PrintMessage(Entity entity)
         {
             if (menu.IsEnabledNotification)
             {
                 Game.PrintMessage(
                     "<font face='Verdana' color='#ff7700'>[</font>Item Manager<font face='Verdana' color='#ff7700'>]</font>"
-                    + " Living armor => " + name);
+                    + " Living armor => " + Game.Localize(entity.Name));
             }
         }
     }

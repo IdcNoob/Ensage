@@ -41,12 +41,9 @@
             "modifier_item_urn_heal",
             "modifier_flask_healing",
             "modifier_bottle_regeneration",
-            "modifier_voodoo_restoration_heal",
-            "modifier_tango_heal",
             "modifier_enchantress_natures_attendants",
             "modifier_oracle_purifying_flames",
             "modifier_warlock_shadow_word",
-            "modifier_treant_living_armor",
             "modifier_filler_heal",
             // invis
             "modifier_invisible",
