@@ -79,7 +79,7 @@
 
         public Team MyTeam { get; }
 
-        //public List<Unit> Units { get; } = new List<Unit>();
+        public List<Unit> Units { get; } = new List<Unit>();
 
         public List<UsableAbility> UsableAbilities { get; } = new List<UsableAbility>();
 
@@ -91,7 +91,7 @@
             MyAbilities.Clear();
             MyItems.Clear();
             addedEntities.Clear();
-            //Units.Clear();
+            Units.Clear();
             types.Clear();
             DroppedItems.Clear();
         }
@@ -273,6 +273,11 @@
             return null;
         }
 
+        public bool MyHeroCanUseAbilities()
+        {
+            return MyHero.IsAlive && MyHero.CanCast() && !MyHero.IsChanneling() && !MyHero.IsInvisible();
+        }
+
         public bool MyHeroCanUseItems()
         {
             return MyHero.IsAlive && MyHero.CanUseItems() && !MyHero.IsChanneling() && !MyHero.IsInvisible();
@@ -338,7 +343,10 @@
 
         private void AddCurrentObjects()
         {
-            foreach (var hero in ObjectManager.GetEntities<Player>().Where(x => x?.Hero != null).Select(x => x.Hero))
+            foreach (var hero in ObjectManager.GetEntities<Player>()
+                .Where(x => x?.Hero != null)
+                .Select(x => x.Hero)
+                .OrderByDescending(x => x.Team == MyTeam))
             {
                 OnAddEntity(new EntityEventArgs(hero));
 
@@ -404,9 +412,9 @@
             }
 
             var unit = args.Entity as Unit;
-            if (unit != null && unit.IsValid)
+            if (unit != null && unit.IsValid && unit.IsRealUnit())
             {
-                // Units.Add(unit);
+                Units.Add(unit);
                 OnUnitAdd?.Invoke(null, new UnitEventArgs(unit));
             }
         }
@@ -453,9 +461,9 @@
             }
 
             var unit = args.Entity as Unit;
-            if (unit != null && unit.IsValid)
+            if (unit != null && unit.IsValid && unit.IsRealUnit())
             {
-                //Units.Remove(unit);
+                Units.Remove(unit);
                 OnUnitRemove?.Invoke(null, new UnitEventArgs(unit));
             }
         }

@@ -10,6 +10,7 @@
         {
             var menu = new Menu("Auto actions", "autoUsage");
 
+            AutoHealsMenu = new AutoHealsMenu(menu);
             SoulRingMenu = new SoulRingMenu(menu);
             PowerTreadsMenu = new PowerTreadsMenu(menu);
             AutoBottleMenu = new AutoBottleMenu(menu);
@@ -23,6 +24,8 @@
         public AutoArcaneBootsMenu AutoArcaneBootsMenu { get; }
 
         public AutoBottleMenu AutoBottleMenu { get; }
+
+        public AutoHealsMenu AutoHealsMenu { get; }
 
         public DewardingMenu DewardingMenu { get; }
 

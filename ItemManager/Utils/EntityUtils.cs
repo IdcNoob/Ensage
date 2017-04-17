@@ -4,6 +4,11 @@
 
     internal static class EntityUtils
     {
+        public static float HealthPercentage(this Entity entity)
+        {
+            return (float)entity.Health / entity.MaximumHealth * 100;
+        }
+
         public static bool IsTechiesMine(this Entity entity)
         {
             return entity.ClassId == ClassId.CDOTA_NPC_TechiesMines;

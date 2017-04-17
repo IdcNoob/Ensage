@@ -63,6 +63,7 @@
     <Compile Include="Core\Modules\AutoActions\AutoArcaneBoots.cs" />
     <Compile Include="Core\Modules\AutoActions\AutoBottle.cs" />
     <Compile Include="Core\Modules\AutoActions\AutoDewarding.cs" />
+    <Compile Include="Core\Modules\AutoActions\AutoHeals\LivingArmor.cs" />
     <Compile Include="Core\Modules\AutoActions\PowerTreadsSwitcher.cs" />
     <Compile Include="Core\Modules\AutoActions\AutoSoulRing.cs" />
     <Compile Include="Core\Modules\AutoActions\TechiesMinesDestroyer.cs" />
@@ -90,6 +91,8 @@
     <Compile Include="Menus\Modules\AutoActions\Actions\AutoBottleMenu.cs" />
     <Compile Include="Menus\Modules\AutoActions\Actions\DewardingMenu.cs" />
     <Compile Include="Menus\Modules\AutoActions\Actions\TechiesMinesDestroyerMenu.cs" />
+    <Compile Include="Menus\Modules\AutoActions\AutoHealsMenu.cs" />
+    <Compile Include="Menus\Modules\AutoActions\Heals\LivingArmorMenu.cs" />
     <Compile Include="Menus\Modules\CourierHelper\CourierHelperMenu.cs" />
     <Compile Include="Menus\Modules\GoldSpender\GoldSpenderMenu.cs" />
     <Compile Include="Menus\Modules\ItemSwap\Auto.cs" />

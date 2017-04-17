@@ -7,6 +7,7 @@
 
     using Modules.AbilityHelper;
     using Modules.AutoActions;
+    using Modules.AutoActions.AutoHeals;
     using Modules.CourierHelper;
     using Modules.GoldSpender;
     using Modules.ItemSwapper;
@@ -50,6 +51,7 @@
             disposables.Add(new AutoArcaneBoots(manager, menu.AutoActionsMenu.AutoArcaneBootsMenu));
             disposables.Add(new AutoDewarding(manager, menu.AutoActionsMenu.DewardingMenu));
             disposables.Add(new TechiesMinesDestroyer(manager, menu.AutoActionsMenu.TechiesMinesDestroyerMenu));
+            disposables.Add(new LivingArmor(manager, menu.AutoActionsMenu.AutoHealsMenu.LivingArmorMenu));
         }
     }
 }

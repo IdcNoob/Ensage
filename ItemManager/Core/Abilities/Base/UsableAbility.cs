@@ -8,7 +8,7 @@
 
     using Utils;
 
-    internal class UsableAbility
+    internal abstract class UsableAbility
     {
         protected Ability Ability;
 
@@ -16,7 +16,7 @@
 
         protected Sleeper Sleeper = new Sleeper();
 
-        public UsableAbility(Ability ability, Manager manager)
+        protected UsableAbility(Ability ability, Manager manager)
         {
             Manager = manager;
             Ability = ability;

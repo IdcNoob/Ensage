@@ -65,7 +65,9 @@
         private void OnUnitAdd(object sender, UnitEventArgs unitEventArgs)
         {
             var hero = unitEventArgs.Unit as Hero;
-            if (hero != null && hero.HeroId == HeroId.npc_dota_hero_techies && hero.Team != manager.MyTeam)
+            if (hero != null && (hero.HeroId == HeroId.npc_dota_hero_techies && hero.Team != manager.MyTeam
+                                 || hero.HeroId == HeroId.npc_dota_hero_rubick && manager.Units.OfType<Hero>()
+                                     .Any(x => x.HeroId == HeroId.npc_dota_hero_techies && x.Team == manager.MyTeam)))
             {
                 manager.OnUnitAdd -= OnUnitAdd;
                 Game.OnUpdate += OnUpdate;
@@ -94,9 +96,6 @@
                          && x.Distance2D(manager.MyHero) <= 1000)
                 .ToList();
 
-            var item = manager.GetMyItems(ItemUtils.StoredPlace.Inventory)
-                .FirstOrDefault(x => usableItems.Contains(x.Id) && x.CanBeCasted());
-
             var canUseItems = manager.MyHero.CanUseItems();
             var attackRange = manager.MyHero.GetAttackRange();
 
@@ -106,6 +105,9 @@
 
                 if (canUseItems && mine.Health > 1 && distance <= chopRange)
                 {
+                    var item = manager.GetMyItems(ItemUtils.StoredPlace.Inventory)
+                        .FirstOrDefault(x => usableItems.Contains(x.Id) && x.CanBeCasted());
+
                     if (item != null)
                     {
                         item.UseAbility(mine);
