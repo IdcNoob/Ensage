@@ -5,14 +5,18 @@
 
     using Abilities;
 
+    using Attributes;
+
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects;
 
     using EventArgs;
 
+    using Menus;
     using Menus.Modules.AutoActions.Actions;
 
+    [Module]
     internal class AutoSoulRing : IDisposable
     {
         private readonly Manager manager;
@@ -25,10 +29,10 @@
 
         private bool subscribed;
 
-        public AutoSoulRing(Manager manager, SoulRingMenu menu)
+        public AutoSoulRing(Manager manager, MenuManager menu)
         {
             this.manager = manager;
-            this.menu = menu;
+            this.menu = menu.AutoActionsMenu.SoulRingMenu;
             order = new Order();
 
             manager.OnAbilityAdd += OnAbilityAdd;

@@ -8,14 +8,14 @@
         {
             var menu = new Menu("Ability helper", "abilityHelper");
 
-            Tranquil = new Tranquil(menu);
-            Blink = new Blink(menu);
+            TranquilMenu = new TranquilMenu(menu);
+            BlinkMenu = new BlinkMenu(menu);
 
             mainMenu.AddSubMenu(menu);
         }
 
-        public Blink Blink { get; }
+        public BlinkMenu BlinkMenu { get; }
 
-        public Tranquil Tranquil { get; }
+        public TranquilMenu TranquilMenu { get; }
     }
 }

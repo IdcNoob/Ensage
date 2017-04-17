@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using Attributes;
+
     using Controllables;
 
     using Ensage;
@@ -11,8 +13,10 @@
 
     using EventArgs;
 
+    using Menus;
     using Menus.Modules.Snatcher;
 
+    [Module]
     internal class Snatcher : IDisposable
     {
         private readonly List<Controllable> controllables = new List<Controllable>();
@@ -25,10 +29,10 @@
 
         private readonly MultiSleeper sleeper = new MultiSleeper();
 
-        public Snatcher(Manager manager, SnatcherMenu menu)
+        public Snatcher(Manager manager, MenuManager menu)
         {
             this.manager = manager;
-            this.menu = menu;
+            this.menu = menu.SnatcherMenu;
 
             controllables.Add(new MyHero(manager.MyHero));
 

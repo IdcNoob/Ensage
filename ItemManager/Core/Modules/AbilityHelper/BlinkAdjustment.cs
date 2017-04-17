@@ -3,22 +3,26 @@
     using System;
     using System.Linq;
 
+    using Attributes;
+
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Extensions.SharpDX;
 
+    using Menus;
     using Menus.Modules.AbilityHelper;
 
+    [Module]
     internal class BlinkAdjustment : IDisposable
     {
         private readonly Manager manager;
 
-        private readonly Blink menu;
+        private readonly BlinkMenu menu;
 
-        public BlinkAdjustment(Manager manager, Blink menu)
+        public BlinkAdjustment(Manager manager, MenuManager menu)
         {
             this.manager = manager;
-            this.menu = menu;
+            this.menu = menu.AbilityHelperMenu.BlinkMenu;
 
             Player.OnExecuteOrder += OnExecuteOrder;
         }

@@ -6,6 +6,8 @@
 
     using Abilities;
 
+    using Attributes;
+
     using Ensage;
     using Ensage.Common.AbilityInfo;
     using Ensage.Common.Extensions;
@@ -14,11 +16,13 @@
 
     using EventArgs;
 
+    using Menus;
     using Menus.Modules.AutoActions.Actions;
     using Menus.Modules.Recovery;
 
     using Attribute = Ensage.Attribute;
 
+    [Module]
     internal class PowerTreadsSwitcher : IDisposable
     {
         private readonly List<string> activeDelaySwitchModifiers = new List<string>();
@@ -75,11 +79,11 @@
 
         private bool subscribed;
 
-        public PowerTreadsSwitcher(Manager manager, PowerTreadsMenu menu, RecoveryMenu recoveryMenu)
+        public PowerTreadsSwitcher(Manager manager, MenuManager menu)
         {
             this.manager = manager;
-            this.menu = menu;
-            this.recoveryMenu = recoveryMenu;
+            this.menu = menu.AutoActionsMenu.PowerTreadsMenu;
+            recoveryMenu = menu.RecoveryMenu;
 
             order = new Order();
 

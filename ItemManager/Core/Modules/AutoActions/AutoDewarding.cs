@@ -3,15 +3,19 @@
     using System;
     using System.Linq;
 
+    using Attributes;
+
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects;
     using Ensage.Common.Objects.UtilityObjects;
 
+    using Menus;
     using Menus.Modules.AutoActions.Actions;
 
     using Utils;
 
+    [Module]
     internal class AutoDewarding : IDisposable
     {
         private readonly float chopRange;
@@ -22,10 +26,10 @@
 
         private readonly Sleeper sleeper = new Sleeper();
 
-        public AutoDewarding(Manager manager, DewardingMenu menu)
+        public AutoDewarding(Manager manager, MenuManager menu)
         {
             this.manager = manager;
-            this.menu = menu;
+            this.menu = menu.AutoActionsMenu.DewardingMenu;
 
             chopRange = Ability.GetAbilityDataById(AbilityId.item_quelling_blade)
                 .AbilitySpecialData.First(x => x.Name == "cast_range_ward")

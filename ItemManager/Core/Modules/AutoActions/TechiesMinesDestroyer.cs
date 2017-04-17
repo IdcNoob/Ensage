@@ -4,16 +4,20 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using Attributes;
+
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
 
     using EventArgs;
 
+    using Menus;
     using Menus.Modules.AutoActions.Actions;
 
     using Utils;
 
+    [Module]
     internal class TechiesMinesDestroyer : IDisposable
     {
         private readonly Sleeper block = new Sleeper();
@@ -33,10 +37,10 @@
             AbilityId.item_bfury
         };
 
-        public TechiesMinesDestroyer(Manager manager, TechiesMinesDestroyerMenu menu)
+        public TechiesMinesDestroyer(Manager manager, MenuManager menu)
         {
             this.manager = manager;
-            this.menu = menu;
+            this.menu = menu.AutoActionsMenu.TechiesMinesDestroyerMenu;
 
             chopRange = Ability.GetAbilityDataById(AbilityId.item_quelling_blade)
                 .AbilitySpecialData.First(x => x.Name == "cast_range_ward")

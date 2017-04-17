@@ -5,12 +5,15 @@
 
     using Abilities;
 
+    using Attributes;
+
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
 
     using EventArgs;
 
+    using Menus;
     using Menus.Modules.AutoActions.Actions;
     using Menus.Modules.Recovery;
 
@@ -18,6 +21,7 @@
 
     using Utils;
 
+    [Module]
     internal class AutoBottle : IDisposable
     {
         private readonly Vector3 fountain;
@@ -34,11 +38,11 @@
 
         private bool subscribed;
 
-        public AutoBottle(Manager manager, AutoBottleMenu menu, RecoveryMenu recoveryMenu)
+        public AutoBottle(Manager manager, MenuManager menu)
         {
             this.manager = manager;
-            this.menu = menu;
-            this.recoveryMenu = recoveryMenu;
+            this.menu = menu.AutoActionsMenu.AutoBottleMenu;
+            recoveryMenu = menu.RecoveryMenu;
 
             fountain = ObjectManager.GetEntities<Unit>()
                 .First(x => x.ClassId == ClassId.CDOTA_Unit_Fountain && x.Team == manager.MyTeam)

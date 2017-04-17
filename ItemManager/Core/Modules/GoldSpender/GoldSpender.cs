@@ -4,6 +4,8 @@ namespace ItemManager.Core.Modules.GoldSpender
     using System.Collections.Generic;
     using System.Linq;
 
+    using Attributes;
+
     using Ensage;
     using Ensage.Common;
     using Ensage.Common.Extensions;
@@ -11,10 +13,12 @@ namespace ItemManager.Core.Modules.GoldSpender
 
     using EventArgs;
 
+    using Menus;
     using Menus.Modules.GoldSpender;
 
     using Utils;
 
+    [Module]
     internal class GoldSpender : IDisposable
     {
         private readonly List<Courier> couriers = new List<Courier>();
@@ -29,10 +33,10 @@ namespace ItemManager.Core.Modules.GoldSpender
 
         private readonly Sleeper sleeper = new Sleeper();
 
-        public GoldSpender(Manager manager, GoldSpenderMenu menu)
+        public GoldSpender(Manager manager, MenuManager menu)
         {
-            this.menu = menu;
             this.manager = manager;
+            this.menu = menu.GoldSpenderMenu;
             enemyTeam = manager.MyHero.GetEnemyTeam();
 
             Game.OnUpdate += OnUpdate;

@@ -3,32 +3,36 @@
     using System;
     using System.Linq;
 
+    using Attributes;
+
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
 
     using EventArgs;
 
+    using Menus;
     using Menus.Modules.AbilityHelper;
 
     using Utils;
 
+    [Module]
     internal class TranquilDrop : IDisposable
     {
         private readonly Manager manager;
 
-        private readonly Tranquil menu;
+        private readonly TranquilMenu menu;
 
         private readonly Sleeper sleeper = new Sleeper();
 
         private bool subscribed;
 
-        public TranquilDrop(Manager manager, Tranquil menu)
+        public TranquilDrop(Manager manager, MenuManager menu)
         {
             this.manager = manager;
-            this.menu = menu;
+            this.menu = menu.AbilityHelperMenu.TranquilMenu;
 
-            menu.OnTranquilDrop += OnTranquilDrop;
+            this.menu.OnTranquilDrop += OnTranquilDrop;
         }
 
         public void Dispose()

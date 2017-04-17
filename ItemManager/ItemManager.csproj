@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\AbilityAttribute.cs" />
+    <Compile Include="Attributes\ModuleAttribute.cs" />
     <Compile Include="Core\Abilities\GuardianGreaves.cs" />
     <Compile Include="Core\Abilities\MagicStick.cs" />
     <Compile Include="Core\Abilities\Mekansm.cs" />
@@ -83,8 +84,8 @@
     <Compile Include="EventArgs\ItemEventArgs.cs" />
     <Compile Include="EventArgs\UnitEventArgs.cs" />
     <Compile Include="Menus\Modules\AbilityHelper\AbilityHelperMenu.cs" />
-    <Compile Include="Menus\Modules\AbilityHelper\Blink.cs" />
-    <Compile Include="Menus\Modules\AbilityHelper\Tranquil.cs" />
+    <Compile Include="Menus\Modules\AbilityHelper\BlinkMenu.cs" />
+    <Compile Include="Menus\Modules\AbilityHelper\TranquilMenu.cs" />
     <Compile Include="Menus\Modules\AutoActions\Actions\AutoArcaneBootsMenu.cs" />
     <Compile Include="Menus\Modules\AutoActions\AutoActionsMenu.cs" />
     <Compile Include="Core\Modules\AutoActions\Order.cs" />

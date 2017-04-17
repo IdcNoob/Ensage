@@ -3,23 +3,27 @@
     using System;
     using System.Linq;
 
+    using Attributes;
+
     using Ensage;
     using Ensage.Common.Extensions;
 
+    using Menus;
     using Menus.Modules.ShrineHelper;
 
     using Utils;
 
+    [Module]
     internal class ShrineHelper : IDisposable
     {
         private readonly Manager manager;
 
         private readonly ShrineHelperMenu menu;
 
-        public ShrineHelper(Manager manager, ShrineHelperMenu shrineHelperMenu)
+        public ShrineHelper(Manager manager, MenuManager menu)
         {
             this.manager = manager;
-            menu = shrineHelperMenu;
+            this.menu = menu.ShrineHelperMenu;
 
             Player.OnExecuteOrder += OnExecuteOrder;
             Unit.OnModifierAdded += OnModifierAdded;

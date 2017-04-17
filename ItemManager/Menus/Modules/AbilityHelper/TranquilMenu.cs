@@ -6,9 +6,9 @@
 
     using EventArgs;
 
-    internal class Tranquil
+    internal class TranquilMenu
     {
-        public Tranquil(Menu mainMenu)
+        public TranquilMenu(Menu mainMenu)
         {
             var menu = new Menu("Tranquil boots", "tranquilDrop");
 

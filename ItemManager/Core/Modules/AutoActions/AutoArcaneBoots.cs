@@ -5,6 +5,8 @@
 
     using Abilities;
 
+    using Attributes;
+
     using Ensage;
     using Ensage.Common;
     using Ensage.Common.Extensions;
@@ -12,8 +14,10 @@
 
     using EventArgs;
 
+    using Menus;
     using Menus.Modules.AutoActions.Actions;
 
+    [Module]
     internal class AutoArcaneBoots : IDisposable
     {
         private readonly Manager manager;
@@ -28,10 +32,10 @@
 
         private bool subscribed;
 
-        public AutoArcaneBoots(Manager manager, AutoArcaneBootsMenu menu)
+        public AutoArcaneBoots(Manager manager, MenuManager menu)
         {
             this.manager = manager;
-            this.menu = menu;
+            this.menu = menu.AutoActionsMenu.AutoArcaneBootsMenu;
 
             manager.OnItemAdd += OnItemAdd;
             manager.OnItemRemove += OnItemRemove;

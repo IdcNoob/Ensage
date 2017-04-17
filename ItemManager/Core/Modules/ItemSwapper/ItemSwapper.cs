@@ -5,17 +5,21 @@
     using System.Linq;
     using System.Threading.Tasks;
 
+    using Attributes;
+
     using Ensage;
     using Ensage.Common.Extensions;
 
     using EventArgs;
 
+    using Menus;
     using Menus.Modules.ItemSwap;
 
     using Utils;
 
     using Courier = Ensage.Courier;
 
+    [Module]
     internal class ItemSwapper : IDisposable
     {
         private readonly List<Courier> couriers = new List<Courier>();
@@ -26,10 +30,10 @@
 
         private bool courierSwapActive;
 
-        public ItemSwapper(Manager manager, ItemSwapMenu menu)
+        public ItemSwapper(Manager manager, MenuManager menu)
         {
             this.manager = manager;
-            this.menu = menu;
+            this.menu = menu.ItemSwapMenu;
 
             this.menu.Backpack.OnSwap += BackpackOnSwap;
             this.menu.Stash.OnSwap += StashOnSwap;

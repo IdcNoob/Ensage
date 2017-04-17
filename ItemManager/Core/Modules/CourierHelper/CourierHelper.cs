@@ -5,15 +5,19 @@
     using System.Linq;
     using System.Threading.Tasks;
 
+    using Attributes;
+
     using Ensage;
     using Ensage.Common.Extensions;
 
     using EventArgs;
 
+    using Menus;
     using Menus.Modules.CourierHelper;
 
     using Utils;
 
+    [Module]
     internal class CourierHelper : IDisposable
     {
         private readonly List<Courier> couriers = new List<Courier>();
@@ -24,10 +28,10 @@
 
         private bool bottleAbuseActive;
 
-        public CourierHelper(Manager manager, CourierHelperMenu menu)
+        public CourierHelper(Manager manager, MenuManager menu)
         {
             this.manager = manager;
-            this.menu = menu;
+            this.menu = menu.CourierHelperMenu;
 
             Entity.OnInt32PropertyChange += OnInt32PropertyChange;
             this.menu.OnBottleAbuse += OnBottleAbuse;

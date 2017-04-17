@@ -2,9 +2,9 @@
 {
     using Ensage.Common.Menu;
 
-    internal class Blink
+    internal class BlinkMenu
     {
-        public Blink(Menu mainMenu)
+        public BlinkMenu(Menu mainMenu)
         {
             var menu = new Menu("Blink dagger", "blinkAdjustment");
 

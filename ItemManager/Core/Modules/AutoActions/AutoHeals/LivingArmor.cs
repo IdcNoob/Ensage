@@ -3,16 +3,20 @@
     using System;
     using System.Linq;
 
+    using Attributes;
+
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
 
     using EventArgs;
 
+    using Menus;
     using Menus.Modules.AutoActions.Heals;
 
     using Utils;
 
+    [Module]
     internal class LivingArmor : IDisposable
     {
         private const string LivingArmorModifier = "modifier_treant_living_armor";
@@ -27,10 +31,10 @@
 
         private bool subscribed;
 
-        public LivingArmor(Manager manager, LivingArmorMenu menu)
+        public LivingArmor(Manager manager, MenuManager menu)
         {
             this.manager = manager;
-            this.menu = menu;
+            this.menu = menu.AutoActionsMenu.AutoHealsMenu.LivingArmorMenu;
 
             manager.OnAbilityAdd += OnAbilityAdd;
             manager.OnAbilityRemove += OnAbilityRemove;

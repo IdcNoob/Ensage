@@ -7,17 +7,21 @@
     using Abilities;
     using Abilities.Interfaces;
 
+    using Attributes;
+
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
 
     using EventArgs;
 
+    using Menus;
     using Menus.Modules.AbilityHelper;
     using Menus.Modules.Recovery;
 
     using Utils;
 
+    [Module]
     internal class RecoveryAbuse : IDisposable
     {
         private readonly Manager manager;
@@ -26,20 +30,20 @@
 
         private readonly MultiSleeper sleeper = new MultiSleeper();
 
-        private readonly Tranquil tranquilDropMenu;
+        private readonly TranquilMenu tranquilDropMenu;
 
         private bool usingItems;
 
-        public RecoveryAbuse(Manager manager, RecoveryMenu menu, Tranquil tranquilDropMenu)
+        public RecoveryAbuse(Manager manager, MenuManager menu)
         {
             this.manager = manager;
-            this.menu = menu;
-            this.tranquilDropMenu = tranquilDropMenu;
+            this.menu = menu.RecoveryMenu;
+            tranquilDropMenu = menu.AbilityHelperMenu.TranquilMenu;
 
             Game.OnUpdate += OnUpdate;
             Player.OnExecuteOrder += OnExecuteOrder;
 
-            menu.OnAbuseChange += OnAbuseChange;
+            this.menu.OnAbuseChange += OnAbuseChange;
         }
 
         public void Dispose()
