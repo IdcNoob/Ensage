@@ -46,7 +46,6 @@
 
             Game.OnUpdate += OnUpdate;
             Player.OnExecuteOrder += OnExecuteOrder;
-
             this.menu.OnUseOtherUnitsChange += OnUseOtherUnitsChange;
         }
 
@@ -55,7 +54,6 @@
             Game.OnUpdate -= OnUpdate;
             Player.OnExecuteOrder -= OnExecuteOrder;
             menu.OnUseOtherUnitsChange -= OnUseOtherUnitsChange;
-
             manager.OnUnitAdd -= OnUnitAdd;
             manager.OnUnitRemove -= OnUnitRemove;
 

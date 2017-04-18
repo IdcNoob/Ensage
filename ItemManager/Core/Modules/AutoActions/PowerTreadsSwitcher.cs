@@ -98,6 +98,31 @@
             activeDelaySwitchModifiers.Clear();
         }
 
+        private Attribute GetAttribute(int menuIndex)
+        {
+            Attribute switchAttribute;
+            switch (menuIndex)
+            {
+                case 0:
+                {
+                    switchAttribute = Attribute.Invalid;
+                    break;
+                }
+                case 1:
+                {
+                    switchAttribute = manager.MyHero.PrimaryAttribute;
+                    break;
+                }
+                default:
+                {
+                    switchAttribute = (Attribute)menuIndex - 2;
+                    break;
+                }
+            }
+
+            return switchAttribute;
+        }
+
         private void OnAbilityAdd(object sender, AbilityEventArgs abilityEventArgs)
         {
             if (!abilityEventArgs.IsMine)
@@ -156,20 +181,8 @@
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!menu.IsEnabled)
-            {
-                return;
-            }
-
-            var orderId = args.OrderId;
-
-            if (orderId != OrderId.Ability && orderId != OrderId.AbilityLocation && orderId != OrderId.AbilityTarget
-                && orderId != OrderId.ToggleAbility)
-            {
-                return;
-            }
-
-            if (!args.Process || args.IsQueued || !args.Entities.Contains(manager.MyHero))
+            if (!menu.IsEnabled || !args.Process || args.IsQueued || !args.Entities.Contains(manager.MyHero)
+                || manager.MyHero.IsInvisible())
             {
                 return;
             }
@@ -178,7 +191,7 @@
 
             if (!args.IsPlayerInput)
             {
-                if (ability.Id == AbilityId.item_power_treads)
+                if (ability?.Id == AbilityId.item_power_treads)
                 {
                     powerTreads.SetSleep(300);
                     return;
@@ -189,26 +202,73 @@
                     return;
                 }
             }
-            else if (ability.Id == AbilityId.item_power_treads)
+            else if (ability?.Id == AbilityId.item_power_treads)
             {
                 powerTreads.ChangeDefaultAttribute();
                 return;
             }
 
-            if (!powerTreads.CanBeCasted() || manager.MyHero.IsInvisible())
+            var sleep = Math.Max(ability.FindCastPoint() * 1000, 100) + 200;
+
+            if (!powerTreads.CanBeCasted())
             {
+                if (ability == null)
+                {
+                    return;
+                }
+
+                sleeper.Sleep((float)sleep, AbilityId.item_power_treads);
+
+                if (powerTreads.ActiveAttribute == Attribute.Intelligence)
+                {
+                    powerTreads.SetSleep((float)sleep);
+                }
+
                 return;
             }
 
-            if (ability.ManaCost <= menu.MpAbilityThreshold || !menu.IsAbilityEnabled(ability.StoredName()))
+            if (ability != null && (ability.ManaCost <= menu.MpAbilityThreshold
+                                    || !menu.IsAbilityEnabled(ability.StoredName())))
             {
                 return;
             }
-
-            var sleep = Math.Max(ability.FindCastPoint() * 1000, 200) + 350;
 
             switch (args.OrderId)
             {
+                case OrderId.MoveLocation:
+                case OrderId.MoveTarget:
+                {
+                    var switchAttribute = GetAttribute(menu.SwitchOnMoveAttribute);
+
+                    if (switchAttribute == Attribute.Invalid || powerTreads.ActiveAttribute == switchAttribute
+                        || activeDelaySwitchModifiers.Any())
+                    {
+                        return;
+                    }
+
+                    powerTreads.SwitchTo(switchAttribute);
+                    powerTreads.ChangeDefaultAttribute(switchAttribute);
+                    sleeper.Sleep(300, AbilityId.item_power_treads);
+
+                    return;
+                }
+                case OrderId.AttackLocation:
+                case OrderId.AttackTarget:
+                {
+                    var switchAttribute = GetAttribute(menu.SwitchOnAttackttribute);
+
+                    if (switchAttribute == Attribute.Invalid || powerTreads.ActiveAttribute == switchAttribute
+                        || activeDelaySwitchModifiers.Any())
+                    {
+                        return;
+                    }
+
+                    powerTreads.SwitchTo(switchAttribute);
+                    powerTreads.ChangeDefaultAttribute(switchAttribute);
+                    sleeper.Sleep(300, AbilityId.item_power_treads);
+
+                    return;
+                }
                 case OrderId.AbilityTarget:
                 {
                     var target = args.Target as Unit;
@@ -251,11 +311,15 @@
                     args.Process = false;
                     break;
                 }
+                default:
+                {
+                    return;
+                }
             }
 
             if (!args.Process)
             {
-                sleeper.Sleep((float)sleep, AbilityId.item_power_treads, true);
+                sleeper.Sleep((float)sleep, AbilityId.item_power_treads);
             }
         }
 
@@ -313,19 +377,15 @@
 
             sleeper.Sleep(200, this);
 
-            if (!menu.IsEnabled || sleeper.Sleeping(AbilityId.item_power_treads) || !manager.MyHeroCanUseItems())
-            {
-                return;
-            }
-
-            if (!powerTreads.CanBeCasted() || powerTreads.ActiveAttribute == powerTreads.DefaultAttribute
-                || !manager.MyHero.CanUseItems() || !powerTreads.CanBeCasted() || manager.MyHero.IsChanneling()
-                || manager.MyHero.IsInvisible() || activeDelaySwitchModifiers.Any())
+            if (!menu.IsEnabled || sleeper.Sleeping(AbilityId.item_power_treads) || !powerTreads.CanBeCasted()
+                || !manager.MyHeroCanUseItems() || powerTreads.ActiveAttribute == powerTreads.DefaultAttribute
+                || activeDelaySwitchModifiers.Any())
             {
                 return;
             }
 
             powerTreads.SwitchTo(powerTreads.DefaultAttribute);
+            sleeper.Sleep(300, this);
         }
     }
 }

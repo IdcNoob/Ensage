@@ -38,10 +38,8 @@
             this.menu.Backpack.OnSwap += BackpackOnSwap;
             this.menu.Stash.OnSwap += StashOnSwap;
             this.menu.Courier.OnSwap += CourierOnSwap;
-
             Unit.OnModifierAdded += OnModifierAdded;
             Entity.OnInt32PropertyChange += OnInt32PropertyChange;
-
             manager.OnItemAdd += OnItemAdd;
             manager.OnItemRemove += OnItemRemove;
             manager.OnUnitAdd += OnUnitAdd;
@@ -52,10 +50,8 @@
             menu.Backpack.OnSwap -= BackpackOnSwap;
             menu.Stash.OnSwap -= StashOnSwap;
             menu.Courier.OnSwap -= CourierOnSwap;
-
             Unit.OnModifierAdded -= OnModifierAdded;
             Entity.OnInt32PropertyChange -= OnInt32PropertyChange;
-
             manager.OnItemAdd -= OnItemAdd;
             manager.OnItemRemove -= OnItemRemove;
             manager.OnUnitAdd -= OnUnitAdd;

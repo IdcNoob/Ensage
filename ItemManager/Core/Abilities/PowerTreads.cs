@@ -22,22 +22,29 @@
 
         public Attribute DefaultAttribute { get; private set; }
 
-        public void ChangeDefaultAttribute()
+        public void ChangeDefaultAttribute(Attribute? attribute = null)
         {
-            switch (powerTreads.ActiveAttribute)
+            if (attribute == null)
             {
-                case Attribute.Strength:
-                    DefaultAttribute = Attribute.Intelligence;
-                    break;
-                case Attribute.Intelligence:
-                    DefaultAttribute = Attribute.Agility;
-                    break;
-                case Attribute.Agility:
-                    DefaultAttribute = Attribute.Strength;
-                    break;
+                switch (powerTreads.ActiveAttribute)
+                {
+                    case Attribute.Strength:
+                        DefaultAttribute = Attribute.Intelligence;
+                        break;
+                    case Attribute.Intelligence:
+                        DefaultAttribute = Attribute.Agility;
+                        break;
+                    case Attribute.Agility:
+                        DefaultAttribute = Attribute.Strength;
+                        break;
+                }
+            }
+            else
+            {
+                DefaultAttribute = attribute.Value;
             }
 
-            SetSleep(300);
+            SetSleep(200);
         }
 
         public void SwitchTo(Attribute attribute, bool queue = false)
@@ -79,7 +86,7 @@
                     break;
             }
 
-            SetSleep(300);
+            SetSleep(200);
         }
 
         public override void Use(bool queue = false)

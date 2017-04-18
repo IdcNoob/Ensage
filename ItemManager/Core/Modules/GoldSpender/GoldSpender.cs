@@ -40,7 +40,6 @@ namespace ItemManager.Core.Modules.GoldSpender
             enemyTeam = manager.MyHero.GetEnemyTeam();
 
             Game.OnUpdate += OnUpdate;
-
             manager.OnUnitAdd += OnUnitAdd;
             manager.OnAbilityAdd += OnAbilityAdd;
             manager.OnAbilityRemove += OnAbilityRemove;
@@ -154,7 +153,6 @@ namespace ItemManager.Core.Modules.GoldSpender
         public void Dispose()
         {
             Game.OnUpdate -= OnUpdate;
-
             manager.OnUnitAdd -= OnUnitAdd;
             manager.OnAbilityAdd -= OnAbilityAdd;
             manager.OnAbilityRemove -= OnAbilityRemove;

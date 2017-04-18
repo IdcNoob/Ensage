@@ -32,6 +32,7 @@
         public void Dispose()
         {
             Player.OnExecuteOrder -= OnExecuteOrder;
+            Unit.OnModifierAdded -= OnModifierAdded;
         }
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)

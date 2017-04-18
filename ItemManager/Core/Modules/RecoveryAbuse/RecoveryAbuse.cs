@@ -42,7 +42,6 @@
 
             Game.OnUpdate += OnUpdate;
             Player.OnExecuteOrder += OnExecuteOrder;
-
             this.menu.OnAbuseChange += OnAbuseChange;
         }
 
@@ -50,7 +49,6 @@
         {
             Game.OnUpdate -= OnUpdate;
             Player.OnExecuteOrder -= OnExecuteOrder;
-
             menu.OnAbuseChange -= OnAbuseChange;
         }
 

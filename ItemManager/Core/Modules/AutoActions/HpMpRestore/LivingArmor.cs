@@ -42,6 +42,9 @@
 
         public void Dispose()
         {
+            manager.OnAbilityAdd -= OnAbilityAdd;
+            manager.OnAbilityRemove -= OnAbilityRemove;
+            Game.OnUpdate -= OnUpdate;
         }
 
         private void OnAbilityAdd(object sender, AbilityEventArgs abilityEventArgs)

@@ -75,6 +75,10 @@
 
         public void Dispose()
         {
+            manager.OnItemAdd -= OnItemAdd;
+            manager.OnItemRemove -= OnItemRemove;
+            Game.OnUpdate -= OnUpdate;
+            Player.OnExecuteOrder -= OnExecuteOrder;
         }
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
@@ -89,7 +93,6 @@
                 case OrderId.AbilityTarget:
                 case OrderId.AbilityLocation:
                 case OrderId.Ability:
-                case OrderId.ToggleAbility:
                 {
                     if (args.Ability.IsAbilityBehavior(AbilityBehavior.Channeled))
                     {
@@ -174,8 +177,8 @@
                 {
                     bottle.Use(bottleTarget);
                 }
+
                 bottle.SetSleep(200);
-                sleeper.Sleep(190, this);
             }
         }
     }
