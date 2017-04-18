@@ -262,20 +262,23 @@
 
             Menu.AddToMainMenu();
 
-            textFont = new Font(
-                Drawing.Direct3DDevice9,
-                new FontDescription
-                {
-                    FaceName = "Tahoma",
-                    Height = 30,
-                    OutputPrecision = FontPrecision.Raster,
-                    Quality = FontQuality.ClearTypeNatural,
-                    CharacterSet = FontCharacterSet.Hangul,
-                    MipLevels = 3,
-                    PitchAndFamily = FontPitchAndFamily.Modern,
-                    Weight = FontWeight.Heavy,
-                    Width = 12
-                });
+            if (Drawing.RenderMode == RenderMode.Dx9)
+            {
+                textFont = new Font(
+                    Drawing.Direct3DDevice9,
+                    new FontDescription
+                    {
+                        FaceName = "Tahoma",
+                        Height = 30,
+                        OutputPrecision = FontPrecision.Raster,
+                        Quality = FontQuality.ClearTypeNatural,
+                        CharacterSet = FontCharacterSet.Hangul,
+                        MipLevels = 3,
+                        PitchAndFamily = FontPitchAndFamily.Modern,
+                        Weight = FontWeight.Heavy,
+                        Width = 12
+                    });
+            }
 
             var ratio = HUDInfo.ScreenSizeX() / HUDInfo.ScreenSizeY();
 
