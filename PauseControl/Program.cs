@@ -1,50 +1,23 @@
 ﻿namespace PauseControl
 {
     using System;
-    using System.Linq;
+    using System.Threading.Tasks;
 
     using Ensage;
     using Ensage.Common;
     using Ensage.Common.Menu;
-    using Ensage.Common.Objects;
 
     internal static class Program
     {
-        private static Menu menu;
-
         private static readonly Random Random = new Random();
 
         private static Team heroTeam;
 
-        private static CustomSleeper sleeper;
+        private static Menu menu;
 
-        private static void Game_OnIngameUpdate(EventArgs args)
-        {
-            if (sleeper.Sleeping)
-            {
-                return;
-            }
+        private static MenuItem pause;
 
-            sleeper.Sleep(1000);
-
-            var dcedAlly = Heroes.GetByTeam(heroTeam).Any(x => x.Player == null);
-
-            if (Game.IsPaused)
-            {
-                if (menu.Item("enabledUnpause").GetValue<bool>()
-                    && (menu.Item("ignoreAlly").GetValue<bool>() || !dcedAlly))
-                {
-                    Game.ExecuteCommand("dota_pause");
-                    sleeper.Sleep(Random.Next(1111, 1222));
-                }
-            }
-            else if (dcedAlly && menu.Item("enabledPause").GetValue<bool>()
-                     && !menu.Item("ignoreAlly").GetValue<bool>())
-            {
-                Game.ExecuteCommand("dota_pause");
-                sleeper.Sleep(Random.Next(3333, 4444));
-            }
-        }
+        private static MenuItem unpause;
 
         private static void Main()
         {
@@ -54,24 +27,71 @@
 
         private static void OnClose(object sender, EventArgs e)
         {
-            Game.OnIngameUpdate -= Game_OnIngameUpdate;
+            ObjectManager.OnRemoveEntity -= OnRemoveEntity;
+            Entity.OnInt32PropertyChange -= OnInt32PropertyChange;
+
+            menu.RemoveFromMainMenu();
+        }
+
+        private static void OnInt32PropertyChange(Entity sender, Int32PropertyChangeEventArgs args)
+        {
+            if (sender.ClassId != ClassId.CDOTAGamerulesProxy || args.PropertyName != "m_iPauseTeam")
+            {
+                return;
+            }
+
+            var pauseTeam = (Team)args.NewValue;
+            if (pauseTeam == heroTeam || pauseTeam == Team.Observer)
+            {
+                return;
+            }
+
+            if (unpause.IsActive())
+            {
+                Unpause();
+            }
         }
 
         private static void OnLoad(object sender, EventArgs e)
         {
             menu = new Menu("Pause Control", "pauseControl", true);
 
-            menu.AddItem(new MenuItem("enabledPause", "Auto pause").SetValue(true));
-            menu.AddItem(new MenuItem("enabledUnpause", "Auto unpause").SetValue(true));
             menu.AddItem(
-                new MenuItem("ignoreAlly", "Ignore ally").SetValue(false)
-                    .SetTooltip("Unpause game even when ally is disconnected"));
+                pause = new MenuItem("enabledPause", "Auto pause").SetValue(true)
+                    .SetTooltip("Auto pause when ally is disconnected"));
+            menu.AddItem(
+                unpause = new MenuItem("enabledUnpause", "Force unpause").SetValue(false)
+                    .SetTooltip("Force unpause if set by enemies"));
 
             menu.AddToMainMenu();
 
             heroTeam = ObjectManager.LocalHero.Team;
-            sleeper = new CustomSleeper();
-            Game.OnIngameUpdate += Game_OnIngameUpdate;
+
+            ObjectManager.OnRemoveEntity += OnRemoveEntity;
+            Entity.OnInt32PropertyChange += OnInt32PropertyChange;
+        }
+
+        private static void OnRemoveEntity(EntityEventArgs args)
+        {
+            if (!pause.IsActive())
+            {
+                return;
+            }
+
+            var player = args.Entity as Player;
+            if (player != null && player.Team == heroTeam && !Game.IsPaused)
+            {
+                Network.PauseGame();
+            }
+        }
+
+        private static async void Unpause()
+        {
+            while (Game.IsPaused)
+            {
+                Network.PauseGame();
+                await Task.Delay(Random.Next(1111, 1222));
+            }
         }
     }
 }
