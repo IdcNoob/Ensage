@@ -15,7 +15,7 @@
     {
         private IEnumerable<Ability> abilities;
 
-        private AbilityBuilder abilitylBuilder;
+        private AbilityBuilder abilityBuilder;
 
         private Hero hero;
 
@@ -37,7 +37,7 @@
                 return;
             }
 
-            var build = abilitylBuilder.GetBestBuild().ToList();
+            var build = abilityBuilder.GetBestBuild().ToList();
             var uniqueAbilities = build.GroupBy(x => x)
                 .Select(x => x.First())
                 .OrderBy(x => x.AbilitySlot)
@@ -48,7 +48,7 @@
             var xStart = HUDInfo.ScreenSizeX() * 0.35f;
             var yStart = HUDInfo.ScreenSizeY() * 0.55f;
 
-            var text = "Auto build preview (Win rate: " + abilitylBuilder.BestBuildWinRate + ")";
+            var text = "Auto build preview (Win rate: " + abilityBuilder.BestBuildWinRate + ")";
 
             Drawing.DrawRect(
                 new Vector2(xStart - 2, yStart - 35 * ratio),
@@ -147,7 +147,7 @@
                      && !x.Name.Contains("special_bonus"));
             menuManager = new MenuManager(abilities.Select(x => x.StoredName()).ToList(), hero.Name);
             sleeper = new Sleeper();
-            abilitylBuilder = new AbilityBuilder(hero);
+            abilityBuilder = new AbilityBuilder(hero);
             talents = hero.Spellbook.Spells.Where(x => x.Name.Contains("special_bonus")).ToList();
 
             sleeper.Sleep(10000);
@@ -169,7 +169,7 @@
 
             if (menuManager.IsEnabledAuto)
             {
-                var ability = abilitylBuilder.GetAbility(hero.Level);
+                var ability = abilityBuilder.GetAbility();
 
                 if (ability == null || ability.IsHidden)
                 {
@@ -187,9 +187,7 @@
             {
                 var learnableAbilities = abilities
                     .OrderByDescending(x => menuManager.GetAbilityPriority(x.StoredName()))
-                    .Where(
-                        x => menuManager.AbilityActive(x.StoredName()) && IsLearnable(x) // x.IsLearnable
-                    )
+                    .Where(x => menuManager.AbilityActive(x.StoredName()) && IsLearnable(x))
                     .ToList();
 
                 var upgrade = learnableAbilities.FirstOrDefault(ForceLearn)
@@ -274,10 +272,8 @@
                     }
                     break;
                 default:
-                    // ability.MaximumLevel
-                    var maxLevel = hero.ClassId == ClassId.CDOTA_Unit_Hero_Invoker ? 7 : 4;
 
-                    if (abilityLevel >= maxLevel || heroLevel <= abilityLevel * 2)
+                    if (abilityLevel >= ability.MaximumLevel || heroLevel <= abilityLevel * 2)
                     {
                         return false;
                     }

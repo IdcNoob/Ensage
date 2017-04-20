@@ -45,7 +45,7 @@
 
         public string BestBuildWinRate { get; private set; }
 
-        public Ability GetAbility(uint level)
+        public Ability GetAbility()
         {
             if (error)
             {
@@ -54,9 +54,11 @@
 
             Ability ability;
 
-            return bestBuild.TryGetValue(level, out ability)
-                       ? ability
-                       : hero.Spellbook.Spells.FirstOrDefault(x => x.ClassId == ClassId.CDOTA_Ability_AttributeBonus);
+            var abilityLevels = (uint)hero.Spellbook.Spells
+                                    .Where(x => !x.IsHidden && !IgnoredAbilities.List.Contains(x.Name))
+                                    .Sum(x => x.Level) + 1;
+
+            return bestBuild.TryGetValue(abilityLevels, out ability) ? ability : hero.Spellbook.Spells.FirstOrDefault();
         }
 
         public IEnumerable<Ability> GetBestBuild()
