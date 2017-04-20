@@ -86,9 +86,17 @@
             }
 
             var player = args.Entity as Player;
-            if (player != null && player.Team == heroTeam && !Game.IsPaused)
+            if (player != null && player.Team == heroTeam)
             {
-                Network.PauseGame();
+                if (!Game.IsPaused)
+                {
+                    Network.PauseGame();
+                }
+                else if (subscribed)
+                {
+                    Game.OnUpdate -= OnUpdate;
+                    subscribed = false;
+                }
             }
         }
 
