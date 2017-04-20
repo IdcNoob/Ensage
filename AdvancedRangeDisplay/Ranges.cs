@@ -17,7 +17,7 @@
         {
             None,
 
-            Expiriece,
+            Experience,
 
             Attack,
 
@@ -30,10 +30,7 @@
 
         private readonly Dictionary<Creep, ParticleEffect> creeps = new Dictionary<Creep, ParticleEffect>();
 
-        private readonly Dictionary<Hero, List<AbilityDraw>> drawedAbilities =
-            new Dictionary<Hero, List<AbilityDraw>>();
-
-        private bool delay;
+        private readonly Dictionary<Hero, List<AbilityDraw>> drawnAbilities = new Dictionary<Hero, List<AbilityDraw>>();
 
         private Team enemyTeam;
 
@@ -49,10 +46,11 @@
             Entity.OnInt32PropertyChange -= OnInt32PropertyChange;
             ObjectManager.OnRemoveEntity -= OnRemoveEntity;
             ObjectManager.OnAddEntity -= OnAddEntity;
+
             menu.OnClose();
-            drawedAbilities.SelectMany(x => x.Value).ForEach(x => x.ParticleEffect?.Dispose());
+            drawnAbilities.SelectMany(x => x.Value).ForEach(x => x.ParticleEffect?.Dispose());
             addedHeroes.Clear();
-            drawedAbilities.Clear();
+            drawnAbilities.Clear();
             addedItems.Clear();
             creeps.ForEach(x => x.Value?.Dispose());
             creeps.Clear();
@@ -60,15 +58,15 @@
 
         public void OnDraw()
         {
-            foreach (var drawedAbilityPair in drawedAbilities)
+            foreach (var drawnAbilityPair in drawnAbilities)
             {
-                foreach (var drawedAbility in drawedAbilityPair.Value.Where(x => x.RadiusOnly))
+                foreach (var drawnAbility in drawnAbilityPair.Value.Where(x => x.RadiusOnly))
                 {
-                    var unit = drawedAbilityPair.Key;
-                    drawedAbility.ParticleEffect?.SetControlPoint(
+                    var unit = drawnAbilityPair.Key;
+                    drawnAbility.ParticleEffect?.SetControlPoint(
                         0,
-                        unit.Position + (Vector3)(VectorExtensions.FromPolarAngle(unit.RotationRad)
-                                                  * drawedAbility.Range));
+                        unit.Position
+                        + (Vector3)(VectorExtensions.FromPolarAngle(unit.RotationRad) * drawnAbility.Range));
                 }
             }
         }
@@ -94,6 +92,191 @@
                 });
 
             sleeper.Sleep(1000);
+        }
+
+        public void OnUpdate()
+        {
+            if (sleeper.Sleeping)
+            {
+                return;
+            }
+
+            var allHeroes = ObjectManager.GetEntitiesParallel<Hero>().Where(x => x.IsValid && !x.IsIllusion);
+
+            foreach (var hero in allHeroes)
+            {
+                if (!addedHeroes.Contains(hero.Handle))
+                {
+                    menu.AddHeroMenu(hero);
+                    addedHeroes.Add(hero.Handle);
+                }
+
+                if (menu.IsItemsMenuEnabled(hero))
+                {
+                    foreach (var item in hero.Inventory.Items)
+                    {
+                        var itemName = item.GetDefaultName();
+
+                        if (string.IsNullOrEmpty(itemName) || addedItems.ContainsKey(hero.StoredName() + itemName))
+                        {
+                            continue;
+                        }
+
+                        addedItems.Add(hero.StoredName() + itemName, item);
+
+                        if (item.GetRealCastRange() > 500)
+                        {
+                            menu.AddMenuItem(hero, item);
+                        }
+                    }
+                }
+
+                foreach (var drawnAbility in drawnAbilities.Where(x => x.Key.Equals(hero))
+                    .SelectMany(x => x.Value)
+                    .Where(x => (x.ParticleEffect != null || !x.IsValid) && !x.Disabled && x.Level > 0))
+                {
+                    switch (drawnAbility.CustomRange)
+                    {
+                        case CustomRange.Experience:
+                        case CustomRange.Aggro:
+                            continue;
+                        case CustomRange.Attack:
+                            if (Math.Abs(drawnAbility.Range - hero.GetAttackRange()) > 10)
+                            {
+                                Redraw(drawnAbility);
+                            }
+                            continue;
+                    }
+
+                    var newAbility = false;
+
+                    if (!drawnAbility.IsValid)
+                    {
+                        drawnAbility.FindAbility();
+
+                        if (drawnAbility.IsValid)
+                        {
+                            newAbility = true;
+                        }
+                    }
+
+                    if (drawnAbility.Ability == null && drawnAbility.ParticleEffect != null)
+                    {
+                        drawnAbility.ParticleEffect.Dispose();
+                        drawnAbility.ParticleEffect = null;
+                    }
+                    else if ((newAbility || (drawnAbility.ParticleEffect != null
+                                             && (Math.Abs(
+                                                     drawnAbility.RealCastRange
+                                                     - drawnAbility.Ability.GetRealCastRange()) > 5
+                                                 || drawnAbility.RadiusOnly
+                                                 && Math.Abs(
+                                                     drawnAbility.Radius - drawnAbility.Ability.GetRadius() - 35) > 5)))
+                             && !drawnAbility.Disabled)
+                    {
+                        Redraw(drawnAbility);
+                    }
+                }
+            }
+
+            sleeper.Sleep(3000);
+        }
+
+        private static void Redraw(AbilityDraw drawnAbility)
+        {
+            if (drawnAbility.ParticleEffect == null)
+            {
+                drawnAbility.ParticleEffect = drawnAbility.RadiusOnly
+                                                  ? new ParticleEffect(
+                                                      @"particles\ui_mouseactions\drag_selected_ring.vpcf",
+                                                      drawnAbility.Hero.Position)
+                                                  : drawnAbility.Hero.AddParticleEffect(
+                                                      @"particles\ui_mouseactions\drag_selected_ring.vpcf");
+                if (drawnAbility.Level < 1)
+                {
+                    return;
+                }
+            }
+
+            drawnAbility.UpdateCastRange();
+            drawnAbility.SaveSettings();
+
+            drawnAbility.ParticleEffect.SetControlPoint(
+                2,
+                new Vector3((drawnAbility.RadiusOnly ? drawnAbility.Radius : drawnAbility.RealCastRange) * -1, 255, 0));
+            drawnAbility.ParticleEffect.Restart();
+        }
+
+        private void OnAddEntity(EntityEventArgs args)
+        {
+            if (!menu.ShowCreepAggroRange)
+            {
+                return;
+            }
+
+            var creep = args.Entity as Creep;
+            if (creep == null || creep.Team != enemyTeam)
+            {
+                return;
+            }
+
+            var effect = new ParticleEffect(@"particles\ui_mouseactions\drag_selected_ring.vpcf", creep);
+            effect.SetControlPoint(1, new Vector3(menu.CreepRedColor, menu.CreepGreenColor, menu.CreepBlueColor));
+            effect.SetControlPoint(2, new Vector3(525, 255, 0));
+
+            creeps.Add(creep, effect);
+        }
+
+        private void OnChange(object sender, AbilityEventArgs args)
+        {
+            List<AbilityDraw> abilities;
+
+            if (!drawnAbilities.TryGetValue(args.Hero, out abilities))
+            {
+                drawnAbilities.Add(args.Hero, new List<AbilityDraw>());
+            }
+
+            var drawnAbility = abilities?.FirstOrDefault(x => x.Name == args.Name);
+
+            if (drawnAbility == null)
+            {
+                drawnAbility = new AbilityDraw(args.Hero, args.Name);
+                drawnAbilities[args.Hero].Add(drawnAbility);
+            }
+
+            drawnAbility.SaveSettings(args.Red, args.Green, args.Blue, args.RadiusOnly);
+
+            if (!args.Redraw)
+            {
+                return;
+            }
+
+            if (args.Enabled)
+            {
+                drawnAbility.Disabled = false;
+
+                if (!drawnAbility.IsValid)
+                {
+                    drawnAbility.FindAbility();
+
+                    if (!drawnAbility.IsValid && drawnAbility.CustomRange == CustomRange.None)
+                    {
+                        return;
+                    }
+                }
+
+                Redraw(drawnAbility);
+            }
+            else
+            {
+                if (drawnAbility.ParticleEffect != null)
+                {
+                    drawnAbility.ParticleEffect.Dispose();
+                    drawnAbility.ParticleEffect = null;
+                }
+
+                drawnAbility.Disabled = true;
+            }
         }
 
         private void OnCreepChange(object sender, BoolEventArgs boolEventArgs)
@@ -126,43 +309,6 @@
             }
         }
 
-        private void OnAddEntity(EntityEventArgs args)
-        {
-            if (!menu.ShowCreepAggroRange)
-            {
-                return;
-            }
-
-            var creep = args.Entity as Creep;
-            if (creep == null || creep.Team != enemyTeam)
-            {
-                return;
-            }
-
-            var effect = new ParticleEffect(@"particles\ui_mouseactions\drag_selected_ring.vpcf", creep);
-            effect.SetControlPoint(1, new Vector3(menu.CreepRedColor, menu.CreepGreenColor, menu.CreepBlueColor));
-            effect.SetControlPoint(2, new Vector3(525, 255, 0));
-
-            creeps.Add(creep, effect);
-        }
-
-        private void OnRemoveEntity(EntityEventArgs args)
-        {
-            if (!menu.ShowCreepAggroRange)
-            {
-                return;
-            }
-
-            var creep = args.Entity as Creep;
-            if (creep != null && creep.Team != enemyTeam)
-            {
-                ParticleEffect effect;
-                creeps.TryGetValue(creep, out effect);
-                effect?.Dispose();
-                creeps.Remove(creep);
-            }
-        }
-
         private void OnInt32PropertyChange(Entity sender, Int32PropertyChangeEventArgs args)
         {
             if (!menu.ShowCreepAggroRange || args.NewValue == args.OldValue || args.NewValue > 0
@@ -181,179 +327,20 @@
             }
         }
 
-        public async void OnUpdate()
+        private void OnRemoveEntity(EntityEventArgs args)
         {
-            if (sleeper.Sleeping || delay)
+            if (!menu.ShowCreepAggroRange)
             {
                 return;
             }
 
-            delay = true;
-
-            try
+            var creep = args.Entity as Creep;
+            if (creep != null && creep.Team != enemyTeam)
             {
-                var allHeroes = ObjectManager.GetEntitiesParallel<Hero>().Where(x => x.IsValid && !x.IsIllusion);
-
-                foreach (var hero in allHeroes)
-                {
-                    if (!addedHeroes.Contains(hero.Handle))
-                    {
-                        await menu.AddHeroMenu(hero);
-                        addedHeroes.Add(hero.Handle);
-                    }
-
-                    if (menu.IsItemsMenuEnabled(hero))
-                    {
-                        foreach (var item in hero.Inventory.Items)
-                        {
-                            var itemName = item.GetDefaultName();
-
-                            if (string.IsNullOrEmpty(itemName) || addedItems.ContainsKey(hero.StoredName() + itemName))
-                            {
-                                continue;
-                            }
-
-                            addedItems.Add(hero.StoredName() + itemName, item);
-
-                            if (item.GetRealCastRange() > 500)
-                            {
-                                await menu.AddMenuItem(hero, item);
-                            }
-                        }
-                    }
-
-                    foreach (var drawedAbility in drawedAbilities.Where(x => x.Key.Equals(hero))
-                        .SelectMany(x => x.Value)
-                        .Where(x => (x.ParticleEffect != null || !x.IsValid) && !x.Disabled && x.Level > 0))
-                    {
-                        switch (drawedAbility.CustomRange)
-                        {
-                            case CustomRange.Expiriece:
-                            case CustomRange.Aggro: continue;
-                            case CustomRange.Attack:
-                                if (Math.Abs(drawedAbility.Range - hero.GetAttackRange()) > 10)
-                                {
-                                    Redraw(drawedAbility);
-                                }
-                                continue;
-                        }
-
-                        var newAbility = false;
-
-                        if (!drawedAbility.IsValid)
-                        {
-                            drawedAbility.FindAbility();
-
-                            if (drawedAbility.IsValid)
-                            {
-                                newAbility = true;
-                            }
-                        }
-
-                        if (drawedAbility.Ability == null && drawedAbility.ParticleEffect != null)
-                        {
-                            drawedAbility.ParticleEffect.Dispose();
-                            drawedAbility.ParticleEffect = null;
-                        }
-                        else if ((newAbility || (drawedAbility.ParticleEffect != null
-                                                 && (Math.Abs(
-                                                         drawedAbility.RealCastRange
-                                                         - drawedAbility.Ability.GetRealCastRange()) > 5
-                                                     || drawedAbility.RadiusOnly
-                                                     && Math.Abs(
-                                                         drawedAbility.Radius - drawedAbility.Ability.GetRadius() - 35)
-                                                     > 5))) && !drawedAbility.Disabled)
-                        {
-                            Redraw(drawedAbility);
-                        }
-                    }
-                }
-            }
-            catch (Exception)
-            {
-            }
-
-            delay = false;
-            sleeper.Sleep(3000);
-        }
-
-        private static void Redraw(AbilityDraw drawedAbility)
-        {
-            if (drawedAbility.ParticleEffect == null)
-            {
-                drawedAbility.ParticleEffect = drawedAbility.RadiusOnly
-                                                   ? new ParticleEffect(
-                                                       @"particles\ui_mouseactions\drag_selected_ring.vpcf",
-                                                       drawedAbility.Hero.Position)
-                                                   : drawedAbility.Hero.AddParticleEffect(
-                                                       @"particles\ui_mouseactions\drag_selected_ring.vpcf");
-                if (drawedAbility.Level < 1)
-                {
-                    return;
-                }
-            }
-
-            drawedAbility.UpdateCastRange();
-            drawedAbility.SaveSettings();
-
-            drawedAbility.ParticleEffect.SetControlPoint(
-                2,
-                new Vector3(
-                    (drawedAbility.RadiusOnly ? drawedAbility.Radius : drawedAbility.RealCastRange) * -1,
-                    255,
-                    0));
-            drawedAbility.ParticleEffect.Restart();
-        }
-
-        private void OnChange(object sender, AbilityEventArgs args)
-        {
-            List<AbilityDraw> abilities;
-
-            if (!drawedAbilities.TryGetValue(args.Hero, out abilities))
-            {
-                drawedAbilities.Add(args.Hero, new List<AbilityDraw>());
-            }
-
-            var drawedAbility = abilities?.FirstOrDefault(x => x.Name == args.Name);
-
-            if (drawedAbility == null)
-            {
-                drawedAbility = new AbilityDraw(args.Hero, args.Name);
-                drawedAbilities[args.Hero].Add(drawedAbility);
-            }
-
-            drawedAbility.SaveSettings(args.Red, args.Green, args.Blue, args.RadiusOnly);
-
-            if (!args.Redraw)
-            {
-                return;
-            }
-
-            if (args.Enabled)
-            {
-                drawedAbility.Disabled = false;
-
-                if (!drawedAbility.IsValid)
-                {
-                    drawedAbility.FindAbility();
-
-                    if (!drawedAbility.IsValid && drawedAbility.CustomRange == CustomRange.None)
-                    {
-                        return;
-                    }
-                }
-
-                Redraw(drawedAbility);
-            }
-            else
-            {
-                if (drawedAbility.ParticleEffect != null)
-                {
-                    drawedAbility.ParticleEffect.Dispose();
-                    drawedAbility.ParticleEffect = null;
-                }
-
-                drawedAbility.Disabled = true;
+                ParticleEffect effect;
+                creeps.TryGetValue(creep, out effect);
+                effect?.Dispose();
+                creeps.Remove(creep);
             }
         }
     }

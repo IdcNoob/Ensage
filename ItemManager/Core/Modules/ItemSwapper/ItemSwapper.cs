@@ -3,12 +3,12 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
 
     using Attributes;
 
     using Ensage;
     using Ensage.Common.Extensions;
+    using Ensage.Common.Objects.UtilityObjects;
 
     using EventArgs;
 
@@ -28,12 +28,21 @@
 
         private readonly ItemSwapMenu menu;
 
+        private readonly Sleeper sleeper;
+
+        private bool courierFollowing;
+
         private bool courierSwapActive;
+
+        private bool itemsMovedToCourier;
+
+        private List<Item> swappedItems = new List<Item>();
 
         public ItemSwapper(Manager manager, MenuManager menu)
         {
             this.manager = manager;
             this.menu = menu.ItemSwapMenu;
+            sleeper = new Sleeper();
 
             this.menu.Backpack.OnSwap += BackpackOnSwap;
             this.menu.Stash.OnSwap += StashOnSwap;
@@ -73,45 +82,25 @@
             MoveItems(backpackItems, inventoryItems, ItemUtils.StoredPlace.Inventory);
         }
 
-        private async void CourierOnSwap(object sender, EventArgs eventArgs)
+        private void CourierOnSwap(object sender, EventArgs eventArgs)
         {
             if (courierSwapActive)
             {
+                courierFollowing = false;
+                itemsMovedToCourier = false;
                 return;
             }
-
-            var courier = couriers.FirstOrDefault(x => x.IsValid && x.IsAlive);
-            if (courier == null)
-            {
-                return;
-            }
-
-            var inventoryItems = manager.GetMyItems(ItemUtils.StoredPlace.Inventory)
-                .Where(x => menu.Courier.ItemEnabled(x.Name) && x.CanBeMoved())
-                .ToList();
-
-            var courierItems = courier.Inventory.Items.Where(x => menu.Courier.ItemEnabled(x.Name)).ToList();
 
             courierSwapActive = true;
+            Game.OnUpdate += OnUpdate;
+        }
 
-            courier.Follow(manager.MyHero);
-            await Task.Delay(200);
-
-            while (courier.Distance2D(manager.MyHero) > 250)
-            {
-                if (!courierSwapActive)
-                {
-                    return;
-                }
-
-                await Task.Delay(200);
-            }
-
-            MoveItems(manager.MyHero, courier, inventoryItems);
-            await Task.Delay(300);
-            MoveItems(courier, manager.MyHero, courierItems);
-
+        private void DisableCourierItemSwap()
+        {
+            courierFollowing = false;
             courierSwapActive = false;
+            itemsMovedToCourier = false;
+            Game.OnUpdate -= OnUpdate;
         }
 
         private void MoveItem(
@@ -139,8 +128,13 @@
             allSlots.Remove(slot);
         }
 
-        private void MoveItems(Unit source, Unit target, ICollection<Item> itemsToMove)
+        private void MoveItems(Unit source, Unit target, IReadOnlyCollection<Item> itemsToMove)
         {
+            if (!itemsToMove.Any())
+            {
+                return;
+            }
+
             var count = Math.Min(target.Inventory.FreeInventorySlots.Count(), itemsToMove.Count);
             for (var i = 0; i < count; i++)
             {
@@ -228,7 +222,7 @@
                 return;
             }
 
-            courierSwapActive = false;
+            DisableCourierItemSwap();
         }
 
         private void OnItemAdd(object sender, ItemEventArgs itemEventArgs)
@@ -296,6 +290,63 @@
             {
                 couriers.Add(courier);
             }
+        }
+
+        private void OnUpdate(EventArgs args)
+        {
+            if (sleeper.Sleeping)
+            {
+                return;
+            }
+
+            var courier = couriers.FirstOrDefault(x => x.IsValid && x.IsAlive);
+            if (courier == null || !manager.MyHero.IsAlive)
+            {
+                DisableCourierItemSwap();
+                return;
+            }
+
+            var inventoryItems = manager.GetMyItems(ItemUtils.StoredPlace.Inventory)
+                .Where(x => menu.Courier.ItemEnabled(x.Name) && x.CanBeMoved())
+                .ToList();
+
+            var courierItems = courier.Inventory.Items
+                .Where(x => x.Purchaser?.Hero?.Handle == manager.MyHandle && menu.Courier.ItemEnabled(x.Name))
+                .ToList();
+
+            if (!inventoryItems.Any() && !courierItems.Any())
+            {
+                DisableCourierItemSwap();
+                return;
+            }
+
+            if (!courierFollowing)
+            {
+                courier.Follow(manager.MyHero);
+                courierFollowing = true;
+            }
+
+            if (courier.Distance2D(manager.MyHero) > 250)
+            {
+                sleeper.Sleep(200);
+                return;
+            }
+
+            if (!itemsMovedToCourier)
+            {
+                swappedItems = inventoryItems;
+                itemsMovedToCourier = true;
+
+                if (inventoryItems.Any())
+                {
+                    MoveItems(manager.MyHero, courier, inventoryItems);
+                    sleeper.Sleep(300);
+                    return;
+                }
+            }
+
+            MoveItems(courier, manager.MyHero, courierItems.Where(x => !swappedItems.Contains(x)).ToList());
+            DisableCourierItemSwap();
         }
 
         private void StashOnSwap(object sender, EventArgs eventArgs)

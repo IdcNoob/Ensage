@@ -63,7 +63,7 @@
                 return;
             }
 
-            if (ObjectManager.GetEntities<Hero>()
+            if (ObjectManager.GetEntitiesParallel<Hero>()
                 .Any(
                     x => x.IsValid && x.IsVisible && x.IsAlive && x.Team != manager.MyTeam
                          && x.Distance2D(manager.MyHero) < 1000))

@@ -14,7 +14,7 @@
             IsEnabled = enabled.IsActive();
 
             var notification = new MenuItem("livingArmorNotification", "Show notification").SetValue(true);
-            notification.SetTooltip("Print in chat message on who living armor was used (visible only to you)");
+            notification.SetTooltip("Print message in chat on whom living armor was used (visible only to you)");
             menu.AddItem(notification);
             notification.ValueChanged += (sender, args) => IsEnabledNotification = args.GetNewValue<bool>();
             IsEnabledNotification = notification.IsActive();

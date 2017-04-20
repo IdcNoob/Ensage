@@ -1,7 +1,6 @@
 ﻿namespace PauseControl
 {
     using System;
-    using System.Threading.Tasks;
 
     using Ensage;
     using Ensage.Common;
@@ -17,6 +16,10 @@
 
         private static MenuItem pause;
 
+        private static bool subscribed;
+
+        private static TickSleeper tickSleeper;
+
         private static MenuItem unpause;
 
         private static void Main()
@@ -29,6 +32,8 @@
         {
             ObjectManager.OnRemoveEntity -= OnRemoveEntity;
             Entity.OnInt32PropertyChange -= OnInt32PropertyChange;
+            Game.OnUpdate -= OnUpdate;
+            subscribed = false;
 
             menu.RemoveFromMainMenu();
         }
@@ -46,9 +51,10 @@
                 return;
             }
 
-            if (unpause.IsActive())
+            if (unpause.IsActive() && !subscribed)
             {
-                Unpause();
+                Game.OnUpdate += OnUpdate;
+                subscribed = true;
             }
         }
 
@@ -66,6 +72,7 @@
             menu.AddToMainMenu();
 
             heroTeam = ObjectManager.LocalHero.Team;
+            tickSleeper = new TickSleeper();
 
             ObjectManager.OnRemoveEntity += OnRemoveEntity;
             Entity.OnInt32PropertyChange += OnInt32PropertyChange;
@@ -85,13 +92,22 @@
             }
         }
 
-        private static async void Unpause()
+        private static void OnUpdate(EventArgs args)
         {
-            while (Game.IsPaused)
+            if (tickSleeper.Sleeping)
+            {
+                return;
+            }
+
+            if (Game.IsPaused)
             {
                 Network.PauseGame();
-                await Task.Delay(Random.Next(1111, 1222));
+                tickSleeper.Sleep(Random.Next(1111, 1222));
+                return;
             }
+
+            Game.OnUpdate -= OnUpdate;
+            subscribed = false;
         }
     }
 }

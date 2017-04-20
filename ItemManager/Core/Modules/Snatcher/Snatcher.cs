@@ -63,9 +63,7 @@
 
         private void AddOtherUnits()
         {
-            var controllableUnits = ObjectManager.GetEntities<Unit>()
-                .Where(x => x.IsValid && x.IsControllable && !x.IsIllusion)
-                .ToList();
+            var controllableUnits = manager.Units.Where(x => x.IsValid && x.IsControllable && !x.IsIllusion).ToList();
 
             var spiritBear = controllableUnits.FirstOrDefault(x => x.ClassId == ClassId.CDOTA_Unit_SpiritBear);
             if (spiritBear != null)

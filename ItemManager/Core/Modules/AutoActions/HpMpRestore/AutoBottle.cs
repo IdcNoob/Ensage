@@ -44,8 +44,8 @@
             this.menu = menu.AutoActionsMenu.AutoHealsMenu.AutoBottleMenu;
             recoveryMenu = menu.RecoveryMenu;
 
-            fountain = ObjectManager.GetEntities<Unit>()
-                .First(x => x.ClassId == ClassId.CDOTA_Unit_Fountain && x.Team == manager.MyTeam)
+            fountain = ObjectManager.GetEntitiesParallel<Unit>()
+                .First(x => x.IsValid && x.ClassId == ClassId.CDOTA_Unit_Fountain && x.Team == manager.MyTeam)
                 .Position;
 
             manager.OnItemAdd += OnItemAdd;

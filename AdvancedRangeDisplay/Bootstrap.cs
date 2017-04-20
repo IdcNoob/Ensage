@@ -4,7 +4,6 @@
 
     using Ensage;
     using Ensage.Common;
-    using Ensage.Common.Threading;
 
     internal class Bootstrap
     {
@@ -28,7 +27,8 @@
         private void OnClose(object sender, EventArgs e)
         {
             Events.OnClose -= OnClose;
-            GameDispatcher.OnIngameUpdate -= Game_OnUpdate;
+            //GameDispatcher.OnIngameUpdate -= Game_OnUpdate;
+            Game.OnIngameUpdate -= Game_OnUpdate;
             Drawing.OnDraw -= Drawing_OnDraw;
             ranges.OnClose();
         }
@@ -37,7 +37,8 @@
         {
             ranges.OnLoad();
             Events.OnClose += OnClose;
-            GameDispatcher.OnIngameUpdate += Game_OnUpdate;
+            // GameDispatcher.OnIngameUpdate += Game_OnUpdate;
+            Game.OnIngameUpdate += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
         }
     }

@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
 
     using Ensage;
     using Ensage.Common.Extensions;
@@ -47,71 +46,21 @@
             menu.AddToMainMenu();
         }
 
-        public bool ShowCreepAggroRange { get; private set; }
-
-        public int CreepRedColor { get; private set; }
-
-        public int CreepBlueColor { get; private set; }
-
-        public int CreepGreenColor { get; private set; }
-
-        private void AddCreepRangesMenu()
-        {
-            var creepsMenu = new Menu("Creeps", "creepRanges");
-            var aggroRangeMenu = new Menu("Aggro range", "aggroRangeMenu");
-
-            var creepsAggro = new MenuItem("creepsAggro", "Aggro range").SetValue(false);
-            creepsAggro.ValueChanged += (sender, args) =>
-                {
-                    ShowCreepAggroRange = args.GetNewValue<bool>();
-                    OnCreepChange?.Invoke(
-                        this,
-                        new BoolEventArgs
-                        {
-                            Enabled = ShowCreepAggroRange
-                        });
-                };
-            ShowCreepAggroRange = creepsAggro.IsActive();
-            aggroRangeMenu.AddItem(creepsAggro);
-
-            var red = new MenuItem("creepsAggroRed", "Red").SetValue(new Slider(255, 0, 255));
-            red.ValueChanged += (sender, args) =>
-                {
-                    CreepRedColor = args.GetNewValue<Slider>().Value;
-                    OnCreepColorChange?.Invoke(this, EventArgs.Empty);
-                };
-            CreepRedColor = red.GetValue<Slider>().Value;
-            aggroRangeMenu.AddItem(red);
-
-            var green = new MenuItem("creepsAggroGreen", "Green").SetValue(new Slider(0, 0, 255));
-            green.ValueChanged += (sender, args) =>
-                {
-                    CreepGreenColor = args.GetNewValue<Slider>().Value;
-                    OnCreepColorChange?.Invoke(this, EventArgs.Empty);
-                };
-            CreepGreenColor = green.GetValue<Slider>().Value;
-            aggroRangeMenu.AddItem(green);
-
-            var blue = new MenuItem("creepsAggroBlue", "Blue").SetValue(new Slider(0, 0, 255));
-            blue.ValueChanged += (sender, args) =>
-                {
-                    CreepBlueColor = args.GetNewValue<Slider>().Value;
-                    OnCreepColorChange?.Invoke(this, EventArgs.Empty);
-                };
-            CreepBlueColor = blue.GetValue<Slider>().Value;
-            aggroRangeMenu.AddItem(blue);
-
-            creepsMenu.AddSubMenu(aggroRangeMenu);
-            menu.AddSubMenu(creepsMenu);
-        }
-
         public event EventHandler<AbilityEventArgs> OnChange;
 
         public event EventHandler<BoolEventArgs> OnCreepChange;
 
         public event EventHandler<EventArgs> OnCreepColorChange;
 
-        public async Task AddHeroMenu(Hero hero)
+        public int CreepBlueColor { get; private set; }
+
+        public int CreepGreenColor { get; private set; }
+
+        public int CreepRedColor { get; private set; }
+
+        public bool ShowCreepAggroRange { get; private set; }
+
+        public void AddHeroMenu(Hero hero)
         {
             var heroName = hero.StoredName();
             var heroMenu = new Menu(hero.GetRealName(), heroName, false, heroName, true);
@@ -127,109 +76,100 @@
 
             var settings = new Menu("Settings", key + "settings");
             heroMenus.First(x => x.Key.Equals(hero)).Value.AddSubMenu(settings);
-            await Task.Delay(200);
 
             var abilities = new MenuItem(key + "generateAbilities", "Generate ability ranges").SetValue(false);
             settings.AddItem(abilities);
-            await Task.Delay(200);
 
-            abilities.ValueChanged += async (sender, args) =>
+            abilities.ValueChanged += (sender, args) =>
                 {
                     if (!args.GetNewValue<bool>())
                     {
                         args.Process = false;
                         return;
                     }
-                    await AddAbilities(hero);
+                    AddAbilities(hero);
                 };
 
             if (abilities.IsActive())
             {
-                await AddAbilities(hero);
+                AddAbilities(hero);
             }
 
             var items = new MenuItem(key + "generateItems", "Generate item ranges").SetValue(false);
             enabledItemsMenu.Add(hero, items);
             settings.AddItem(items);
-            await Task.Delay(200);
 
-            items.ValueChanged += async (sender, args) =>
+            items.ValueChanged += (sender, args) =>
                 {
                     if (!args.GetNewValue<bool>())
                     {
                         args.Process = false;
                         return;
                     }
-                    await AddAItems(hero);
+                    AddAItems(hero);
                 };
 
             if (items.IsActive())
             {
-                await AddAItems(hero);
+                AddAItems(hero);
             }
 
             var attack = new MenuItem(key + "generateAttack", "Generate attack range").SetValue(false);
             settings.AddItem(attack);
-            await Task.Delay(200);
 
-            attack.ValueChanged += async (sender, args) =>
+            attack.ValueChanged += (sender, args) =>
                 {
                     if (!args.GetNewValue<bool>())
                     {
                         args.Process = false;
                         return;
                     }
-                    await AddMenuItem(hero, null, Ranges.CustomRange.Attack);
+                    AddMenuItem(hero, null, Ranges.CustomRange.Attack);
                 };
 
             if (attack.IsActive())
             {
-                await AddMenuItem(hero, null, Ranges.CustomRange.Attack);
+                AddMenuItem(hero, null, Ranges.CustomRange.Attack);
             }
 
-            var expirience = new MenuItem(key + "generateExpirience", "Generate expirience range").SetValue(false);
-            settings.AddItem(expirience);
-            await Task.Delay(200);
+            var experience = new MenuItem(key + "generateExpirience", "Generate experience range").SetValue(false);
+            settings.AddItem(experience);
 
-            expirience.ValueChanged += async (sender, args) =>
+            experience.ValueChanged += (sender, args) =>
                 {
                     if (!args.GetNewValue<bool>())
                     {
                         args.Process = false;
                         return;
                     }
-                    await AddMenuItem(hero, null, Ranges.CustomRange.Expiriece);
+                    AddMenuItem(hero, null, Ranges.CustomRange.Experience);
                 };
 
-            if (expirience.IsActive())
+            if (experience.IsActive())
             {
-                await AddMenuItem(hero, null, Ranges.CustomRange.Expiriece);
+                AddMenuItem(hero, null, Ranges.CustomRange.Experience);
             }
 
             var aggro = new MenuItem(key + "generateAggro", "Generate agrro range").SetValue(false);
             settings.AddItem(aggro);
-            await Task.Delay(200);
 
-            aggro.ValueChanged += async (sender, args) =>
+            aggro.ValueChanged += (sender, args) =>
                 {
                     if (!args.GetNewValue<bool>())
                     {
                         args.Process = false;
                         return;
                     }
-                    await AddMenuItem(hero, null, Ranges.CustomRange.Aggro);
+                    AddMenuItem(hero, null, Ranges.CustomRange.Aggro);
                 };
 
             if (aggro.IsActive())
             {
-                await AddMenuItem(hero, null, Ranges.CustomRange.Aggro);
+                AddMenuItem(hero, null, Ranges.CustomRange.Aggro);
             }
         }
 
-        public async Task AddMenuItem(
-            Hero hero,
-            Ability ability,
-            Ranges.CustomRange customRange = Ranges.CustomRange.None)
+        public void AddMenuItem(Hero hero, Ability ability, Ranges.CustomRange customRange = Ranges.CustomRange.None)
         {
             var isItem = ability is Item;
             var abilityName = isItem ? ability.GetDefaultName() : ability?.StoredName();
@@ -243,7 +183,7 @@
                     menuName = "Attack range";
                     texture = null;
                     break;
-                case Ranges.CustomRange.Expiriece:
+                case Ranges.CustomRange.Experience:
                     abilityName = "expRange";
                     menuName = "Exp range";
                     texture = null;
@@ -269,19 +209,10 @@
             var abilityMenu = new Menu(texture == null ? menuName : " ", key, false, texture, true);
 
             var enable = new MenuItem(key + "enabled", "Enabled").SetValue(false);
-            await Task.Delay(100);
-
             var radiusOnly = new MenuItem(key + "radius", "Damage radius only").SetValue(false);
-            await Task.Delay(100);
-
             var red = new MenuItem(key + "red", "Red").SetValue(new Slider(255, 0, 255));
-            await Task.Delay(100);
-
             var green = new MenuItem(key + "green", "Green").SetValue(new Slider(0, 0, 255));
-            await Task.Delay(100);
-
             var blue = new MenuItem(key + "blue", "Blue").SetValue(new Slider(0, 0, 255));
-            await Task.Delay(100);
 
             enable.ValueChanged += (sender, arg) =>
                 {
@@ -354,14 +285,10 @@
             if (radiusOnlyAbilities.Contains(abilityName))
             {
                 abilityMenu.AddItem(radiusOnly);
-                await Task.Delay(50);
             }
             abilityMenu.AddItem(red.SetFontColor(Color.IndianRed));
-            await Task.Delay(50);
             abilityMenu.AddItem(green.SetFontColor(Color.LightGreen));
-            await Task.Delay(50);
             abilityMenu.AddItem(blue.SetFontColor(Color.LightBlue));
-            await Task.Delay(50);
 
             if (customRange == Ranges.CustomRange.None)
             {
@@ -380,8 +307,6 @@
             {
                 heroMenus.First(x => x.Key.Equals(hero)).Value.AddSubMenu(abilityMenu);
             }
-
-            await Task.Delay(50);
 
             OnChange?.Invoke(
                 this,
@@ -413,16 +338,16 @@
             menu.RemoveFromMainMenu();
         }
 
-        private async Task AddAbilities(Hero hero)
+        private void AddAbilities(Hero hero)
         {
             foreach (var ability in hero.Spellbook.Spells.Where(
                 x => !x.IsHidden && !x.Name.Contains("special_bonus") && !x.Name.Contains("empty")))
             {
-                await AddMenuItem(hero, ability);
+                AddMenuItem(hero, ability);
             }
         }
 
-        private async Task AddAItems(Hero hero)
+        private void AddAItems(Hero hero)
         {
             foreach (var item in hero.Inventory.Items)
             {
@@ -437,9 +362,59 @@
 
                 if (item.GetRealCastRange() > 500)
                 {
-                    await AddMenuItem(hero, item);
+                    AddMenuItem(hero, item);
                 }
             }
+        }
+
+        private void AddCreepRangesMenu()
+        {
+            var creepsMenu = new Menu("Creeps", "creepRanges");
+            var aggroRangeMenu = new Menu("Aggro range", "aggroRangeMenu");
+
+            var creepsAggro = new MenuItem("creepsAggro", "Aggro range").SetValue(false);
+            creepsAggro.ValueChanged += (sender, args) =>
+                {
+                    ShowCreepAggroRange = args.GetNewValue<bool>();
+                    OnCreepChange?.Invoke(
+                        this,
+                        new BoolEventArgs
+                        {
+                            Enabled = ShowCreepAggroRange
+                        });
+                };
+            ShowCreepAggroRange = creepsAggro.IsActive();
+            aggroRangeMenu.AddItem(creepsAggro);
+
+            var red = new MenuItem("creepsAggroRed", "Red").SetValue(new Slider(255, 0, 255));
+            red.ValueChanged += (sender, args) =>
+                {
+                    CreepRedColor = args.GetNewValue<Slider>().Value;
+                    OnCreepColorChange?.Invoke(this, EventArgs.Empty);
+                };
+            CreepRedColor = red.GetValue<Slider>().Value;
+            aggroRangeMenu.AddItem(red);
+
+            var green = new MenuItem("creepsAggroGreen", "Green").SetValue(new Slider(0, 0, 255));
+            green.ValueChanged += (sender, args) =>
+                {
+                    CreepGreenColor = args.GetNewValue<Slider>().Value;
+                    OnCreepColorChange?.Invoke(this, EventArgs.Empty);
+                };
+            CreepGreenColor = green.GetValue<Slider>().Value;
+            aggroRangeMenu.AddItem(green);
+
+            var blue = new MenuItem("creepsAggroBlue", "Blue").SetValue(new Slider(0, 0, 255));
+            blue.ValueChanged += (sender, args) =>
+                {
+                    CreepBlueColor = args.GetNewValue<Slider>().Value;
+                    OnCreepColorChange?.Invoke(this, EventArgs.Empty);
+                };
+            CreepBlueColor = blue.GetValue<Slider>().Value;
+            aggroRangeMenu.AddItem(blue);
+
+            creepsMenu.AddSubMenu(aggroRangeMenu);
+            menu.AddSubMenu(creepsMenu);
         }
     }
 }

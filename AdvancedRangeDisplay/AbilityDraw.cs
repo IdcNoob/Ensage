@@ -22,7 +22,7 @@
                     CustomRange = Ranges.CustomRange.Attack;
                     break;
                 case "expRange":
-                    CustomRange = Ranges.CustomRange.Expiriece;
+                    CustomRange = Ranges.CustomRange.Experience;
                     break;
                 case "aggroRange":
                     CustomRange = Ranges.CustomRange.Aggro;
@@ -102,7 +102,7 @@
                     RealCastRange = Hero.GetRealAttackRange();
                     Range = attackRange;
                     return;
-                case Ranges.CustomRange.Expiriece:
+                case Ranges.CustomRange.Experience:
                     RealCastRange = 1450;
                     Range = 1450;
                     return;

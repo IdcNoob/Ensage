@@ -8,7 +8,6 @@
     using System.Security.Permissions;
     using System.Text;
     using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
 
     using Ensage;
     using Ensage.Common.Extensions;
@@ -69,22 +68,38 @@
         {
             switch (classId)
             {
-                case ClassId.CDOTA_Unit_Hero_DoomBringer: return "doom";
-                case ClassId.CDOTA_Unit_Hero_Furion: return "natures-prophet";
-                case ClassId.CDOTA_Unit_Hero_Magnataur: return "magnus";
-                case ClassId.CDOTA_Unit_Hero_Necrolyte: return "necrophos";
-                case ClassId.CDOTA_Unit_Hero_Nevermore: return "shadow-fiend";
-                case ClassId.CDOTA_Unit_Hero_Obsidian_Destroyer: return "outworld-devourer";
-                case ClassId.CDOTA_Unit_Hero_Rattletrap: return "clockwerk";
-                case ClassId.CDOTA_Unit_Hero_Shredder: return "timbersaw";
-                case ClassId.CDOTA_Unit_Hero_SkeletonKing: return "wraith-king";
-                case ClassId.CDOTA_Unit_Hero_Wisp: return "io";
-                case ClassId.CDOTA_Unit_Hero_Zuus: return "zeus";
-                case ClassId.CDOTA_Unit_Hero_Windrunner: return "windranger";
-                case ClassId.CDOTA_Unit_Hero_Life_Stealer: return "lifestealer";
-                case ClassId.CDOTA_Unit_Hero_Treant: return "treant-protector";
-                case ClassId.CDOTA_Unit_Hero_MonkeyKing: return "monkey-king";
-                case ClassId.CDOTA_Unit_Hero_AbyssalUnderlord: return "underlord";
+                case ClassId.CDOTA_Unit_Hero_DoomBringer:
+                    return "doom";
+                case ClassId.CDOTA_Unit_Hero_Furion:
+                    return "natures-prophet";
+                case ClassId.CDOTA_Unit_Hero_Magnataur:
+                    return "magnus";
+                case ClassId.CDOTA_Unit_Hero_Necrolyte:
+                    return "necrophos";
+                case ClassId.CDOTA_Unit_Hero_Nevermore:
+                    return "shadow-fiend";
+                case ClassId.CDOTA_Unit_Hero_Obsidian_Destroyer:
+                    return "outworld-devourer";
+                case ClassId.CDOTA_Unit_Hero_Rattletrap:
+                    return "clockwerk";
+                case ClassId.CDOTA_Unit_Hero_Shredder:
+                    return "timbersaw";
+                case ClassId.CDOTA_Unit_Hero_SkeletonKing:
+                    return "wraith-king";
+                case ClassId.CDOTA_Unit_Hero_Wisp:
+                    return "io";
+                case ClassId.CDOTA_Unit_Hero_Zuus:
+                    return "zeus";
+                case ClassId.CDOTA_Unit_Hero_Windrunner:
+                    return "windranger";
+                case ClassId.CDOTA_Unit_Hero_Life_Stealer:
+                    return "lifestealer";
+                case ClassId.CDOTA_Unit_Hero_Treant:
+                    return "treant-protector";
+                case ClassId.CDOTA_Unit_Hero_MonkeyKing:
+                    return "monkey-king";
+                case ClassId.CDOTA_Unit_Hero_AbyssalUnderlord:
+                    return "underlord";
             }
 
             var name = classId.ToString().Substring("CDOTA_Unit_Hero_".Length).Replace("_", string.Empty);
@@ -109,15 +124,13 @@
             BestBuildWinRate = best.Item1 + "%";
         }
 
-        private async void SaveAbilityBuild(string heroName)
+        private void SaveAbilityBuild(string heroName)
         {
             try
             {
                 string html;
                 var webRequest = WebRequest.CreateHttp("http://www.dotabuff.com/heroes/" + heroName + "/builds");
                 webRequest.UserAgent = "Nokia 3310";
-
-                await Task.Delay(1000);
 
                 using (var responseStream = webRequest.GetResponse().GetResponseStream())
                 {

@@ -343,8 +343,8 @@
 
         private void AddCurrentObjects()
         {
-            foreach (var hero in ObjectManager.GetEntities<Player>()
-                .Where(x => x?.Hero != null)
+            foreach (var hero in ObjectManager.GetEntitiesParallel<Player>()
+                .Where(x => x != null && x.IsValid && x.Hero != null && x.Hero.IsValid)
                 .Select(x => x.Hero)
                 .OrderByDescending(x => x.Team == MyTeam))
             {
@@ -363,9 +363,9 @@
                 }
             }
 
-            foreach (var unit in ObjectManager.GetEntities<Unit>())
+            foreach (var entity in ObjectManager.GetEntitiesParallel<Entity>().Where(x => x.IsValid && x.IsAlive))
             {
-                OnAddEntity(new EntityEventArgs(unit));
+                OnAddEntity(new EntityEventArgs(entity));
             }
         }
 
