@@ -27,8 +27,6 @@
 
         public bool DealsAutoAttackDamage { get; protected set; }
 
-        public bool DealsDamageToTowers { get; protected set; }
-
         public float ManaCost => Ability.ManaCost;
 
         public DotaTexture Texture { get; }

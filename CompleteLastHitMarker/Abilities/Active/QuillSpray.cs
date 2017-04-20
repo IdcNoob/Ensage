@@ -20,7 +20,7 @@
         public QuillSpray(Ability ability)
             : base(ability)
         {
-            for (var i = 0u; i < ability.MaximumLevel; i++)
+            for (var i = 0u; i < Damage.Length; i++)
             {
                 Damage[i] = Ability.AbilitySpecialData.First(x => x.Name == "quill_base_damage").GetValue(i);
                 stackDamage[i] = Ability.AbilitySpecialData.First(x => x.Name == "quill_stack_damage").GetValue(i);

@@ -50,7 +50,7 @@
                 }
             }
 
-            foreach (var ability in ObjectManager.GetEntities<Item>()
+            foreach (var ability in ObjectManager.GetEntitiesParallel<Item>()
                 .Where(x => x.IsValid && x.Purchaser?.Hero?.Handle == Handle && x.Id != AbilityId.ability_base))
             {
                 var type = abilityTypes.FirstOrDefault(

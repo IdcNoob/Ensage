@@ -14,15 +14,15 @@
     [Ability(AbilityId.tiny_toss)]
     internal class Toss : DefaultActive
     {
-        private readonly float[] tossBonusDamage = new float[4];
-
-        private readonly float[] tossBonusDamageScepter = new float[4];
-
-        private readonly float towerDamageReduction;
-
         private readonly Ability grow;
 
         private readonly Unit owner;
+
+        private readonly float[] tossBonusDamage = new float[3];
+
+        private readonly float[] tossBonusDamageScepter = new float[3];
+
+        private readonly float towerDamageReduction;
 
         public Toss(Ability ability)
             : base(ability)
@@ -37,7 +37,7 @@
                 return;
             }
 
-            for (var i = 0u; i < grow.MaximumLevel; i++)
+            for (var i = 0u; i < tossBonusDamage.Length; i++)
             {
                 tossBonusDamage[i] = grow.AbilitySpecialData.First(x => x.Name == "grow_bonus_damage_pct").GetValue(i)
                                      / 100 + 1;

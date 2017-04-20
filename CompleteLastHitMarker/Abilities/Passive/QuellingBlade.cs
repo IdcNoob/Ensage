@@ -13,8 +13,6 @@
 
     using Units.Base;
 
-    using Utils;
-
     [Ability(AbilityId.item_quelling_blade)]
     internal class QuellingBlade : DefaultPassive
     {
@@ -37,11 +35,6 @@
         public override float GetBonusDamage(Hero hero, KillableUnit unit, IEnumerable<IPassiveAbility> abilities)
         {
             if (!CanDoDamage(hero, unit, abilities))
-            {
-                return 0;
-            }
-
-            if (unit.UnitType != UnitType.Creep)
             {
                 return 0;
             }

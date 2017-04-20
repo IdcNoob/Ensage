@@ -20,7 +20,7 @@
         public StiflingDagger(Ability ability)
             : base(ability)
         {
-            for (var i = 0u; i < ability.MaximumLevel; i++)
+            for (var i = 0u; i < Damage.Length; i++)
             {
                 autoAttackDamageReduction[i] = ability.AbilitySpecialData.First(x => x.Name == "attack_factor")
                                                    .GetValue(i) / 100 + 1;

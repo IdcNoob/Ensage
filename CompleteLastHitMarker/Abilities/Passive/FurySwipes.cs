@@ -1,6 +1,5 @@
 ﻿namespace CompleteLastHitMarker.Abilities.Passive
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -14,20 +13,18 @@
 
     using Units.Base;
 
-    [Ability(AbilityId.antimage_mana_break)]
-    internal class ManaBreak : DefaultPassive
+    [Ability(AbilityId.ursa_fury_swipes)]
+    internal class FurySwipes : DefaultPassive
     {
-        private readonly float multiplier;
+        private const string FurySwipesModifier = "modifier_ursa_fury_swipes_damage_increase";
 
-        public ManaBreak(Ability ability)
+        public FurySwipes(Ability ability)
             : base(ability)
         {
             for (var i = 0u; i < Damage.Length; i++)
             {
-                Damage[i] = Ability.AbilitySpecialData.First(x => x.Name == "mana_per_hit").GetValue(i);
+                Damage[i] = Ability.AbilitySpecialData.First(x => x.Name == "damage_per_stack").GetValue(i);
             }
-
-            multiplier = Ability.AbilitySpecialData.First(x => x.Name == "damage_per_burn").Value;
         }
 
         public override float GetBonusDamage(Hero hero, KillableUnit unit, IEnumerable<IPassiveAbility> abilities)
@@ -37,7 +34,8 @@
                 return 0;
             }
 
-            return Math.Min(Damage[Ability.Level - 1], unit.Mana) * multiplier;
+            return (unit.Modifiers.FirstOrDefault(x => x.Name == FurySwipesModifier)?.StackCount ?? 0)
+                   * Damage[Level - 1];
         }
     }
 }

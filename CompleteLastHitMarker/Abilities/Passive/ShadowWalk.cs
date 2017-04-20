@@ -13,8 +13,6 @@
 
     using Units.Base;
 
-    using Utils;
-
     [Ability(AbilityId.bounty_hunter_wind_walk)]
     internal class ShadowWalk : DefaultPassive
     {
@@ -23,7 +21,7 @@
         public ShadowWalk(Ability ability)
             : base(ability)
         {
-            for (var i = 0u; i < ability.MaximumLevel; i++)
+            for (var i = 0u; i < Damage.Length; i++)
             {
                 Damage[i] = Ability.AbilitySpecialData.First(x => x.Name == "bonus_damage").GetValue(i);
             }
@@ -32,11 +30,6 @@
         public override float GetBonusDamage(Hero hero, KillableUnit unit, IEnumerable<IPassiveAbility> abilities)
         {
             if (!CanDoDamage(hero, unit, abilities))
-            {
-                return 0;
-            }
-
-            if (unit.UnitType == UnitType.Tower)
             {
                 return 0;
             }

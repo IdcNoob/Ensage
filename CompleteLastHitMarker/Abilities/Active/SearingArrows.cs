@@ -18,7 +18,7 @@
         {
             DealsDamageToTowers = true;
 
-            for (var i = 0u; i < ability.MaximumLevel; i++)
+            for (var i = 0u; i < Damage.Length; i++)
             {
                 Damage[i] = Ability.AbilitySpecialData.First(x => x.Name == "damage_bonus").GetValue(i);
             }

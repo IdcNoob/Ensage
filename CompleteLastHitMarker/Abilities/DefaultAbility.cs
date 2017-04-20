@@ -18,11 +18,14 @@
             Handle = ability.Handle;
             Name = ability.Name;
             IsItem = ability is Item;
+            Damage = new float[Ability.MaximumLevel];
         }
 
         public AbilityId AbilityId { get; }
 
         public DamageType DamageType { get; protected set; }
+
+        public bool DealsDamageToTowers { get; protected set; }
 
         public uint Handle { get; }
 
@@ -30,7 +33,7 @@
 
         public string Name { get; }
 
-        protected float[] Damage { get; } = new float[8];
+        protected float[] Damage { get; }
 
         protected bool IsItem { get; }
 

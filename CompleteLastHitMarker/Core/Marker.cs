@@ -143,18 +143,14 @@
                                     ? menu.AutoAttackMenu.AutoAttackColors.CanBeKilledColor(hero.Team, unit.Team)
                                     : menu.AutoAttackMenu.AutoAttackColors.CanNotBeKilledColor(hero.Team, unit.Team);
 
+                    // empty hp + border
+                    Drawing.DrawRect(hpBarPosition + new Vector2(-1), hpBarSize + new Vector2(2), Color.Black, false);
+
                     // current hp
                     Drawing.DrawRect(
                         hpBarPosition,
                         new Vector2(currentHpBarSize, hpBarSize.Y),
                         menu.AutoAttackMenu.AutoAttackColors.DefaultHealthColor(hero.Team, unit.Team),
-                        false);
-
-                    // empty hp
-                    Drawing.DrawRect(
-                        hpBarPosition + new Vector2(currentHpBarSize, 0),
-                        new Vector2(hpBarSize.X - currentHpBarSize, hpBarSize.Y),
-                        Color.Black,
                         false);
 
                     // damage
@@ -163,9 +159,6 @@
                         new Vector2(size, hpBarSize.Y),
                         color,
                         false);
-
-                    // outline
-                    Drawing.DrawRect(hpBarPosition + new Vector2(-1), hpBarSize + new Vector2(1), Color.Black, true);
                 }
 
                 if (menu.AbilitiesMenu.IsEnabled && unit.AbilityDamageCalculated)
@@ -201,6 +194,24 @@
                         / 2,
                         unit.DefaultTextureY + menu.AbilitiesMenu.Texture.Y);
 
+                    if (menu.AbilitiesMenu.ShowBorder && damage >= health
+                        || menu.AbilitiesMenu.ShowWarningBorder && damage < health)
+                    {
+                        var color = damage < health
+                                        ? menu.AbilitiesMenu.AbilitiesColor.CanNotBeKilledColor
+                                        : menu.AbilitiesMenu.AbilitiesColor.CanBeKilledColor;
+                        var borderWidth = menu.AbilitiesMenu.Texture.Size * 0.1f;
+                        var startBorderPosition = hpBarPosition + startPositionShift;
+
+                        //border
+                        Drawing.DrawRect(
+                            startBorderPosition + new Vector2(-borderWidth),
+                            new Vector2(
+                                menu.AbilitiesMenu.Texture.Size * abilitiesCount + borderWidth * 2,
+                                menu.AbilitiesMenu.Texture.Size + borderWidth * 2),
+                            color);
+                    }
+
                     for (var i = 0; i < abilitiesCount; i++)
                     {
                         Drawing.DrawRect(
@@ -208,43 +219,6 @@
                             new Vector2(menu.AbilitiesMenu.Texture.Size),
                             abilities[i]);
                     }
-
-                    if (!menu.AbilitiesMenu.ShowBorder && damage > health)
-                    {
-                        continue;
-                    }
-
-                    var color = damage < health
-                                    ? menu.AbilitiesMenu.AbilitiesColor.CanNotBeKilledColor
-                                    : menu.AbilitiesMenu.AbilitiesColor.CanBeKilledColor;
-                    var borderWidth = menu.AbilitiesMenu.Texture.Size * 0.1f;
-                    var startBorderPosition = hpBarPosition + startPositionShift;
-
-                    //border
-
-                    // left
-                    Drawing.DrawRect(
-                        startBorderPosition + new Vector2(-borderWidth, 0),
-                        new Vector2(borderWidth, menu.AbilitiesMenu.Texture.Size),
-                        color);
-
-                    // right
-                    Drawing.DrawRect(
-                        startBorderPosition + new Vector2(menu.AbilitiesMenu.Texture.Size * abilitiesCount, 0),
-                        new Vector2(borderWidth, menu.AbilitiesMenu.Texture.Size),
-                        color);
-
-                    // top
-                    Drawing.DrawRect(
-                        startBorderPosition + new Vector2(-borderWidth, -borderWidth),
-                        new Vector2(menu.AbilitiesMenu.Texture.Size * abilitiesCount + borderWidth * 2, borderWidth),
-                        color);
-
-                    // bottom
-                    Drawing.DrawRect(
-                        startBorderPosition + new Vector2(-borderWidth, menu.AbilitiesMenu.Texture.Size),
-                        new Vector2(menu.AbilitiesMenu.Texture.Size * abilitiesCount + borderWidth * 2, borderWidth),
-                        color);
                 }
             }
         }

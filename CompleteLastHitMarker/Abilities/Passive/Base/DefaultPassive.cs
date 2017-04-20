@@ -20,16 +20,18 @@
         {
         }
 
+        protected bool DealsDamageToAllies { get; set; }
+
         public abstract float GetBonusDamage(Hero hero, KillableUnit unit, IEnumerable<IPassiveAbility> abilities);
 
         protected virtual bool CanDoDamage(Hero hero, KillableUnit unit, IEnumerable<IPassiveAbility> abilities)
         {
-            if (unit.Team == hero.Team)
+            if (!DealsDamageToAllies && unit.Team == hero.Team)
             {
                 return false;
             }
 
-            if (DamageType != DamageType.Physical && unit.UnitType == UnitType.Tower)
+            if (!DealsDamageToTowers && unit.UnitType == UnitType.Tower)
             {
                 return false;
             }

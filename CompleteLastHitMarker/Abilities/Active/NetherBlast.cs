@@ -24,7 +24,7 @@
         {
             DealsDamageToTowers = true;
 
-            for (var i = 0u; i < ability.MaximumLevel; i++)
+            for (var i = 0u; i < Damage.Length; i++)
             {
                 Damage[i] = Ability.AbilitySpecialData.First(x => x.Name == "blast_damage").GetValue(i);
             }
@@ -38,7 +38,7 @@
 
         public override float CalculateDamage(Hero source, Unit target)
         {
-            var damage = target.SpellDamageTaken(Damage[Level - 1], DamageType, source, string.Empty);
+            var damage = target.SpellDamageTaken(Damage[Level - 1], DamageType, source, Name);
 
             if (talent?.Level >= 1)
             {

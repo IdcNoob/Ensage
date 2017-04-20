@@ -47,9 +47,11 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abilities\Active\ArcaneBolt.cs" />
     <Compile Include="Abilities\Active\ArcaneOrb.cs" />
     <Compile Include="Abilities\Active\Avalanche.cs" />
     <Compile Include="Abilities\Active\Base\DefaultActive.cs" />
+    <Compile Include="Abilities\Active\BoundlessStrike.cs" />
     <Compile Include="Abilities\Active\GlaivesOfWisdom.cs" />
     <Compile Include="Abilities\Active\NetherBlast.cs" />
     <Compile Include="Abilities\Active\ProximityMines.cs" />
@@ -63,12 +65,16 @@
     <Compile Include="Abilities\Interfaces\IPassiveAbility.cs" />
     <Compile Include="Abilities\Passive\Base\DefaultPassive.cs" />
     <Compile Include="Abilities\Passive\BattleFury.cs" />
+    <Compile Include="Abilities\Passive\Feast.cs" />
+    <Compile Include="Abilities\Passive\FurySwipes.cs" />
     <Compile Include="Abilities\Passive\IronTalon.cs" />
     <Compile Include="Abilities\Passive\Jinada.cs" />
+    <Compile Include="Abilities\Passive\JinguMastery.cs" />
     <Compile Include="Abilities\Passive\ManaBreak.cs" />
     <Compile Include="Abilities\Passive\Overload.cs" />
     <Compile Include="Abilities\Passive\QuellingBlade.cs" />
     <Compile Include="Abilities\Passive\ShadowWalk.cs" />
+    <Compile Include="Abilities\Passive\Tidebringer.cs" />
     <Compile Include="Attributes\AbilityAttribute.cs" />
     <Compile Include="Core\AbilityData.cs" />
     <Compile Include="Core\Marker.cs" />

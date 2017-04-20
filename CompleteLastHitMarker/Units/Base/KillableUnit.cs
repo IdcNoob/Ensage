@@ -53,6 +53,8 @@
 
         public float MaxHealth => Unit.MaximumHealth;
 
+        public IEnumerable<Modifier> Modifiers => Unit.Modifiers;
+
         public float MyAutoAttackDamageDone { get; protected set; }
 
         public Team Team { get; }
