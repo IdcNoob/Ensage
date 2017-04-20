@@ -16,6 +16,8 @@
         public SearingArrows(Ability ability)
             : base(ability)
         {
+            DealsDamageToTowers = true;
+
             for (var i = 0u; i < ability.MaximumLevel; i++)
             {
                 Damage[i] = Ability.AbilitySpecialData.First(x => x.Name == "damage_bonus").GetValue(i);

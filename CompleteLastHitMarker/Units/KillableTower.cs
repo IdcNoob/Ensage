@@ -2,14 +2,12 @@
 {
     using Base;
 
-    using Core;
-
     using Ensage;
     using Ensage.Common;
 
-    using Menus.Abilities;
-
     using SharpDX;
+
+    using Utils;
 
     internal class KillableTower : KillableUnit
     {
@@ -21,13 +19,9 @@
             hpBarPositionFix = new Vector2(-2, -31);
             HpBarSize = new Vector2(HUDInfo.GetHPBarSizeX(Unit) + 5, HUDInfo.GetHpBarSizeY(Unit) / 2);
             DefaultTextureY = -50;
+            UnitType = UnitType.Tower;
         }
 
         public override Vector2 HpBarPosition => HUDInfo.GetHPbarPosition(Unit) + hpBarPositionFix;
-
-        public override void CalculateAbilityDamageTaken(MyHero hero, AbilitiesMenu menu)
-        {
-            // add tower damage abilities ?
-        }
     }
 }

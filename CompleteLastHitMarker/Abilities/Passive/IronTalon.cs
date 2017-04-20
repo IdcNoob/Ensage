@@ -11,8 +11,9 @@
 
     using Interfaces;
 
-    using Units;
     using Units.Base;
+
+    using Utils;
 
     [Ability(AbilityId.item_iron_talon)]
     internal class IronTalon : DefaultPassive
@@ -40,7 +41,7 @@
                 return 0;
             }
 
-            if (unit is KillableTower)
+            if (unit.UnitType != UnitType.Creep)
             {
                 return 0;
             }

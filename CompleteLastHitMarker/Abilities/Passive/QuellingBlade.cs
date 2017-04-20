@@ -11,8 +11,9 @@
 
     using Interfaces;
 
-    using Units;
     using Units.Base;
+
+    using Utils;
 
     [Ability(AbilityId.item_quelling_blade)]
     internal class QuellingBlade : DefaultPassive
@@ -40,7 +41,7 @@
                 return 0;
             }
 
-            if (unit is KillableTower)
+            if (unit.UnitType != UnitType.Creep)
             {
                 return 0;
             }

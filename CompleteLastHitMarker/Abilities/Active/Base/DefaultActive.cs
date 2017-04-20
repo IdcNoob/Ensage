@@ -8,6 +8,10 @@
 
     using Interfaces;
 
+    using Units.Base;
+
+    using Utils;
+
     internal class DefaultActive : DefaultAbility, IActiveAbility
     {
         public DefaultActive(Ability ability)
@@ -23,6 +27,8 @@
 
         public bool DealsAutoAttackDamage { get; protected set; }
 
+        public bool DealsDamageToTowers { get; protected set; }
+
         public float ManaCost => Ability.ManaCost;
 
         public DotaTexture Texture { get; }
@@ -35,6 +41,11 @@
         public bool CanBeCasted()
         {
             return Ability.CanBeCasted() && !Ability.IsHidden;
+        }
+
+        public override bool IsValid(Hero hero, KillableUnit unit)
+        {
+            return base.IsValid(hero, unit) && (DealsDamageToTowers || unit.UnitType != UnitType.Tower);
         }
     }
 }

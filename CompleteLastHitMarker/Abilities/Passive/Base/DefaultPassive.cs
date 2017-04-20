@@ -7,8 +7,9 @@
 
     using Interfaces;
 
-    using Units;
     using Units.Base;
+
+    using Utils;
 
     internal abstract class DefaultPassive : DefaultAbility, IPassiveAbility
     {
@@ -28,7 +29,7 @@
                 return false;
             }
 
-            if (DamageType != DamageType.Physical && unit is KillableTower)
+            if (DamageType != DamageType.Physical && unit.UnitType == UnitType.Tower)
             {
                 return false;
             }

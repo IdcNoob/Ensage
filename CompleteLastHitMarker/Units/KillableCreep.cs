@@ -7,6 +7,8 @@
 
     using SharpDX;
 
+    using Utils;
+
     internal class KillableCreep : KillableUnit
     {
         private readonly Vector2 hpBarPositionFix;
@@ -17,6 +19,7 @@
             hpBarPositionFix = new Vector2(13, 21);
             HpBarSize = new Vector2(HUDInfo.GetHPBarSizeX(Unit) - 24, HUDInfo.GetHpBarSizeY(Unit) / 2);
             DefaultTextureY = -50;
+            UnitType = UnitType.Creep;
         }
 
         public override Vector2 HpBarPosition => HUDInfo.GetHPbarPosition(Unit) + hpBarPositionFix;

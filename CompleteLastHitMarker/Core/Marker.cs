@@ -66,7 +66,7 @@
 
         private void AddCreeps()
         {
-            foreach (var tower in ObjectManager.GetEntities<Creep>().Where(x => x.IsAlive))
+            foreach (var tower in ObjectManager.GetEntitiesParallel<Creep>().Where(x => x.IsValid && x.IsAlive))
             {
                 killableUnits.Add(new KillableCreep(tower));
             }
@@ -74,7 +74,7 @@
 
         private void AddTowers()
         {
-            foreach (var tower in ObjectManager.GetEntities<Tower>().Where(x => x.IsAlive))
+            foreach (var tower in ObjectManager.GetEntitiesParallel<Tower>().Where(x => x.IsValid && x.IsAlive))
             {
                 killableUnits.Add(new KillableTower(tower));
             }
@@ -82,12 +82,12 @@
 
         private void OnAddEntity(EntityEventArgs args)
         {
-            //var creep = args.Entity as Creep;
-            //if (creep != null && creep.IsValid && killableUnits.All(x => x.Handle != args.Entity.Handle))
-            //{
-            //    killableUnits.Add(new KillableCreep(creep));
-            //    return;
-            //}
+            var creep = args.Entity as Creep;
+            if (creep != null && creep.IsValid && killableUnits.All(x => x.Handle != args.Entity.Handle))
+            {
+                killableUnits.Add(new KillableCreep(creep));
+                return;
+            }
 
             var item = args.Entity as Item;
             if (item != null && item.IsValid && item.Purchaser?.Hero?.Handle == hero.Handle)
@@ -111,10 +111,8 @@
 
             foreach (var unit in killableUnits.Where(x => x.DamageCalculated && x.IsValid()))
             {
-                var hpBarPosition = unit.HpBarPosition + new Vector2(
-                                        menu.AutoAttackMenu.AutoAttackHealthBar.X,
-                                        menu.AutoAttackMenu.AutoAttackHealthBar.Y);
-
+                var hpBarPosition = menu.AutoAttackMenu.AutoAttackHealthBar.GetHealthBarPosition(unit);
+                var hpBarSize = menu.AutoAttackMenu.AutoAttackHealthBar.GetHealthBarSize(unit);
                 var myAutoAttackDamageDone = unit.MyAutoAttackDamageDone;
                 var health = unit.Health;
 
@@ -124,11 +122,6 @@
                     var startPositionShift = 0f;
                     var sizeMaximized = false;
                     var canBeKilled = myAutoAttackDamageDone >= health;
-
-                    var hpBarSize = new Vector2(
-                        unit.HpBarSize.X + menu.AutoAttackMenu.AutoAttackHealthBar.SizeX,
-                        unit.HpBarSize.Y + menu.AutoAttackMenu.AutoAttackHealthBar.SizeY);
-
                     var currentHpBarSize = hpBarSize.X * unit.HealthPercentage;
 
                     if (menu.AutoAttackMenu.FillHpBar && canBeKilled)
@@ -172,11 +165,7 @@
                         false);
 
                     // outline
-                    Drawing.DrawRect(
-                        hpBarPosition + new Vector2(-1, -1),
-                        hpBarSize + new Vector2(1, 1),
-                        Color.Black,
-                        true);
+                    Drawing.DrawRect(hpBarPosition + new Vector2(-1), hpBarSize + new Vector2(1), Color.Black, true);
                 }
 
                 if (menu.AbilitiesMenu.IsEnabled && unit.AbilityDamageCalculated)
@@ -208,8 +197,8 @@
 
                     var abilitiesCount = abilities.Count;
                     var startPositionShift = new Vector2(
-                        menu.AbilitiesMenu.Texture.X + (unit.HpBarSize.X
-                                                        - menu.AbilitiesMenu.Texture.Size * abilitiesCount) / 2,
+                        menu.AbilitiesMenu.Texture.X + (hpBarSize.X - menu.AbilitiesMenu.Texture.Size * abilitiesCount)
+                        / 2,
                         unit.DefaultTextureY + menu.AbilitiesMenu.Texture.Y);
 
                     for (var i = 0; i < abilitiesCount; i++)
@@ -278,13 +267,6 @@
             if (!menu.IsEnabled || !hero.IsAlive)
             {
                 return;
-            }
-
-            //temp fix
-            foreach (var creep in ObjectManager.GetEntitiesParallel<Creep>()
-                .Where(x => x.IsValid && x.IsAlive && x.IsSpawned && killableUnits.All(z => z.Handle != x.Handle)))
-            {
-                killableUnits.Add(new KillableCreep(creep));
             }
 
             foreach (var unit in killableUnits.Where(x => x.IsValid() && x.Distance(hero) < 2000))

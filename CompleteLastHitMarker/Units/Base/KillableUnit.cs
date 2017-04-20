@@ -57,7 +57,9 @@
 
         public Team Team { get; }
 
-        public virtual void CalculateAbilityDamageTaken(MyHero hero, AbilitiesMenu menu)
+        public UnitType UnitType { get; protected set; }
+
+        public void CalculateAbilityDamageTaken(MyHero hero, AbilitiesMenu menu)
         {
             if (hero.Team == Team)
             {
@@ -79,7 +81,7 @@
             }
         }
 
-        public virtual void CalculateAutoAttackDamageTaken(MyHero hero)
+        public void CalculateAutoAttackDamageTaken(MyHero hero)
         {
             var tempDamage = 0f;
             var multiplier = Damage.Multiplier(hero.AttackDamageType, ArmorType);

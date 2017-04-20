@@ -14,6 +14,8 @@
 
     using Units.Base;
 
+    using Utils;
+
     [Ability(AbilityId.antimage_mana_break)]
     internal class ManaBreak : DefaultPassive
     {
@@ -33,6 +35,11 @@
         public override float GetBonusDamage(Hero hero, KillableUnit unit, IEnumerable<IPassiveAbility> abilities)
         {
             if (!CanDoDamage(hero, unit, abilities))
+            {
+                return 0;
+            }
+
+            if (unit.UnitType == UnitType.Tower)
             {
                 return 0;
             }

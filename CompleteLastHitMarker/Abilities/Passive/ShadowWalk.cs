@@ -11,8 +11,9 @@
 
     using Interfaces;
 
-    using Units;
     using Units.Base;
+
+    using Utils;
 
     [Ability(AbilityId.bounty_hunter_wind_walk)]
     internal class ShadowWalk : DefaultPassive
@@ -35,7 +36,7 @@
                 return 0;
             }
 
-            if (unit is KillableTower)
+            if (unit.UnitType == UnitType.Tower)
             {
                 return 0;
             }
