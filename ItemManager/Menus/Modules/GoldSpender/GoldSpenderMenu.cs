@@ -30,7 +30,7 @@
 
             var hpThresholdPct =
                 new MenuItem("goldSpenderHpThresholdPct", "HP% threshold").SetValue(new Slider(20, 1, 40));
-            hpThresholdPct.SetTooltip("Buy items if you have less HP in %");
+            hpThresholdPct.SetTooltip("Buy items if you have less HP%");
             menu.AddItem(hpThresholdPct);
             hpThresholdPct.ValueChanged += (sender, args) => HpThresholdPct = args.GetNewValue<Slider>().Value;
             HpThresholdPct = hpThresholdPct.GetValue<Slider>().Value;

@@ -36,8 +36,8 @@
                 new StringList(new[] { "None", "Hero attribute", "Strength", "Agility", "Intelligence" }));
             menu.AddItem(switchOnAttack);
             switchOnAttack.ValueChanged +=
-                (sender, args) => SwitchOnAttackttribute = args.GetNewValue<StringList>().SelectedIndex;
-            SwitchOnAttackttribute = switchOnAttack.GetValue<StringList>().SelectedIndex;
+                (sender, args) => SwitchOnAttackAttribute = args.GetNewValue<StringList>().SelectedIndex;
+            SwitchOnAttackAttribute = switchOnAttack.GetValue<StringList>().SelectedIndex;
 
             var switchOnHeal = new MenuItem("ptSwitchOnHeal", "Switch when healing").SetValue(true);
             switchOnHeal.SetTooltip("AutoBottleMenu, flask, shrine");
@@ -63,7 +63,7 @@
 
         public int MpAbilityThreshold { get; private set; }
 
-        public int SwitchOnAttackttribute { get; private set; }
+        public int SwitchOnAttackAttribute { get; private set; }
 
         public bool SwitchOnHeal { get; private set; }
 

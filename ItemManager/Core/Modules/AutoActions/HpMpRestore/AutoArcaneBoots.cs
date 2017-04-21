@@ -1,6 +1,7 @@
 ﻿namespace ItemManager.Core.Modules.AutoActions.HpMpRestore
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
 
     using Abilities;
@@ -12,13 +13,13 @@
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
 
-    using EventArgs;
+    using Interfaces;
 
     using Menus;
     using Menus.Modules.AutoActions.HpMpRestore;
 
-    [Module]
-    internal class AutoArcaneBoots : IDisposable
+    [AbilityBasedModule(AbilityId.item_arcane_boots)]
+    internal class AutoArcaneBoots : IAbilityBasedModule
     {
         private readonly Manager manager;
 
@@ -30,22 +31,31 @@
 
         private bool notified;
 
-        private bool subscribed;
-
         public AutoArcaneBoots(Manager manager, MenuManager menu)
         {
             this.manager = manager;
             this.menu = menu.AutoActionsMenu.AutoHealsMenu.AutoArcaneBootsMenu;
 
-            manager.OnItemAdd += OnItemAdd;
-            manager.OnItemRemove += OnItemRemove;
+            Refresh();
+
+            Game.OnUpdate += OnUpdate;
+            Player.OnExecuteOrder += OnExecuteOrder;
         }
+
+        public List<AbilityId> AbilityIds { get; } = new List<AbilityId>
+        {
+            AbilityId.item_arcane_boots
+        };
 
         public void Dispose()
         {
-            manager.OnItemAdd -= OnItemAdd;
             Game.OnUpdate -= OnUpdate;
             Player.OnExecuteOrder -= OnExecuteOrder;
+        }
+
+        public void Refresh()
+        {
+            arcaneBoots = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityIds.First()) as ArcaneBoots;
         }
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
@@ -55,62 +65,22 @@
                 return;
             }
 
-            if (args.Ability?.Id == AbilityId.item_arcane_boots)
+            if (args.Ability?.Id == AbilityIds.First())
             {
                 notified = false;
             }
         }
 
-        private void OnItemAdd(object sender, ItemEventArgs itemEventArgs)
-        {
-            if (!itemEventArgs.IsMine || itemEventArgs.Item.Id != AbilityId.item_arcane_boots)
-            {
-                return;
-            }
-
-            arcaneBoots =
-                manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_arcane_boots) as ArcaneBoots;
-
-            if (arcaneBoots == null || subscribed)
-            {
-                return;
-            }
-
-            subscribed = true;
-            Game.OnUpdate += OnUpdate;
-            Player.OnExecuteOrder += OnExecuteOrder;
-        }
-
-        private void OnItemRemove(object sender, ItemEventArgs itemEventArgs)
-        {
-            if (!itemEventArgs.IsMine || itemEventArgs.Item.Id != AbilityId.item_arcane_boots)
-            {
-                return;
-            }
-
-            arcaneBoots =
-                manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_arcane_boots) as ArcaneBoots;
-
-            if (arcaneBoots != null || !subscribed)
-            {
-                return;
-            }
-
-            subscribed = false;
-            Game.OnUpdate -= OnUpdate;
-            Player.OnExecuteOrder -= OnExecuteOrder;
-        }
-
         private void OnUpdate(EventArgs args)
         {
-            if (sleeper.Sleeping || Game.IsPaused)
+            if (sleeper.Sleeping)
             {
                 return;
             }
 
             sleeper.Sleep(500);
 
-            if (!menu.AutoUse || !manager.MyHero.CanUseItems() || !arcaneBoots.CanBeCasted()
+            if (!menu.AutoUse || Game.IsPaused || !manager.MyHero.CanUseItems() || !arcaneBoots.CanBeCasted()
                 || manager.MyHero.MissingMana < arcaneBoots.ManaRestore)
             {
                 return;
@@ -126,8 +96,8 @@
             {
                 if (!notified && menu.NotifyAllies)
                 {
-                    Network.ItemAlert(manager.MyHero.Position, AbilityId.item_arcane_boots);
-                    DelayAction.Add(200, () => Network.ItemAlert(manager.MyHero.Position, AbilityId.item_arcane_boots));
+                    Network.ItemAlert(manager.MyHero.Position, AbilityIds.First());
+                    DelayAction.Add(200, () => Network.ItemAlert(manager.MyHero.Position, AbilityIds.First()));
                     notified = true;
                 }
 

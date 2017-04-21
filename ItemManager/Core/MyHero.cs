@@ -234,7 +234,7 @@ namespace ItemManager.Core
 
         public bool IsInvisible()
         {
-            return Hero.IsInvisible();
+            return Hero.IsInvisible() && !Hero.IsVisibleToEnemies;
         }
 
         public bool ItemsCanBeDisabled()
@@ -307,7 +307,22 @@ namespace ItemManager.Core
 
         private bool CanUse()
         {
-            return Hero.IsAlive && !Hero.IsChanneling() && !IsInvisible();
+            return Hero.IsAlive && !Hero.IsChanneling() && (!IsInvisible() || CanUseAbilitiesInInvisibility());
+        }
+
+        private bool CanUseAbilitiesInInvisibility()
+        {
+            if (Hero.HeroId == HeroId.npc_dota_hero_riki)
+            {
+                return true;
+            }
+
+            if (Hero.HeroId == HeroId.npc_dota_hero_treant && Hero.HasModifier("modifier_treant_natures_guise_invis"))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private ItemSlot? GetSlot(uint? handle, AbilityId? abilityId, ItemStoredPlace itemStoredPlace)

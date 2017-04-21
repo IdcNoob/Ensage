@@ -47,11 +47,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\AbilityAttribute.cs" />
+    <Compile Include="Attributes\AbilityBasedModuleAttribute.cs" />
     <Compile Include="Attributes\ModuleAttribute.cs" />
+    <Compile Include="Core\Abilities\BlinkDagger.cs" />
     <Compile Include="Core\Abilities\GuardianGreaves.cs" />
+    <Compile Include="Core\Abilities\HandOfMidas.cs" />
     <Compile Include="Core\Abilities\IronTalon.cs" />
+    <Compile Include="Core\Abilities\LivingArmor.cs" />
     <Compile Include="Core\Abilities\MagicStick.cs" />
     <Compile Include="Core\Abilities\Mekansm.cs" />
+    <Compile Include="Core\Abilities\PhaseBoots.cs" />
     <Compile Include="Core\Abilities\UrnOfShadows.cs" />
     <Compile Include="Bootstrap.cs" />
     <Compile Include="Core\Abilities\ArcaneBoots.cs" />
@@ -60,19 +65,25 @@
     <Compile Include="Core\Abilities\SoulRing.cs" />
     <Compile Include="Core\Abilities\Base\UsableAbility.cs" />
     <Compile Include="Core\Abilities\Interfaces\IRecoveryAbility.cs" />
+    <Compile Include="Core\Modules\AbilityBasedModuleManager.cs" />
     <Compile Include="Core\Modules\AbilityHelper\BlinkAdjustment.cs" />
     <Compile Include="Core\Modules\AbilityHelper\TranquilDrop.cs" />
     <Compile Include="Core\Modules\AutoActions\AutoIronTalon.cs" />
+    <Compile Include="Core\Modules\AutoActions\AutoMidas.cs" />
+    <Compile Include="Core\Modules\AutoActions\AutoPhaseBoots.cs" />
+    <Compile Include="Core\Modules\AutoActions\HpMpRestore\AutoMagicStick.cs" />
+    <Compile Include="Core\Modules\AutoActions\HpMpRestore\AutoTango.cs" />
     <Compile Include="Core\Modules\AutoActions\HpMpRestore\AutoArcaneBoots.cs" />
     <Compile Include="Core\Modules\AutoActions\HpMpRestore\AutoBottle.cs" />
     <Compile Include="Core\Modules\AutoActions\AutoDewarding.cs" />
-    <Compile Include="Core\Modules\AutoActions\HpMpRestore\LivingArmor.cs" />
+    <Compile Include="Core\Modules\AutoActions\HpMpRestore\AutoLivingArmor.cs" />
     <Compile Include="Core\Modules\AutoActions\PowerTreadsSwitcher.cs" />
     <Compile Include="Core\Modules\AutoActions\AutoSoulRing.cs" />
     <Compile Include="Core\Modules\AutoActions\TechiesMinesDestroyer.cs" />
     <Compile Include="Core\Modules\CourierHelper\CourierHelper.cs" />
     <Compile Include="Core\Manager.cs" />
     <Compile Include="Core\Modules\GoldSpender\GoldSpender.cs" />
+    <Compile Include="Core\Modules\Interfaces\IAbilityBasedModule.cs" />
     <Compile Include="Core\Modules\ItemSwapper\ItemSwapper.cs" />
     <Compile Include="Core\Modules\RecoveryAbuse\RecoveryAbuse.cs" />
     <Compile Include="Core\Modules\ShrineHelper\ShrineHelper.cs" />
@@ -90,6 +101,8 @@
     <Compile Include="Menus\Modules\AbilityHelper\BlinkMenu.cs" />
     <Compile Include="Menus\Modules\AbilityHelper\TranquilMenu.cs" />
     <Compile Include="Menus\Modules\AutoActions\Actions\IronTalonMenu.cs" />
+    <Compile Include="Menus\Modules\AutoActions\Actions\MidasMenu.cs" />
+    <Compile Include="Menus\Modules\AutoActions\Actions\PhaseBootsMenu.cs" />
     <Compile Include="Menus\Modules\AutoActions\HpMpRestore\AutoArcaneBootsMenu.cs" />
     <Compile Include="Menus\Modules\AutoActions\AutoActionsMenu.cs" />
     <Compile Include="Core\Modules\AutoActions\Order.cs" />
@@ -97,6 +110,8 @@
     <Compile Include="Menus\Modules\AutoActions\Actions\DewardingMenu.cs" />
     <Compile Include="Menus\Modules\AutoActions\Actions\TechiesMinesDestroyerMenu.cs" />
     <Compile Include="Menus\Modules\AutoActions\AutoHealsMenu.cs" />
+    <Compile Include="Menus\Modules\AutoActions\HpMpRestore\AutoMagicStickMenu.cs" />
+    <Compile Include="Menus\Modules\AutoActions\HpMpRestore\AutoTangoMenu.cs" />
     <Compile Include="Menus\Modules\AutoActions\HpMpRestore\LivingArmorMenu.cs" />
     <Compile Include="Menus\Modules\CourierHelper\CourierHelperMenu.cs" />
     <Compile Include="Menus\Modules\GoldSpender\GoldSpenderMenu.cs" />
@@ -119,6 +134,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\CourierUtils.cs" />
+    <Compile Include="Utils\CreepUtils.cs" />
     <Compile Include="Utils\EntityUtils.cs" />
     <Compile Include="Utils\ItemUtils.cs" />
     <Compile Include="Utils\ModifierUtils.cs" />

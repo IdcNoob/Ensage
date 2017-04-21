@@ -12,6 +12,8 @@
 
             AutoBottleMenu = new AutoBottleMenu(menu);
             AutoArcaneBootsMenu = new AutoArcaneBootsMenu(menu);
+            AutoTangoMenu = new AutoTangoMenu(menu);
+            AutoMagicStickMenu = new AutoMagicStickMenu(menu);
             LivingArmorMenu = new LivingArmorMenu(menu);
 
             rootMenu.AddSubMenu(menu);
@@ -20,6 +22,10 @@
         public AutoArcaneBootsMenu AutoArcaneBootsMenu { get; }
 
         public AutoBottleMenu AutoBottleMenu { get; }
+
+        public AutoMagicStickMenu AutoMagicStickMenu { get; }
+
+        public AutoTangoMenu AutoTangoMenu { get; }
 
         public LivingArmorMenu LivingArmorMenu { get; }
     }

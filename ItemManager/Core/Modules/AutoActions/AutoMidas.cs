@@ -17,30 +17,30 @@
     using Menus;
     using Menus.Modules.AutoActions.Actions;
 
-    [AbilityBasedModule(AbilityId.item_iron_talon)]
-    internal class AutoIronTalon : IAbilityBasedModule
+    using Utils;
+
+    [AbilityBasedModule(AbilityId.item_hand_of_midas)]
+    internal class AutoMidas : IAbilityBasedModule
     {
         private readonly Manager manager;
 
-        private readonly IronTalonMenu menu;
+        private readonly MidasMenu menu;
 
         private readonly Sleeper sleeper = new Sleeper();
 
-        private IronTalon ironTalon;
+        private HandOfMidas handOfMidas;
 
-        public AutoIronTalon(Manager manager, MenuManager menu)
+        public AutoMidas(Manager manager, MenuManager menu)
         {
             this.manager = manager;
-            this.menu = menu.AutoActionsMenu.IronTalonMenu;
+            this.menu = menu.AutoActionsMenu.MidasMenu;
 
             Refresh();
-
-            Game.OnUpdate += OnUpdate;
         }
 
         public List<AbilityId> AbilityIds { get; } = new List<AbilityId>
         {
-            AbilityId.item_iron_talon
+            AbilityId.item_hand_of_midas
         };
 
         public void Dispose()
@@ -50,7 +50,7 @@
 
         public void Refresh()
         {
-            ironTalon = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityIds.First()) as IronTalon;
+            handOfMidas = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityIds.First()) as HandOfMidas;
         }
 
         private void OnUpdate(EventArgs args)
@@ -62,7 +62,7 @@
 
             sleeper.Sleep(500);
 
-            if (!menu.IsEnabled || !manager.MyHero.CanUseItems() || !ironTalon.CanBeCasted() || Game.IsPaused)
+            if (!menu.IsEnabled || !manager.MyHero.CanUseItems() || !handOfMidas.CanBeCasted() || Game.IsPaused)
             {
                 return;
             }
@@ -70,15 +70,16 @@
             var creep = ObjectManager.GetEntitiesParallel<Creep>()
                 .Where(
                     x => x.IsValid && x.IsAlive && x.IsSpawned && x.IsVisible
-                         && x.Distance2D(manager.MyHero.Position) <= ironTalon.GetCastRange()
+                         && x.Distance2D(manager.MyHero.Position) <= handOfMidas.GetCastRange()
                          && x.Team != manager.MyHero.Team && !x.IsAncient
-                         && x.Health * ironTalon.Damage >= menu.DamageThreshold)
+                         && x.HealthPercentage() >= menu.HealthThresholdPct
+                         && x.GetGrantedExperience() >= menu.ExperienceThreshold)
                 .OrderByDescending(x => x.Health)
                 .FirstOrDefault();
 
             if (creep != null)
             {
-                ironTalon.Use(creep);
+                handOfMidas.Use(creep);
             }
         }
     }

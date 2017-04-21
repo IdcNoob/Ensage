@@ -14,6 +14,8 @@
             SoulRingMenu = new SoulRingMenu(menu);
             PowerTreadsMenu = new PowerTreadsMenu(menu);
             IronTalonMenu = new IronTalonMenu(menu);
+            PhaseBootsMenu = new PhaseBootsMenu(menu);
+            MidasMenu = new MidasMenu(menu);
             DewardingMenu = new DewardingMenu(menu);
             TechiesMinesDestroyerMenu = new TechiesMinesDestroyerMenu(menu);
 
@@ -25,6 +27,10 @@
         public DewardingMenu DewardingMenu { get; }
 
         public IronTalonMenu IronTalonMenu { get; }
+
+        public MidasMenu MidasMenu { get; }
+
+        public PhaseBootsMenu PhaseBootsMenu { get; }
 
         public PowerTreadsMenu PowerTreadsMenu { get; }
 

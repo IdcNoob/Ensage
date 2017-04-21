@@ -39,12 +39,6 @@
                     x => x.Namespace?.Contains("ItemManager.Core.Modules") == true
                          && x.GetCustomAttribute<ModuleAttribute>() != null))
             {
-                if (!type.GetInterfaces().Contains(typeof(IDisposable)))
-                {
-                    Console.WriteLine("[Item Manager] => " + type.Name + " missing IDisposable interface");
-                    continue;
-                }
-
                 disposables.Add((IDisposable)Activator.CreateInstance(type, manager, menu));
             }
         }

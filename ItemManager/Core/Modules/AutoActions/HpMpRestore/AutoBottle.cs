@@ -1,6 +1,7 @@
 ﻿namespace ItemManager.Core.Modules.AutoActions.HpMpRestore
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
 
     using Abilities;
@@ -11,7 +12,7 @@
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
 
-    using EventArgs;
+    using Interfaces;
 
     using Menus;
     using Menus.Modules.AutoActions.HpMpRestore;
@@ -21,8 +22,8 @@
 
     using Utils;
 
-    [Module]
-    internal class AutoBottle : IDisposable
+    [AbilityBasedModule(AbilityId.item_bottle)]
+    internal class AutoBottle : IAbilityBasedModule
     {
         private readonly Vector3 fountain;
 
@@ -36,8 +37,6 @@
 
         private Bottle bottle;
 
-        private bool subscribed;
-
         public AutoBottle(Manager manager, MenuManager menu)
         {
             this.manager = manager;
@@ -48,9 +47,16 @@
                 .First(x => x.IsValid && x.ClassId == ClassId.CDOTA_Unit_Fountain && x.Team == manager.MyHero.Team)
                 .Position;
 
-            manager.OnItemAdd += OnItemAdd;
-            manager.OnItemRemove += OnItemRemove;
+            Refresh();
+
+            Game.OnUpdate += OnUpdate;
+            Player.OnExecuteOrder += OnExecuteOrder;
         }
+
+        public List<AbilityId> AbilityIds { get; } = new List<AbilityId>
+        {
+            AbilityId.item_bottle
+        };
 
         public bool BottleCanBeRefilled()
         {
@@ -75,10 +81,13 @@
 
         public void Dispose()
         {
-            manager.OnItemAdd -= OnItemAdd;
-            manager.OnItemRemove -= OnItemRemove;
             Game.OnUpdate -= OnUpdate;
             Player.OnExecuteOrder -= OnExecuteOrder;
+        }
+
+        public void Refresh()
+        {
+            bottle = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityIds.First()) as Bottle;
         }
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
@@ -103,54 +112,17 @@
             }
         }
 
-        private void OnItemAdd(object sender, ItemEventArgs itemEventArgs)
-        {
-            if (!itemEventArgs.IsMine || itemEventArgs.Item.Id != AbilityId.item_bottle || subscribed)
-            {
-                return;
-            }
-
-            bottle = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_bottle) as Bottle;
-
-            if (bottle == null)
-            {
-                return;
-            }
-
-            subscribed = true;
-            Game.OnUpdate += OnUpdate;
-            Player.OnExecuteOrder += OnExecuteOrder;
-        }
-
-        private void OnItemRemove(object sender, ItemEventArgs itemEventArgs)
-        {
-            if (!itemEventArgs.IsMine || itemEventArgs.Item.Id != AbilityId.item_bottle || subscribed)
-            {
-                return;
-            }
-
-            bottle = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_bottle) as Bottle;
-
-            if (bottle != null)
-            {
-                return;
-            }
-
-            subscribed = false;
-            Game.OnUpdate -= OnUpdate;
-            Player.OnExecuteOrder -= OnExecuteOrder;
-        }
-
         private void OnUpdate(EventArgs args)
         {
-            if (sleeper.Sleeping(this) || Game.IsPaused || recoveryMenu.IsActive)
+            if (sleeper.Sleeping(this))
             {
                 return;
             }
 
             sleeper.Sleep(300, this);
 
-            if (!manager.MyHero.CanUseItems() || !bottle.CanBeAutoCasted() || !BottleCanBeRefilled())
+            if (Game.IsPaused || recoveryMenu.IsActive || !manager.MyHero.CanUseItems() || !bottle.CanBeAutoCasted()
+                || !BottleCanBeRefilled())
             {
                 return;
             }

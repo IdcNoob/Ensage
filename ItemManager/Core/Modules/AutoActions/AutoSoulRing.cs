@@ -1,6 +1,6 @@
 ﻿namespace ItemManager.Core.Modules.AutoActions
 {
-    using System;
+    using System.Collections.Generic;
     using System.Linq;
 
     using Abilities;
@@ -12,11 +12,13 @@
 
     using EventArgs;
 
+    using Interfaces;
+
     using Menus;
     using Menus.Modules.AutoActions.Actions;
 
-    [Module]
-    internal class AutoSoulRing : IDisposable
+    [AbilityBasedModule(AbilityId.item_soul_ring)]
+    internal class AutoSoulRing : IAbilityBasedModule
     {
         private readonly Manager manager;
 
@@ -26,23 +28,38 @@
 
         private SoulRing soulRing;
 
-        private bool subscribed;
-
         public AutoSoulRing(Manager manager, MenuManager menu)
         {
             this.manager = manager;
             this.menu = menu.AutoActionsMenu.SoulRingMenu;
             order = new Order();
 
+            Refresh();
+
+            foreach (var ability in manager.MyHero.Abilities.Where(x => x.GetManaCost(0) > 0))
+            {
+                this.menu.AddAbility(ability.StoredName(), true);
+            }
+
             manager.OnAbilityAdd += OnAbilityAdd;
             manager.OnAbilityRemove += OnAbilityRemove;
         }
+
+        public List<AbilityId> AbilityIds { get; } = new List<AbilityId>
+        {
+            AbilityId.item_soul_ring
+        };
 
         public void Dispose()
         {
             Player.OnExecuteOrder -= OnExecuteOrder;
             manager.OnAbilityAdd -= OnAbilityAdd;
             manager.OnAbilityRemove -= OnAbilityRemove;
+        }
+
+        public void Refresh()
+        {
+            soulRing = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityIds.First()) as SoulRing;
         }
 
         private void OnAbilityAdd(object sender, AbilityEventArgs abilityEventArgs)
@@ -56,18 +73,6 @@
             {
                 menu.AddAbility(abilityEventArgs.Ability.StoredName(), true);
             }
-
-            if (abilityEventArgs.Ability.Id == AbilityId.item_soul_ring)
-            {
-                soulRing =
-                    manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_soul_ring) as SoulRing;
-
-                if (soulRing != null && !subscribed)
-                {
-                    subscribed = true;
-                    Player.OnExecuteOrder += OnExecuteOrder;
-                }
-            }
         }
 
         private void OnAbilityRemove(object sender, AbilityEventArgs abilityEventArgs)
@@ -80,18 +85,6 @@
             if (abilityEventArgs.Ability.GetManaCost(0) > 0)
             {
                 menu.RemoveAbility(abilityEventArgs.Ability.StoredName());
-            }
-
-            if (abilityEventArgs.Ability.Id == AbilityId.item_soul_ring)
-            {
-                soulRing =
-                    manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_soul_ring) as SoulRing;
-
-                if (soulRing == null)
-                {
-                    subscribed = false;
-                    Player.OnExecuteOrder -= OnExecuteOrder;
-                }
             }
         }
 

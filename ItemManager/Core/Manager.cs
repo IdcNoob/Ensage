@@ -84,7 +84,7 @@
             }
 
             foreach (var unit in ObjectManager.GetEntitiesParallel<Unit>()
-                .Where(x => !added.Contains(x.Handle) && x.IsValid && x.IsRealUnit()))
+                .Where(x => !added.Contains(x.Handle) && x.IsValid))
             {
                 OnAddEntity(new EntityEventArgs(unit));
             }
@@ -129,7 +129,7 @@
             }
 
             var unit = args.Entity as Unit;
-            if (unit != null && unit.IsValid && unit.IsRealUnit())
+            if (unit != null && unit.IsValid && unit.IsRealUnit() && !(unit is Building))
             {
                 Units.Add(unit);
                 OnUnitAdd?.Invoke(null, new UnitEventArgs(unit));
@@ -176,7 +176,7 @@
             }
 
             var unit = args.Entity as Unit;
-            if (unit != null && unit.IsValid && unit.IsRealUnit())
+            if (unit != null && unit.IsValid && unit.IsRealUnit() && !(unit is Building))
             {
                 Units.Remove(unit);
                 OnUnitRemove?.Invoke(null, new UnitEventArgs(unit));

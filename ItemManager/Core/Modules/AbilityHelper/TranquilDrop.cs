@@ -3,8 +3,6 @@
     using System;
     using System.Linq;
 
-    using Attributes;
-
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
@@ -16,8 +14,9 @@
 
     using Utils;
 
-    [Module]
-    internal class TranquilDrop : IDisposable
+    // [AbilityBasedModule(AbilityId.item_tranquil_boots)]
+
+    internal class TranquilDrop //: IAbilityBasedModule
     {
         private readonly Manager manager;
 
@@ -35,10 +34,16 @@
             this.menu.OnTranquilDrop += OnTranquilDrop;
         }
 
+        public AbilityId AbilityId { get; } = AbilityId.item_tranquil_boots;
+
         public void Dispose()
         {
             menu.OnTranquilDrop -= OnTranquilDrop;
             Game.OnUpdate -= OnUpdate;
+        }
+
+        public void Refresh()
+        {
         }
 
         private void OnTranquilDrop(object sender, BoolEventArgs boolEventArgs)
@@ -46,7 +51,7 @@
             if (boolEventArgs.Enabled)
             {
                 var tranquils = manager.MyHero.GetMyItems(ItemStoredPlace.Inventory)
-                    .FirstOrDefault(x => x.Id == AbilityId.item_tranquil_boots);
+                    .FirstOrDefault(x => x.Id == AbilityId);
 
                 if (tranquils == null)
                 {
@@ -80,7 +85,7 @@
 
         private void OnUpdate(EventArgs args)
         {
-            if (Game.IsPaused || sleeper.Sleeping)
+            if (sleeper.Sleeping || Game.IsPaused)
             {
                 return;
             }

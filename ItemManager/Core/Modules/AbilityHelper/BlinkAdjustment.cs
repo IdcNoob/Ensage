@@ -1,35 +1,52 @@
 ﻿namespace ItemManager.Core.Modules.AbilityHelper
 {
-    using System;
+    using System.Collections.Generic;
     using System.Linq;
+
+    using Abilities;
 
     using Attributes;
 
     using Ensage;
-    using Ensage.Common.Extensions;
     using Ensage.Common.Extensions.SharpDX;
+
+    using Interfaces;
 
     using Menus;
     using Menus.Modules.AbilityHelper;
 
-    [Module]
-    internal class BlinkAdjustment : IDisposable
+    [AbilityBasedModule(AbilityId.item_blink)]
+    internal class BlinkAdjustment : IAbilityBasedModule
     {
         private readonly Manager manager;
 
         private readonly BlinkMenu menu;
+
+        private BlinkDagger blinkDagger;
 
         public BlinkAdjustment(Manager manager, MenuManager menu)
         {
             this.manager = manager;
             this.menu = menu.AbilityHelperMenu.BlinkMenu;
 
+            Refresh();
+
             Player.OnExecuteOrder += OnExecuteOrder;
         }
+
+        public List<AbilityId> AbilityIds { get; } = new List<AbilityId>
+        {
+            AbilityId.item_blink
+        };
 
         public void Dispose()
         {
             Player.OnExecuteOrder -= OnExecuteOrder;
+        }
+
+        public void Refresh()
+        {
+            blinkDagger = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityIds.First()) as BlinkDagger;
         }
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
@@ -39,11 +56,10 @@
                 return;
             }
 
-            if (args.OrderId == OrderId.AbilityLocation && args.Ability?.Id == AbilityId.item_blink)
+            if (args.OrderId == OrderId.AbilityLocation && args.Ability?.Id == AbilityIds.First())
             {
                 var location = args.TargetPosition;
-                var blink = args.Ability;
-                var castRange = blink.GetCastRange();
+                var castRange = blinkDagger.GetCastRange();
 
                 if (manager.MyHero.Distance2D(location) <= castRange)
                 {
@@ -51,7 +67,7 @@
                 }
 
                 args.Process = false;
-                blink.UseAbility(manager.MyHero.Position.Extend(location, castRange - 10));
+                blinkDagger.Use(manager.MyHero.Position.Extend(location, castRange - 10));
             }
         }
     }
