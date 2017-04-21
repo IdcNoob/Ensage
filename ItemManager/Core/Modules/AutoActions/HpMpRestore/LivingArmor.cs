@@ -80,7 +80,7 @@
 
             sleeper.Sleep(300);
 
-            if (!menu.IsEnabled || !manager.MyHeroCanUseAbilities() || !livingArmor.CanBeCasted() || Game.IsPaused)
+            if (!menu.IsEnabled || !manager.MyHero.CanUseAbilities() || !livingArmor.CanBeCasted() || Game.IsPaused)
             {
                 return;
             }
@@ -89,7 +89,7 @@
             {
                 var hero = manager.Units.OfType<Hero>()
                     .Where(
-                        x => x.IsValid && x.IsAlive && x.Team == manager.MyTeam && !x.IsIllusion && !x.IsInvul()
+                        x => x.IsValid && x.IsAlive && x.Team == manager.MyHero.Team && !x.IsIllusion && !x.IsInvul()
                              && !x.HasModifier(LivingArmorModifier))
                     .OrderBy(x => x.HealthPercentage())
                     .FirstOrDefault(x => x.HealthPercentage() < menu.HeroHpThreshold);
@@ -99,7 +99,7 @@
                     if (menu.HeroEnemySearchRange <= 0 || ObjectManager.GetEntitiesParallel<Hero>()
                             .Any(
                                 x => x.IsAlive && !x.IsIllusion && x.Distance2D(hero) <= menu.HeroEnemySearchRange
-                                     && x.Team != manager.MyTeam && !x.HasModifier(LivingArmorModifier)))
+                                     && x.Team != manager.MyHero.Team && !x.HasModifier(LivingArmorModifier)))
                     {
                         PrintMessage(hero);
                         livingArmor.UseAbility(hero);
@@ -113,7 +113,8 @@
             {
                 var tower = manager.Units.OfType<Tower>()
                     .Where(
-                        x => x.IsValid && x.IsAlive && x.Team == manager.MyTeam && !x.HasModifier(LivingArmorModifier))
+                        x => x.IsValid && x.IsAlive && x.Team == manager.MyHero.Team
+                             && !x.HasModifier(LivingArmorModifier))
                     .OrderBy(x => x.HealthPercentage())
                     .FirstOrDefault(x => x.HealthPercentage() < menu.TowerHpThreshold);
 
@@ -131,7 +132,7 @@
                 if (menu.IsEnabledCreepUnderTower)
                 {
                     var creep = manager.Units.OfType<Tower>()
-                        .Where(x => x.IsValid && x.IsAlive && x.Team != manager.MyTeam)
+                        .Where(x => x.IsValid && x.IsAlive && x.Team != manager.MyHero.Team)
                         .Select(x => x.AttackTarget)
                         .Where(
                             x => x is Creep && x.IsValid && x.IsAlive && x.IsSpawned
@@ -150,7 +151,7 @@
 
                 var lowHpCreep = manager.Units.OfType<Creep>()
                     .Where(
-                        x => x.IsValid && x.IsAlive && x.IsSpawned && x.Team == manager.MyTeam && !x.IsInvul()
+                        x => x.IsValid && x.IsAlive && x.IsSpawned && x.Team == manager.MyHero.Team && !x.IsInvul()
                              && !x.HasModifier(LivingArmorModifier))
                     .OrderBy(x => x.HealthPercentage())
                     .FirstOrDefault(x => x.HealthPercentage() < menu.CreepHpThreshold);

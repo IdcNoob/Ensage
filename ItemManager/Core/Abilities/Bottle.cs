@@ -11,6 +11,8 @@
 
     using Interfaces;
 
+    using Menus.Modules.Recovery;
+
     using Utils;
 
     [Ability(AbilityId.item_bottle)]
@@ -27,16 +29,16 @@
             HealthRestore = ability.AbilitySpecialData.First(x => x.Name == "health_restore").Value;
 
             PowerTreadsAttribute = Attribute.Agility;
-            ItemRestoredStats = ItemUtils.Stats.All;
+            RestoredStats = RestoredStats.All;
         }
 
         public float HealthRestore { get; }
 
-        public ItemUtils.Stats ItemRestoredStats { get; }
-
         public float ManaRestore { get; }
 
         public Attribute PowerTreadsAttribute { get; }
+
+        public RestoredStats RestoredStats { get; }
 
         public bool TookFromStash { get; private set; }
 
@@ -56,7 +58,7 @@
 
             if (IsInInventory())
             {
-                var regeneration = Manager.MyHero.FindModifier(ModifierUtils.BottleRegeneration);
+                var regeneration = Manager.MyHero.Hero.FindModifier(ModifierUtils.BottleRegeneration);
                 return regeneration == null || regeneration.RemainingTime < 0.15 + Game.Ping / 1000;
             }
 
@@ -75,16 +77,28 @@
             SetSleep(200);
         }
 
-        public override void Use(bool queue = false)
+        public bool ShouldBeUsed(MyHero hero, RecoveryMenu menu, float missingHealth, float missingMana)
+        {
+            if (menu.ItemSettingsMenu.BottleSettings.OverhealEnabled)
+            {
+                return missingMana >= menu.ItemSettingsMenu.BottleSettings.MpThreshold
+                       || missingHealth >= menu.ItemSettingsMenu.BottleSettings.HpThreshold;
+            }
+
+            return missingMana >= menu.ItemSettingsMenu.BottleSettings.MpThreshold
+                   && missingHealth >= menu.ItemSettingsMenu.BottleSettings.HpThreshold;
+        }
+
+        public override void Use(Unit target = null, bool queue = false)
         {
             if (IsInStash())
             {
-                Manager.SaveItemSlot(bottle, ItemUtils.StoredPlace.Stash);
+                Manager.MyHero.SaveItemSlot(bottle, ItemStoredPlace.Stash);
                 MoveItem(ItemSlot.InventorySlot_1, true);
                 return;
             }
 
-            base.Use(queue);
+            base.Use(target, queue);
             SetSleep(500);
         }
 
@@ -100,12 +114,12 @@
 
         private bool IsInInventory()
         {
-            return Manager.GetMyItems(ItemUtils.StoredPlace.Inventory).Any(x => x.Handle == Handle);
+            return Manager.MyHero.GetMyItems(ItemStoredPlace.Inventory).Any(x => x.Handle == Handle);
         }
 
         private bool IsInStash()
         {
-            return Manager.GetMyItems(ItemUtils.StoredPlace.Stash).Any(x => x.Handle == Handle);
+            return Manager.MyHero.GetMyItems(ItemStoredPlace.Stash).Any(x => x.Handle == Handle);
         }
     }
 }

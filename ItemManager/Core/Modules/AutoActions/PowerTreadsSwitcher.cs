@@ -110,7 +110,7 @@
                 }
                 case 1:
                 {
-                    switchAttribute = manager.MyHero.PrimaryAttribute;
+                    switchAttribute = manager.MyHero.Hero.PrimaryAttribute;
                     break;
                 }
                 default:
@@ -138,7 +138,8 @@
             if (abilityEventArgs.Ability.Id == AbilityId.item_power_treads)
             {
                 powerTreads =
-                    manager.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_power_treads) as PowerTreads;
+                    manager.MyHero.UsableAbilities.FirstOrDefault(
+                        x => x.Id == AbilityId.item_power_treads) as PowerTreads;
 
                 if (powerTreads != null && !subscribed)
                 {
@@ -167,7 +168,8 @@
             if (abilityEventArgs.Ability.Id == AbilityId.item_power_treads)
             {
                 powerTreads =
-                    manager.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_power_treads) as PowerTreads;
+                    manager.MyHero.UsableAbilities.FirstOrDefault(
+                        x => x.Id == AbilityId.item_power_treads) as PowerTreads;
 
                 if (powerTreads == null)
                 {
@@ -181,7 +183,7 @@
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!menu.IsEnabled || !args.Process || args.IsQueued || !args.Entities.Contains(manager.MyHero)
+            if (!menu.IsEnabled || !args.Process || args.IsQueued || !args.Entities.Contains(manager.MyHero.Hero)
                 || manager.MyHero.IsInvisible())
             {
                 return;
@@ -278,7 +280,7 @@
                         {
                             powerTreads.SwitchTo(Attribute.Intelligence);
                             order.UseAbility(ability, target);
-                            sleep += manager.MyHero.GetTurnTime(target) * 1000;
+                            sleep += manager.MyHero.Hero.GetTurnTime(target) * 1000;
                             args.Process = false;
                         }
                     }
@@ -292,7 +294,7 @@
                     {
                         powerTreads.SwitchTo(Attribute.Intelligence);
                         order.UseAbility(ability, targetLocation);
-                        sleep += manager.MyHero.GetTurnTime(targetLocation) * 1000;
+                        sleep += manager.MyHero.Hero.GetTurnTime(targetLocation) * 1000;
                         args.Process = false;
                     }
                     break;
@@ -325,7 +327,7 @@
 
         private void OnModifierAdded(Unit sender, ModifierChangedEventArgs args)
         {
-            if (sender.Handle != manager.MyHandle)
+            if (sender.Handle != manager.MyHero.Handle)
             {
                 return;
             }
@@ -356,7 +358,7 @@
 
         private void OnModifierRemoved(Unit sender, ModifierChangedEventArgs args)
         {
-            if (sender.Handle != manager.MyHandle)
+            if (sender.Handle != manager.MyHero.Handle)
             {
                 return;
             }
@@ -378,7 +380,7 @@
             sleeper.Sleep(200, this);
 
             if (!menu.IsEnabled || sleeper.Sleeping(AbilityId.item_power_treads) || !powerTreads.CanBeCasted()
-                || !manager.MyHeroCanUseItems() || powerTreads.ActiveAttribute == powerTreads.DefaultAttribute
+                || !manager.MyHero.CanUseItems() || powerTreads.ActiveAttribute == powerTreads.DefaultAttribute
                 || activeDelaySwitchModifiers.Any())
             {
                 return;

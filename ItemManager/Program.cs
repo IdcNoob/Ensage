@@ -1,7 +1,5 @@
 ﻿namespace ItemManager
 {
-    using Core;
-
     using Ensage.Common;
 
     internal class Program

@@ -52,24 +52,24 @@
 
             sleeper.Sleep(200);
 
-            if (!menu.IsEnabled || !manager.MyHeroCanUseItems())
+            if (!menu.IsEnabled || !manager.MyHero.CanUseItems())
             {
                 return;
             }
 
             var ward = ObjectManager.GetEntitiesParallel<Unit>()
                 .FirstOrDefault(
-                    x => x.IsValid && x.IsWard() && x.IsAlive && x.Team != manager.MyTeam
-                         && x.Distance2D(manager.MyHero) <= chopRange);
+                    x => x.IsValid && x.IsWard() && x.IsAlive && x.Team != manager.MyHero.Team
+                         && x.Distance2D(manager.MyHero.Position) <= chopRange);
 
             if (ward == null)
             {
                 return;
             }
 
-            var item = manager.GetMyItems(ItemUtils.StoredPlace.Inventory)
+            var item = manager.MyHero.GetMyItems(ItemStoredPlace.Inventory)
                 .Where(
-                    x => (!x.IsTango() || manager.MyMissingHealth >= menu.TangoHpThreshold)
+                    x => (!x.IsTango() || manager.MyHero.MissingHealth >= menu.TangoHpThreshold)
                          && menu.IsAbilityEnabled(x.StoredName()) && x.CanBeCasted())
                 .OrderByDescending(x => menu.GetAbilityPriority(x.StoredName()))
                 .FirstOrDefault();

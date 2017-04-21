@@ -38,8 +38,8 @@
 
         public virtual bool CanBeCasted()
         {
-            return !IsSleeping && Ability.IsValid && Ability.CanBeCasted() && Manager
-                       .GetMyItems(ItemUtils.StoredPlace.Inventory)
+            return !IsSleeping && Ability.IsValid && Ability.CanBeCasted() && Manager.MyHero
+                       .GetMyItems(ItemStoredPlace.Inventory)
                        .Any(x => x.Handle == Handle);
         }
 
@@ -53,7 +53,7 @@
             Sleeper.Sleep(time);
         }
 
-        public virtual void Use(bool queue = false)
+        public virtual void Use(Unit target = null, bool queue = false)
         {
             if (Ability.IsAbilityBehavior(AbilityBehavior.NoTarget))
             {
@@ -64,7 +64,7 @@
             }
             else if (Ability.IsAbilityBehavior(AbilityBehavior.UnitTarget))
             {
-                if (!Ability.UseAbility(Manager.MyHero, queue))
+                if (!Ability.UseAbility(target ?? Manager.MyHero.Hero, queue))
                 {
                     return;
                 }

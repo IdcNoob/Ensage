@@ -45,7 +45,7 @@
             recoveryMenu = menu.RecoveryMenu;
 
             fountain = ObjectManager.GetEntitiesParallel<Unit>()
-                .First(x => x.IsValid && x.ClassId == ClassId.CDOTA_Unit_Fountain && x.Team == manager.MyTeam)
+                .First(x => x.IsValid && x.ClassId == ClassId.CDOTA_Unit_Fountain && x.Team == manager.MyHero.Team)
                 .Position;
 
             manager.OnItemAdd += OnItemAdd;
@@ -83,7 +83,7 @@
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!args.Entities.Contains(manager.MyHero) || args.IsQueued || !args.Process)
+            if (!args.Entities.Contains(manager.MyHero.Hero) || args.IsQueued || !args.Process)
             {
                 return;
             }
@@ -110,7 +110,7 @@
                 return;
             }
 
-            bottle = manager.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_bottle) as Bottle;
+            bottle = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_bottle) as Bottle;
 
             if (bottle == null)
             {
@@ -129,7 +129,7 @@
                 return;
             }
 
-            bottle = manager.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_bottle) as Bottle;
+            bottle = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_bottle) as Bottle;
 
             if (bottle != null)
             {
@@ -150,7 +150,7 @@
 
             sleeper.Sleep(300, this);
 
-            if (!manager.MyHeroCanUseItems() || !bottle.CanBeAutoCasted() || !BottleCanBeRefilled())
+            if (!manager.MyHero.CanUseItems() || !bottle.CanBeAutoCasted() || !BottleCanBeRefilled())
             {
                 return;
             }
@@ -160,16 +160,17 @@
 
             var bottleTarget = ObjectManager.GetEntitiesParallel<Hero>()
                 .Where(
-                    x => !x.IsIllusion && x.Distance2D(manager.MyHero) <= bottle.GetCastRange() && x.IsAlive
-                         && x.Team == manager.MyTeam && !x.IsInvul())
+                    x => !x.IsIllusion && x.Distance2D(manager.MyHero.Position) <= bottle.GetCastRange() && x.IsAlive
+                         && x.Team == manager.MyHero.Team && !x.IsInvul())
                 .OrderBy(x => x.FindModifier(ModifierUtils.BottleRegeneration)?.RemainingTime)
                 .FirstOrDefault(
-                    x => (useOnAllies && !x.Equals(manager.MyHero) || useOnSelf && x.Equals(manager.MyHero))
+                    x => (useOnAllies && x.Handle != manager.MyHero.Handle
+                          || useOnSelf && x.Handle == manager.MyHero.Handle)
                          && (x.Health < x.MaximumHealth || x.Mana < x.MaximumMana));
 
             if (bottleTarget != null)
             {
-                if (bottleTarget.Equals(manager.MyHero))
+                if (bottleTarget.Handle == manager.MyHero.Handle)
                 {
                     bottle.Use();
                 }

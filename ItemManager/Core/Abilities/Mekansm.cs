@@ -10,6 +10,8 @@
 
     using Interfaces;
 
+    using Menus.Modules.Recovery;
+
     using Utils;
 
     [Ability(AbilityId.item_mekansm)]
@@ -22,15 +24,20 @@
             HealthRestore = ability.AbilitySpecialData.First(x => x.Name == "heal_amount").Value;
 
             PowerTreadsAttribute = Attribute.Intelligence;
-            ItemRestoredStats = ItemUtils.Stats.Health;
+            RestoredStats = RestoredStats.Health;
         }
 
         public float HealthRestore { get; }
 
-        public ItemUtils.Stats ItemRestoredStats { get; }
-
         public float ManaRestore { get; }
 
         public Attribute PowerTreadsAttribute { get; }
+
+        public RestoredStats RestoredStats { get; }
+
+        public bool ShouldBeUsed(MyHero hero, RecoveryMenu menu, float missingHealth, float missingMana)
+        {
+            return missingHealth >= menu.ItemSettingsMenu.Mekansm.HpThreshold;
+        }
     }
 }

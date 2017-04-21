@@ -58,7 +58,7 @@
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!args.Entities.Contains(manager.MyHero) || !block.Sleeping)
+            if (!args.Entities.Contains(manager.MyHero.Hero) || !block.Sleeping)
             {
                 return;
             }
@@ -69,9 +69,11 @@
         private void OnUnitAdd(object sender, UnitEventArgs unitEventArgs)
         {
             var hero = unitEventArgs.Unit as Hero;
-            if (hero != null && (hero.HeroId == HeroId.npc_dota_hero_techies && hero.Team != manager.MyTeam
+            if (hero != null && (hero.HeroId == HeroId.npc_dota_hero_techies && hero.Team != manager.MyHero.Team
                                  || hero.HeroId == HeroId.npc_dota_hero_rubick && manager.Units.OfType<Hero>()
-                                     .Any(x => x.HeroId == HeroId.npc_dota_hero_techies && x.Team == manager.MyTeam)))
+                                     .Any(
+                                         x => x.HeroId == HeroId.npc_dota_hero_techies
+                                              && x.Team == manager.MyHero.Team)))
             {
                 manager.OnUnitAdd -= OnUnitAdd;
                 Game.OnUpdate += OnUpdate;
@@ -88,20 +90,19 @@
 
             sleeper.Sleep(200);
 
-            if (!menu.DestroyMines || !manager.MyHero.IsAlive || !manager.MyHero.CanAttack()
-                || manager.MyHero.IsChanneling())
+            if (!menu.DestroyMines || !manager.MyHero.CanAttack())
             {
                 return;
             }
 
             var techiesMines = ObjectManager.GetEntitiesParallel<Unit>()
                 .Where(
-                    x => x.IsValid && x.IsTechiesMine() && x.IsAlive && x.Team != manager.MyTeam
-                         && x.Distance2D(manager.MyHero) <= 1000)
+                    x => x.IsValid && x.IsTechiesMine() && x.IsAlive && x.Team != manager.MyHero.Team
+                         && x.Distance2D(manager.MyHero.Position) <= 1000)
                 .ToList();
 
             var canUseItems = manager.MyHero.CanUseItems();
-            var attackRange = manager.MyHero.GetAttackRange();
+            var attackRange = manager.MyHero.Hero.GetAttackRange();
 
             foreach (var mine in techiesMines)
             {
@@ -109,7 +110,7 @@
 
                 if (canUseItems && mine.Health > 1 && distance <= chopRange)
                 {
-                    var item = manager.GetMyItems(ItemUtils.StoredPlace.Inventory)
+                    var item = manager.MyHero.GetMyItems(ItemStoredPlace.Inventory)
                         .FirstOrDefault(x => usableItems.Contains(x.Id) && x.CanBeCasted());
 
                     if (item != null)
@@ -126,14 +127,14 @@
 
                 if (distance < attackRange + 200 && !techiesMines.Any(x => !x.Equals(mine) && x.Distance2D(mine) < 400))
                 {
-                    if (mine.Health <= manager.MyHero.MinimumDamage + manager.MyHero.BonusDamage)
+                    if (mine.Health <= manager.MyHero.Damage)
                     {
-                        if (manager.MyHero.Attack(mine))
+                        if (manager.MyHero.Hero.Attack(mine))
                         {
                             block.Sleep(
-                                (float)(Math.Max(0, distance - attackRange) / manager.MyHero.MovementSpeed
-                                        + manager.MyHero.AttackPoint() + manager.MyHero.GetTurnTime(mine)) * 1000
-                                + Game.Ping);
+                                (float)(Math.Max(0, distance - attackRange) / manager.MyHero.Hero.MovementSpeed
+                                        + manager.MyHero.Hero.AttackPoint() + manager.MyHero.Hero.GetTurnTime(mine))
+                                * 1000 + Game.Ping);
                             sleeper.Sleep(500);
                             return;
                         }

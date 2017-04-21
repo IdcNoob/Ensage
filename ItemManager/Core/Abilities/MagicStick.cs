@@ -10,6 +10,8 @@
 
     using Interfaces;
 
+    using Menus.Modules.Recovery;
+
     using Utils;
 
     [Ability(AbilityId.item_magic_stick)]
@@ -28,20 +30,26 @@
             restorePerCharge = ability.AbilitySpecialData.First(x => x.Name == "restore_per_charge").Value;
 
             PowerTreadsAttribute = Attribute.Agility;
-            ItemRestoredStats = ItemUtils.Stats.All;
+            RestoredStats = RestoredStats.All;
         }
 
         public float HealthRestore => restorePerCharge * magicStick.CurrentCharges;
-
-        public ItemUtils.Stats ItemRestoredStats { get; }
 
         public float ManaRestore => restorePerCharge * magicStick.CurrentCharges;
 
         public Attribute PowerTreadsAttribute { get; }
 
+        public RestoredStats RestoredStats { get; }
+
         public override bool CanBeCasted()
         {
             return base.CanBeCasted() && magicStick.CurrentCharges > 0;
+        }
+
+        public bool ShouldBeUsed(MyHero hero, RecoveryMenu menu, float missingHealth, float missingMana)
+        {
+            return missingMana >= menu.ItemSettingsMenu.MagicStick.MpThreshold
+                   || missingHealth >= menu.ItemSettingsMenu.MagicStick.HpThreshold;
         }
     }
 }

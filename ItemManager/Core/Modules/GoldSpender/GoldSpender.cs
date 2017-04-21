@@ -23,8 +23,6 @@ namespace ItemManager.Core.Modules.GoldSpender
     {
         private readonly List<Courier> couriers = new List<Courier>();
 
-        private readonly Team enemyTeam;
-
         private readonly List<Ability> invisAbilities = new List<Ability>();
 
         private readonly Manager manager;
@@ -37,7 +35,6 @@ namespace ItemManager.Core.Modules.GoldSpender
         {
             this.manager = manager;
             this.menu = menu.GoldSpenderMenu;
-            enemyTeam = manager.MyHero.GetEnemyTeam();
 
             Game.OnUpdate += OnUpdate;
             manager.OnUnitAdd += OnUnitAdd;
@@ -72,9 +69,9 @@ namespace ItemManager.Core.Modules.GoldSpender
             {
                 Unit unit;
 
-                if (item.IsPurchasable(manager.MyHero))
+                if (item.IsPurchasable(manager.MyHero.Hero))
                 {
-                    unit = manager.MyHero;
+                    unit = manager.MyHero.Hero;
                 }
                 else if (item.IsPurchasable(courier))
                 {
@@ -88,39 +85,39 @@ namespace ItemManager.Core.Modules.GoldSpender
                 switch (item)
                 {
                     case AbilityId.item_dust:
-                        if (manager.GetItemCharges(item) >= 2 || !invisAbilities.Any())
+                        if (manager.MyHero.GetItemCharges(item) >= 2 || !invisAbilities.Any())
                         {
                             continue;
                         }
                         break;
                     case AbilityId.item_ward_observer:
                     case AbilityId.item_ward_sentry:
-                        if (manager.GetItemCharges(item) >= 2)
+                        if (manager.MyHero.GetItemCharges(item) >= 2)
                         {
                             continue;
                         }
                         break;
                     case AbilityId.item_tpscroll:
-                        if (manager.GetItemCharges(item) >= 2 || manager.MyItems.Any(
+                        if (manager.MyHero.GetItemCharges(item) >= 2 || manager.MyHero.Items.Any(
                                 x => x.Id == AbilityId.item_travel_boots || x.Id == AbilityId.item_travel_boots_2))
                         {
                             continue;
                         }
                         break;
                     case AbilityId.item_energy_booster:
-                        if (manager.MyItems.Any(x => x.Id == AbilityId.item_arcane_boots))
+                        if (manager.MyHero.Items.Any(x => x.Id == AbilityId.item_arcane_boots))
                         {
                             continue;
                         }
                         break;
                     case AbilityId.item_smoke_of_deceit:
-                        if (manager.GetItemCharges(item) >= 1)
+                        if (manager.MyHero.GetItemCharges(item) >= 1)
                         {
                             continue;
                         }
                         break;
                     case AbilityId.item_tome_of_knowledge:
-                        if (manager.MyHero.Level >= 25)
+                        if (manager.MyHero.Hero.Level >= 25)
                         {
                             continue;
                         }
@@ -197,7 +194,7 @@ namespace ItemManager.Core.Modules.GoldSpender
             return Math.Min(
                 manager.MyHero.Player.UnreliableGold,
                 100 + (manager.MyHero.Player.ReliableGold + manager.MyHero.Player.UnreliableGold
-                       + manager.MyItems.Sum(x => (int)x.Cost)) / 50);
+                       + manager.MyHero.Items.Sum(x => (int)x.Cost)) / 50);
         }
 
         private void OnAbilityAdd(object sender, AbilityEventArgs abilityEventArgs)
@@ -208,14 +205,14 @@ namespace ItemManager.Core.Modules.GoldSpender
             }
 
             var item = abilityEventArgs.Ability as Item;
-            if (item != null && item.Purchaser.Team != manager.MyTeam)
+            if (item != null && item.Purchaser.Team != manager.MyHero.Team)
             {
                 invisAbilities.Add(item);
                 return;
             }
 
             var ability = abilityEventArgs.Ability;
-            if (ability.Owner?.Team != manager.MyTeam)
+            if (ability.Owner?.Team != manager.MyHero.Team)
             {
                 invisAbilities.Add(item);
             }
@@ -229,7 +226,7 @@ namespace ItemManager.Core.Modules.GoldSpender
         private void OnUnitAdd(object sender, UnitEventArgs unitEventArgs)
         {
             var courier = unitEventArgs.Unit as Courier;
-            if (courier != null && courier.Team == manager.MyTeam)
+            if (courier != null && courier.Team == manager.MyHero.Team)
             {
                 couriers.Add(courier);
             }
@@ -255,7 +252,7 @@ namespace ItemManager.Core.Modules.GoldSpender
                 return;
             }
 
-            if (manager.MyHero.Health > menu.HpThreshold && manager.MyHealthPercentage > menu.HpThresholdPct)
+            if (manager.MyHero.Health > menu.HpThreshold && manager.MyHero.HealthPercentage > menu.HpThresholdPct)
             {
                 return;
             }
@@ -263,8 +260,8 @@ namespace ItemManager.Core.Modules.GoldSpender
             var distance = menu.EnemyDistance;
             if (distance <= 0 || ObjectManager.GetEntitiesParallel<Hero>()
                     .Any(
-                        x => x.IsValid && x.Team == enemyTeam && !x.IsIllusion && x.IsAlive
-                             && x.Distance2D(manager.MyHero) <= distance))
+                        x => x.IsValid && x.Team == manager.MyHero.EnemyTeam && !x.IsIllusion && x.IsAlive
+                             && x.Distance2D(manager.MyHero.Position) <= distance))
             {
                 BuyItems();
             }

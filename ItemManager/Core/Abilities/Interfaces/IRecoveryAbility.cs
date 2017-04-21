@@ -2,6 +2,8 @@
 {
     using Ensage;
 
+    using Menus.Modules.Recovery;
+
     using Utils;
 
     internal interface IRecoveryAbility
@@ -14,16 +16,18 @@
 
         bool IsSleeping { get; }
 
-        ItemUtils.Stats ItemRestoredStats { get; }
-
         float ManaRestore { get; }
 
         string Name { get; }
 
         Attribute PowerTreadsAttribute { get; }
 
+        RestoredStats RestoredStats { get; }
+
         bool CanBeCasted();
 
-        void Use(bool queue = false);
+        bool ShouldBeUsed(MyHero hero, RecoveryMenu menu, float missingHealth, float missingMana);
+
+        void Use(Unit target = null, bool queue = false);
     }
 }

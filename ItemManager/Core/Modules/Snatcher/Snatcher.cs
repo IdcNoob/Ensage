@@ -34,7 +34,7 @@
             this.manager = manager;
             this.menu = menu.SnatcherMenu;
 
-            controllables.Add(new MyHero(manager.MyHero));
+            controllables.Add(new MyHero(manager.MyHero.Hero));
 
             if (this.menu.UseOtherUnits)
             {
@@ -72,7 +72,7 @@
             }
 
             foreach (var meepo in controllableUnits.Where(
-                x => x.ClassId == ClassId.CDOTA_Unit_Hero_Meepo && x.Handle != manager.MyHandle))
+                x => x.ClassId == ClassId.CDOTA_Unit_Hero_Meepo && x.Handle != manager.MyHero.Handle))
             {
                 controllables.Add(new MeepoClone(meepo));
             }
@@ -192,7 +192,7 @@
             }
             else
             {
-                controllables.RemoveAll(x => x.Handle != manager.MyHandle);
+                controllables.RemoveAll(x => x.Handle != manager.MyHero.Handle);
                 manager.OnUnitAdd -= OnUnitAdd;
                 manager.OnUnitRemove -= OnUnitRemove;
             }

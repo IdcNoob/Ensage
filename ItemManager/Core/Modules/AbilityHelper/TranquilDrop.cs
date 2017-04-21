@@ -45,7 +45,7 @@
         {
             if (boolEventArgs.Enabled)
             {
-                var tranquils = manager.GetMyItems(ItemUtils.StoredPlace.Inventory)
+                var tranquils = manager.MyHero.GetMyItems(ItemStoredPlace.Inventory)
                     .FirstOrDefault(x => x.Id == AbilityId.item_tranquil_boots);
 
                 if (tranquils == null)
@@ -53,8 +53,8 @@
                     return;
                 }
 
-                manager.MyHero.Stop();
-                manager.DropItem(tranquils, ItemUtils.StoredPlace.Inventory);
+                manager.MyHero.Hero.Stop();
+                manager.MyHero.DropItem(tranquils, ItemStoredPlace.Inventory);
 
                 if (subscribed)
                 {
@@ -66,7 +66,7 @@
             }
             else
             {
-                manager.PickUpItems();
+                manager.MyHero.PickUpItems();
 
                 if (!subscribed)
                 {
@@ -87,10 +87,10 @@
 
             if (ObjectManager.GetEntitiesParallel<Hero>()
                 .Any(
-                    x => x.IsValid && x.IsValid && x.IsAlive && x.Team != manager.MyTeam
-                         && x.Distance2D(manager.MyHero) < 800))
+                    x => x.IsValid && x.IsValid && x.IsAlive && x.Team != manager.MyHero.Team
+                         && x.Distance2D(manager.MyHero.Position) < 800))
             {
-                manager.PickUpItems();
+                manager.MyHero.PickUpItems();
                 sleeper.Sleep(500);
             }
         }

@@ -10,6 +10,8 @@
 
     using Interfaces;
 
+    using Menus.Modules.Recovery;
+
     using Utils;
 
     [Ability(AbilityId.item_soul_ring)]
@@ -22,15 +24,21 @@
             ManaRestore = ability.AbilitySpecialData.First(x => x.Name == "mana_gain").Value;
 
             PowerTreadsAttribute = Attribute.Strength;
-            ItemRestoredStats = ItemUtils.Stats.Mana;
+            RestoredStats = RestoredStats.Mana;
         }
 
         public float HealthRestore { get; }
 
-        public ItemUtils.Stats ItemRestoredStats { get; }
-
         public float ManaRestore { get; }
 
         public Attribute PowerTreadsAttribute { get; }
+
+        public RestoredStats RestoredStats { get; }
+
+        public bool ShouldBeUsed(MyHero hero, RecoveryMenu menu, float missingHealth, float missingMana)
+        {
+            return missingMana >= menu.ItemSettingsMenu.SoulRing.MpThreshold
+                   && hero.HealthPercentage >= menu.ItemSettingsMenu.SoulRing.HpThreshold;
+        }
     }
 }

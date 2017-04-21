@@ -15,7 +15,7 @@
             {
                 var mpThreshold =
                     new MenuItem("mpThreshold" + simpleName, "MP threshold").SetValue(
-                        new Slider(initialMp.Value, 1, 500));
+                        new Slider(initialMp.Value, 1, initialMp.Value * 2));
                 mpThreshold.SetTooltip("Use only when you are missing more mp");
                 Menu.AddItem(mpThreshold);
                 mpThreshold.ValueChanged += (sender, args) => MpThreshold = args.GetNewValue<Slider>().Value;
@@ -26,7 +26,7 @@
             {
                 var hpThreshold =
                     new MenuItem("hpThreshold" + simpleName, "HP threshold").SetValue(
-                        new Slider(initialHp.Value, 1, 500));
+                        new Slider(initialHp.Value, 1, initialHp.Value * 2));
                 hpThreshold.SetTooltip("Use only when you are missing more hp");
                 Menu.AddItem(hpThreshold);
                 hpThreshold.ValueChanged += (sender, args) => HpThreshold = args.GetNewValue<Slider>().Value;

@@ -10,6 +10,8 @@
 
     using Interfaces;
 
+    using Menus.Modules.Recovery;
+
     using Utils;
 
     [Ability(AbilityId.item_guardian_greaves)]
@@ -22,15 +24,21 @@
             HealthRestore = ability.AbilitySpecialData.First(x => x.Name == "replenish_health").Value;
 
             PowerTreadsAttribute = Attribute.Agility;
-            ItemRestoredStats = ItemUtils.Stats.All;
+            RestoredStats = RestoredStats.All;
         }
 
         public float HealthRestore { get; }
 
-        public ItemUtils.Stats ItemRestoredStats { get; }
-
         public float ManaRestore { get; }
 
         public Attribute PowerTreadsAttribute { get; }
+
+        public RestoredStats RestoredStats { get; }
+
+        public bool ShouldBeUsed(MyHero hero, RecoveryMenu menu, float missingHealth, float missingMana)
+        {
+            return missingMana >= menu.ItemSettingsMenu.GuardianGreaves.MpThreshold
+                   || missingHealth >= menu.ItemSettingsMenu.GuardianGreaves.HpThreshold;
+        }
     }
 }

@@ -7,34 +7,43 @@
     using Ensage;
     using Ensage.Items;
 
+    [Flags]
+    public enum ItemStoredPlace
+    {
+        Inventory = 1,
+
+        Backpack = 2,
+
+        Stash = 4,
+
+        Any = Inventory | Backpack | Stash
+    }
+
+    [Flags]
+    public enum ItemStats
+    {
+        None = 0,
+
+        Any = 1,
+
+        Health = Any | 2,
+
+        Mana = Any | 4,
+
+        All = Health | Mana
+    }
+
+    public enum RestoredStats
+    {
+        Health,
+
+        Mana,
+
+        All
+    }
+
     internal static class ItemUtils
     {
-        [Flags]
-        public enum Stats
-        {
-            None = 0,
-
-            Any = 1,
-
-            Health = Any | 2,
-
-            Mana = Any | 4,
-
-            All = Health | Mana
-        }
-
-        [Flags]
-        public enum StoredPlace
-        {
-            Inventory = 1,
-
-            Backpack = 2,
-
-            Stash = 4,
-
-            Any = Inventory | Backpack | Stash
-        }
-
         private static readonly List<string> BonusAllStats = new List<string>
         {
             "bonus_all_stats",
@@ -94,7 +103,7 @@
             { AbilityId.item_stout_shield, ShopFlags.Base | ShopFlags.Side } //Stout Shield
         };
 
-        private static readonly Dictionary<AbilityId, Stats> SavedStats = new Dictionary<AbilityId, Stats>();
+        private static readonly Dictionary<AbilityId, ItemStats> SavedStats = new Dictionary<AbilityId, ItemStats>();
 
         public static bool CanBeMoved(this Item item)
         {
@@ -119,32 +128,32 @@
             return true;
         }
 
-        public static Stats GetItemStats(this Item item)
+        public static ItemStats GetItemStats(this Item item)
         {
-            Stats stats;
-            if (SavedStats.TryGetValue(item.Id, out stats))
+            ItemStats itemStats;
+            if (SavedStats.TryGetValue(item.Id, out itemStats))
             {
-                return stats;
+                return itemStats;
             }
 
             if (item.AbilitySpecialData.Any(x => BonusAllStats.Contains(x.Name)))
             {
-                stats = Stats.Health | Stats.Mana;
+                itemStats = ItemStats.Health | ItemStats.Mana;
             }
             else
             {
                 if (item.AbilitySpecialData.Any(x => BonusHealth.Contains(x.Name)))
                 {
-                    stats |= Stats.Health;
+                    itemStats |= ItemStats.Health;
                 }
                 if (item.AbilitySpecialData.Any(x => BonusMana.Contains(x.Name)))
                 {
-                    stats |= Stats.Mana;
+                    itemStats |= ItemStats.Mana;
                 }
             }
 
-            SavedStats.Add(item.Id, stats);
-            return stats;
+            SavedStats.Add(item.Id, itemStats);
+            return itemStats;
         }
 
         public static bool IsEmptyBottle(this Item item)

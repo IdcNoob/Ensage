@@ -1,4 +1,4 @@
-﻿namespace ItemManager.Core
+﻿namespace ItemManager
 {
     using System;
     using System.Collections.Generic;
@@ -6,6 +6,8 @@
     using System.Reflection;
 
     using Attributes;
+
+    using Core;
 
     using Menus;
 

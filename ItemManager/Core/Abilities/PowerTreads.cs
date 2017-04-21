@@ -89,7 +89,7 @@
             SetSleep(200);
         }
 
-        public override void Use(bool queue = false)
+        public override void Use(Unit target = null, bool queue = false)
         {
         }
     }

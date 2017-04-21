@@ -13,6 +13,7 @@
             AutoHealsMenu = new AutoHealsMenu(menu);
             SoulRingMenu = new SoulRingMenu(menu);
             PowerTreadsMenu = new PowerTreadsMenu(menu);
+            IronTalonMenu = new IronTalonMenu(menu);
             DewardingMenu = new DewardingMenu(menu);
             TechiesMinesDestroyerMenu = new TechiesMinesDestroyerMenu(menu);
 
@@ -22,6 +23,8 @@
         public AutoHealsMenu AutoHealsMenu { get; }
 
         public DewardingMenu DewardingMenu { get; }
+
+        public IronTalonMenu IronTalonMenu { get; }
 
         public PowerTreadsMenu PowerTreadsMenu { get; }
 

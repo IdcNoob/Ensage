@@ -8,7 +8,6 @@
     using Attributes;
 
     using Ensage;
-    using Ensage.Common.Extensions;
     using Ensage.Common.Objects;
 
     using EventArgs;
@@ -46,16 +45,6 @@
             manager.OnAbilityRemove -= OnAbilityRemove;
         }
 
-        private bool CheckHpThreshold()
-        {
-            return (float)manager.MyHero.Health / manager.MyHero.MaximumHealth * 100 >= menu.HpThreshold;
-        }
-
-        private bool CheckMpThreshold()
-        {
-            return manager.MyHero.Mana / manager.MyHero.MaximumMana * 100 <= menu.MpThreshold;
-        }
-
         private void OnAbilityAdd(object sender, AbilityEventArgs abilityEventArgs)
         {
             if (!abilityEventArgs.IsMine)
@@ -70,7 +59,8 @@
 
             if (abilityEventArgs.Ability.Id == AbilityId.item_soul_ring)
             {
-                soulRing = manager.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_soul_ring) as SoulRing;
+                soulRing =
+                    manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_soul_ring) as SoulRing;
 
                 if (soulRing != null && !subscribed)
                 {
@@ -94,7 +84,8 @@
 
             if (abilityEventArgs.Ability.Id == AbilityId.item_soul_ring)
             {
-                soulRing = manager.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_soul_ring) as SoulRing;
+                soulRing =
+                    manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_soul_ring) as SoulRing;
 
                 if (soulRing == null)
                 {
@@ -118,7 +109,7 @@
                 case OrderId.Ability:
                 case OrderId.ToggleAbility:
                 {
-                    if (!args.Process || args.IsQueued || !args.Entities.Contains(manager.MyHero))
+                    if (!args.Process || args.IsQueued || !args.Entities.Contains(manager.MyHero.Hero))
                     {
                         return;
                     }
@@ -139,8 +130,8 @@
                         }
                     }
 
-                    if (!soulRing.CanBeCasted() || !CheckHpThreshold() || !CheckMpThreshold()
-                        || manager.MyHero.IsInvisible())
+                    if (!soulRing.CanBeCasted() || manager.MyHero.HealthPercentage < menu.HpThreshold
+                        || manager.MyHero.ManaPercentage > menu.MpThreshold || manager.MyHero.IsInvisible())
                     {
                         return;
                     }

@@ -37,16 +37,17 @@
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!menu.BlockShrineUsage || !args.IsPlayerInput || !args.Entities.Contains(manager.MyHero))
+            if (!menu.BlockShrineUsage || !args.IsPlayerInput || !args.Entities.Contains(manager.MyHero.Hero))
             {
                 return;
             }
 
             if (args.OrderId == OrderId.MoveTarget && args.Target?.ClassId == ClassId.CDOTA_BaseNPC_Healer
-                && manager.MyHealthPercentage > menu.HpThreshold && manager.MyManaPercentage > menu.MpThreshold)
+                && manager.MyHero.HealthPercentage > menu.HpThreshold
+                && manager.MyHero.ManaPercentage > menu.MpThreshold)
             {
                 args.Process = false;
-                manager.MyHero.Move(args.Target.Position);
+                manager.MyHero.Hero.Move(args.Target.Position);
             }
         }
 
@@ -58,20 +59,20 @@
                 return;
             }
 
-            if (manager.MyHealthPercentage > 80 && manager.MyManaPercentage > 80)
+            if (manager.MyHero.HealthPercentage > 80 && manager.MyHero.ManaPercentage > 80)
             {
                 return;
             }
 
             if (ObjectManager.GetEntitiesParallel<Hero>()
                 .Any(
-                    x => x.IsValid && x.IsVisible && x.IsAlive && x.Team != manager.MyTeam
-                         && x.Distance2D(manager.MyHero) < 1000))
+                    x => x.IsValid && x.IsVisible && x.IsAlive && x.Team != manager.MyHero.Team
+                         && x.Distance2D(manager.MyHero.Position) < 1000))
             {
                 return;
             }
 
-            manager.DropItems(ItemUtils.Stats.Any, true);
+            manager.MyHero.DropItems(ItemStats.Any, true);
         }
     }
 }

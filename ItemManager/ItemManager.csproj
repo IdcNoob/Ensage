@@ -49,10 +49,11 @@
     <Compile Include="Attributes\AbilityAttribute.cs" />
     <Compile Include="Attributes\ModuleAttribute.cs" />
     <Compile Include="Core\Abilities\GuardianGreaves.cs" />
+    <Compile Include="Core\Abilities\IronTalon.cs" />
     <Compile Include="Core\Abilities\MagicStick.cs" />
     <Compile Include="Core\Abilities\Mekansm.cs" />
     <Compile Include="Core\Abilities\UrnOfShadows.cs" />
-    <Compile Include="Core\Bootstrap.cs" />
+    <Compile Include="Bootstrap.cs" />
     <Compile Include="Core\Abilities\ArcaneBoots.cs" />
     <Compile Include="Core\Abilities\Bottle.cs" />
     <Compile Include="Core\Abilities\PowerTreads.cs" />
@@ -61,6 +62,7 @@
     <Compile Include="Core\Abilities\Interfaces\IRecoveryAbility.cs" />
     <Compile Include="Core\Modules\AbilityHelper\BlinkAdjustment.cs" />
     <Compile Include="Core\Modules\AbilityHelper\TranquilDrop.cs" />
+    <Compile Include="Core\Modules\AutoActions\AutoIronTalon.cs" />
     <Compile Include="Core\Modules\AutoActions\HpMpRestore\AutoArcaneBoots.cs" />
     <Compile Include="Core\Modules\AutoActions\HpMpRestore\AutoBottle.cs" />
     <Compile Include="Core\Modules\AutoActions\AutoDewarding.cs" />
@@ -79,6 +81,7 @@
     <Compile Include="Core\Modules\Snatcher\Controllables\MyHero.cs" />
     <Compile Include="Core\Modules\Snatcher\Controllables\SpiritBear.cs" />
     <Compile Include="Core\Modules\Snatcher\Snatcher.cs" />
+    <Compile Include="Core\MyHero.cs" />
     <Compile Include="EventArgs\AbilityEventArgs.cs" />
     <Compile Include="EventArgs\BoolEventArgs.cs" />
     <Compile Include="EventArgs\ItemEventArgs.cs" />
@@ -86,6 +89,7 @@
     <Compile Include="Menus\Modules\AbilityHelper\AbilityHelperMenu.cs" />
     <Compile Include="Menus\Modules\AbilityHelper\BlinkMenu.cs" />
     <Compile Include="Menus\Modules\AbilityHelper\TranquilMenu.cs" />
+    <Compile Include="Menus\Modules\AutoActions\Actions\IronTalonMenu.cs" />
     <Compile Include="Menus\Modules\AutoActions\HpMpRestore\AutoArcaneBootsMenu.cs" />
     <Compile Include="Menus\Modules\AutoActions\AutoActionsMenu.cs" />
     <Compile Include="Core\Modules\AutoActions\Order.cs" />
@@ -117,7 +121,6 @@
     <Compile Include="Utils\CourierUtils.cs" />
     <Compile Include="Utils\EntityUtils.cs" />
     <Compile Include="Utils\ItemUtils.cs" />
-    <Compile Include="Utils\HeroUtils.cs" />
     <Compile Include="Utils\ModifierUtils.cs" />
   </ItemGroup>
   <ItemGroup>

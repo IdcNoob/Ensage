@@ -50,7 +50,7 @@
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!args.Entities.Contains(manager.MyHero) || !args.Process || args.OrderId != OrderId.Ability)
+            if (!args.Entities.Contains(manager.MyHero.Hero) || !args.Process || args.OrderId != OrderId.Ability)
             {
                 return;
             }
@@ -69,7 +69,7 @@
             }
 
             arcaneBoots =
-                manager.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_arcane_boots) as ArcaneBoots;
+                manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_arcane_boots) as ArcaneBoots;
 
             if (arcaneBoots == null || subscribed)
             {
@@ -89,7 +89,7 @@
             }
 
             arcaneBoots =
-                manager.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_arcane_boots) as ArcaneBoots;
+                manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_arcane_boots) as ArcaneBoots;
 
             if (arcaneBoots != null || !subscribed)
             {
@@ -110,17 +110,18 @@
 
             sleeper.Sleep(500);
 
-            if (!menu.AutoUse || !manager.MyHeroCanUseItems() || !arcaneBoots.CanBeCasted()
-                || manager.MyMissingMana < arcaneBoots.ManaRestore)
+            if (!menu.AutoUse || !manager.MyHero.CanUseItems() || !arcaneBoots.CanBeCasted()
+                || manager.MyHero.MissingMana < arcaneBoots.ManaRestore)
             {
                 return;
             }
 
             if (ObjectManager.GetEntitiesParallel<Hero>()
                 .Any(
-                    x => x.IsValid && x.Handle != manager.MyHandle && x.IsAlive && x.IsVisible && !x.IsIllusion
-                         && x.Team == manager.MyTeam && x.Distance2D(manager.MyHero) <= menu.AllySearchRange
-                         && x.Distance2D(manager.MyHero) > arcaneBoots.GetCastRange()
+                    x => x.IsValid && x.Handle != manager.MyHero.Handle && x.IsAlive && x.IsVisible && !x.IsIllusion
+                         && x.Team == manager.MyHero.Team
+                         && x.Distance2D(manager.MyHero.Position) <= menu.AllySearchRange
+                         && x.Distance2D(manager.MyHero.Position) > arcaneBoots.GetCastRange()
                          && x.MaximumMana - x.Mana > arcaneBoots.ManaRestore))
             {
                 if (!notified && menu.NotifyAllies)

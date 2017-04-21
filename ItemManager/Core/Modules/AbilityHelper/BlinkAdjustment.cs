@@ -34,7 +34,7 @@
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!menu.IsEnabled || !args.Entities.Contains(manager.MyHero) || args.IsQueued)
+            if (!menu.IsEnabled || !args.Entities.Contains(manager.MyHero.Hero) || args.IsQueued || !args.Process)
             {
                 return;
             }

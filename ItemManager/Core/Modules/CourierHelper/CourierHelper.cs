@@ -104,15 +104,15 @@
             }
 
             var purchaser = courier.Inventory.Items.Select(x => x.Purchaser?.Hero)
-                .OrderByDescending(x => x?.Handle == manager.MyHandle)
-                .FirstOrDefault(x => x?.Team == manager.MyTeam);
+                .OrderByDescending(x => x?.Handle == manager.MyHero.Handle)
+                .FirstOrDefault(x => x?.Team == manager.MyHero.Team);
 
             if (purchaser == null)
             {
                 return;
             }
 
-            if (purchaser.Handle == manager.MyHandle)
+            if (purchaser.Handle == manager.MyHero.Handle)
             {
                 courier.DeliverItems();
             }
@@ -125,7 +125,7 @@
         private void OnUnitAdd(object sender, UnitEventArgs unitEventArgs)
         {
             var courier = unitEventArgs.Unit as Courier;
-            if (courier != null && courier.Team == manager.MyTeam)
+            if (courier != null && courier.Team == manager.MyHero.Team)
             {
                 couriers.Add(courier);
             }
@@ -145,11 +145,11 @@
                 return;
             }
 
-            var myBottle = manager.GetMyItems(ItemUtils.StoredPlace.Inventory | ItemUtils.StoredPlace.Backpack)
+            var myBottle = manager.MyHero.GetMyItems(ItemStoredPlace.Inventory | ItemStoredPlace.Backpack)
                 .FirstOrDefault(x => x.Id == AbilityId.item_bottle);
 
             var courierBottle = courier.Inventory.Items.FirstOrDefault(
-                x => x.Id == AbilityId.item_bottle && x.Purchaser?.Hero?.Handle == manager.MyHandle);
+                x => x.Id == AbilityId.item_bottle && x.Purchaser?.Hero?.Handle == manager.MyHero.Handle);
 
             if (myBottle == null && courierBottle == null)
             {
@@ -161,24 +161,24 @@
             {
                 if (!courierFollowing)
                 {
-                    courier.Follow(manager.MyHero);
+                    courier.Follow(manager.MyHero.Hero);
                     courierFollowing = true;
                 }
 
-                if (courier.Distance2D(manager.MyHero) > 250 || myBottle.CurrentCharges > 0)
+                if (courier.Distance2D(manager.MyHero.Hero) > 250 || myBottle.CurrentCharges > 0)
                 {
                     sleeper.Sleep(200);
                     return;
                 }
 
-                manager.MyHero.GiveItem(myBottle, courier);
+                manager.MyHero.Hero.GiveItem(myBottle, courier);
                 sleeper.Sleep(300);
                 return;
             }
 
             courier.Burst();
 
-            if (manager.GetMyItems(ItemUtils.StoredPlace.Stash).Any())
+            if (manager.MyHero.GetMyItems(ItemStoredPlace.Stash).Any())
             {
                 courier.TakeAndDeliverItems();
             }
