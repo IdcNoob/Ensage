@@ -20,6 +20,13 @@
             allyRange.ValueChanged += (sender, args) => AllySearchRange = args.GetNewValue<Slider>().Value;
             AllySearchRange = allyRange.GetValue<Slider>().Value;
 
+            var fountainRange =
+                new MenuItem("autoBootsFountainRange", "Fountain range").SetValue(new Slider(4000, 2000, 8000));
+            fountainRange.SetTooltip("Don't use if fountain is closer (2k - fountain; 4k - base; 8k - t2");
+            menu.AddItem(fountainRange);
+            fountainRange.ValueChanged += (sender, args) => FountainRange = args.GetNewValue<Slider>().Value;
+            FountainRange = fountainRange.GetValue<Slider>().Value;
+
             var notifyAllies = new MenuItem("autoArcaneNotify", "Notify allies").SetValue(true);
             notifyAllies.SetTooltip("Notify allies if they are out of arcane boots cast range");
             menu.AddItem(notifyAllies);
@@ -32,6 +39,8 @@
         public int AllySearchRange { get; private set; }
 
         public bool AutoUse { get; private set; }
+
+        public int FountainRange { get; private set; }
 
         public bool NotifyAllies { get; private set; }
     }

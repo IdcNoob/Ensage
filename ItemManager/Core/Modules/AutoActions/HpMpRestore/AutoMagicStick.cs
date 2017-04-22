@@ -9,12 +9,15 @@
     using Attributes;
 
     using Ensage;
+    using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
 
     using Interfaces;
 
     using Menus;
     using Menus.Modules.AutoActions.HpMpRestore;
+
+    using Utils;
 
     [AbilityBasedModule(AbilityId.item_magic_stick)]
     [AbilityBasedModule(AbilityId.item_magic_wand)]
@@ -63,7 +66,16 @@
 
             sleeper.Sleep(100);
 
-            if (Game.IsPaused || !manager.MyHero.CanUseItems() || !magicStick.CanBeCasted())
+            if (Game.IsPaused || !manager.MyHero.CanUseItems() || !magicStick.CanBeCasted()
+                || manager.MyHero.HasModifier(ModifierUtils.IceBlastDebuff))
+            {
+                return;
+            }
+
+            if (menu.EnemySearchRange > 0 && !ObjectManager.GetEntitiesParallel<Hero>()
+                    .Any(
+                        x => x.IsAlive && !x.IsIllusion && x.IsVisible && x.Team != manager.MyHero.Team
+                             && x.Distance2D(manager.MyHero.Position) <= menu.EnemySearchRange))
             {
                 return;
             }

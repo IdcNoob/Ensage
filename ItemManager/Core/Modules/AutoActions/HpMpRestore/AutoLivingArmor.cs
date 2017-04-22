@@ -73,7 +73,8 @@
             {
                 var hero = manager.Units.OfType<Hero>()
                     .Where(
-                        x => x.IsValid && x.IsAlive && x.Team == manager.MyHero.Team && !x.IsIllusion && !x.IsInvul()
+                        x => x.IsValid && x.IsAlive && x.Team == manager.MyHero.Team
+                             && (!menu.IgnoreSelf || x.Handle != manager.MyHero.Handle) && !x.IsIllusion && !x.IsInvul()
                              && !x.HasModifier(ModifierUtils.LivingArmorModifier))
                     .OrderBy(x => x.HealthPercentage())
                     .FirstOrDefault(x => x.HealthPercentage() < menu.HeroHpThreshold);
@@ -82,8 +83,8 @@
                 {
                     if (menu.HeroEnemySearchRange <= 0 || ObjectManager.GetEntitiesParallel<Hero>()
                             .Any(
-                                x => x.IsAlive && !x.IsIllusion && x.Distance2D(hero) <= menu.HeroEnemySearchRange
-                                     && x.Team != manager.MyHero.Team
+                                x => x.IsAlive && !x.IsIllusion && x.IsVisible && x.Team != manager.MyHero.Team
+                                     && x.Distance2D(hero) <= menu.HeroEnemySearchRange
                                      && !x.HasModifier(ModifierUtils.LivingArmorModifier)))
                     {
                         PrintMessage(hero);

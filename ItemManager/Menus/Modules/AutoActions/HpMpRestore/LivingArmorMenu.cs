@@ -26,6 +26,12 @@
             heroEnabled.ValueChanged += (sender, args) => IsEnabledHero = args.GetNewValue<bool>();
             IsEnabledHero = heroEnabled.IsActive();
 
+            var ignoreSelf = new MenuItem("livingArmorSelfIgnore", "Ignore your hero").SetValue(false);
+            ignoreSelf.SetTooltip("Don't auto use living armor on your hero");
+            heroMenu.AddItem(ignoreSelf);
+            ignoreSelf.ValueChanged += (sender, args) => IgnoreSelf = args.GetNewValue<bool>();
+            IgnoreSelf = ignoreSelf.IsActive();
+
             var heroHpThreshold = new MenuItem("livingArmorHeroHp", "Hero HP% threshold").SetValue(new Slider(70));
             heroHpThreshold.SetTooltip("Use living armor if your ally has less hp%");
             heroMenu.AddItem(heroHpThreshold);
@@ -84,6 +90,8 @@
         public int HeroEnemySearchRange { get; private set; }
 
         public int HeroHpThreshold { get; private set; }
+
+        public bool IgnoreSelf { get; private set; }
 
         public bool IsEnabled { get; private set; }
 

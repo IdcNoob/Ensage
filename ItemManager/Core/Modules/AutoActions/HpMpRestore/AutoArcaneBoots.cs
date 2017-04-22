@@ -18,9 +18,13 @@
     using Menus;
     using Menus.Modules.AutoActions.HpMpRestore;
 
+    using SharpDX;
+
     [AbilityBasedModule(AbilityId.item_arcane_boots)]
     internal class AutoArcaneBoots : IAbilityBasedModule
     {
+        private readonly Vector3 fountain;
+
         private readonly Manager manager;
 
         private readonly AutoArcaneBootsMenu menu;
@@ -35,6 +39,10 @@
         {
             this.manager = manager;
             this.menu = menu.AutoActionsMenu.AutoHealsMenu.AutoArcaneBootsMenu;
+
+            fountain = ObjectManager.GetEntitiesParallel<Unit>()
+                .First(x => x.IsValid && x.ClassId == ClassId.CDOTA_Unit_Fountain && x.Team == manager.MyHero.Team)
+                .Position;
 
             Refresh();
 
@@ -81,14 +89,15 @@
             sleeper.Sleep(500);
 
             if (!menu.AutoUse || Game.IsPaused || !manager.MyHero.CanUseItems() || !arcaneBoots.CanBeCasted()
-                || manager.MyHero.MissingMana < arcaneBoots.ManaRestore)
+                || manager.MyHero.MissingMana < arcaneBoots.ManaRestore
+                || manager.MyHero.Distance2D(fountain) < menu.FountainRange)
             {
                 return;
             }
 
-            if (ObjectManager.GetEntitiesParallel<Hero>()
+            if (manager.Units.OfType<Hero>()
                 .Any(
-                    x => x.IsValid && x.Handle != manager.MyHero.Handle && x.IsAlive && x.IsVisible && !x.IsIllusion
+                    x => x.IsValid && x.Handle != manager.MyHero.Handle && x.IsAlive && !x.IsIllusion
                          && x.Team == manager.MyHero.Team
                          && x.Distance2D(manager.MyHero.Position) <= menu.AllySearchRange
                          && x.Distance2D(manager.MyHero.Position) > arcaneBoots.GetCastRange()

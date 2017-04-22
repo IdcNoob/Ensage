@@ -43,6 +43,8 @@
 
         public static string FountainRegeneration { get; } = "modifier_fountain_aura_buff";
 
+        public static string IceBlastDebuff { get; } = "modifier_ice_blast";
+
         public static string LivingArmorModifier { get; } = "modifier_treant_living_armor";
 
         public static string ShrineRegeneration { get; } = "modifier_filler_heal";

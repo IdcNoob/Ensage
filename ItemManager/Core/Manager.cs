@@ -129,7 +129,7 @@
             }
 
             var unit = args.Entity as Unit;
-            if (unit != null && unit.IsValid && unit.IsRealUnit() && !(unit is Building))
+            if (unit != null && unit.IsValid && unit.IsRealUnit())
             {
                 Units.Add(unit);
                 OnUnitAdd?.Invoke(null, new UnitEventArgs(unit));
@@ -176,7 +176,7 @@
             }
 
             var unit = args.Entity as Unit;
-            if (unit != null && unit.IsValid && unit.IsRealUnit() && !(unit is Building))
+            if (unit != null && unit.IsValid && unit.IsRealUnit())
             {
                 Units.Remove(unit);
                 OnUnitRemove?.Invoke(null, new UnitEventArgs(unit));
