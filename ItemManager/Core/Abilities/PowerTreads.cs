@@ -49,6 +49,8 @@
 
         public void SwitchTo(Attribute attribute, bool queue = false)
         {
+            SetSleep(200);
+
             switch (attribute)
             {
                 case Attribute.Strength:
@@ -85,8 +87,6 @@
                     }
                     break;
             }
-
-            SetSleep(200);
         }
 
         public override void Use(Unit target = null, bool queue = false)

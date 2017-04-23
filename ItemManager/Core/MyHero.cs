@@ -23,6 +23,8 @@ namespace ItemManager.Core
 
         private readonly Dictionary<Item, ItemSlot> itemSlots = new Dictionary<Item, ItemSlot>();
 
+        private readonly Ability cloakAndDagger;
+
         public MyHero(Hero hero)
         {
             Hero = hero;
@@ -30,6 +32,8 @@ namespace ItemManager.Core
             Handle = hero.Handle;
             Team = hero.Team;
             EnemyTeam = hero.GetEnemyTeam();
+
+            cloakAndDagger = hero.Spellbook.Spells.FirstOrDefault(x => x.Id == AbilityId.riki_permanent_invisibility);
         }
 
         public List<Ability> Abilities { get; } = new List<Ability>();
@@ -87,6 +91,21 @@ namespace ItemManager.Core
         public bool CanUseAbilities()
         {
             return CanUse() && Hero.CanCast();
+        }
+
+        public bool CanUseAbilitiesInInvisibility()
+        {
+            if (cloakAndDagger?.AbilityState == AbilityState.Ready)
+            {
+                return true;
+            }
+
+            if (Hero.HasModifier("modifier_treant_natures_guise_invis"))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public bool CanUseItems()
@@ -308,21 +327,6 @@ namespace ItemManager.Core
         private bool CanUse()
         {
             return Hero.IsAlive && !Hero.IsChanneling() && (!IsInvisible() || CanUseAbilitiesInInvisibility());
-        }
-
-        private bool CanUseAbilitiesInInvisibility()
-        {
-            if (Hero.HeroId == HeroId.npc_dota_hero_riki)
-            {
-                return true;
-            }
-
-            if (Hero.HeroId == HeroId.npc_dota_hero_treant && Hero.HasModifier("modifier_treant_natures_guise_invis"))
-            {
-                return true;
-            }
-
-            return false;
         }
 
         private ItemSlot? GetSlot(uint? handle, AbilityId? abilityId, ItemStoredPlace itemStoredPlace)

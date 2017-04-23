@@ -54,22 +54,16 @@
 
         public virtual void Use(Unit target = null, bool queue = false)
         {
+            SetSleep(200);
+
             if (Ability.IsAbilityBehavior(AbilityBehavior.NoTarget))
             {
-                if (!Ability.UseAbility(queue))
-                {
-                    return;
-                }
+                Ability.UseAbility(queue);
             }
             else if (Ability.IsAbilityBehavior(AbilityBehavior.UnitTarget))
             {
-                if (!Ability.UseAbility(target ?? Manager.MyHero.Hero, queue))
-                {
-                    return;
-                }
+                Ability.UseAbility(target ?? Manager.MyHero.Hero, queue);
             }
-
-            SetSleep(200);
         }
     }
 }

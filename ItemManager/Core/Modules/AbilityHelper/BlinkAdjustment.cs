@@ -51,7 +51,8 @@
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!menu.IsEnabled || !args.Entities.Contains(manager.MyHero.Hero) || args.IsQueued || !args.Process)
+            if (!menu.IsEnabled || !args.Entities.Contains(manager.MyHero.Hero) || args.IsQueued || !args.Process
+                || blinkDagger.IsSleeping)
             {
                 return;
             }
@@ -67,7 +68,7 @@
                 }
 
                 args.Process = false;
-                blinkDagger.Use(manager.MyHero.Position.Extend(location, castRange - 10));
+                blinkDagger.Use(manager.MyHero.Position.Extend(location, castRange - 50));
             }
         }
     }

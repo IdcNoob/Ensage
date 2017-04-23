@@ -104,12 +104,8 @@
 
         public void Use(Hero hero, bool queue = false)
         {
-            if (!Ability.UseAbility(hero, queue))
-            {
-                return;
-            }
-
             SetSleep(500);
+            Ability.UseAbility(hero, queue);
         }
 
         private bool IsInInventory()

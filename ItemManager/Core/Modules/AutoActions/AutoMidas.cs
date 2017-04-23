@@ -36,6 +36,8 @@
             this.menu = menu.AutoActionsMenu.MidasMenu;
 
             Refresh();
+
+            Game.OnUpdate += OnUpdate;
         }
 
         public List<AbilityId> AbilityIds { get; } = new List<AbilityId>

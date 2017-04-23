@@ -141,27 +141,15 @@
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
             if (!menu.IsEnabled || !args.Process || args.IsQueued || !args.Entities.Contains(manager.MyHero.Hero)
-                || manager.MyHero.IsInvisible())
+                || !args.IsPlayerInput && !menu.UniversalUseEnabled || manager.MyHero.IsInvisible()
+                && !manager.MyHero.CanUseAbilitiesInInvisibility())
             {
                 return;
             }
 
             var ability = args.Ability;
 
-            if (!args.IsPlayerInput)
-            {
-                if (ability?.Id == AbilityIds.First())
-                {
-                    powerTreads.SetSleep(300);
-                    return;
-                }
-
-                if (!menu.UniversalUseEnabled)
-                {
-                    return;
-                }
-            }
-            else if (ability?.Id == AbilityIds.First())
+            if (args.IsPlayerInput && ability?.Id == AbilityIds.First())
             {
                 powerTreads.ChangeDefaultAttribute();
                 return;

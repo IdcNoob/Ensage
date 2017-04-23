@@ -43,6 +43,7 @@
 
             manager.OnAbilityAdd += OnAbilityAdd;
             manager.OnAbilityRemove += OnAbilityRemove;
+            Player.OnExecuteOrder += OnExecuteOrder;
         }
 
         public List<AbilityId> AbilityIds { get; } = new List<AbilityId>
@@ -102,32 +103,20 @@
                 case OrderId.Ability:
                 case OrderId.ToggleAbility:
                 {
-                    if (!args.Process || args.IsQueued || !args.Entities.Contains(manager.MyHero.Hero))
+                    if (!args.IsPlayerInput && !menu.UniversalUseEnabled || !args.Process || args.IsQueued
+                        || !args.Entities.Contains(manager.MyHero.Hero))
+                    {
+                        return;
+                    }
+
+                    if (!soulRing.CanBeCasted() || manager.MyHero.HealthPercentage < menu.HpThreshold
+                        || manager.MyHero.ManaPercentage > menu.MpThreshold || manager.MyHero.IsInvisible()
+                        && !manager.MyHero.CanUseAbilitiesInInvisibility())
                     {
                         return;
                     }
 
                     var ability = args.Ability;
-
-                    if (!args.IsPlayerInput)
-                    {
-                        if (ability.Id == AbilityId.item_soul_ring)
-                        {
-                            soulRing.SetSleep(1000);
-                            return;
-                        }
-
-                        if (!menu.UniversalUseEnabled)
-                        {
-                            return;
-                        }
-                    }
-
-                    if (!soulRing.CanBeCasted() || manager.MyHero.HealthPercentage < menu.HpThreshold
-                        || manager.MyHero.ManaPercentage > menu.MpThreshold || manager.MyHero.IsInvisible())
-                    {
-                        return;
-                    }
 
                     if (ability.ManaCost <= menu.MpAbilityThreshold || !menu.IsAbilityEnabled(ability.StoredName()))
                     {

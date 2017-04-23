@@ -18,8 +18,8 @@
 
         public void Use(Vector3 position, bool queue = false)
         {
-            Ability.UseAbility(position, queue);
             SetSleep(500);
+            Ability.UseAbility(position, queue);
         }
     }
 }
