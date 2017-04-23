@@ -164,12 +164,12 @@ namespace ItemManager.Core.Modules.GoldSpender
             unreliable = manager.MyHero.Player.UnreliableGold;
 
             if (time <= 0 || Game.GameTime / 60 < time || manager.MyHero.Player.BuybackCooldownTime
-                >= manager.MyHero.RespawnTime())
+                >= manager.MyHero.RespawnTime)
             {
                 return;
             }
 
-            var requiredGold = manager.MyHero.BuybackCost() + GoldLossOnDeath();
+            var requiredGold = manager.MyHero.BuybackCost + GoldLossOnDeath();
 
             if (unreliable + reliable >= requiredGold)
             {

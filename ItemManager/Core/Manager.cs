@@ -101,7 +101,7 @@
                 var isMine = ability.Owner?.Handle == MyHero.Handle;
                 if (isMine)
                 {
-                    MyHero.Abilities.Add(ability);
+                    MyHero.AddAbility(ability);
 
                     var type = types.FirstOrDefault(
                         x => x.GetCustomAttributes<AbilityAttribute>().Any(z => z.AbilityId == ability.Id));
@@ -121,7 +121,7 @@
                 var isMine = item.Purchaser?.Hero?.Handle == MyHero.Handle;
                 if (isMine)
                 {
-                    MyHero.Items.Add(item);
+                    MyHero.AddItem(item);
                 }
 
                 OnItemAdd?.Invoke(null, new ItemEventArgs(item, isMine));
@@ -151,7 +151,7 @@
                 var isMine = ability.Owner?.Handle == MyHero.Handle;
                 if (isMine)
                 {
-                    MyHero.Abilities.Remove(ability);
+                    MyHero.RemoveAbility(ability);
                     var usableAbility = MyHero.UsableAbilities.FirstOrDefault(x => x.Handle == ability.Handle);
                     if (usableAbility != null)
                     {
@@ -168,7 +168,7 @@
                 var isMine = item.Purchaser?.Hero?.Handle == MyHero.Handle;
                 if (isMine)
                 {
-                    MyHero.Items.Remove(item);
+                    MyHero.RemoveItem(item);
                 }
 
                 OnItemRemove?.Invoke(null, new ItemEventArgs(item, isMine));

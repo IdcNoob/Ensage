@@ -19,11 +19,15 @@ namespace ItemManager.Core
 
     internal class MyHero : IDisposable
     {
-        private readonly MultiSleeper disabledItems = new MultiSleeper();
-
-        private readonly Dictionary<Item, ItemSlot> itemSlots = new Dictionary<Item, ItemSlot>();
+        private readonly List<Ability> abilities = new List<Ability>();
 
         private readonly Ability cloakAndDagger;
+
+        private readonly MultiSleeper disabledItems = new MultiSleeper();
+
+        private readonly List<Item> items = new List<Item>();
+
+        private readonly Dictionary<Item, ItemSlot> itemSlots = new Dictionary<Item, ItemSlot>();
 
         public MyHero(Hero hero)
         {
@@ -36,7 +40,9 @@ namespace ItemManager.Core
             cloakAndDagger = hero.Spellbook.Spells.FirstOrDefault(x => x.Id == AbilityId.riki_permanent_invisibility);
         }
 
-        public List<Ability> Abilities { get; } = new List<Ability>();
+        public IEnumerable<Ability> Abilities => abilities.Where(x => x.IsValid);
+
+        public int BuybackCost => (int)(100 + Math.Pow(Hero.Level, 2) * 1.5 + Game.GameTime / 60 * 15);
 
         public float Damage => Hero.MinimumDamage + Hero.BonusDamage;
 
@@ -56,7 +62,7 @@ namespace ItemManager.Core
 
         public bool IsAlive => Hero.IsAlive;
 
-        public List<Item> Items { get; } = new List<Item>();
+        public IEnumerable<Item> Items => items.Where(x => x.IsValid);
 
         public float Mana => Hero.Mana;
 
@@ -74,13 +80,20 @@ namespace ItemManager.Core
 
         public Vector3 Position => Hero.Position;
 
+        public float RespawnTime => (float)3.8 * Hero.Level + 5 + Hero.RespawnTimePenalty;
+
         public Team Team { get; }
 
         public List<UsableAbility> UsableAbilities { get; } = new List<UsableAbility>();
 
-        public int BuybackCost()
+        public void AddAbility(Ability ability)
         {
-            return (int)(100 + Math.Pow(Hero.Level, 2) * 1.5 + Game.GameTime / 60 * 15);
+            abilities.Add(ability);
+        }
+
+        public void AddItem(Item item)
+        {
+            items.Add(item);
         }
 
         public bool CanAttack()
@@ -117,8 +130,8 @@ namespace ItemManager.Core
         {
             DroppedItems.Clear();
             UsableAbilities.Clear();
-            Abilities.Clear();
-            Items.Clear();
+            abilities.Clear();
+            items.Clear();
             itemSlots.Clear();
         }
 
@@ -278,11 +291,11 @@ namespace ItemManager.Core
                 return 0;
             }
 
-            var items = ObjectManager.GetEntitiesParallel<PhysicalItem>()
+            var physicalItems = ObjectManager.GetEntitiesParallel<PhysicalItem>()
                 .Where(x => x.IsVisible && x.Distance2D(Hero) < 800 && DroppedItems.Contains(x.Item))
                 .Reverse();
 
-            if (!items.Any())
+            if (!physicalItems.Any())
             {
                 return 0;
             }
@@ -291,7 +304,7 @@ namespace ItemManager.Core
 
             var sleep = DroppedItems.Count * Game.Ping;
 
-            foreach (var physicalItem in items)
+            foreach (var physicalItem in physicalItems)
             {
                 if (Hero.PickUpItem(physicalItem, true))
                 {
@@ -302,7 +315,9 @@ namespace ItemManager.Core
 
                     if (slot != null && item != null)
                     {
-                        DelayAction.Add(200, () => { item.MoveItem(slot.Value); });
+                        DelayAction.Add(
+                            200 + Hero.Distance2D(physicalItem) / Hero.MovementSpeed,
+                            () => { item.MoveItem(slot.Value); });
                     }
                 }
             }
@@ -310,9 +325,14 @@ namespace ItemManager.Core
             return sleep;
         }
 
-        public float RespawnTime()
+        public void RemoveAbility(Ability ability)
         {
-            return (float)3.8 * Hero.Level + 5 + Hero.RespawnTimePenalty;
+            abilities.Remove(ability);
+        }
+
+        public void RemoveItem(Item item)
+        {
+            items.Remove(item);
         }
 
         public void SaveItemSlot(Item item, ItemStoredPlace itemStored = ItemStoredPlace.Any)
