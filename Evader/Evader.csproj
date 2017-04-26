@@ -393,6 +393,7 @@
     <Compile Include="EvadableAbilities\Units\SpiritBear\Entangle.cs" />
     <Compile Include="UsableAbilities\Abilities\BallLightning.cs" />
     <Compile Include="UsableAbilities\Abilities\BlindingLight.cs" />
+    <Compile Include="UsableAbilities\Abilities\Doppelganger.cs" />
     <Compile Include="UsableAbilities\Abilities\ElectricVortex.cs" />
     <Compile Include="UsableAbilities\Abilities\Enrage.cs" />
     <Compile Include="UsableAbilities\Abilities\Meld.cs" />

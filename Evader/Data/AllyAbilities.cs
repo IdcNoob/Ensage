@@ -96,7 +96,7 @@ namespace Evader.Data
                     "keeper_of_the_light_blinding_light",
                     ability => new BlindingLight(ability, AbilityType.Counter, AbilityCastTarget.Enemy)
                 },
-                { "phantom_lancer_doppelwalk", ability => new Targetable(ability, AbilityType.Counter) },
+                { "phantom_lancer_doppelwalk", ability => new Doppelganger(ability, AbilityType.Counter) },
                 { "pugna_nether_ward", ability => new Targetable(ability, AbilityType.Counter) },
                 { "razor_static_link", ability => new Targetable(ability, AbilityType.Counter) },
                 {

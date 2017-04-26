@@ -917,7 +917,7 @@
                                 }
 
                                 var requiredTime = blinkAbility.GetRequiredTime(ability, fountain, remainingTime)
-                                                   + 0.01f;
+                                                   + 0.02f;
                                 var time = remainingTime - requiredTime;
                                 var ignoreRemainingTime = ability.IgnoreRemainingTime(blinkAbility, time);
 
@@ -988,7 +988,7 @@
                                 var requiredTime = counterAbility.GetRequiredTime(
                                                        ability,
                                                        targetEnemy ? abilityOwner : ally,
-                                                       remainingTime) + Game.Ping / 1000 + 0.06f;
+                                                       remainingTime) + Game.Ping / 1000 + 0.07f;
 
                                 var ignoreRemainingTime = false;
 
@@ -1082,7 +1082,7 @@
                                 var remainingDisableTime = ability.GetRemainingDisableTime();
                                 var requiredTime =
                                     disableAbility.GetRequiredTime(ability, abilityOwner, remainingDisableTime)
-                                    + Game.Ping / 1000 + 0.01f;
+                                    + Game.Ping / 1000 + 0.02f;
 
                                 var ignoreRemainingTime =
                                     ability.IgnoreRemainingTime(disableAbility, remainingDisableTime);
