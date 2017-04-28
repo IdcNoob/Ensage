@@ -72,7 +72,7 @@
             if (hero != null && (hero.HeroId == HeroId.npc_dota_hero_techies && hero.Team != manager.MyHero.Team
                                  || hero.HeroId == HeroId.npc_dota_hero_rubick && manager.Units.OfType<Hero>()
                                      .Any(
-                                         x => x.HeroId == HeroId.npc_dota_hero_techies
+                                         x => x.IsValid && x.HeroId == HeroId.npc_dota_hero_techies
                                               && x.Team == manager.MyHero.Team)))
             {
                 manager.OnUnitAdd -= OnUnitAdd;
@@ -90,7 +90,15 @@
 
             sleeper.Sleep(200);
 
-            if (!menu.DestroyMines || !manager.MyHero.CanAttack())
+            if (!menu.DestroyMines)
+            {
+                return;
+            }
+
+            var canUseItems = manager.MyHero.CanUseItems();
+            var canAttack = manager.MyHero.CanAttack();
+
+            if (!canAttack && !canUseItems)
             {
                 return;
             }
@@ -101,8 +109,8 @@
                          && x.Distance2D(manager.MyHero.Position) <= 1000)
                 .ToList();
 
-            var canUseItems = manager.MyHero.CanUseItems();
             var attackRange = manager.MyHero.Hero.GetAttackRange();
+            var isInvisible = manager.MyHero.IsInvisible();
 
             foreach (var mine in techiesMines)
             {
@@ -110,7 +118,7 @@
 
                 if (canUseItems && mine.Health > 1 && distance <= chopRange)
                 {
-                    var item = manager.MyHero.GetMyItems(ItemStoredPlace.Inventory)
+                    var item = manager.MyHero.GetItems(ItemStoredPlace.Inventory)
                         .FirstOrDefault(x => usableItems.Contains(x.Id) && x.CanBeCasted());
 
                     if (item != null)
@@ -120,7 +128,7 @@
                     }
                 }
 
-                if (!menu.AttackMines)
+                if (!menu.AttackMines || !canAttack || isInvisible && !menu.AttackMinesInvisible)
                 {
                     continue;
                 }

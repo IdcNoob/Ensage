@@ -39,7 +39,7 @@
         public virtual bool CanBeCasted()
         {
             return !IsSleeping && Ability.IsValid && Ability.CanBeCasted()
-                   && (!IsItem || Manager.MyHero.GetMyItems(ItemStoredPlace.Inventory).Any(x => x.Handle == Handle));
+                   && (!IsItem || Manager.MyHero.GetItems(ItemStoredPlace.Inventory).Any(x => x.Handle == Handle));
         }
 
         public float GetCastRange()

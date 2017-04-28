@@ -50,7 +50,7 @@
         {
             if (boolEventArgs.Enabled)
             {
-                var tranquils = manager.MyHero.GetMyItems(ItemStoredPlace.Inventory)
+                var tranquils = manager.MyHero.GetItems(ItemStoredPlace.Inventory)
                     .FirstOrDefault(x => x.Id == AbilityId);
 
                 if (tranquils == null)

@@ -145,7 +145,7 @@
                 return;
             }
 
-            var myBottle = manager.MyHero.GetMyItems(ItemStoredPlace.Inventory | ItemStoredPlace.Backpack)
+            var myBottle = manager.MyHero.GetItems(ItemStoredPlace.Inventory | ItemStoredPlace.Backpack)
                 .FirstOrDefault(x => x.Id == AbilityId.item_bottle);
 
             var courierBottle = courier.Inventory.Items.FirstOrDefault(
@@ -178,7 +178,7 @@
 
             courier.Burst();
 
-            if (manager.MyHero.GetMyItems(ItemStoredPlace.Stash).Any())
+            if (manager.MyHero.GetItems(ItemStoredPlace.Stash).Any())
             {
                 courier.TakeAndDeliverItems();
             }

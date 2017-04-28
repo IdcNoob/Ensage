@@ -63,6 +63,7 @@
             if (itemEventArgs.Item.Id == AbilityId.item_branches)
             {
                 branchRemovalTime = Game.RawGameTime;
+                sleeper.Sleep(100);
             }
         }
 
@@ -73,7 +74,7 @@
                 return;
             }
 
-            sleeper.Sleep(200);
+            sleeper.Sleep(500);
 
             if (!menu.IsEnabled || !manager.MyHero.CanUseItems() || Game.IsPaused
                 || manager.MyHero.MissingHealth < menu.HealthThreshold
@@ -93,7 +94,7 @@
                 return;
             }
 
-            var tango = manager.MyHero.GetMyItems(ItemStoredPlace.Inventory)
+            var tango = manager.MyHero.GetItems(ItemStoredPlace.Inventory)
                 .FirstOrDefault(x => x.IsTango() && x.CanBeCasted());
 
             tango?.UseAbility(happyKappaTree);

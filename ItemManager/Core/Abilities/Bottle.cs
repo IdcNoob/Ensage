@@ -40,7 +40,7 @@
 
         public RestoredStats RestoredStats { get; }
 
-        public bool TookFromStash { get; private set; }
+        public bool TakenFromStash { get; private set; }
 
         public bool CanBeAutoCasted()
         {
@@ -73,7 +73,7 @@
         public void MoveItem(ItemSlot slot, bool took)
         {
             bottle.MoveItem(slot);
-            TookFromStash = took;
+            TakenFromStash = took;
             SetSleep(200);
         }
 
@@ -110,12 +110,12 @@
 
         private bool IsInInventory()
         {
-            return Manager.MyHero.GetMyItems(ItemStoredPlace.Inventory).Any(x => x.Handle == Handle);
+            return Manager.MyHero.GetItems(ItemStoredPlace.Inventory).Any(x => x.Handle == Handle);
         }
 
         private bool IsInStash()
         {
-            return Manager.MyHero.GetMyItems(ItemStoredPlace.Stash).Any(x => x.Handle == Handle);
+            return Manager.MyHero.GetItems(ItemStoredPlace.Stash).Any(x => x.Handle == Handle);
         }
     }
 }

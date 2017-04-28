@@ -113,7 +113,7 @@ namespace ItemManager.Core
                 return true;
             }
 
-            if (Hero.HasModifier("modifier_treant_natures_guise_invis"))
+            if (Hero.HasModifier(ModifierUtils.TreantProtectorInvis))
             {
                 return true;
             }
@@ -158,7 +158,7 @@ namespace ItemManager.Core
 
         public void DropItems(ItemStats dropItemStats, bool toBackpack = false, params IRecoveryAbility[] ignoredItems)
         {
-            foreach (var item in GetMyItems(ItemStoredPlace.Inventory)
+            foreach (var item in GetItems(ItemStoredPlace.Inventory)
                 .Where(
                     x => ignoredItems.All(z => z.Handle != x.Handle) && !DroppedItems.Contains(x)
                          && !disabledItems.Sleeping(x.Handle) && x.IsEnabled && x.IsDroppable
@@ -185,7 +185,7 @@ namespace ItemManager.Core
 
         public Item GetBestBackpackItem()
         {
-            return GetMyItems(ItemStoredPlace.Backpack)
+            return GetItems(ItemStoredPlace.Backpack)
                 .Where(x => !x.IsRecipe && !x.IsEmptyBottle())
                 .OrderByDescending(x => x.Cost)
                 .FirstOrDefault();
@@ -212,7 +212,7 @@ namespace ItemManager.Core
             return wards + (uint)Items.Where(x => x.Id == id).Sum(x => x.CurrentCharges);
         }
 
-        public IEnumerable<Item> GetMyItems(ItemStoredPlace itemStoredPlace)
+        public IEnumerable<Item> GetItems(ItemStoredPlace itemStoredPlace)
         {
             var list = new List<Item>();
 
@@ -277,7 +277,7 @@ namespace ItemManager.Core
         public float PickUpItems()
         {
             var bottle = UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_bottle) as Bottle;
-            if (bottle != null && bottle.TookFromStash)
+            if (bottle != null && bottle.TakenFromStash)
             {
                 var slot = GetSavedSlot(bottle.Handle);
                 if (slot != null)

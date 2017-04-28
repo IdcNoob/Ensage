@@ -67,7 +67,7 @@
                 return;
             }
 
-            var item = manager.MyHero.GetMyItems(ItemStoredPlace.Inventory)
+            var item = manager.MyHero.GetItems(ItemStoredPlace.Inventory)
                 .Where(
                     x => (!x.IsTango() || manager.MyHero.MissingHealth >= menu.TangoHpThreshold)
                          && menu.IsAbilityEnabled(x.StoredName()) && x.CanBeCasted())

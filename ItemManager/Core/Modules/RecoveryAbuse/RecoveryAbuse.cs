@@ -58,7 +58,7 @@
             {
                 manager.MyHero.DroppedItems.RemoveAll(
                     x => x == null || !x.IsValid || manager.MyHero
-                             .GetMyItems(ItemStoredPlace.Inventory | ItemStoredPlace.Backpack)
+                             .GetItems(ItemStoredPlace.Inventory | ItemStoredPlace.Backpack)
                              .Contains(x));
             }
             else if (usingItems && !menu.ItemsToBackpack)

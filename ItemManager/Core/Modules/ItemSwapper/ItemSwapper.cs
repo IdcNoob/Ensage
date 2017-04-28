@@ -70,11 +70,11 @@
 
         private void BackpackOnSwap(object sender, EventArgs eventArgs)
         {
-            var inventoryItems = manager.MyHero.GetMyItems(ItemStoredPlace.Inventory)
+            var inventoryItems = manager.MyHero.GetItems(ItemStoredPlace.Inventory)
                 .Where(x => menu.Backpack.ItemEnabled(x.Name) && x.CanBeMoved())
                 .ToList();
 
-            var backpackItems = manager.MyHero.GetMyItems(ItemStoredPlace.Backpack)
+            var backpackItems = manager.MyHero.GetItems(ItemStoredPlace.Backpack)
                 .Where(x => menu.Backpack.ItemEnabled(x.Name))
                 .ToList();
 
@@ -153,7 +153,6 @@
                 {
                     // ReSharper disable LoopCanBeConvertedToQuery
                     foreach (var itemSlot in Enum.GetValues(typeof(InventorySlot)).Cast<ItemSlot>())
-
                     {
                         allSlots.Add(itemSlot);
                     }
@@ -239,7 +238,7 @@
         {
             var item = itemEventArgs.Item;
 
-            if (!itemEventArgs.IsMine || item.IsRecipe || manager.MyHero.GetMyItems(ItemStoredPlace.Any)
+            if (!itemEventArgs.IsMine || item.IsRecipe || manager.MyHero.GetItems(ItemStoredPlace.Any)
                     .Any(x => x.Id == item.Id))
             {
                 return;
@@ -306,7 +305,7 @@
                 return;
             }
 
-            var inventoryItems = manager.MyHero.GetMyItems(ItemStoredPlace.Inventory)
+            var inventoryItems = manager.MyHero.GetItems(ItemStoredPlace.Inventory)
                 .Where(x => menu.Courier.ItemEnabled(x.Name) && x.CanBeMoved())
                 .ToList();
 
@@ -356,11 +355,11 @@
                 return;
             }
 
-            var inventoryItems = manager.MyHero.GetMyItems(ItemStoredPlace.Inventory)
+            var inventoryItems = manager.MyHero.GetItems(ItemStoredPlace.Inventory)
                 .Where(x => menu.Stash.ItemEnabled(x.Name) && x.CanBeMoved())
                 .ToList();
 
-            var stashItems = manager.MyHero.GetMyItems(ItemStoredPlace.Stash)
+            var stashItems = manager.MyHero.GetItems(ItemStoredPlace.Stash)
                 .Where(x => menu.Stash.ItemEnabled(x.Name))
                 .ToList();
 

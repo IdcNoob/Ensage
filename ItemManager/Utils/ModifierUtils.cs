@@ -51,6 +51,8 @@
 
         public static string TangoRegeneration { get; } = "modifier_tango_heal";
 
+        public static string TreantProtectorInvis { get; } = "modifier_treant_natures_guise_invis";
+
         public static string UrnRegeneration { get; } = "modifier_item_urn_heal";
     }
 }

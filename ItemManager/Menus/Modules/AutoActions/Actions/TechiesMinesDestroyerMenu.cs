@@ -21,10 +21,18 @@
             attackMines.ValueChanged += (sender, args) => AttackMines = args.GetNewValue<bool>();
             AttackMines = attackMines.IsActive();
 
+            var attackMinesInvisible = new MenuItem("attackMinesInvis", "Attack when invisible").SetValue(true);
+            attackMinesInvisible.SetTooltip("Attack techies mines when your hero is invisible");
+            menu.AddItem(attackMinesInvisible);
+            attackMinesInvisible.ValueChanged += (sender, args) => AttackMinesInvisible = args.GetNewValue<bool>();
+            AttackMinesInvisible = attackMinesInvisible.IsActive();
+
             mainMenu.AddSubMenu(menu);
         }
 
         public bool AttackMines { get; private set; }
+
+        public bool AttackMinesInvisible { get; private set; }
 
         public bool DestroyMines { get; private set; }
     }
