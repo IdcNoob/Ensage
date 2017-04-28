@@ -91,6 +91,12 @@
             AbilityDrawer.UpdateCirclePosition(GetProjectilePosition());
         }
 
+        public override void End()
+        {
+            base.End();
+            abilityUnit = null;
+        }
+
         public override float GetRemainingDisableTime()
         {
             return 0;
