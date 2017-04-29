@@ -176,7 +176,7 @@
                             damage += myAutoAttackDamageDone;
                         }
 
-                        if (damage > health || !menu.AbilitiesMenu.SumDamage)
+                        if (damage >= health || !menu.AbilitiesMenu.SumDamage)
                         {
                             break;
                         }

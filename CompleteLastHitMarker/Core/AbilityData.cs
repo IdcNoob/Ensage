@@ -27,7 +27,8 @@
             AbilityId.tinker_heat_seeking_missile,
             AbilityId.warlock_rain_of_chaos,
             AbilityId.zuus_cloud,
-            AbilityId.zuus_thundergods_wrath
+            AbilityId.zuus_thundergods_wrath,
+            AbilityId.nyx_assassin_mana_burn
         };
 
         public static List<AbilityId> ForceInclude { get; } = new List<AbilityId>

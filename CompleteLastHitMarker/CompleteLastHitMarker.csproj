@@ -71,6 +71,7 @@
     <Compile Include="Abilities\Passive\Jinada.cs" />
     <Compile Include="Abilities\Passive\JinguMastery.cs" />
     <Compile Include="Abilities\Passive\ManaBreak.cs" />
+    <Compile Include="Abilities\Passive\Nethertoxin.cs" />
     <Compile Include="Abilities\Passive\Overload.cs" />
     <Compile Include="Abilities\Passive\QuellingBlade.cs" />
     <Compile Include="Abilities\Passive\ShadowWalk.cs" />
