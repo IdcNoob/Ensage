@@ -109,7 +109,8 @@
                 return;
             }
 
-            foreach (var unit in killableUnits.Where(x => x.DamageCalculated && x.IsValid()))
+            foreach (var unit in killableUnits.Where(x => x.DamageCalculated && x.IsValid())
+                .OrderByDescending(x => x.Distance(Game.MousePosition)))
             {
                 var hpBarPosition = menu.AutoAttackMenu.AutoAttackHealthBar.GetHealthBarPosition(unit);
                 var hpBarSize = menu.AutoAttackMenu.AutoAttackHealthBar.GetHealthBarSize(unit);

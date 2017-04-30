@@ -109,6 +109,11 @@
             return hero.Position.Distance2D(Unit);
         }
 
+        public float Distance(Vector3 position)
+        {
+            return position.Distance2D(Unit);
+        }
+
         public bool IsValid()
         {
             return Unit != null && Unit.IsValid && Unit.IsSpawned && Unit.IsAlive && Unit.IsVisible;

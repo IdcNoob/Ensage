@@ -33,6 +33,11 @@
 
         public override float GetBonusDamage(Hero hero, KillableUnit unit, IEnumerable<IPassiveAbility> abilities)
         {
+            if (!CanDoDamage(hero, unit, abilities))
+            {
+                return 0;
+            }
+
             return (float)(Damage[Level - 1] * Math.Pow(2, Math.Floor((1 - unit.HealthPercentage) / 0.2)) * reduction);
         }
     }
