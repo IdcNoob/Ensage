@@ -27,6 +27,12 @@
             attackMinesInvisible.ValueChanged += (sender, args) => AttackMinesInvisible = args.GetNewValue<bool>();
             AttackMinesInvisible = attackMinesInvisible.IsActive();
 
+            var updateRate = new MenuItem("techiesMinesUpdateRate", "Update rate").SetValue(new Slider(200, 0, 500));
+            updateRate.SetTooltip("Lower value => faster reaction, but requires more resources");
+            menu.AddItem(updateRate);
+            updateRate.ValueChanged += (sender, args) => UpdateRate = args.GetNewValue<Slider>().Value;
+            UpdateRate = updateRate.GetValue<Slider>().Value;
+
             mainMenu.AddSubMenu(menu);
         }
 
@@ -35,5 +41,7 @@
         public bool AttackMinesInvisible { get; private set; }
 
         public bool DestroyMines { get; private set; }
+
+        public int UpdateRate { get; private set; }
     }
 }

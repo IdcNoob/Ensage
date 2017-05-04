@@ -29,6 +29,12 @@
             tangoHpThreshold.ValueChanged += (sender, args) => TangoHpThreshold = args.GetNewValue<Slider>().Value;
             TangoHpThreshold = tangoHpThreshold.GetValue<Slider>().Value;
 
+            var updateRate = new MenuItem("dewardUpdateRate", "Update rate").SetValue(new Slider(200, 0, 500));
+            updateRate.SetTooltip("Lower value => faster reaction, but requires more resources");
+            menu.AddItem(updateRate);
+            updateRate.ValueChanged += (sender, args) => UpdateRate = args.GetNewValue<Slider>().Value;
+            UpdateRate = updateRate.GetValue<Slider>().Value;
+
             menu.AddItem(
                 new MenuItem("dewardItemsToggler", "Items:").SetValue(
                     abilityToggler = new AbilityToggler(ItemsToUse.ToDictionary(x => x.ToString(), x => true))));
@@ -52,6 +58,8 @@
         };
 
         public int TangoHpThreshold { get; private set; }
+
+        public int UpdateRate { get; private set; }
 
         public uint GetAbilityPriority(string itemName)
         {

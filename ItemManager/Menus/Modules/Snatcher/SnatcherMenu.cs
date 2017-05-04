@@ -61,10 +61,11 @@
                 };
             UseOtherUnits = otherUnits.IsActive();
 
-            var delay = new MenuItem("snatcherSleep", "Check delay").SetValue(new Slider(100, 0, 500));
-            menu.AddItem(delay);
-            delay.ValueChanged += (sender, args) => Delay = args.GetNewValue<Slider>().Value;
-            Delay = delay.GetValue<Slider>().Value;
+            var updateRate = new MenuItem("snatcherUpdateRate", "Update rate").SetValue(new Slider(0, 0, 500));
+            updateRate.SetTooltip("Lower value => faster reaction, but requires more resources");
+            menu.AddItem(updateRate);
+            updateRate.ValueChanged += (sender, args) => UpdateRate = args.GetNewValue<Slider>().Value;
+            UpdateRate = updateRate.GetValue<Slider>().Value;
 
             SetEnabledItems(holdItems.GetValue<AbilityToggler>().Dictionary, EnabledHoldItems);
             SetEnabledItems(toggleItems.GetValue<AbilityToggler>().Dictionary, EnabledToggleItems);
@@ -74,8 +75,6 @@
 
         public event EventHandler<BoolEventArgs> OnUseOtherUnitsChange;
 
-        public int Delay { get; private set; }
-
         public List<AbilityId> EnabledHoldItems { get; } = new List<AbilityId>();
 
         public List<AbilityId> EnabledToggleItems { get; } = new List<AbilityId>();
@@ -83,6 +82,8 @@
         public bool HoldKey { get; private set; }
 
         public bool ToggleKey { get; private set; }
+
+        public int UpdateRate { get; private set; }
 
         public bool UseOtherUnits { get; private set; }
 

@@ -58,7 +58,7 @@
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!args.Entities.Contains(manager.MyHero.Hero) || !block.Sleeping)
+            if (!args.Entities.Contains(manager.MyHero.Hero) || !block.Sleeping || !args.IsPlayerInput)
             {
                 return;
             }
@@ -88,7 +88,7 @@
                 return;
             }
 
-            sleeper.Sleep(200);
+            sleeper.Sleep(menu.UpdateRate);
 
             if (!menu.DestroyMines)
             {
@@ -105,7 +105,7 @@
 
             var techiesMines = ObjectManager.GetEntitiesParallel<Unit>()
                 .Where(
-                    x => x.IsValid && x.IsTechiesMine() && x.IsAlive && x.Team != manager.MyHero.Team
+                    x => x.IsValid && x.IsTechiesMine() && !x.IsInvul() && x.IsAlive && x.Team != manager.MyHero.Team
                          && x.Distance2D(manager.MyHero.Position) <= 1000)
                 .ToList();
 
@@ -124,6 +124,7 @@
                     if (item != null)
                     {
                         item.UseAbility(mine);
+                        sleeper.Sleep(500);
                         return;
                     }
                 }

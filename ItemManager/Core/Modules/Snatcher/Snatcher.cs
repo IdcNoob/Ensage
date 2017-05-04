@@ -138,7 +138,7 @@
                 return;
             }
 
-            sleeper.Sleep(menu.Delay, this);
+            sleeper.Sleep(menu.UpdateRate, this);
 
             var validControllables = controllables.Where(x => x.IsValid()).ToList();
 

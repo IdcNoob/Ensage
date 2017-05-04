@@ -50,7 +50,7 @@
                 return;
             }
 
-            sleeper.Sleep(200);
+            sleeper.Sleep(menu.UpdateRate);
 
             if (!menu.IsEnabled || !manager.MyHero.CanUseItems())
             {
@@ -74,7 +74,11 @@
                 .OrderByDescending(x => menu.GetAbilityPriority(x.StoredName()))
                 .FirstOrDefault();
 
-            item?.UseAbility(ward);
+            if (item != null)
+            {
+                item.UseAbility(ward);
+                sleeper.Sleep(500);
+            }
         }
     }
 }
