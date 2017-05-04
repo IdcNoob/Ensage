@@ -976,6 +976,11 @@
 
                             foreach (var counterAbility in counterAbilities)
                             {
+                                if (!Menu.Hotkeys.EnabledBkb && counterAbility.Name == "item_black_king_bar")
+                                {
+                                    continue;
+                                }
+
                                 var targetEnemy = !counterAbility.CanBeUsedOnAlly && counterAbility.CanBeUsedOnEnemy;
 
                                 if (!counterAbility.CanBeUsedOnAlly && !allyIsMe && !targetEnemy

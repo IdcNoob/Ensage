@@ -11,6 +11,8 @@
 
     internal class StatusDrawer
     {
+        private const string BkbText = "BKB";
+
         private const string EvaderText = "Evader";
 
         private const string Font = "Arial";
@@ -18,6 +20,8 @@
         private const string MovementBlockedText = "Movement Blocked";
 
         private const string PathfinderText = "Pathfinder";
+
+        private readonly Vector2 bkbTextPosition;
 
         private readonly Vector2 evaderTextPosition;
 
@@ -37,15 +41,20 @@
             var x = HUDInfo.ScreenSizeX();
             var evaderTextSize = Drawing.MeasureText(EvaderText, Font, textSize, FontFlags.None);
             var pathfinderTextSize = Drawing.MeasureText(PathfinderText, Font, textSize, FontFlags.None);
+            var bkbTextSize = Drawing.MeasureText(BkbText, Font, textSize, FontFlags.None);
             var movementBlockedText = Drawing.MeasureText(MovementBlockedText, Font, textSize, FontFlags.None);
 
             evaderTextPosition = new Vector2(x - evaderTextSize.X - 10, evaderTextSize.Y + 25);
+
             pathfinderTextPosition = new Vector2(
                 x - pathfinderTextSize.X - 10,
                 pathfinderTextSize.Y + evaderTextPosition.Y);
+
+            bkbTextPosition = new Vector2(x - bkbTextSize.X - 10, bkbTextSize.Y + pathfinderTextPosition.Y);
+
             movementBlockedPosition = new Vector2(
                 x - movementBlockedText.X - 10,
-                movementBlockedText.Y + pathfinderTextPosition.Y);
+                movementBlockedText.Y + bkbTextPosition.Y);
         }
 
         private static HotkeysMenu Menu => Variables.Menu.Hotkeys;
@@ -70,6 +79,11 @@
                     textSize,
                     Menu.PathfinderMode == Pathfinder.EvadeMode.All ? textColor : Color.Red,
                     FontFlags.None);
+            }
+
+            if (Menu.EnabledBkb)
+            {
+                Drawing.DrawText(BkbText, Font, bkbTextPosition, textSize, textColor, FontFlags.None);
             }
 
             if (sleeper.Sleeping("avoiding") || sleeper.Sleeping("block"))

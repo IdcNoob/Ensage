@@ -28,6 +28,13 @@
                     }
                 };
 
+            var enabledBkb =
+                new MenuItem("enableBkb", "Enable bkb").SetValue(new KeyBind('-', KeyBindType.Toggle, true));
+            enabledBkb.SetTooltip("Enables/disables bkb usage with a hotkey");
+            menu.AddItem(enabledBkb);
+            enabledBkb.ValueChanged += (sender, args) => EnabledBkb = args.GetNewValue<KeyBind>().Active;
+            EnabledBkb = enabledBkb.IsActive();
+
             menu.AddItem(
                     new MenuItem("forceBlink", "Force blink").SetValue(new KeyBind(46, KeyBindType.Press))
                         .SetTooltip("Blink in front of your hero as soon as possible"))
@@ -35,6 +42,8 @@
 
             rootMenu.AddSubMenu(menu);
         }
+
+        public bool EnabledBkb { get; private set; }
 
         public bool EnabledEvader { get; private set; }
 
