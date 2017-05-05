@@ -1,7 +1,10 @@
 ﻿namespace ItemManager.Core.Modules.AbilityHelper
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
+
+    using Attributes;
 
     using Ensage;
     using Ensage.Common.Extensions;
@@ -9,14 +12,15 @@
 
     using EventArgs;
 
+    using Interfaces;
+
     using Menus;
     using Menus.Modules.AbilityHelper;
 
     using Utils;
 
-    // [AbilityBasedModule(AbilityId.item_tranquil_boots)]
-
-    internal class TranquilDrop //: IAbilityBasedModule
+    [AbilityBasedModule(AbilityId.item_tranquil_boots)]
+    internal class TranquilDrop : IAbilityBasedModule
     {
         private readonly Manager manager;
 
@@ -34,7 +38,10 @@
             this.menu.OnTranquilDrop += OnTranquilDrop;
         }
 
-        public AbilityId AbilityId { get; } = AbilityId.item_tranquil_boots;
+        public List<AbilityId> AbilityIds { get; } = new List<AbilityId>
+        {
+            AbilityId.item_tranquil_boots
+        };
 
         public void Dispose()
         {
@@ -51,7 +58,7 @@
             if (boolEventArgs.Enabled)
             {
                 var tranquils = manager.MyHero.GetItems(ItemStoredPlace.Inventory)
-                    .FirstOrDefault(x => x.Id == AbilityId);
+                    .FirstOrDefault(x => x.Id == AbilityIds.First());
 
                 if (tranquils == null)
                 {
