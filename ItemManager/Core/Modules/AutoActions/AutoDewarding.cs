@@ -32,8 +32,8 @@
             this.menu = menu.AutoActionsMenu.DewardingMenu;
 
             chopRange = Ability.GetAbilityDataById(AbilityId.item_quelling_blade)
-                .AbilitySpecialData.First(x => x.Name == "cast_range_ward")
-                .Value;
+                            .AbilitySpecialData.First(x => x.Name == "cast_range_ward")
+                            .Value + 200;
 
             Game.OnUpdate += OnUpdate;
         }
@@ -58,9 +58,11 @@
             }
 
             var ward = ObjectManager.GetEntitiesParallel<Unit>()
-                .FirstOrDefault(
+                .Where(
                     x => x.IsValid && x.IsWard() && x.IsAlive && x.Team != manager.MyHero.Team
-                         && x.Distance2D(manager.MyHero.Position) <= chopRange);
+                         && x.Distance2D(manager.MyHero.Position) <= chopRange)
+                .OrderByDescending(x => x.IsSentryWard())
+                .FirstOrDefault();
 
             if (ward == null)
             {
