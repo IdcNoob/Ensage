@@ -6,6 +6,13 @@
     {
         public static string BottleRegeneration { get; } = "modifier_bottle_regeneration";
 
+        public static List<string> CanUseAbilitiesInInvis { get; } = new List<string>
+        {
+            "modifier_broodmother_spin_web_invisible_applier",
+            "modifier_riki_permanent_invisibility",
+            "modifier_treant_natures_guise_invis"
+        };
+
         public static List<string> DelayPowerTreadsSwitchModifiers { get; } = new List<string>
         {
             // abilities
@@ -50,8 +57,6 @@
         public static string ShrineRegeneration { get; } = "modifier_filler_heal";
 
         public static string TangoRegeneration { get; } = "modifier_tango_heal";
-
-        public static string TreantProtectorInvis { get; } = "modifier_treant_natures_guise_invis";
 
         public static string UrnRegeneration { get; } = "modifier_item_urn_heal";
     }

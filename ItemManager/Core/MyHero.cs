@@ -21,8 +21,6 @@ namespace ItemManager.Core
     {
         private readonly List<Ability> abilities = new List<Ability>();
 
-        private readonly Ability cloakAndDagger;
-
         private readonly MultiSleeper disabledItems = new MultiSleeper();
 
         private readonly List<Item> items = new List<Item>();
@@ -36,8 +34,6 @@ namespace ItemManager.Core
             Handle = hero.Handle;
             Team = hero.Team;
             EnemyTeam = hero.GetEnemyTeam();
-
-            cloakAndDagger = hero.Spellbook.Spells.FirstOrDefault(x => x.Id == AbilityId.riki_permanent_invisibility);
         }
 
         public IEnumerable<Ability> Abilities => abilities.Where(x => x.IsValid);
@@ -108,17 +104,7 @@ namespace ItemManager.Core
 
         public bool CanUseAbilitiesInInvisibility()
         {
-            if (cloakAndDagger?.AbilityState == AbilityState.Ready)
-            {
-                return true;
-            }
-
-            if (Hero.HasModifier(ModifierUtils.TreantProtectorInvis))
-            {
-                return true;
-            }
-
-            return false;
+            return Hero.HasModifiers(ModifierUtils.CanUseAbilitiesInInvis.ToArray(), false);
         }
 
         public bool CanUseItems()
