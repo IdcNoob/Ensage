@@ -257,7 +257,8 @@ namespace ItemManager.Core
 
         public bool ItemsCanBeDisabled()
         {
-            return Hero.ActiveShop == ShopType.None;
+            return Hero.ActiveShop == (ShopType)7;
+            //return Hero.ActiveShop == ShopType.None;
         }
 
         public float PickUpItems()
