@@ -58,6 +58,8 @@ namespace ItemManager.Core
 
         public bool IsAlive => Hero.IsAlive;
 
+        public bool IsChanneling => Hero.IsChanneling();
+
         public IEnumerable<Item> Items => items.Where(x => x.IsValid);
 
         public float Mana => Hero.Mana;
@@ -94,7 +96,7 @@ namespace ItemManager.Core
 
         public bool CanAttack()
         {
-            return Hero.IsAlive && !Hero.IsChanneling() && Hero.CanAttack();
+            return Hero.IsAlive && !IsChanneling && Hero.CanAttack();
         }
 
         public bool CanUseAbilities()
@@ -333,7 +335,7 @@ namespace ItemManager.Core
 
         private bool CanUse()
         {
-            return Hero.IsAlive && !Hero.IsChanneling() && (!IsInvisible() || CanUseAbilitiesInInvisibility());
+            return Hero.IsAlive && !IsChanneling && (!IsInvisible() || CanUseAbilitiesInInvisibility());
         }
 
         private ItemSlot? GetSlot(uint? handle, AbilityId? abilityId, ItemStoredPlace itemStoredPlace)
