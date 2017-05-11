@@ -119,8 +119,8 @@
                     var missingMana = manager.MyHero.MissingMana;
 
                     var powerTreads =
-                        manager.MyHero.UsableAbilities.FirstOrDefault(
-                            x => x.Id == AbilityId.item_power_treads) as PowerTreads;
+                        manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_power_treads) as
+                            PowerTreads;
 
                     var usedAbilities = new List<uint>();
 

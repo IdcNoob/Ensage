@@ -69,15 +69,17 @@
                 return;
             }
 
-            var creep = ObjectManager.GetEntitiesParallel<Creep>()
+            var creeps = ObjectManager.GetEntitiesParallel<Creep>()
                 .Where(
                     x => x.IsValid && x.IsAlive && x.IsSpawned && x.IsVisible
                          && x.Distance2D(manager.MyHero.Position) <= handOfMidas.GetCastRange()
                          && x.Team != manager.MyHero.Team && !x.IsAncient
                          && x.HealthPercentage() >= menu.HealthThresholdPct
-                         && x.GetGrantedExperience() >= menu.ExperienceThreshold)
-                .OrderByDescending(x => x.Health)
-                .FirstOrDefault();
+                         && (x.GetGrantedExperience() >= menu.ExperienceThreshold || manager.MyHero.Level >= 25));
+
+            var creep = manager.MyHero.Level >= 25
+                            ? creeps.OrderBy(x => x.GetGrantedExperience()).FirstOrDefault()
+                            : creeps.OrderByDescending(x => x.Health).FirstOrDefault();
 
             if (creep != null)
             {

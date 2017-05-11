@@ -62,6 +62,8 @@ namespace ItemManager.Core
 
         public IEnumerable<Item> Items => items.Where(x => x.IsValid);
 
+        public uint Level => Hero.Level;
+
         public float Mana => Hero.Mana;
 
         public float ManaPercentage => Mana / MaximumMana * 100;

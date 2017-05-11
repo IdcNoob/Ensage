@@ -14,8 +14,8 @@
                 return;
             }
 
-            var burst =
-                courier.Spellbook.Spells.FirstOrDefault(x => x.Id == AbilityId.courier_burst && x.CanBeCasted());
+            var burst = courier.Spellbook.Spells.FirstOrDefault(
+                x => x.Id == AbilityId.courier_burst && x.CanBeCasted());
 
             burst?.UseAbility(queue);
         }
