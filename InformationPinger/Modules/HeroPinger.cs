@@ -42,10 +42,9 @@
 
             var newAbility = Hero.Spellbook.Spells.FirstOrDefault(
                 x => x.IsValid && !x.IsHidden && !pinged.Contains(x.Handle)
-                     && (Variables.Abilities.Contains(x.StoredName())
-                         || (isRubick && x.AbilitySlot == AbilitySlot.Slot_4
-                             && (rubickDisable && x.IsDisable()
-                                 || rubickUltimate && x.AbilityType == AbilityType.Ultimate))) && x.Level > 0);
+                     && (Variables.Abilities.Contains(x.StoredName()) || isRubick && x.AbilitySlot == AbilitySlot.Slot_4
+                         && (rubickDisable && x.IsDisable() || rubickUltimate && x.AbilityType == AbilityType.Ultimate))
+                     && x.Level > 0);
 
             return Announce(newAbility, doublePing);
         }
@@ -110,17 +109,22 @@
                 return false;
             }
 
-            ability.Announce();
+            DelayAction.Add(
+                750,
+                () =>
+                    {
+                        ability.Announce();
 
-            if (doublePing)
-            {
-                DelayAction.Add(250, () => ability.Announce());
-                Variables.Sleeper.Sleep(random.Next(3333, 4333), "CanPing");
-            }
-            else
-            {
-                Variables.Sleeper.Sleep(random.Next(1111, 1333), "CanPing");
-            }
+                        if (doublePing)
+                        {
+                            DelayAction.Add(250, () => ability.Announce());
+                            Variables.Sleeper.Sleep(random.Next(3333, 4333), "CanPing");
+                        }
+                        else
+                        {
+                            Variables.Sleeper.Sleep(random.Next(1111, 1333), "CanPing");
+                        }
+                    });
 
             pinged.Add(ability.Handle);
             return true;
@@ -133,17 +137,22 @@
                 return false;
             }
 
-            Network.EnemyItemAlert(item);
+            DelayAction.Add(
+                750,
+                () =>
+                    {
+                        Network.EnemyItemAlert(item);
 
-            if (doublePing)
-            {
-                DelayAction.Add(250, () => Network.EnemyItemAlert(item));
-                Variables.Sleeper.Sleep(random.Next(3333, 4333), "CanPing");
-            }
-            else
-            {
-                Variables.Sleeper.Sleep(random.Next(1111, 1333), "CanPing");
-            }
+                        if (doublePing)
+                        {
+                            DelayAction.Add(250, () => Network.EnemyItemAlert(item));
+                            Variables.Sleeper.Sleep(random.Next(3333, 4333), "CanPing");
+                        }
+                        else
+                        {
+                            Variables.Sleeper.Sleep(random.Next(1111, 1333), "CanPing");
+                        }
+                    });
 
             if (!ignoreList)
             {
