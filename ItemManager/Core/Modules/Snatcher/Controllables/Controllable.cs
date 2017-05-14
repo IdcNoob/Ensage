@@ -2,6 +2,8 @@
 {
     using Ensage;
 
+    using Menus.Modules.Snatcher;
+
     internal abstract class Controllable
     {
         protected Controllable(Unit unit)
@@ -14,7 +16,7 @@
 
         protected Unit Unit { get; }
 
-        public abstract bool CanPick(PhysicalItem physicalItem);
+        public abstract bool CanPick(PhysicalItem physicalItem, Manager manager, SnatcherMenu menu);
 
         public abstract bool CanPick(Rune rune);
 

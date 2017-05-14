@@ -7,9 +7,11 @@
 
     using Menus.Modules.Snatcher;
 
-    internal class SpiritBear : Controllable
+    using Utils;
+
+    internal class Hero : Controllable
     {
-        public SpiritBear(Unit unit)
+        public Hero(Unit unit)
             : base(unit)
         {
         }
@@ -25,12 +27,29 @@
             {
                 case AbilityId.item_gem:
                 case AbilityId.item_rapier:
-                {
-                    return Unit.Inventory.FreeInventorySlots.Any();
-                }
                 case AbilityId.item_aegis:
                 {
-                    return false;
+                    if (Unit.Inventory.FreeInventorySlots.Any())
+                    {
+                        return true;
+                    }
+
+                    if (!Unit.Inventory.FreeBackpackSlots.Any())
+                    {
+                        return false;
+                    }
+
+                    var item = manager.MyHero.GetItems(ItemStoredPlace.Inventory)
+                        .OrderBy(x => x.Cost)
+                        .FirstOrDefault(x => x.CanBeMoved() && x.Cost < menu.ItemMoveCostThreshold);
+
+                    if (item == null)
+                    {
+                        return false;
+                    }
+
+                    item.MoveItem(Unit.Inventory.FreeBackpackSlots.First());
+                    return true;
                 }
                 case AbilityId.item_cheese:
                 {

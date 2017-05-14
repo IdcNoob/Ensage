@@ -61,6 +61,15 @@
                 };
             UseOtherUnits = otherUnits.IsActive();
 
+            var itemMoveCostThreshold =
+                new MenuItem("snatcherMoveItemCost", "Move item cost threshold").SetValue(new Slider(1000, 0, 5000));
+            itemMoveCostThreshold.SetTooltip(
+                "It will move item from inventory (when full) to backpack which costs less gold to pick up aegis/rapier/gem (disabled: 0)");
+            menu.AddItem(itemMoveCostThreshold);
+            itemMoveCostThreshold.ValueChanged +=
+                (sender, args) => ItemMoveCostThreshold = args.GetNewValue<Slider>().Value;
+            ItemMoveCostThreshold = itemMoveCostThreshold.GetValue<Slider>().Value;
+
             var updateRate = new MenuItem("snatcherUpdateRate", "Update rate").SetValue(new Slider(0, 0, 500));
             updateRate.SetTooltip("Lower value => faster reaction, but requires more resources");
             menu.AddItem(updateRate);
@@ -80,6 +89,8 @@
         public List<AbilityId> EnabledToggleItems { get; } = new List<AbilityId>();
 
         public bool HoldKey { get; private set; }
+
+        public int ItemMoveCostThreshold { get; private set; }
 
         public bool ToggleKey { get; private set; }
 

@@ -109,23 +109,19 @@
         {
             switch (item.Id)
             {
-                case AbilityId.item_aegis:
                 case AbilityId.item_gem:
-                case AbilityId.item_rapier:
                 {
                     return false;
                 }
                 case AbilityId.item_bottle:
                 {
-                    if (((Bottle)item).StoredRune != RuneType.None)
-                    {
-                        return false;
-                    }
-                    break;
+                    return ((Bottle)item).StoredRune == RuneType.None;
+                }
+                default:
+                {
+                    return item.IsDroppable;
                 }
             }
-
-            return true;
         }
 
         public static ItemStats GetItemStats(this Item item)

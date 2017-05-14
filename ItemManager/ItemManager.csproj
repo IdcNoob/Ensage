@@ -89,7 +89,7 @@
     <Compile Include="Core\Modules\ShrineHelper\ShrineHelper.cs" />
     <Compile Include="Core\Modules\Snatcher\Controllables\Controllable.cs" />
     <Compile Include="Core\Modules\Snatcher\Controllables\MeepoClone.cs" />
-    <Compile Include="Core\Modules\Snatcher\Controllables\MyHero.cs" />
+    <Compile Include="Core\Modules\Snatcher\Controllables\Hero.cs" />
     <Compile Include="Core\Modules\Snatcher\Controllables\SpiritBear.cs" />
     <Compile Include="Core\Modules\Snatcher\Snatcher.cs" />
     <Compile Include="Core\MyHero.cs" />

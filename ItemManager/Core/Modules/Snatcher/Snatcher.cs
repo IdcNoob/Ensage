@@ -16,6 +16,8 @@
     using Menus;
     using Menus.Modules.Snatcher;
 
+    using Hero = Controllables.Hero;
+
     [Module]
     internal class Snatcher : IDisposable
     {
@@ -34,7 +36,7 @@
             this.manager = manager;
             this.menu = menu.SnatcherMenu;
 
-            controllables.Add(new MyHero(manager.MyHero.Hero));
+            controllables.Add(new Hero(manager.MyHero.Hero));
 
             if (this.menu.UseOtherUnits)
             {
@@ -172,7 +174,7 @@
             {
                 foreach (var controllable in validControllables)
                 {
-                    if (controllable.CanPick(item))
+                    if (controllable.CanPick(item, manager, menu))
                     {
                         controllable.Pick(item);
                         sleeper.Sleep(500, item.Handle);
