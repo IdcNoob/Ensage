@@ -34,13 +34,12 @@
             menu.AddItem(new MenuItem("hitRun", "Hit & run").SetValue(new KeyBind('H', KeyBindType.Press)))
                 .SetTooltip("X Mark on self => Dagger => Hit => Return")
                 .ValueChanged += (sender, arg) => { HitAndRunEnabled = arg.GetNewValue<KeyBind>().Active; };
-            menu
-                    .AddItem(
-                        new MenuItem("torrentStatic", "Torrent on static objects").SetValue(
-                            new KeyBind('J', KeyBindType.Press)))
-                    .SetTooltip("Will cast torrent on rune or aegis/wk reincarnation before spawn")
-                    .ValueChanged +=
-                (sender, arg) => { TorrentOnStaticObjectsEnabled = arg.GetNewValue<KeyBind>().Active; };
+            menu.AddItem(
+                    new MenuItem("torrentStatic", "Torrent on static objects")
+                        .SetValue(new KeyBind('J', KeyBindType.Press)))
+                .SetTooltip("Will cast torrent on rune or aegis/wk reincarnation before spawn")
+                .ValueChanged +=
+            (sender, arg) => { TorrentOnStaticObjectsEnabled = arg.GetNewValue<KeyBind>().Active; };
             menu.AddItem(hitAndRunDamage = new MenuItem("hitAndRunDamage", "Hit & run AD").SetValue(true))
                 .SetTooltip("Use additional damage when using hit & run (shadow blade etc.)");
 

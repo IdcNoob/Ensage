@@ -43,7 +43,7 @@
 
         private void OnLoad(object sender, EventArgs e)
         {
-            if (ObjectManager.LocalHero.ClassId != ClassId.CDOTA_Unit_Hero_Kunkka)
+            if (ObjectManager.LocalHero.HeroId != HeroId.npc_dota_hero_kunkka)
             {
                 return;
             }

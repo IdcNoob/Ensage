@@ -14,8 +14,6 @@
             CastPoint = (float)ability.FindCastPoint();
         }
 
-        public float GetSleepTime => CastPoint * 1000 + Game.Ping;
-
         public Ability Ability { get; }
 
         public bool CanBeCasted => !sleeper.Sleeping && !Ability.IsHidden && Ability.CanBeCasted();
@@ -23,6 +21,8 @@
         public bool Casted => Ability.IsHidden;
 
         public float CastPoint { get; }
+
+        public float GetSleepTime => CastPoint * 1000 + Game.Ping;
 
         public uint ManaCost { get; } = 0;
 

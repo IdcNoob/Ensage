@@ -421,16 +421,9 @@
 
                 if (ghostShip.CanBeCasted && fullCombo)
                 {
-                    if (hero.Distance2D(xMark.Position) < ghostShip.CastRange - ghostShip.Radius)
-                    {
-                        hero.Move(xMark.Position.Extend(hero.Position, ghostShip.CastRange));
-                        sleeper.Sleep(100);
-                        return;
-                    }
-
                     if (!hero.AghanimState() && torrent.CanBeCasted)
                     {
-                        ghostShip.UseAbility(xMark.Position.Extend(hero.Position, ghostShip.Radius / 2));
+                        ghostShip.UseAbility(xMark.Position);
                         sleeper.Sleep(ghostShip.GetSleepTime);
                         return;
                     }
@@ -442,8 +435,8 @@
                     }
                 }
 
-                if (torrent.CanBeCasted && (!fullCombo || (ghostShip.CanBeCasted
-                                                           || !hero.AghanimState() && ghostShip.Cooldown > 2)))
+                if (torrent.CanBeCasted
+                    && (!fullCombo || (ghostShip.CanBeCasted || !hero.AghanimState() && ghostShip.Cooldown > 2)))
                 {
                     torrent.UseAbility(xMark.Position);
                     sleeper.Sleep(torrent.GetSleepTime);

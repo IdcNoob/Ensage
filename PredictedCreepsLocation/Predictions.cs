@@ -37,7 +37,7 @@
                 return;
             }
 
-            foreach (var wave in creepWaves.Where(x => !x.IsVisible()))
+            foreach (var wave in creepWaves /*.Where(x => !x.IsVisible())*/)
             {
                 var minimapSize = menuManager.ShowOnMinimapSize;
                 var position = wave.CurrentPosition.WorldToMinimap();
@@ -63,7 +63,8 @@
 
             foreach (var wave in creepWaves)
             {
-                var visibleAll = wave.IsVisible(true);
+                //   var visibleAll = wave.IsVisible(true);
+                var visibleAll = false;
 
                 if (!visibleAll)
                 {
@@ -73,9 +74,8 @@
                         wave.WasVisible = false;
                     }
 
-                    wave.CurrentPosition = wave.PreviousPoint.Extend(
-                        wave.NextPoint,
-                        wave.GetSpeed() * (gameTime - wave.Time));
+                    wave.CurrentPosition =
+                        wave.PreviousPoint.Extend(wave.NextPoint, wave.GetSpeed() * (gameTime - wave.Time));
                 }
                 else
                 {
@@ -115,10 +115,10 @@
                     }
                 }
 
-                if (wave.IsVisible())
-                {
-                    continue;
-                }
+                //if (wave.IsVisible())
+                //{
+                //    continue;
+                //}
 
                 if (menuManager.ShowOnMapEnabled)
                 {

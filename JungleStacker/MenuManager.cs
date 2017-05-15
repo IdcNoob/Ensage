@@ -30,8 +30,7 @@
             menu.AddItem(new MenuItem("heroStack", "Stack with hero").SetValue(new KeyBind('K', KeyBindType.Press)))
                 .SetTooltip("Will stack closest camp with your hero")
                 .ValueChanged += OnHeroStackEabled;
-            menu
-                .AddItem(
+            menu.AddItem(
                     new MenuItem("forceAdd", "Force add/remove unit").SetValue(new KeyBind('L', KeyBindType.Press)))
                 .SetTooltip(
                     "Will add/remove selected unit to/from controllables. Useful for ally dominated creep with shared control")
@@ -43,10 +42,6 @@
             menu.AddToMainMenu();
         }
 
-        public bool IsDebugEnabled => debug.IsActive();
-
-        public bool IsEnabled => enabled.IsActive();
-
         public event EventHandler OnForceAdd;
 
         public event EventHandler OnHeroStack;
@@ -54,6 +49,10 @@
         public event EventHandler<MenuArgs> OnProgramStateChange;
 
         public event EventHandler OnStacksReset;
+
+        public bool IsDebugEnabled => debug.IsActive();
+
+        public bool IsEnabled => enabled.IsActive();
 
         private static void OnDebugChange(object sender, OnValueChangeEventArgs arg)
         {

@@ -30,9 +30,8 @@
             }
 
             towerDamageReduction = Ability.AbilitySpecialData.First(x => x.Name == "structure_damage_mod").Value;
-            talent =
-                ((Unit)ability.Owner).Spellbook.Spells.FirstOrDefault(
-                    x => x.Id == AbilityId.special_bonus_unique_pugna_2);
+            talent = ((Unit)ability.Owner).Spellbook.Spells.FirstOrDefault(
+                x => x.Id == AbilityId.special_bonus_unique_pugna_2);
             talentBonusDamage = talent?.AbilitySpecialData.First(x => x.Name == "value").Value ?? 0;
         }
 

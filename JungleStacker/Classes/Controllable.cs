@@ -45,13 +45,13 @@
             Done
         }
 
+        public readonly List<Camp> BlockedCamps = new List<Camp>();
+
         private readonly float attackAnimationPoint;
 
         private readonly uint attackRange;
 
         private readonly float attackRate;
-
-        public readonly List<Camp> BlockedCamps = new List<Camp>();
 
         private readonly bool isRanged;
 
@@ -108,6 +108,8 @@
             }
         }
 
+        public event EventHandler OnCampChange;
+
         public static bool Debug { set; get; }
 
         public Camp CurrentCamp { get; private set; }
@@ -162,8 +164,6 @@
             "Arial",
             new Vector2(16),
             FontFlags.None);
-
-        public event EventHandler OnCampChange;
 
         public void OnClose()
         {
@@ -317,7 +317,7 @@
                     lastHealth = Unit.Health;
 
                     var seconds = gameTime % 60;
-                    if (seconds >= 57 || gameTime % 120 >= 65)
+                    if (seconds >= 57)
                     {
                         return;
                     }
@@ -336,11 +336,11 @@
                                    CurrentCamp.MaxTimeAdjustment,
                                    CurrentCamp.CurrentStacksCount - CurrentCamp.StackCountTimeAdjustment
                                    + CurrentCamp.TimeAdjustment)
-                               : 0)
-                        + (attackTarget
-                               ? GetAttackPoint() + Unit.Distance2D(target) / projectileSpeed + Unit.GetTurnTime(target)
-                                 + Math.Max(0, Unit.Distance2D(target) - attackRange) / Unit.MovementSpeed
-                               : Unit.Distance2D(targetPosition) / Unit.MovementSpeed)
+                               : 0) + (attackTarget
+                                           ? GetAttackPoint() + Unit.Distance2D(target) / projectileSpeed
+                                             + Unit.GetTurnTime(target)
+                                             + Math.Max(0, Unit.Distance2D(target) - attackRange) / Unit.MovementSpeed
+                                           : Unit.Distance2D(targetPosition) / Unit.MovementSpeed)
                         + Unit.GetTurnTime(targetPosition) + Game.Ping / 1000 >= CurrentCamp.StackTime)
                     {
                         if (attackTarget)

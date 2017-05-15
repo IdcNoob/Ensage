@@ -19,7 +19,15 @@
             AghanimSpeed = Speed * 4;
         }
 
+        public Ability Ability { get; }
+
         public float AghanimSpeed { get; private set; }
+
+        public bool CanBeCasted => !sleeper.Sleeping && Ability.CanBeCasted();
+
+        public bool Casted => Ability.AbilityState == AbilityState.OnCooldown;
+
+        public float CastPoint { get; }
 
         public float CastRange => Ability.GetCastRange() + 150;
 
@@ -33,21 +41,13 @@
 
         public bool JustCasted => Casted && Ability.Cooldown + 4 >= Ability.CooldownLength;
 
+        public uint ManaCost => Ability.ManaCost;
+
         public Vector3 Position { get; set; }
 
         public float Radius { get; }
 
         public float Speed { get; private set; }
-
-        public Ability Ability { get; }
-
-        public bool CanBeCasted => !sleeper.Sleeping && Ability.CanBeCasted();
-
-        public bool Casted => Ability.AbilityState == AbilityState.OnCooldown;
-
-        public float CastPoint { get; }
-
-        public uint ManaCost => Ability.ManaCost;
 
         public void UseAbility(Vector3 targetPosition)
         {

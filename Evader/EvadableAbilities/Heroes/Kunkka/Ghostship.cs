@@ -74,11 +74,6 @@
 
         public void AddUnit(Unit unit)
         {
-            if (AbilityOwner.IsVisible)
-            {
-                return;
-            }
-
             abilityUnit = unit;
             StartCast = Game.RawGameTime;
             EndCast = StartCast + GetDelay();
@@ -108,16 +103,6 @@
                 }
 
                 StartPosition = position.SetZ(350);
-                Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
-            }
-            else if (StartCast <= 0 && IsInPhase && AbilityOwner.IsVisible)
-            {
-                StartCast = Game.RawGameTime;
-                EndCast = StartCast + CastPoint + GetDelay();
-            }
-            else if (StartCast > 0 && Obstacle == null && CanBeStopped() && !AbilityOwner.IsTurning())
-            {
-                StartPosition = AbilityOwner.InFront(castRange);
                 Obstacle = Pathfinder.AddObstacle(StartPosition, GetRadius(), Obstacle);
             }
             else if (StartCast > 0 && Game.RawGameTime > EndCast)

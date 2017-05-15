@@ -100,7 +100,9 @@
                 return;
             }
 
-            var abilities = abilityUpdater.EvadableAbilities.Where(x => abilityNames.Contains(x.Name)).ToList();
+            var abilities = abilityUpdater.EvadableAbilities
+                .Where(x => abilityNames.Contains(x.Name) && (!x.AbilityOwner.IsVisible || x.TimeSinceCast() < 1))
+                .ToList();
 
             if (abilities.Count != 1)
             {

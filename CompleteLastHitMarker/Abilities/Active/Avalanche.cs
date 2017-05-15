@@ -25,8 +25,8 @@
                 Damage[i] = Ability.AbilitySpecialData.First(x => x.Name == "avalanche_damage").GetValue(i);
             }
 
-            talent =
-                ((Unit)ability.Owner).Spellbook.Spells.FirstOrDefault(x => x.Id == AbilityId.special_bonus_unique_tiny);
+            talent = ((Unit)ability.Owner).Spellbook.Spells.FirstOrDefault(
+                x => x.Id == AbilityId.special_bonus_unique_tiny);
             talentBonusDamage = talent?.AbilitySpecialData.First(x => x.Name == "value").Value ?? 0;
         }
 

@@ -19,7 +19,15 @@
             Radius = ability.GetRadius() + 25;
         }
 
+        public Ability Ability { get; }
+
         public double AdditionalDelay { get; }
+
+        public bool CanBeCasted => !sleeper.Sleeping && Ability.CanBeCasted();
+
+        public bool Casted => Ability.Cooldown > 5;
+
+        public float CastPoint { get; }
 
         public float CastRange => Ability.GetCastRange() + 100;
 
@@ -29,17 +37,9 @@
 
         public double HitTime { get; private set; }
 
-        public float Radius { get; }
-
-        public Ability Ability { get; }
-
-        public bool CanBeCasted => !sleeper.Sleeping && Ability.CanBeCasted();
-
-        public bool Casted => Ability.Cooldown > 5;
-
-        public float CastPoint { get; }
-
         public uint ManaCost => Ability.ManaCost;
+
+        public float Radius { get; }
 
         public void CalculateHitTime()
         {

@@ -12,9 +12,9 @@
     {
         private const int Speed = 325;
 
-        private const int SpeedMax = 406;
+        private const int SpeedMax = 422;
 
-        private const int SpeedMin = 243;
+        private const int SpeedMin = 211;
 
         public List<Creep> Creeps = new List<Creep>();
 
@@ -59,7 +59,7 @@
                 switch (LaneData.LanePosition)
                 {
                     case LanePosition.Top:
-                        if (gameTime - timeAdded < 2)
+                        if (gameTime - timeAdded < 8)
                         {
                             return LaneData.Team == Team.Radiant ? SpeedMax : SpeedMin;
                         }

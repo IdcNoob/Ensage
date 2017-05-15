@@ -23,7 +23,7 @@
                         case AttackDamageType.Pierce:
                             return 0.35f;
                         case AttackDamageType.Siege:
-                            return 1.5f;
+                            return 2.5f;
                         case AttackDamageType.Hero:
                             return 0.5f;
                     }

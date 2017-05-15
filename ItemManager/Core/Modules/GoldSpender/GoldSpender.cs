@@ -193,8 +193,8 @@ namespace ItemManager.Core.Modules.GoldSpender
         {
             return Math.Min(
                 manager.MyHero.Player.UnreliableGold,
-                100 + (manager.MyHero.Player.ReliableGold + manager.MyHero.Player.UnreliableGold
-                       + manager.MyHero.Items.Sum(x => (int)x.Cost)) / 50);
+                50 + (manager.MyHero.Player.ReliableGold + manager.MyHero.Player.UnreliableGold
+                      + manager.MyHero.Items.Sum(x => (int)x.Cost)) / 40);
         }
 
         private void OnAbilityAdd(object sender, AbilityEventArgs abilityEventArgs)

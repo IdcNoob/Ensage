@@ -212,7 +212,7 @@
                     camp.IsCleared = true;
                     camp.CurrentStacksCount = 0;
                 }
-                else if ((int)(Game.GameTime + 60) % 120 == 0 && camp.CurrentStacksCount <= 0)
+                else if ((int)Game.GameTime % 60 == 0 && camp.CurrentStacksCount <= 0)
                 {
                     camp.CurrentStacksCount = 1;
                     camp.IsCleared = false;
