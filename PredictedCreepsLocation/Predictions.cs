@@ -37,7 +37,7 @@
                 return;
             }
 
-            foreach (var wave in creepWaves /*.Where(x => !x.IsVisible())*/)
+            foreach (var wave in creepWaves.Where(x => !x.IsVisible()))
             {
                 var minimapSize = menuManager.ShowOnMinimapSize;
                 var position = wave.CurrentPosition.WorldToMinimap();
@@ -63,8 +63,7 @@
 
             foreach (var wave in creepWaves)
             {
-                //   var visibleAll = wave.IsVisible(true);
-                var visibleAll = false;
+                var visibleAll = wave.IsVisible(true);
 
                 if (!visibleAll)
                 {
@@ -115,10 +114,10 @@
                     }
                 }
 
-                //if (wave.IsVisible())
-                //{
-                //    continue;
-                //}
+                if (wave.IsVisible())
+                {
+                    continue;
+                }
 
                 if (menuManager.ShowOnMapEnabled)
                 {
