@@ -71,7 +71,7 @@
         private void BackpackOnSwap(object sender, EventArgs eventArgs)
         {
             var inventoryItems = manager.MyHero.GetItems(ItemStoredPlace.Inventory)
-                .Where(x => menu.Backpack.ItemEnabled(x.Name) && x.CanBeMoved())
+                .Where(x => menu.Backpack.ItemEnabled(x.Name) && x.CanBeMovedToBackpack())
                 .ToList();
 
             var backpackItems = manager.MyHero.GetItems(ItemStoredPlace.Backpack)
@@ -306,7 +306,7 @@
             }
 
             var inventoryItems = manager.MyHero.GetItems(ItemStoredPlace.Inventory)
-                .Where(x => menu.Courier.ItemEnabled(x.Name) && x.CanBeMoved())
+                .Where(x => menu.Courier.ItemEnabled(x.Name) && x.CanBeMovedToBackpack())
                 .ToList();
 
             var courierItems = courier.Inventory.Items
@@ -356,7 +356,7 @@
             }
 
             var inventoryItems = manager.MyHero.GetItems(ItemStoredPlace.Inventory)
-                .Where(x => menu.Stash.ItemEnabled(x.Name) && x.CanBeMoved())
+                .Where(x => menu.Stash.ItemEnabled(x.Name) && x.CanBeMovedToBackpack())
                 .ToList();
 
             var stashItems = manager.MyHero.GetItems(ItemStoredPlace.Stash)

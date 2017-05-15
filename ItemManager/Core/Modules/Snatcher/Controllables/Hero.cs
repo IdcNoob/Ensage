@@ -5,8 +5,6 @@
     using Ensage;
     using Ensage.Common.Extensions;
 
-    using Menus.Modules.Snatcher;
-
     using Utils;
 
     internal class Hero : Controllable
@@ -16,9 +14,9 @@
         {
         }
 
-        public override bool CanPick(PhysicalItem physicalItem, Manager manager, SnatcherMenu menu)
+        public override bool CanPick(PhysicalItem physicalItem, int costThreshold)
         {
-            if (Unit.Distance2D(physicalItem) > 400)
+            if (Sleeper.Sleeping || Unit.Distance2D(physicalItem) > 400)
             {
                 return false;
             }
@@ -39,9 +37,8 @@
                         return false;
                     }
 
-                    var item = manager.MyHero.GetItems(ItemStoredPlace.Inventory)
-                        .OrderBy(x => x.Cost)
-                        .FirstOrDefault(x => x.CanBeMoved() && x.Cost < menu.ItemMoveCostThreshold);
+                    var item = Unit.Inventory.Items.OrderBy(x => x.Cost)
+                        .FirstOrDefault(x => x.CanBeMovedToBackpack() && x.Cost < costThreshold);
 
                     if (item == null)
                     {
@@ -62,7 +59,7 @@
 
         public override bool CanPick(Rune rune)
         {
-            return Unit.Distance2D(rune) < 400;
+            return !Sleeper.Sleeping && Unit.Distance2D(rune) < 400;
         }
     }
 }

@@ -76,10 +76,9 @@
 
             sleeper.Sleep(500);
 
-            if (!menu.IsEnabled || !manager.MyHero.CanUseItems() || Game.IsPaused
+            if (!menu.IsEnabled || branchRemovalTime + 10 < Game.RawGameTime || Game.IsPaused
                 || manager.MyHero.MissingHealth < menu.HealthThreshold
-                || manager.MyHero.HasModifier(ModifierUtils.TangoRegeneration)
-                || branchRemovalTime + 10 < Game.RawGameTime)
+                || manager.MyHero.HasModifier(ModifierUtils.TangoRegeneration) || !manager.MyHero.CanUseItems())
             {
                 return;
             }

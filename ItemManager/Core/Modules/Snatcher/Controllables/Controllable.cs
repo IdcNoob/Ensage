@@ -1,8 +1,7 @@
 ﻿namespace ItemManager.Core.Modules.Snatcher.Controllables
 {
     using Ensage;
-
-    using Menus.Modules.Snatcher;
+    using Ensage.Common.Objects.UtilityObjects;
 
     internal abstract class Controllable
     {
@@ -10,13 +9,16 @@
         {
             Unit = unit;
             Handle = unit.Handle;
+            Sleeper = new Sleeper();
         }
 
         public uint Handle { get; }
 
+        protected Sleeper Sleeper { get; }
+
         protected Unit Unit { get; }
 
-        public abstract bool CanPick(PhysicalItem physicalItem, Manager manager, SnatcherMenu menu);
+        public abstract bool CanPick(PhysicalItem physicalItem, int costThreshold);
 
         public abstract bool CanPick(Rune rune);
 
@@ -27,12 +29,18 @@
 
         public void Pick(PhysicalItem item)
         {
-            Unit.PickUpItem(item);
+            if (Unit.PickUpItem(item))
+            {
+                Sleeper.Sleep(500);
+            }
         }
 
         public void Pick(Rune rune)
         {
-            Unit.PickUpRune(rune);
+            if (Unit.PickUpRune(rune))
+            {
+                Sleeper.Sleep(500);
+            }
         }
     }
 }

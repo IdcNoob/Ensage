@@ -5,8 +5,6 @@
     using Ensage;
     using Ensage.Common.Extensions;
 
-    using Menus.Modules.Snatcher;
-
     internal class SpiritBear : Controllable
     {
         public SpiritBear(Unit unit)
@@ -14,9 +12,9 @@
         {
         }
 
-        public override bool CanPick(PhysicalItem physicalItem, Manager manager, SnatcherMenu menu)
+        public override bool CanPick(PhysicalItem physicalItem, int costThreshold)
         {
-            if (Unit.Distance2D(physicalItem) > 400)
+            if (Sleeper.Sleeping || Unit.Distance2D(physicalItem) > 400)
             {
                 return false;
             }
@@ -43,7 +41,7 @@
 
         public override bool CanPick(Rune rune)
         {
-            return Unit.Distance2D(rune) < 400;
+            return !Sleeper.Sleeping && Unit.Distance2D(rune) < 400;
         }
     }
 }

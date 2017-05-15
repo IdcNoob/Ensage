@@ -105,11 +105,12 @@
 
         private static readonly Dictionary<AbilityId, ItemStats> SavedStats = new Dictionary<AbilityId, ItemStats>();
 
-        public static bool CanBeMoved(this Item item)
+        public static bool CanBeMovedToBackpack(this Item item)
         {
             switch (item.Id)
             {
                 case AbilityId.item_gem:
+                case AbilityId.item_rapier:
                 {
                     return false;
                 }
@@ -164,8 +165,8 @@
                 return false;
             }
 
-            var stockInfo = Game.StockInfo.FirstOrDefault(x => x.AbilityId == id && x.Team == unit.Team);
-            if (stockInfo != null && stockInfo.StockCount <= 0)
+            var itemStockInfo = Game.StockInfo.FirstOrDefault(x => x.AbilityId == id && x.Team == unit.Team);
+            if (itemStockInfo != null && itemStockInfo.StockCount <= 0)
             {
                 return false;
             }

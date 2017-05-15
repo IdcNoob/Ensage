@@ -82,7 +82,7 @@
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!args.IsPlayerInput)
+            if (!args.IsPlayerInput || !args.Process)
             {
                 return;
             }
@@ -174,7 +174,7 @@
             {
                 foreach (var controllable in validControllables)
                 {
-                    if (controllable.CanPick(item, manager, menu))
+                    if (controllable.CanPick(item, menu.ItemMoveCostThreshold))
                     {
                         controllable.Pick(item);
                         sleeper.Sleep(500, item.Handle);
