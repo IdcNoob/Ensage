@@ -81,7 +81,7 @@
             targetParticle.SetControlPoint(7, target.Position);
         }
 
-        public void OnExecuteAbilitiy(Player sender, ExecuteOrderEventArgs args)
+        public void OnExecuteAbility(Player sender, ExecuteOrderEventArgs args)
         {
             if (!args.Entities.Contains(hero) || !menuManager.IsEnabled || !args.IsPlayerInput)
             {
@@ -96,7 +96,7 @@
 
             if (ability.Equals(ghostShip.Ability) && args.OrderId == OrderId.AbilityLocation)
             {
-                ghostShip.Position = hero.Position.Extend(args.TargetPosition, ghostShip.CastRange);
+                ghostShip.Position = args.TargetPosition;
             }
         }
 
@@ -188,8 +188,7 @@
 
             if (ghostShip.IsInPhase)
             {
-                ghostShip.HitTime = Game.RawGameTime + ghostShip.CastRange
-                                    / (hero.AghanimState() ? ghostShip.AghanimSpeed : ghostShip.Speed) + 0.12;
+                ghostShip.HitTime = Game.RawGameTime + ghostShip.CastRange / ghostShip.Speed + 0.12;
             }
 
             if (menuManager.TpHomeEanbled)
@@ -421,22 +420,11 @@
 
                 if (ghostShip.CanBeCasted && fullCombo)
                 {
-                    if (!hero.AghanimState() && torrent.CanBeCasted)
-                    {
-                        ghostShip.UseAbility(xMark.Position);
-                        sleeper.Sleep(ghostShip.GetSleepTime);
-                        return;
-                    }
-
-                    if (torrent.Casted && Game.RawGameTime
-                        >= torrent.HitTime - ghostShip.CastPoint - xReturn.CastPoint - Game.Ping / 1000)
-                    {
-                        ghostShip.UseAbility(GetTorrentThinker()?.Position ?? xMark.Position);
-                    }
+                    ghostShip.UseAbility(xMark.Position);
+                    sleeper.Sleep(ghostShip.GetSleepTime);
                 }
 
-                if (torrent.CanBeCasted
-                    && (!fullCombo || (ghostShip.CanBeCasted || !hero.AghanimState() && ghostShip.Cooldown > 2)))
+                if (torrent.CanBeCasted && (!fullCombo || ghostShip.CanBeCasted || ghostShip.Cooldown > 2))
                 {
                     torrent.UseAbility(xMark.Position);
                     sleeper.Sleep(torrent.GetSleepTime);
@@ -541,15 +529,8 @@
 
                 if (ghostShip.JustCasted)
                 {
-                    var hitTime = ghostShip.HitTime;
-                    if (!hero.AghanimState())
-                    {
-                        hitTime += 0.25 - 0.25 / (150 / Math.Min(Game.Ping, 150));
-                    }
-                    else
-                    {
-                        hitTime -= 0.25 / (150 / Math.Min(Game.Ping, 150));
-                    }
+                    var hitTime = ghostShip.HitTime + (0.25 - 0.25 / (150 / Math.Min(Game.Ping, 150)));
+
                     if (xMark.Position.Distance2D(ghostShip.Position) <= ghostShip.Radius
                         && hitTime <= gameTime - delay)
                     {

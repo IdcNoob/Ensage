@@ -99,14 +99,15 @@
 
             foreach (var unit in ObjectManager.GetEntitiesParallel<Unit>()
                 .Where(
-                    x => !(x is Building) && x.IsValid && x.IsAlive && x.IsSpawned && (!x.IsIllusion || x.HasModifiers(
-                                                                                           new[]
-                                                                                           {
-                                                                                               "modifier_arc_warden_tempest_double",
-                                                                                               "modifier_vengefulspirit_hybrid_special",
-                                                                                               "modifier_morph_hybrid_special"
-                                                                                           },
-                                                                                           false))))
+                    x => !(x is Building) && x.IsValid && x.IsAlive && x.IsSpawned
+                         && (!x.IsIllusion || x.HasModifiers(
+                                 new[]
+                                 {
+                                     "modifier_arc_warden_tempest_double",
+                                     "modifier_vengefulspirit_hybrid_special",
+                                     "modifier_morph_hybrid_special"
+                                 },
+                                 false))))
             {
                 var abilities = new List<Ability>();
 

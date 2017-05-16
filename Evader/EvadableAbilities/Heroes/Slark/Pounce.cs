@@ -48,8 +48,8 @@
 
             StartCast = Game.RawGameTime;
             StartPosition = AbilityOwner.NetworkPosition;
-            EndPosition = StartPosition + (Vector3)(VectorExtensions.FromPolarAngle(AbilityOwner.RotationRad)
-                                                    * GetCastRange());
+            EndPosition = StartPosition
+                          + (Vector3)(VectorExtensions.FromPolarAngle(AbilityOwner.RotationRad) * GetCastRange());
             EndCast = StartCast + GetCastRange() / GetProjectileSpeed();
             Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
         }
