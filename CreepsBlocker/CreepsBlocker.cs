@@ -32,6 +32,7 @@
 
         protected override void OnDeactivate()
         {
+            UpdateManager.Unsubscribe(OnUpdate);
             config.Dispose();
         }
 
