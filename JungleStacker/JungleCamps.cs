@@ -22,7 +22,7 @@
                         StackPosition = new Vector3(-1805, -2930, 256),
                         WaitPosition = new Vector3(-1829, -3834, 256),
                         Id = 1,
-                        StackTime = 56,
+                        StackTime = 54,
                         Team = Team.Radiant,
                         Ancients = false,
                         Name = "Medium Camp",
@@ -70,7 +70,9 @@
                         Name = "Bot Hard Camp",
                         StackCountTimeAdjustment = 3,
                         TimeAdjustment = 2,
-                        MaxTimeAdjustment = 2
+                        MaxTimeAdjustment = 2,
+                        PullTime = "x:24 / x:54",
+                        DrawPullTime = true
                     });
                 GetCamps.Add(
                     new Camp
@@ -84,6 +86,8 @@
                         Team = Team.Radiant,
                         Ancients = false,
                         Name = "Easy Camp",
+                        PullTime = "x:12 / x:43",
+                        DrawPullTime = true
                     });
                 GetCamps.Add(
                     new Camp
@@ -199,7 +203,9 @@
                         StackTime = 53,
                         Team = Team.Dire,
                         Ancients = false,
-                        Name = "Easy Camp"
+                        Name = "Easy Camp",
+                        PullTime = "x:12 / x:43",
+                        DrawPullTime = true
                     });
                 GetCamps.Add(
                     new Camp
@@ -215,7 +221,9 @@
                         Name = "Top Hard Camp",
                         StackCountTimeAdjustment = 3,
                         TimeAdjustment = 1,
-                        MaxTimeAdjustment = 2
+                        MaxTimeAdjustment = 2,
+                        PullTime = "x:22 / x:52",
+                        DrawPullTime = true
                     });
                 GetCamps.Add(
                     new Camp

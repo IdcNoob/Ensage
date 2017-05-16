@@ -77,7 +77,7 @@
         {
             var order = args.OrderId;
 
-            if (order == OrderId.Hold || order == OrderId.MoveLocation)
+            if (args.IsPlayerInput && (order == OrderId.Hold || order == OrderId.MoveLocation))
             {
                 foreach (var entity in args.Entities)
                 {

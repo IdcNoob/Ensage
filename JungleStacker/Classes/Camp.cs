@@ -20,8 +20,6 @@
         private static readonly DotaTexture IncreaseArrow =
             Textures.GetTexture("materials/ensage_ui/other/arrow_usual_left");
 
-        private static readonly Vector2 OverlaySize = new Vector2(174, 80);
-
         private Vector2 arrowRectangleSize;
 
         private float campNameTextPosition;
@@ -29,6 +27,8 @@
         private Vector2 countTextSize;
 
         private Vector2 position;
+
+        private Vector2 pullTimeTextSize;
 
         private int requiredStacksCount = 1;
 
@@ -41,6 +41,7 @@
             requiredStacksTextSize = Drawing.MeasureText("Required stacks:", "Arial", new Vector2(15), FontFlags.None)
                                      - 18;
             stacksTextSize = Drawing.MeasureText("Stacks:", "Arial", new Vector2(15), FontFlags.None) - 5;
+            pullTimeTextSize = Drawing.MeasureText("Pull time:", "Arial", new Vector2(15), FontFlags.None) + 10;
             countTextSize = Drawing.MeasureText("9", "Arial", new Vector2(16), FontFlags.None);
             arrowRectangleSize = new Vector2(20);
 
@@ -54,6 +55,8 @@
 
         public int CurrentStacksCount { get; set; } = 0;
 
+        public bool DrawPullTime { get; set; }
+
         public bool IsCleared { get; set; } = true;
 
         public bool IsStacking { get; set; }
@@ -61,6 +64,8 @@
         public double MaxTimeAdjustment { get; set; }
 
         public Vector3 OverlayPosition { get; set; }
+
+        public string PullTime { get; set; }
 
         public int RequiredStacksCount
         {
@@ -113,6 +118,19 @@
             position.Y + 38,
             arrowRectangleSize.X,
             arrowRectangleSize.Y);
+
+        private Vector2 OverlaySize
+        {
+            get
+            {
+                if (DrawPullTime)
+                {
+                    return new Vector2(180, 100);
+                }
+
+                return new Vector2(180, 80);
+            }
+        }
 
         public void OnClose()
         {
@@ -231,6 +249,24 @@
                 new Vector2(15),
                 Color.White,
                 FontFlags.None);
+
+            if (DrawPullTime)
+            {
+                // 4th line
+                Drawing.DrawText(
+                    "Pull time:",
+                    new Vector2(position.X - 20, position.Y + 60),
+                    new Vector2(15),
+                    Color.White,
+                    FontFlags.None);
+
+                Drawing.DrawText(
+                    PullTime,
+                    position + new Vector2(pullTimeTextSize.X + 12, 60),
+                    new Vector2(16),
+                    Color.White,
+                    FontFlags.None);
+            }
 
             var alphaDecArrow = IsUnderDecreaseArrow ? 25 : -25;
 
