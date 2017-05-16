@@ -12,13 +12,13 @@
         public Config()
         {
             factory = MenuFactory.Create("Creeps Blocker");
-            Enabled = factory.Item("Hotkey", new KeyBind('M'));
+            Key = factory.Item("Hotkey", new KeyBind('M'));
             BlockRangedCreep = factory.Item("Block ranged creep", true);
         }
 
         public MenuItem<bool> BlockRangedCreep { get; }
 
-        public MenuItem<KeyBind> Enabled { get; }
+        public MenuItem<KeyBind> Key { get; }
 
         public void Dispose()
         {

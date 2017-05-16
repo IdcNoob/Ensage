@@ -4,6 +4,7 @@
     using System.Linq;
 
     using Ensage;
+    using Ensage.Common.Menu;
     using Ensage.SDK.Extensions;
     using Ensage.SDK.Helpers;
     using Ensage.SDK.Service;
@@ -27,18 +28,31 @@
         protected override void OnActivate()
         {
             config = new Config();
-            UpdateManager.Subscribe(OnUpdate, 100);
+            config.Key.Item.ValueChanged += KeyPressed;
         }
 
         protected override void OnDeactivate()
         {
+            config.Key.Item.ValueChanged -= KeyPressed;
             UpdateManager.Unsubscribe(OnUpdate);
             config.Dispose();
         }
 
+        private void KeyPressed(object sender, OnValueChangeEventArgs onValueChangeEventArgs)
+        {
+            if (onValueChangeEventArgs.GetNewValue<KeyBind>())
+            {
+                UpdateManager.Subscribe(OnUpdate, 100);
+            }
+            else
+            {
+                UpdateManager.Unsubscribe(OnUpdate);
+            }
+        }
+
         private void OnUpdate()
         {
-            if (!config.Enabled || !hero.IsAlive || Game.IsPaused)
+            if (!hero.IsAlive || Game.IsPaused)
             {
                 return;
             }
