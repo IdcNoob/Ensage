@@ -526,8 +526,8 @@
             if (Menu.Hotkeys.ForceBlink)
             {
                 var blinkDagger =
-                    abilityUpdater.UsableAbilities.FirstOrDefault(x => x.ClassId == ClassId.CDOTA_Item_BlinkDagger) as
-                        BlinkDagger;
+                    abilityUpdater.UsableAbilities.FirstOrDefault(
+                        x => x.ClassId == ClassId.CDOTA_Item_BlinkDagger) as BlinkDagger;
 
                 if (blinkDagger != null && blinkDagger.CanBeCasted(null, null))
                 {
@@ -602,8 +602,8 @@
                 foreach (var obstacle in multiIntersection)
                 {
                     var ability =
-                        abilityUpdater.EvadableAbilities.FirstOrDefault(x => x.Obstacle == obstacle && x.IsDisable) as
-                            AOE;
+                        abilityUpdater.EvadableAbilities.FirstOrDefault(
+                            x => x.Obstacle == obstacle && x.IsDisable) as AOE;
 
                     if (ability == null || sleeper.Sleeping(ability))
                     {
@@ -992,11 +992,10 @@
                                     continue;
                                 }
 
-                                var requiredTime =
-                                    counterAbility.GetRequiredTime(
-                                        ability,
-                                        targetEnemy ? abilityOwner : ally,
-                                        remainingTime) + Game.Ping / 1000 + 0.07f;
+                                var requiredTime = counterAbility.GetRequiredTime(
+                                                       ability,
+                                                       targetEnemy ? abilityOwner : ally,
+                                                       remainingTime) + Game.Ping / 1000 + 0.07f;
 
                                 var ignoreRemainingTime = false;
 

@@ -16,9 +16,12 @@
             CastPoint = (float)ability.FindCastPoint();
             Radius = 560;
             Speed = ability.GetProjectileSpeed();
+            AghanimSpeed = Speed * 4;
         }
 
         public Ability Ability { get; }
+
+        public float AghanimSpeed { get; private set; }
 
         public bool CanBeCasted => !sleeper.Sleeping && Ability.CanBeCasted();
 
@@ -49,7 +52,6 @@
         public void UseAbility(Vector3 targetPosition)
         {
             Ability.UseAbility(targetPosition);
-            Position = targetPosition;
             sleeper.Sleep(GetSleepTime + 300);
         }
     }

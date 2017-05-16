@@ -1,9 +1,9 @@
 ﻿namespace Evader.EvadableAbilities.Heroes.Kunkka
 {
-    using System.Linq;
-
     using Base;
     using Base.Interfaces;
+
+    using Common;
 
     using Ensage;
     using Ensage.Common.Extensions;
@@ -15,9 +15,15 @@
 
     internal class Ghostship : AOE, IModifier, IUnit
     {
-        private readonly float shipRange;
+        private readonly float additionalAghanimDelay;
+
+        private readonly float castRange;
 
         private Unit abilityUnit;
+
+        private bool aghanimState;
+
+        private bool fowCast;
 
         public Ghostship(Ability ability)
             : base(ability)
@@ -45,35 +51,51 @@
             Modifier.AllyCounterAbilities.AddRange(Invul);
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
 
-            shipRange = ability.AbilitySpecialData.First(x => x.Name == "ghostship_distance").Value;
-            AdditionalDelay = shipRange / Ability.GetProjectileSpeed();
+            castRange = Ability.GetCastRange();
+
+            AdditionalDelay = 3.1f;
+            additionalAghanimDelay = 1.6f;
         }
 
         public EvadableModifier Modifier { get; }
+
+        private bool AghanimState
+        {
+            get
+            {
+                //cache aghanim for fow casts
+                if (AbilityOwner.IsVisible)
+                {
+                    aghanimState = AbilityOwner.AghanimState();
+                }
+                return aghanimState;
+            }
+        }
 
         public void AddUnit(Unit unit)
         {
             abilityUnit = unit;
             StartCast = Game.RawGameTime;
-            EndCast = StartCast + AdditionalDelay;
+            EndCast = StartCast + GetDelay();
             StartPosition = unit.Position.SetZ(350);
+            fowCast = true;
         }
 
         public override bool CanBeStopped()
         {
-            return false;
+            return !fowCast && base.CanBeStopped();
         }
 
         public override void Check()
         {
-            if (StartCast > 0 && Obstacle == null)
+            if (fowCast && Obstacle == null)
             {
                 if (!IsAbilityUnitValid() || !abilityUnit.IsVisible)
                 {
                     return;
                 }
 
-                var position = StartPosition.Extend(abilityUnit.Position.SetZ(350), shipRange);
+                var position = StartPosition.Extend(abilityUnit.Position.SetZ(350), GetShipRange());
 
                 if (position.Distance2D(StartPosition) < 50)
                 {
@@ -89,9 +111,30 @@
             }
         }
 
+        public override void End()
+        {
+            if (Obstacle == null)
+            {
+                return;
+            }
+
+            base.End();
+            fowCast = false;
+        }
+
         public override float GetRemainingTime(Hero hero = null)
         {
-            return StartCast + AdditionalDelay - Game.RawGameTime;
+            return StartCast + (fowCast ? 0 : CastPoint) + GetDelay() - Game.RawGameTime;
+        }
+
+        private float GetDelay()
+        {
+            return AghanimState ? additionalAghanimDelay : AdditionalDelay;
+        }
+
+        private float GetShipRange()
+        {
+            return AghanimState ? castRange : castRange * 2;
         }
 
         private bool IsAbilityUnitValid()

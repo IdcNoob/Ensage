@@ -60,7 +60,7 @@
 
         private void Player_OnExecuteAction(Player sender, ExecuteOrderEventArgs args)
         {
-            kunkka.OnExecuteAbility(sender, args);
+            kunkka.OnExecuteAbilitiy(sender, args);
         }
 
         private void UnitOnModifierAdded(Unit sender, ModifierChangedEventArgs args)
