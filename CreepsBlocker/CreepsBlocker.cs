@@ -6,6 +6,7 @@
     using Ensage;
     using Ensage.Common.Menu;
     using Ensage.SDK.Extensions;
+    using Ensage.SDK.Handlers;
     using Ensage.SDK.Helpers;
     using Ensage.SDK.Service;
     using Ensage.SDK.Service.Metadata;
@@ -19,6 +20,8 @@
 
         private Config config;
 
+        private IUpdateHandler updateHandler;
+
         [ImportingConstructor]
         public CreepsBlocker([Import] IServiceContext context)
         {
@@ -29,6 +32,7 @@
         {
             config = new Config();
             config.Key.Item.ValueChanged += KeyPressed;
+            updateHandler = UpdateManager.Subscribe(OnUpdate, 100, false);
         }
 
         protected override void OnDeactivate()
@@ -40,14 +44,7 @@
 
         private void KeyPressed(object sender, OnValueChangeEventArgs onValueChangeEventArgs)
         {
-            if (onValueChangeEventArgs.GetNewValue<KeyBind>())
-            {
-                UpdateManager.Subscribe(OnUpdate, 100);
-            }
-            else
-            {
-                UpdateManager.Unsubscribe(OnUpdate);
-            }
+            updateHandler.IsEnabled = onValueChangeEventArgs.GetNewValue<KeyBind>();
         }
 
         private void OnUpdate()
