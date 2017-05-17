@@ -45,6 +45,14 @@
         private void KeyPressed(object sender, OnValueChangeEventArgs onValueChangeEventArgs)
         {
             updateHandler.IsEnabled = onValueChangeEventArgs.GetNewValue<KeyBind>();
+
+            if (!config.CenterCamera)
+            {
+                return;
+            }
+
+            const string Command = "dota_camera_center_on_hero";
+            Game.ExecuteCommand((updateHandler.IsEnabled ? "+" : "-") + Command);
         }
 
         private void OnUpdate()
@@ -77,8 +85,8 @@
                 return;
             }
 
-            var movePosition = blockCreep.InFront(450f / hero.MovementSpeed * 100);
-            if (hero.FindRotationAngle(movePosition) > 2.25)
+            var movePosition = blockCreep.InFront((float)config.BlockSensitivity / hero.MovementSpeed * 100);
+            if (movePosition.Distance(creepsMoveDirection) > creepsMoveDirection.Distance(hero.Position))
             {
                 return;
             }
