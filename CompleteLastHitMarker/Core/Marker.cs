@@ -37,6 +37,8 @@
             ObjectManager.OnRemoveEntity -= OnRemoveEntity;
             Game.OnUpdate -= OnUpdate;
             Drawing.OnDraw -= OnDraw;
+            Unit.OnModifierAdded -= ModifierChanged;
+            Unit.OnModifierRemoved -= ModifierChanged;
 
             killableUnits.Clear();
             menu.OnClose();
@@ -60,6 +62,8 @@
 
             ObjectManager.OnAddEntity += OnAddEntity;
             ObjectManager.OnRemoveEntity += OnRemoveEntity;
+            Unit.OnModifierAdded += ModifierChanged;
+            Unit.OnModifierRemoved += ModifierChanged;
             Game.OnUpdate += OnUpdate;
             Drawing.OnDraw += OnDraw;
         }
@@ -78,6 +82,16 @@
             {
                 killableUnits.Add(new KillableTower(tower));
             }
+        }
+
+        private void ModifierChanged(Unit sender, ModifierChangedEventArgs args)
+        {
+            if (sender.Handle != hero.Handle)
+            {
+                return;
+            }
+
+            sleeper.Sleep(75);
         }
 
         private void OnAddEntity(EntityEventArgs args)
