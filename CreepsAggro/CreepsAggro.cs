@@ -15,7 +15,7 @@
     [ExportPlugin("Creeps Aggro", StartupMode.Auto, "IdcNoob")]
     internal class CreepsAggro : Plugin
     {
-        private readonly Hero hero;
+        private readonly Unit hero;
 
         private readonly Team heroTeam;
 

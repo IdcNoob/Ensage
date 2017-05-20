@@ -13,10 +13,10 @@
 
     using SharpDX;
 
-    [ExportPlugin("Creeps blocker", StartupMode.Auto, "IdcNoob")]
+    [ExportPlugin("Creeps Blocker", StartupMode.Auto, "IdcNoob")]
     internal class CreepsBlocker : Plugin
     {
-        private readonly Hero hero;
+        private readonly Unit hero;
 
         private Config config;
 
