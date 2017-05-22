@@ -103,7 +103,7 @@
                 case OrderId.AbilityLocation:
                 case OrderId.Ability:
                 {
-                    if (args.Ability.IsAbilityBehavior(AbilityBehavior.Channeled))
+                    if (args.Ability.IsAbilityBehavior(AbilityBehavior.Channeled) || args.Ability.IsInvis())
                     {
                         sleeper.Sleep(1000, this);
                     }
