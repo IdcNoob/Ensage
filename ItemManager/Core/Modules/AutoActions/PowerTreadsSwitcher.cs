@@ -13,6 +13,7 @@
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects;
     using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Helpers;
 
     using EventArgs;
 
@@ -43,13 +44,14 @@
 
         private PowerTreads powerTreads;
 
-        public PowerTreadsSwitcher(Manager manager, MenuManager menu)
+        public PowerTreadsSwitcher(Manager manager, MenuManager menu, AbilityId abilityId)
         {
             this.manager = manager;
             this.menu = menu.AutoActionsMenu.PowerTreadsMenu;
             recoveryMenu = menu.RecoveryMenu;
             order = new Order();
 
+            AbilityId = abilityId;
             Refresh();
 
             foreach (var ability in manager.MyHero.Abilities.Where(x => x.GetManaCost(0) > 0))
@@ -60,20 +62,17 @@
             manager.OnAbilityAdd += OnAbilityAdd;
             manager.OnAbilityRemove += OnAbilityRemove;
             Player.OnExecuteOrder += OnExecuteOrder;
-            Game.OnUpdate += OnUpdate;
+            UpdateManager.Subscribe(OnUpdate, 100);
             Unit.OnModifierAdded += OnModifierAdded;
             Unit.OnModifierRemoved += OnModifierRemoved;
         }
 
-        public List<AbilityId> AbilityIds { get; } = new List<AbilityId>
-        {
-            AbilityId.item_power_treads
-        };
+        public AbilityId AbilityId { get; }
 
         public void Dispose()
         {
             Player.OnExecuteOrder -= OnExecuteOrder;
-            Game.OnUpdate -= OnUpdate;
+            UpdateManager.Unsubscribe(OnUpdate);
             Unit.OnModifierAdded -= OnModifierAdded;
             Unit.OnModifierRemoved -= OnModifierRemoved;
             manager.OnAbilityAdd -= OnAbilityAdd;
@@ -84,7 +83,7 @@
 
         public void Refresh()
         {
-            powerTreads = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityIds.First()) as PowerTreads;
+            powerTreads = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId) as PowerTreads;
         }
 
         private Attribute GetAttribute(int menuIndex)
@@ -149,7 +148,7 @@
 
             var ability = args.Ability;
 
-            if (args.IsPlayerInput && ability?.Id == AbilityIds.First())
+            if (args.IsPlayerInput && ability?.Id == AbilityId)
             {
                 powerTreads.ChangeDefaultAttribute();
                 return;
@@ -164,7 +163,7 @@
                     return;
                 }
 
-                sleeper.Sleep((float)sleep, AbilityIds.First());
+                sleeper.Sleep((float)sleep, AbilityId);
 
                 if (powerTreads.ActiveAttribute == Attribute.Intelligence)
                 {
@@ -195,7 +194,7 @@
 
                     powerTreads.SwitchTo(switchAttribute);
                     powerTreads.ChangeDefaultAttribute(switchAttribute);
-                    sleeper.Sleep(300, AbilityIds.First());
+                    sleeper.Sleep(300, AbilityId);
 
                     return;
                 }
@@ -212,7 +211,7 @@
 
                     powerTreads.SwitchTo(switchAttribute);
                     powerTreads.ChangeDefaultAttribute(switchAttribute);
-                    sleeper.Sleep(300, AbilityIds.First());
+                    sleeper.Sleep(300, AbilityId);
 
                     return;
                 }
@@ -266,7 +265,7 @@
 
             if (!args.Process)
             {
-                sleeper.Sleep((float)sleep, AbilityIds.First());
+                sleeper.Sleep((float)sleep, AbilityId);
             }
         }
 
@@ -282,7 +281,7 @@
             {
                 activeDelaySwitchModifiers.Add(modifier);
 
-                if (sleeper.Sleeping(AbilityIds.First()) || recoveryMenu.IsActive)
+                if (sleeper.Sleeping(AbilityId) || recoveryMenu.IsActive)
                 {
                     return;
                 }
@@ -315,7 +314,7 @@
             }
         }
 
-        private void OnUpdate(EventArgs args)
+        private void OnUpdate()
         {
             if (sleeper.Sleeping(this) || Game.IsPaused)
             {
@@ -324,7 +323,7 @@
 
             sleeper.Sleep(200, this);
 
-            if (!menu.IsEnabled || sleeper.Sleeping(AbilityIds.First()) || !powerTreads.CanBeCasted()
+            if (!menu.IsEnabled || sleeper.Sleeping(AbilityId) || !powerTreads.CanBeCasted()
                 || !manager.MyHero.CanUseItems() || powerTreads.ActiveAttribute == powerTreads.DefaultAttribute
                 || activeDelaySwitchModifiers.Any())
             {

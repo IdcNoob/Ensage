@@ -1,7 +1,5 @@
 ﻿namespace ItemManager.Core.Modules.AutoActions
 {
-    using System;
-    using System.Collections.Generic;
     using System.Linq;
 
     using Abilities;
@@ -10,7 +8,7 @@
 
     using Ensage;
     using Ensage.Common.Extensions;
-    using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Helpers;
 
     using Interfaces;
 
@@ -24,44 +22,33 @@
 
         private readonly IronTalonMenu menu;
 
-        private readonly Sleeper sleeper = new Sleeper();
-
         private IronTalon ironTalon;
 
-        public AutoIronTalon(Manager manager, MenuManager menu)
+        public AutoIronTalon(Manager manager, MenuManager menu, AbilityId abilityId)
         {
             this.manager = manager;
             this.menu = menu.AutoActionsMenu.IronTalonMenu;
 
+            AbilityId = abilityId;
             Refresh();
 
-            Game.OnUpdate += OnUpdate;
+            UpdateManager.Subscribe(OnUpdate, 500);
         }
 
-        public List<AbilityId> AbilityIds { get; } = new List<AbilityId>
-        {
-            AbilityId.item_iron_talon
-        };
+        public AbilityId AbilityId { get; }
 
         public void Dispose()
         {
-            Game.OnUpdate -= OnUpdate;
+            UpdateManager.Unsubscribe(OnUpdate);
         }
 
         public void Refresh()
         {
-            ironTalon = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityIds.First()) as IronTalon;
+            ironTalon = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId) as IronTalon;
         }
 
-        private void OnUpdate(EventArgs args)
+        private void OnUpdate()
         {
-            if (sleeper.Sleeping)
-            {
-                return;
-            }
-
-            sleeper.Sleep(500);
-
             if (!menu.IsEnabled || !manager.MyHero.CanUseItems() || !ironTalon.CanBeCasted() || Game.IsPaused)
             {
                 return;

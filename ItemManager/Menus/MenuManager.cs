@@ -9,6 +9,7 @@
     using Modules.CourierHelper;
     using Modules.GoldSpender;
     using Modules.ItemSwap;
+    using Modules.OffensiveAbilities;
     using Modules.Recovery;
     using Modules.ShrineHelper;
     using Modules.Snatcher;
@@ -21,6 +22,7 @@
         {
             mainMenu = new Menu(" Item Manager", "itemManager", true, "courier_go_to_secretshop", true);
 
+            OffensiveItemsMenu = new OffensiveItemsMenu(mainMenu);
             AutoActionsMenu = new AutoActionsMenu(mainMenu);
             AbilityHelperMenu = new AbilityHelperMenu(mainMenu);
             RecoveryMenu = new RecoveryMenu(mainMenu);
@@ -42,6 +44,8 @@
         public GoldSpenderMenu GoldSpenderMenu { get; }
 
         public ItemSwapMenu ItemSwapMenu { get; }
+
+        public OffensiveItemsMenu OffensiveItemsMenu { get; }
 
         public RecoveryMenu RecoveryMenu { get; }
 

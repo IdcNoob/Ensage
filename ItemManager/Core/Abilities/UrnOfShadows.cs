@@ -7,6 +7,7 @@
     using Base;
 
     using Ensage;
+    using Ensage.SDK.Extensions;
 
     using Interfaces;
 
@@ -15,13 +16,15 @@
     using Utils;
 
     [Ability(AbilityId.item_urn_of_shadows)]
-    internal class UrnOfShadows : UsableAbility, IRecoveryAbility
+    internal class UrnOfShadows : UsableAbility, IRecoveryAbility, IOffensiveAbility
     {
         private readonly Item urnOfShadows;
 
         public UrnOfShadows(Ability ability, Manager manager)
             : base(ability, manager)
         {
+            IsOffensiveAbility = true;
+
             urnOfShadows = ability as Item;
 
             ManaRestore = 0;
@@ -43,6 +46,12 @@
         {
             return base.CanBeCasted() && urnOfShadows.CurrentCharges > 0
                    && !Manager.MyHero.HasModifier(ModifierUtils.UrnRegeneration);
+        }
+
+        public bool CanBeCasted(Unit target)
+        {
+            return base.CanBeCasted() && urnOfShadows.CurrentCharges > 0
+                   && !target.HasModifier(ModifierUtils.UrnDebuff);
         }
 
         public bool ShouldBeUsed(MyHero hero, RecoveryMenu menu, float missingHealth, float missingMana)

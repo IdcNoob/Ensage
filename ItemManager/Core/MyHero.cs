@@ -23,6 +23,14 @@ namespace ItemManager.Core
 
         private readonly MultiSleeper disabledItems = new MultiSleeper();
 
+        private readonly List<OrderId> dropTarget = new List<OrderId>
+        {
+            OrderId.Hold,
+            OrderId.Stop,
+            OrderId.MoveLocation,
+            OrderId.MoveTarget
+        };
+
         private readonly List<Item> items = new List<Item>();
 
         private readonly Dictionary<Item, ItemSlot> itemSlots = new Dictionary<Item, ItemSlot>();
@@ -34,6 +42,7 @@ namespace ItemManager.Core
             Handle = hero.Handle;
             Team = hero.Team;
             EnemyTeam = hero.GetEnemyTeam();
+            Player.OnExecuteOrder += OnExecuteOrder;
         }
 
         public IEnumerable<Ability> Abilities => abilities.Where(x => x.IsValid);
@@ -82,6 +91,8 @@ namespace ItemManager.Core
 
         public float RespawnTime => (float)3.8 * Hero.Level + 5 + Hero.RespawnTimePenalty;
 
+        public Unit Target { get; private set; }
+
         public Team Team { get; }
 
         public List<UsableAbility> UsableAbilities { get; } = new List<UsableAbility>();
@@ -98,7 +109,7 @@ namespace ItemManager.Core
 
         public bool CanAttack()
         {
-            return Hero.IsAlive && !IsChanneling && Hero.CanAttack();
+            return IsAlive && !IsChanneling && Hero.CanAttack();
         }
 
         public bool CanUseAbilities()
@@ -118,6 +129,7 @@ namespace ItemManager.Core
 
         public void Dispose()
         {
+            Player.OnExecuteOrder -= OnExecuteOrder;
             DroppedItems.Clear();
             UsableAbilities.Clear();
             abilities.Clear();
@@ -261,8 +273,7 @@ namespace ItemManager.Core
 
         public bool ItemsCanBeDisabled()
         {
-            return Hero.ActiveShop == (ShopType)7;
-            //return Hero.ActiveShop == ShopType.None;
+            return Hero.ActiveShop == ShopType.None;
         }
 
         public float PickUpItems()
@@ -376,6 +387,27 @@ namespace ItemManager.Core
             }
 
             return null;
+        }
+
+        private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
+        {
+            if (!args.Entities.Contains(Hero) || !args.Process)
+            {
+                return;
+            }
+
+            if (args.OrderId == OrderId.AttackTarget)
+            {
+                var target = args.Target as Unit;
+                if (target != null)
+                {
+                    Target = target;
+                }
+            }
+            else if (dropTarget.Contains(args.OrderId))
+            {
+                Target = null;
+            }
         }
     }
 }

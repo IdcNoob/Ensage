@@ -1,7 +1,5 @@
 ﻿namespace ItemManager.Core.Modules.AutoActions.HpMpRestore
 {
-    using System;
-    using System.Collections.Generic;
     using System.Linq;
 
     using Abilities;
@@ -10,7 +8,7 @@
 
     using Ensage;
     using Ensage.Common.Extensions;
-    using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Helpers;
 
     using Interfaces;
 
@@ -27,45 +25,33 @@
 
         private readonly AutoMagicStickMenu menu;
 
-        private readonly Sleeper sleeper = new Sleeper();
-
         private MagicStick magicStick;
 
-        public AutoMagicStick(Manager manager, MenuManager menu)
+        public AutoMagicStick(Manager manager, MenuManager menu, AbilityId abilityId)
         {
             this.manager = manager;
             this.menu = menu.AutoActionsMenu.AutoHealsMenu.AutoMagicStickMenu;
 
+            AbilityId = abilityId;
             Refresh();
 
-            Game.OnUpdate += OnUpdate;
+            UpdateManager.Subscribe(OnUpdate, 100);
         }
 
-        public List<AbilityId> AbilityIds { get; } = new List<AbilityId>
-        {
-            AbilityId.item_magic_stick,
-            AbilityId.item_magic_wand
-        };
+        public AbilityId AbilityId { get; }
 
         public void Dispose()
         {
-            Game.OnUpdate -= OnUpdate;
+            UpdateManager.Unsubscribe(OnUpdate);
         }
 
         public void Refresh()
         {
-            magicStick = manager.MyHero.UsableAbilities.FirstOrDefault(x => AbilityIds.Contains(x.Id)) as MagicStick;
+            magicStick = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId) as MagicStick;
         }
 
-        private void OnUpdate(EventArgs args)
+        private void OnUpdate()
         {
-            if (sleeper.Sleeping)
-            {
-                return;
-            }
-
-            sleeper.Sleep(100);
-
             if (Game.IsPaused || !manager.MyHero.CanUseItems() || !magicStick.CanBeCasted()
                 || manager.MyHero.HasModifier(ModifierUtils.IceBlastDebuff))
             {

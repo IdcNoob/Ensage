@@ -12,6 +12,7 @@
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Helpers;
 
     using EventArgs;
 
@@ -40,14 +41,14 @@
             this.menu = menu.RecoveryMenu;
             tranquilDropMenu = menu.AbilityHelperMenu.TranquilMenu;
 
-            Game.OnUpdate += OnUpdate;
+            UpdateManager.Subscribe(OnUpdate);
             Player.OnExecuteOrder += OnExecuteOrder;
             this.menu.OnAbuseChange += OnAbuseChange;
         }
 
         public void Dispose()
         {
-            Game.OnUpdate -= OnUpdate;
+            UpdateManager.Unsubscribe(OnUpdate);
             Player.OnExecuteOrder -= OnExecuteOrder;
             menu.OnAbuseChange -= OnAbuseChange;
         }
@@ -83,7 +84,7 @@
             }
         }
 
-        private void OnUpdate(EventArgs args)
+        private void OnUpdate()
         {
             if (sleeper.Sleeping(this) || Game.IsPaused || !menu.IsEnabled)
             {

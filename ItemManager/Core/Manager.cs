@@ -10,8 +10,8 @@
     using Attributes;
 
     using Ensage;
-    using Ensage.Common;
     using Ensage.Common.Extensions;
+    using Ensage.SDK.Helpers;
 
     using EventArgs;
 
@@ -19,16 +19,16 @@
     {
         private readonly List<Type> types;
 
-        public Manager()
+        public Manager(Hero hero)
         {
-            MyHero = new MyHero(ObjectManager.LocalHero);
+            MyHero = new MyHero(hero);
 
             types = Assembly.GetExecutingAssembly()
                 .GetTypes()
-                .Where(x => x.Namespace == "ItemManager.Core.Abilities")
+                .Where(x => x.IsClass && x.Namespace?.Contains("ItemManager.Core.Abilities") == true)
                 .ToList();
 
-            DelayAction.Add(3000, AddCurrentObjects);
+            UpdateManager.BeginInvoke(AddCurrentObjects, 3000);
         }
 
         public event EventHandler<AbilityEventArgs> OnAbilityAdd;

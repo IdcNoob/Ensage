@@ -48,7 +48,16 @@
             "modifier_weaver_shukuchi"
         };
 
+        public static string DiffusalDebuff { get; } = "modifier_item_diffusal_blade_slow";
+
         public static string FountainRegeneration { get; } = "modifier_fountain_aura_buff";
+
+        public static List<string> HexModifiers { get; } = new List<string>
+        {
+            "modifier_sheepstick_debuff",
+            "modifier_shadow_shaman_voodoo",
+            "modifier_lion_voodoo"
+        };
 
         public static string IceBlastDebuff { get; } = "modifier_ice_blast";
 
@@ -57,6 +66,8 @@
         public static string ShrineRegeneration { get; } = "modifier_filler_heal";
 
         public static string TangoRegeneration { get; } = "modifier_tango_heal";
+
+        public static string UrnDebuff { get; } = "modifier_item_urn_damage";
 
         public static string UrnRegeneration { get; } = "modifier_item_urn_heal";
     }

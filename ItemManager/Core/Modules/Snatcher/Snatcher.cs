@@ -10,6 +10,7 @@
 
     using Ensage;
     using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Helpers;
 
     using EventArgs;
 
@@ -46,14 +47,14 @@
                 manager.OnUnitAdd += OnUnitAdd;
             }
 
-            Game.OnUpdate += OnUpdate;
+            UpdateManager.Subscribe(OnUpdate);
             Player.OnExecuteOrder += OnExecuteOrder;
             this.menu.OnUseOtherUnitsChange += OnUseOtherUnitsChange;
         }
 
         public void Dispose()
         {
-            Game.OnUpdate -= OnUpdate;
+            UpdateManager.Unsubscribe(OnUpdate);
             Player.OnExecuteOrder -= OnExecuteOrder;
             menu.OnUseOtherUnitsChange -= OnUseOtherUnitsChange;
             manager.OnUnitAdd -= OnUnitAdd;
@@ -133,7 +134,7 @@
             }
         }
 
-        private void OnUpdate(EventArgs args)
+        private void OnUpdate()
         {
             if (sleeper.Sleeping(this) || Game.IsPaused)
             {

@@ -2,13 +2,18 @@
 {
     using System.Linq;
 
+    using Attributes;
+
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
 
     using Utils;
 
-    internal abstract class UsableAbility
+    [Ability(AbilityId.item_phase_boots)]
+    [Ability(AbilityId.treant_living_armor)]
+    [Ability(AbilityId.item_hand_of_midas)]
+    internal class UsableAbility
     {
         protected Ability Ability;
 
@@ -16,7 +21,7 @@
 
         protected Sleeper Sleeper = new Sleeper();
 
-        protected UsableAbility(Ability ability, Manager manager)
+        public UsableAbility(Ability ability, Manager manager)
         {
             Manager = manager;
             Ability = ability;
@@ -31,6 +36,8 @@
         public AbilityId Id { get; }
 
         public bool IsItem { get; }
+
+        public bool IsOffensiveAbility { get; protected set; }
 
         public bool IsSleeping => Sleeper.Sleeping;
 

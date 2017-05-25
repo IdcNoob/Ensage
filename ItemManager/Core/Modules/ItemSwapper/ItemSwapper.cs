@@ -9,6 +9,8 @@
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Handlers;
+    using Ensage.SDK.Helpers;
 
     using EventArgs;
 
@@ -30,9 +32,9 @@
 
         private readonly Sleeper sleeper;
 
-        private bool courierFollowing;
+        private readonly IUpdateHandler updateHandler;
 
-        private bool courierSwapActive;
+        private bool courierFollowing;
 
         private bool itemsMovedToCourier;
 
@@ -44,6 +46,7 @@
             this.menu = menu.ItemSwapMenu;
             sleeper = new Sleeper();
 
+            updateHandler = UpdateManager.Subscribe(OnUpdate, 100, false);
             this.menu.Backpack.OnSwap += BackpackOnSwap;
             this.menu.Stash.OnSwap += StashOnSwap;
             this.menu.Courier.OnSwap += CourierOnSwap;
@@ -84,23 +87,21 @@
 
         private void CourierOnSwap(object sender, EventArgs eventArgs)
         {
-            if (courierSwapActive)
+            if (updateHandler.IsEnabled)
             {
                 courierFollowing = false;
                 itemsMovedToCourier = false;
                 return;
             }
 
-            courierSwapActive = true;
-            Game.OnUpdate += OnUpdate;
+            updateHandler.IsEnabled = true;
         }
 
         private void DisableCourierItemSwap()
         {
             courierFollowing = false;
-            courierSwapActive = false;
             itemsMovedToCourier = false;
-            Game.OnUpdate -= OnUpdate;
+            updateHandler.IsEnabled = false;
         }
 
         private void MoveItem(
@@ -210,7 +211,7 @@
 
         private void OnInt32PropertyChange(Entity sender, Int32PropertyChangeEventArgs args)
         {
-            if (!courierSwapActive || args.OldValue == args.NewValue || args.PropertyName != "m_nCourierState")
+            if (!updateHandler.IsEnabled || args.OldValue == args.NewValue || args.PropertyName != "m_nCourierState")
             {
                 return;
             }
@@ -291,7 +292,7 @@
             }
         }
 
-        private void OnUpdate(EventArgs args)
+        private void OnUpdate()
         {
             if (sleeper.Sleeping)
             {

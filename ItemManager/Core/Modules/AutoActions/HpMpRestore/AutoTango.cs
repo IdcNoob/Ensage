@@ -1,14 +1,12 @@
 ﻿namespace ItemManager.Core.Modules.AutoActions.HpMpRestore
 {
-    using System;
-    using System.Collections.Generic;
     using System.Linq;
 
     using Attributes;
 
     using Ensage;
     using Ensage.Common.Extensions;
-    using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Helpers;
 
     using EventArgs;
 
@@ -27,31 +25,26 @@
 
         private readonly AutoTangoMenu menu;
 
-        private readonly Sleeper sleeper = new Sleeper();
-
         private float branchRemovalTime;
 
-        public AutoTango(Manager manager, MenuManager menu)
+        public AutoTango(Manager manager, MenuManager menu, AbilityId abilityId)
         {
             this.manager = manager;
             this.menu = menu.AutoActionsMenu.AutoHealsMenu.AutoTangoMenu;
 
+            AbilityId = abilityId;
             Refresh();
 
-            Game.OnUpdate += OnUpdate;
+            UpdateManager.Subscribe(OnUpdate, 500);
             manager.OnItemRemove += OnItemRemove;
         }
 
-        public List<AbilityId> AbilityIds { get; } = new List<AbilityId>
-        {
-            AbilityId.item_tango,
-            AbilityId.item_tango_single
-        };
+        public AbilityId AbilityId { get; }
 
         public void Dispose()
         {
             manager.OnItemRemove -= OnItemRemove;
-            Game.OnUpdate -= OnUpdate;
+            UpdateManager.Unsubscribe(OnUpdate);
         }
 
         public void Refresh()
@@ -63,19 +56,12 @@
             if (itemEventArgs.Item.Id == AbilityId.item_branches)
             {
                 branchRemovalTime = Game.RawGameTime;
-                sleeper.Sleep(100);
+                UpdateManager.BeginInvoke(OnUpdate, 100);
             }
         }
 
-        private void OnUpdate(EventArgs args)
+        private void OnUpdate()
         {
-            if (sleeper.Sleeping)
-            {
-                return;
-            }
-
-            sleeper.Sleep(500);
-
             if (!menu.IsEnabled || branchRemovalTime + 10 < Game.RawGameTime || Game.IsPaused
                 || manager.MyHero.MissingHealth < menu.HealthThreshold
                 || manager.MyHero.HasModifier(ModifierUtils.TangoRegeneration) || !manager.MyHero.CanUseItems())

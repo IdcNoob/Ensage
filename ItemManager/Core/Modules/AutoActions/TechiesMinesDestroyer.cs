@@ -9,6 +9,7 @@
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Helpers;
 
     using EventArgs;
 
@@ -52,7 +53,7 @@
         public void Dispose()
         {
             manager.OnUnitAdd -= OnUnitAdd;
-            Game.OnUpdate -= OnUpdate;
+            UpdateManager.Unsubscribe(OnUpdate);
             Player.OnExecuteOrder -= OnExecuteOrder;
         }
 
@@ -76,12 +77,12 @@
                                               && x.Team == manager.MyHero.Team)))
             {
                 manager.OnUnitAdd -= OnUnitAdd;
-                Game.OnUpdate += OnUpdate;
+                UpdateManager.Subscribe(OnUpdate);
                 Player.OnExecuteOrder += OnExecuteOrder;
             }
         }
 
-        private void OnUpdate(EventArgs args)
+        private void OnUpdate()
         {
             if (sleeper.Sleeping || Game.IsPaused)
             {

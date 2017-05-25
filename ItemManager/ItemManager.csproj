@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{79431B27-86B2-4F0B-9A92-DD3AE8E84B1C}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ItemManager</RootNamespace>
     <AssemblyName>ItemManager</AssemblyName>
@@ -25,13 +25,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ensage">
@@ -40,23 +43,31 @@
     <Reference Include="Ensage.Common">
       <HintPath>C:\BanIsComing\References\Ensage.Common.dll</HintPath>
     </Reference>
+    <Reference Include="Ensage.SDK">
+      <HintPath>C:\BanIsComing\References\Ensage.SDK.dll</HintPath>
+    </Reference>
+    <Reference Include="PlaySharp.Toolkit">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\BanIsComing\References\PlaySharp.Toolkit.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX.Mathematics">
       <HintPath>C:\BanIsComing\References\SharpDX.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\AbilityAttribute.cs" />
     <Compile Include="Attributes\AbilityBasedModuleAttribute.cs" />
     <Compile Include="Attributes\ModuleAttribute.cs" />
+    <Compile Include="Core\Abilities\Base\OffensiveAbility.cs" />
     <Compile Include="Core\Abilities\BlinkDagger.cs" />
+    <Compile Include="Core\Abilities\DiffusalBlade.cs" />
     <Compile Include="Core\Abilities\GuardianGreaves.cs" />
-    <Compile Include="Core\Abilities\HandOfMidas.cs" />
+    <Compile Include="Core\Abilities\Interfaces\IOffensiveAbility.cs" />
     <Compile Include="Core\Abilities\IronTalon.cs" />
-    <Compile Include="Core\Abilities\LivingArmor.cs" />
     <Compile Include="Core\Abilities\MagicStick.cs" />
     <Compile Include="Core\Abilities\Mekansm.cs" />
-    <Compile Include="Core\Abilities\PhaseBoots.cs" />
     <Compile Include="Core\Abilities\UrnOfShadows.cs" />
     <Compile Include="Bootstrap.cs" />
     <Compile Include="Core\Abilities\ArcaneBoots.cs" />
@@ -65,6 +76,7 @@
     <Compile Include="Core\Abilities\SoulRing.cs" />
     <Compile Include="Core\Abilities\Base\UsableAbility.cs" />
     <Compile Include="Core\Abilities\Interfaces\IRecoveryAbility.cs" />
+    <Compile Include="Core\Abilities\VeilOfDiscord.cs" />
     <Compile Include="Core\Modules\AbilityBasedModuleManager.cs" />
     <Compile Include="Core\Modules\AbilityHelper\BlinkAdjustment.cs" />
     <Compile Include="Core\Modules\AbilityHelper\TranquilDrop.cs" />
@@ -85,6 +97,18 @@
     <Compile Include="Core\Modules\GoldSpender\GoldSpender.cs" />
     <Compile Include="Core\Modules\Interfaces\IAbilityBasedModule.cs" />
     <Compile Include="Core\Modules\ItemSwapper\ItemSwapper.cs" />
+    <Compile Include="Core\Modules\OffensiveAbilities\Abilities\AbyssalBlade.cs" />
+    <Compile Include="Core\Modules\OffensiveAbilities\Abilities\DiffusalBlade.cs" />
+    <Compile Include="Core\Modules\OffensiveAbilities\Abilities\EtherealBlade.cs" />
+    <Compile Include="Core\Modules\OffensiveAbilities\Abilities\EulsScepterOfDivinity.cs" />
+    <Compile Include="Core\Modules\OffensiveAbilities\Abilities\HeavensHalberd.cs" />
+    <Compile Include="Core\Modules\OffensiveAbilities\Abilities\MedallionOfCourage.cs" />
+    <Compile Include="Core\Modules\OffensiveAbilities\OffensiveAbilityManager.cs" />
+    <Compile Include="Core\Modules\OffensiveAbilities\Abilities\OrchidMalevolence.cs" />
+    <Compile Include="Core\Modules\OffensiveAbilities\Abilities\RodOfAtos.cs" />
+    <Compile Include="Core\Modules\OffensiveAbilities\Abilities\ScytheOfVyse.cs" />
+    <Compile Include="Core\Modules\OffensiveAbilities\Abilities\UrnOfShadows.cs" />
+    <Compile Include="Core\Modules\OffensiveAbilities\Abilities\VeilOfDiscord.cs" />
     <Compile Include="Core\Modules\RecoveryAbuse\RecoveryAbuse.cs" />
     <Compile Include="Core\Modules\ShrineHelper\ShrineHelper.cs" />
     <Compile Include="Core\Modules\Snatcher\Controllables\Controllable.cs" />
@@ -122,6 +146,8 @@
     <Compile Include="Menus\Modules\ItemSwap\ItemSwapMenu.cs" />
     <Compile Include="Menus\MenuManager.cs" />
     <Compile Include="Menus\Modules\AutoActions\Actions\PowerTreadsMenu.cs" />
+    <Compile Include="Menus\Modules\OffensiveAbilities\AbilitySettings\AbilitySettingsMenu.cs" />
+    <Compile Include="Menus\Modules\OffensiveAbilities\OffensiveItemsMenu.cs" />
     <Compile Include="Menus\Modules\Recovery\ItemSettings\BottleSettings.cs" />
     <Compile Include="Menus\Modules\Recovery\ItemSettings\PowerTreadsSettings.cs" />
     <Compile Include="Menus\Modules\Recovery\ItemSettings\SettingsMenu.cs" />
@@ -131,13 +157,13 @@
     <Compile Include="Menus\Modules\ShrineHelper\ShrineHelperMenu.cs" />
     <Compile Include="Menus\Modules\Snatcher\SnatcherMenu.cs" />
     <Compile Include="Menus\Modules\AutoActions\Actions\SoulRingMenu.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\CourierUtils.cs" />
     <Compile Include="Utils\CreepUtils.cs" />
     <Compile Include="Utils\EntityUtils.cs" />
     <Compile Include="Utils\ItemUtils.cs" />
     <Compile Include="Utils\ModifierUtils.cs" />
+    <Compile Include="Utils\UnitUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

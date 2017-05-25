@@ -1,6 +1,5 @@
 ﻿namespace ItemManager.Core.Modules.AbilityHelper
 {
-    using System.Collections.Generic;
     using System.Linq;
 
     using Abilities;
@@ -24,20 +23,18 @@
 
         private BlinkDagger blinkDagger;
 
-        public BlinkAdjustment(Manager manager, MenuManager menu)
+        public BlinkAdjustment(Manager manager, MenuManager menu, AbilityId abilityId)
         {
             this.manager = manager;
             this.menu = menu.AbilityHelperMenu.BlinkMenu;
 
+            AbilityId = abilityId;
             Refresh();
 
             Player.OnExecuteOrder += OnExecuteOrder;
         }
 
-        public List<AbilityId> AbilityIds { get; } = new List<AbilityId>
-        {
-            AbilityId.item_blink
-        };
+        public AbilityId AbilityId { get; }
 
         public void Dispose()
         {
@@ -46,7 +43,7 @@
 
         public void Refresh()
         {
-            blinkDagger = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityIds.First()) as BlinkDagger;
+            blinkDagger = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId) as BlinkDagger;
         }
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
@@ -57,7 +54,7 @@
                 return;
             }
 
-            if (args.OrderId == OrderId.AbilityLocation && args.Ability?.Id == AbilityIds.First())
+            if (args.OrderId == OrderId.AbilityLocation && args.Ability?.Id == AbilityId)
             {
                 var location = args.TargetPosition;
                 var castRange = blinkDagger.GetCastRange();

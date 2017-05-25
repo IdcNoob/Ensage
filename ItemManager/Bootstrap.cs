@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.Composition;
     using System.Linq;
     using System.Reflection;
 
@@ -9,25 +10,28 @@
 
     using Core;
 
+    using Ensage;
+    using Ensage.SDK.Service;
+    using Ensage.SDK.Service.Metadata;
+
     using Menus;
 
-    internal class Bootstrap
+    [ExportPlugin("Item Manager", StartupMode.Auto, "IdcNoob")]
+    internal class Bootstrap : Plugin
     {
         private readonly List<IDisposable> disposables = new List<IDisposable>();
 
-        public void OnClose()
-        {
-            foreach (var disposable in disposables)
-            {
-                disposable.Dispose();
-            }
+        private readonly Hero hero;
 
-            disposables.Clear();
+        [ImportingConstructor]
+        public Bootstrap([Import] IServiceContext context)
+        {
+            hero = context.Owner as Hero;
         }
 
-        public void OnLoad()
+        protected override void OnActivate()
         {
-            var manager = new Manager();
+            var manager = new Manager(hero);
             var menu = new MenuManager();
 
             disposables.Add(manager);
@@ -41,6 +45,16 @@
             {
                 disposables.Add((IDisposable)Activator.CreateInstance(type, manager, menu));
             }
+        }
+
+        protected override void OnDeactivate()
+        {
+            foreach (var disposable in disposables)
+            {
+                disposable.Dispose();
+            }
+
+            disposables.Clear();
         }
     }
 }

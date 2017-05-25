@@ -10,6 +10,7 @@ namespace ItemManager.Core.Modules.GoldSpender
     using Ensage.Common;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Helpers;
 
     using EventArgs;
 
@@ -36,7 +37,7 @@ namespace ItemManager.Core.Modules.GoldSpender
             this.manager = manager;
             this.menu = menu.GoldSpenderMenu;
 
-            Game.OnUpdate += OnUpdate;
+            UpdateManager.Subscribe(OnUpdate, 100);
             manager.OnUnitAdd += OnUnitAdd;
             manager.OnAbilityAdd += OnAbilityAdd;
             manager.OnAbilityRemove += OnAbilityRemove;
@@ -149,7 +150,7 @@ namespace ItemManager.Core.Modules.GoldSpender
 
         public void Dispose()
         {
-            Game.OnUpdate -= OnUpdate;
+            UpdateManager.Unsubscribe(OnUpdate);
             manager.OnUnitAdd -= OnUnitAdd;
             manager.OnAbilityAdd -= OnAbilityAdd;
             manager.OnAbilityRemove -= OnAbilityRemove;
@@ -232,16 +233,9 @@ namespace ItemManager.Core.Modules.GoldSpender
             }
         }
 
-        private void OnUpdate(EventArgs args)
+        private void OnUpdate()
         {
-            if (sleeper.Sleeping || Game.IsPaused)
-            {
-                return;
-            }
-
-            sleeper.Sleep(100);
-
-            if (!menu.SpendGold || !manager.MyHero.IsAlive)
+            if (sleeper.Sleeping || !menu.SpendGold || Game.IsPaused || !manager.MyHero.IsAlive)
             {
                 return;
             }

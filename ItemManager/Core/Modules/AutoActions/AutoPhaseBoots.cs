@@ -1,10 +1,9 @@
 ﻿namespace ItemManager.Core.Modules.AutoActions
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
 
-    using Abilities;
+    using Abilities.Base;
 
     using Attributes;
 
@@ -23,22 +22,20 @@
 
         private readonly PhaseBootsMenu menu;
 
-        private PhaseBoots phaseBoots;
+        private UsableAbility phaseBoots;
 
-        public AutoPhaseBoots(Manager manager, MenuManager menu)
+        public AutoPhaseBoots(Manager manager, MenuManager menu, AbilityId abilityId)
         {
             this.manager = manager;
             this.menu = menu.AutoActionsMenu.PhaseBootsMenu;
 
+            AbilityId = abilityId;
             Refresh();
 
             Player.OnExecuteOrder += OnExecuteOrder;
         }
 
-        public List<AbilityId> AbilityIds { get; } = new List<AbilityId>
-        {
-            AbilityId.item_phase_boots
-        };
+        public AbilityId AbilityId { get; }
 
         public void Dispose()
         {
@@ -47,8 +44,7 @@
 
         public void Refresh()
         {
-            phaseBoots =
-                manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_phase_boots) as PhaseBoots;
+            phaseBoots = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_phase_boots);
         }
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)

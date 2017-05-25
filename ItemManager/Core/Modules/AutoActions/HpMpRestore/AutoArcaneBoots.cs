@@ -1,7 +1,5 @@
 ﻿namespace ItemManager.Core.Modules.AutoActions.HpMpRestore
 {
-    using System;
-    using System.Collections.Generic;
     using System.Linq;
 
     using Abilities;
@@ -9,9 +7,8 @@
     using Attributes;
 
     using Ensage;
-    using Ensage.Common;
     using Ensage.Common.Extensions;
-    using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Helpers;
 
     using Interfaces;
 
@@ -29,13 +26,11 @@
 
         private readonly AutoArcaneBootsMenu menu;
 
-        private readonly Sleeper sleeper = new Sleeper();
-
         private ArcaneBoots arcaneBoots;
 
         private bool notified;
 
-        public AutoArcaneBoots(Manager manager, MenuManager menu)
+        public AutoArcaneBoots(Manager manager, MenuManager menu, AbilityId abilityId)
         {
             this.manager = manager;
             this.menu = menu.AutoActionsMenu.AutoHealsMenu.AutoArcaneBootsMenu;
@@ -44,26 +39,24 @@
                 .First(x => x.IsValid && x.ClassId == ClassId.CDOTA_Unit_Fountain && x.Team == manager.MyHero.Team)
                 .Position;
 
+            AbilityId = abilityId;
             Refresh();
 
-            Game.OnUpdate += OnUpdate;
+            UpdateManager.Subscribe(OnUpdate, 500);
             Player.OnExecuteOrder += OnExecuteOrder;
         }
 
-        public List<AbilityId> AbilityIds { get; } = new List<AbilityId>
-        {
-            AbilityId.item_arcane_boots
-        };
+        public AbilityId AbilityId { get; }
 
         public void Dispose()
         {
-            Game.OnUpdate -= OnUpdate;
+            UpdateManager.Unsubscribe(OnUpdate);
             Player.OnExecuteOrder -= OnExecuteOrder;
         }
 
         public void Refresh()
         {
-            arcaneBoots = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityIds.First()) as ArcaneBoots;
+            arcaneBoots = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId) as ArcaneBoots;
         }
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
@@ -73,21 +66,14 @@
                 return;
             }
 
-            if (args.Ability?.Id == AbilityIds.First())
+            if (args.Ability?.Id == AbilityId)
             {
                 notified = false;
             }
         }
 
-        private void OnUpdate(EventArgs args)
+        private void OnUpdate()
         {
-            if (sleeper.Sleeping)
-            {
-                return;
-            }
-
-            sleeper.Sleep(500);
-
             if (!menu.AutoUse || Game.IsPaused || !manager.MyHero.CanUseItems() || !arcaneBoots.CanBeCasted()
                 || manager.MyHero.MissingMana < arcaneBoots.ManaRestore
                 || manager.MyHero.Distance2D(fountain) < menu.FountainRange)
@@ -105,8 +91,8 @@
             {
                 if (!notified && menu.NotifyAllies)
                 {
-                    Network.ItemAlert(manager.MyHero.Position, AbilityIds.First());
-                    DelayAction.Add(200, () => Network.ItemAlert(manager.MyHero.Position, AbilityIds.First()));
+                    Network.ItemAlert(manager.MyHero.Position, AbilityId);
+                    UpdateManager.BeginInvoke(() => { Network.ItemAlert(manager.MyHero.Position, AbilityId); }, 200);
                     notified = true;
                 }
 

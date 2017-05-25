@@ -1,16 +1,14 @@
 ﻿namespace ItemManager.Core.Modules.AutoActions.HpMpRestore
 {
-    using System;
-    using System.Collections.Generic;
     using System.Linq;
 
-    using Abilities;
+    using Abilities.Base;
 
     using Attributes;
 
     using Ensage;
     using Ensage.Common.Extensions;
-    using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Helpers;
 
     using Interfaces;
 
@@ -26,44 +24,33 @@
 
         private readonly LivingArmorMenu menu;
 
-        private readonly Sleeper sleeper = new Sleeper();
+        private UsableAbility livingArmor;
 
-        private LivingArmor livingArmor;
-
-        public AutoLivingArmor(Manager manager, MenuManager menu)
+        public AutoLivingArmor(Manager manager, MenuManager menu, AbilityId abilityId)
         {
             this.manager = manager;
             this.menu = menu.AutoActionsMenu.AutoHealsMenu.LivingArmorMenu;
 
+            AbilityId = abilityId;
             Refresh();
 
-            Game.OnUpdate += OnUpdate;
+            UpdateManager.Subscribe(OnUpdate, 300);
         }
 
-        public List<AbilityId> AbilityIds { get; } = new List<AbilityId>
-        {
-            AbilityId.treant_living_armor
-        };
+        public AbilityId AbilityId { get; }
 
         public void Dispose()
         {
-            Game.OnUpdate -= OnUpdate;
+            UpdateManager.Unsubscribe(OnUpdate);
         }
 
         public void Refresh()
         {
-            livingArmor = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityIds.First()) as LivingArmor;
+            livingArmor = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId);
         }
 
-        private void OnUpdate(EventArgs args)
+        private void OnUpdate()
         {
-            if (sleeper.Sleeping)
-            {
-                return;
-            }
-
-            sleeper.Sleep(300);
-
             if (!menu.IsEnabled || !manager.MyHero.CanUseAbilities() || !livingArmor.CanBeCasted() || Game.IsPaused)
             {
                 return;
@@ -89,7 +76,6 @@
                     {
                         PrintMessage(hero);
                         livingArmor.Use(hero);
-                        sleeper.Sleep(1000);
                         return;
                     }
                 }
@@ -108,7 +94,6 @@
                 {
                     PrintMessage(tower);
                     livingArmor.Use(tower);
-                    sleeper.Sleep(1000);
                     return;
                 }
             }
@@ -130,7 +115,6 @@
                     {
                         PrintMessage(creep);
                         livingArmor.Use(creep);
-                        sleeper.Sleep(1000);
                         return;
                     }
                 }
@@ -146,7 +130,6 @@
                 {
                     PrintMessage(lowHpCreep);
                     livingArmor.Use(lowHpCreep);
-                    sleeper.Sleep(1000);
                 }
             }
         }

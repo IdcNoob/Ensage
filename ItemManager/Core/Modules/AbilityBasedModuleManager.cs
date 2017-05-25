@@ -58,7 +58,7 @@
                 return;
             }
 
-            var module = modules.FirstOrDefault(x => x.AbilityIds.Contains(abilityEventArgs.Ability.Id));
+            var module = modules.FirstOrDefault(x => x.AbilityId == abilityEventArgs.Ability.Id);
             if (module != null)
             {
                 module.Refresh();
@@ -71,7 +71,8 @@
 
             if (type != null)
             {
-                modules.Add((IAbilityBasedModule)Activator.CreateInstance(type, manager, menu));
+                modules.Add(
+                    (IAbilityBasedModule)Activator.CreateInstance(type, manager, menu, abilityEventArgs.Ability.Id));
             }
         }
 
@@ -82,13 +83,13 @@
                 return;
             }
 
-            var module = modules.FirstOrDefault(x => x.AbilityIds.Contains(abilityEventArgs.Ability.Id));
+            var module = modules.FirstOrDefault(x => x.AbilityId == abilityEventArgs.Ability.Id);
             if (module == null)
             {
                 return;
             }
 
-            if (manager.MyHero.Abilities.Any(x => module.AbilityIds.Contains(x.Id)))
+            if (manager.MyHero.Abilities.Any(x => module.AbilityId == x.Id))
             {
                 module.Refresh();
                 return;

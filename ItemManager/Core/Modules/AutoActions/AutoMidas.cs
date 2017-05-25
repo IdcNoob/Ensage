@@ -1,16 +1,14 @@
 ﻿namespace ItemManager.Core.Modules.AutoActions
 {
-    using System;
-    using System.Collections.Generic;
     using System.Linq;
 
-    using Abilities;
+    using Abilities.Base;
 
     using Attributes;
 
     using Ensage;
     using Ensage.Common.Extensions;
-    using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Helpers;
 
     using Interfaces;
 
@@ -26,44 +24,33 @@
 
         private readonly MidasMenu menu;
 
-        private readonly Sleeper sleeper = new Sleeper();
+        private UsableAbility handOfMidas;
 
-        private HandOfMidas handOfMidas;
-
-        public AutoMidas(Manager manager, MenuManager menu)
+        public AutoMidas(Manager manager, MenuManager menu, AbilityId abilityId)
         {
             this.manager = manager;
             this.menu = menu.AutoActionsMenu.MidasMenu;
 
+            AbilityId = abilityId;
             Refresh();
 
-            Game.OnUpdate += OnUpdate;
+            UpdateManager.Subscribe(OnUpdate, 500);
         }
 
-        public List<AbilityId> AbilityIds { get; } = new List<AbilityId>
-        {
-            AbilityId.item_hand_of_midas
-        };
+        public AbilityId AbilityId { get; }
 
         public void Dispose()
         {
-            Game.OnUpdate -= OnUpdate;
+            UpdateManager.Unsubscribe(OnUpdate);
         }
 
         public void Refresh()
         {
-            handOfMidas = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityIds.First()) as HandOfMidas;
+            handOfMidas = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId);
         }
 
-        private void OnUpdate(EventArgs args)
+        private void OnUpdate()
         {
-            if (sleeper.Sleeping)
-            {
-                return;
-            }
-
-            sleeper.Sleep(500);
-
             if (!menu.IsEnabled || !manager.MyHero.CanUseItems() || !handOfMidas.CanBeCasted() || Game.IsPaused)
             {
                 return;

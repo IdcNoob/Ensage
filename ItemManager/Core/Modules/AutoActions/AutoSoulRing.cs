@@ -1,6 +1,5 @@
 ﻿namespace ItemManager.Core.Modules.AutoActions
 {
-    using System.Collections.Generic;
     using System.Linq;
 
     using Abilities;
@@ -28,12 +27,13 @@
 
         private SoulRing soulRing;
 
-        public AutoSoulRing(Manager manager, MenuManager menu)
+        public AutoSoulRing(Manager manager, MenuManager menu, AbilityId abilityId)
         {
             this.manager = manager;
             this.menu = menu.AutoActionsMenu.SoulRingMenu;
             order = new Order();
 
+            AbilityId = abilityId;
             Refresh();
 
             foreach (var ability in manager.MyHero.Abilities.Where(x => x.GetManaCost(0) > 0))
@@ -46,10 +46,7 @@
             Player.OnExecuteOrder += OnExecuteOrder;
         }
 
-        public List<AbilityId> AbilityIds { get; } = new List<AbilityId>
-        {
-            AbilityId.item_soul_ring
-        };
+        public AbilityId AbilityId { get; }
 
         public void Dispose()
         {
@@ -60,7 +57,7 @@
 
         public void Refresh()
         {
-            soulRing = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityIds.First()) as SoulRing;
+            soulRing = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId) as SoulRing;
         }
 
         private void OnAbilityAdd(object sender, AbilityEventArgs abilityEventArgs)

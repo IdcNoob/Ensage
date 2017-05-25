@@ -9,6 +9,7 @@
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects;
     using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Helpers;
 
     using Menus;
     using Menus.Modules.AutoActions.Actions;
@@ -35,15 +36,15 @@
                             .AbilitySpecialData.First(x => x.Name == "cast_range_ward")
                             .Value + 200;
 
-            Game.OnUpdate += OnUpdate;
+            UpdateManager.Subscribe(OnUpdate);
         }
 
         public void Dispose()
         {
-            Game.OnUpdate -= OnUpdate;
+            UpdateManager.Unsubscribe(OnUpdate);
         }
 
-        private void OnUpdate(EventArgs args)
+        private void OnUpdate()
         {
             if (sleeper.Sleeping || Game.IsPaused)
             {

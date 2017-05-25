@@ -1,7 +1,5 @@
 ﻿namespace ItemManager.Core.Modules.AbilityHelper
 {
-    using System;
-    using System.Collections.Generic;
     using System.Linq;
 
     using Attributes;
@@ -9,6 +7,8 @@
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Handlers;
+    using Ensage.SDK.Helpers;
 
     using EventArgs;
 
@@ -28,25 +28,25 @@
 
         private readonly Sleeper sleeper = new Sleeper();
 
-        private bool subscribed;
+        private readonly IUpdateHandler updateHandler;
 
-        public TranquilDrop(Manager manager, MenuManager menu)
+        public TranquilDrop(Manager manager, MenuManager menu, AbilityId abilityId)
         {
             this.manager = manager;
             this.menu = menu.AbilityHelperMenu.TranquilMenu;
 
+            AbilityId = abilityId;
+
             this.menu.OnTranquilDrop += OnTranquilDrop;
+            updateHandler = UpdateManager.Subscribe(OnUpdate, 100, false);
         }
 
-        public List<AbilityId> AbilityIds { get; } = new List<AbilityId>
-        {
-            AbilityId.item_tranquil_boots
-        };
+        public AbilityId AbilityId { get; }
 
         public void Dispose()
         {
             menu.OnTranquilDrop -= OnTranquilDrop;
-            Game.OnUpdate -= OnUpdate;
+            UpdateManager.Unsubscribe(OnUpdate);
         }
 
         public void Refresh()
@@ -58,7 +58,7 @@
             if (boolEventArgs.Enabled)
             {
                 var tranquils = manager.MyHero.GetItems(ItemStoredPlace.Inventory)
-                    .FirstOrDefault(x => x.Id == AbilityIds.First());
+                    .FirstOrDefault(x => x.Id == AbilityId);
 
                 if (tranquils == null)
                 {
@@ -67,30 +67,16 @@
 
                 manager.MyHero.Hero.Stop();
                 manager.MyHero.DropItem(tranquils, ItemStoredPlace.Inventory);
-
-                if (subscribed)
-                {
-                    return;
-                }
-
-                Game.OnUpdate += OnUpdate;
-                subscribed = true;
+                updateHandler.IsEnabled = true;
             }
             else
             {
                 manager.MyHero.PickUpItems();
-
-                if (!subscribed)
-                {
-                    return;
-                }
-
-                Game.OnUpdate -= OnUpdate;
-                subscribed = false;
+                updateHandler.IsEnabled = false;
             }
         }
 
-        private void OnUpdate(EventArgs args)
+        private void OnUpdate()
         {
             if (sleeper.Sleeping || Game.IsPaused)
             {

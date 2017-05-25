@@ -1,7 +1,5 @@
 ﻿namespace ItemManager.Core.Modules.AutoActions.HpMpRestore
 {
-    using System;
-    using System.Collections.Generic;
     using System.Linq;
 
     using Abilities;
@@ -11,6 +9,7 @@
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Helpers;
 
     using Interfaces;
 
@@ -37,7 +36,7 @@
 
         private Bottle bottle;
 
-        public AutoBottle(Manager manager, MenuManager menu)
+        public AutoBottle(Manager manager, MenuManager menu, AbilityId abilityId)
         {
             this.manager = manager;
             this.menu = menu.AutoActionsMenu.AutoHealsMenu.AutoBottleMenu;
@@ -47,16 +46,14 @@
                 .First(x => x.IsValid && x.ClassId == ClassId.CDOTA_Unit_Fountain && x.Team == manager.MyHero.Team)
                 .Position;
 
+            AbilityId = abilityId;
             Refresh();
 
-            Game.OnUpdate += OnUpdate;
+            UpdateManager.Subscribe(OnUpdate, 300);
             Player.OnExecuteOrder += OnExecuteOrder;
         }
 
-        public List<AbilityId> AbilityIds { get; } = new List<AbilityId>
-        {
-            AbilityId.item_bottle
-        };
+        public AbilityId AbilityId { get; }
 
         public bool BottleCanBeRefilled()
         {
@@ -81,13 +78,13 @@
 
         public void Dispose()
         {
-            Game.OnUpdate -= OnUpdate;
+            UpdateManager.Unsubscribe(OnUpdate);
             Player.OnExecuteOrder -= OnExecuteOrder;
         }
 
         public void Refresh()
         {
-            bottle = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityIds.First()) as Bottle;
+            bottle = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId) as Bottle;
         }
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
@@ -112,15 +109,8 @@
             }
         }
 
-        private void OnUpdate(EventArgs args)
+        private void OnUpdate()
         {
-            if (sleeper.Sleeping(this))
-            {
-                return;
-            }
-
-            sleeper.Sleep(300, this);
-
             if (Game.IsPaused || recoveryMenu.IsActive || !manager.MyHero.CanUseItems() || !bottle.CanBeAutoCasted()
                 || !BottleCanBeRefilled())
             {
