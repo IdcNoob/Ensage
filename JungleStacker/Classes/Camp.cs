@@ -36,12 +36,15 @@
 
         private Vector2 stacksTextSize;
 
+        private Vector2 stackTimeTextSize;
+
         public Camp()
         {
             requiredStacksTextSize = Drawing.MeasureText("Required stacks:", "Arial", new Vector2(15), FontFlags.None)
                                      - 18;
             stacksTextSize = Drawing.MeasureText("Stacks:", "Arial", new Vector2(15), FontFlags.None) - 5;
             pullTimeTextSize = Drawing.MeasureText("Pull time:", "Arial", new Vector2(15), FontFlags.None) + 10;
+            stackTimeTextSize = Drawing.MeasureText("Stack time:", "Arial", new Vector2(15), FontFlags.None) + 45;
             countTextSize = Drawing.MeasureText("9", "Arial", new Vector2(16), FontFlags.None);
             arrowRectangleSize = new Vector2(20);
 
@@ -125,10 +128,10 @@
             {
                 if (DrawPullTime)
                 {
-                    return new Vector2(180, 100);
+                    return new Vector2(180, 120);
                 }
 
-                return new Vector2(180, 80);
+                return new Vector2(180, 100);
             }
         }
 
@@ -250,19 +253,34 @@
                 Color.White,
                 FontFlags.None);
 
+            // 4th line
+            Drawing.DrawText(
+                "Stack time:",
+                new Vector2(position.X - 20, position.Y + 60),
+                new Vector2(15),
+                Color.White,
+                FontFlags.None);
+
+            Drawing.DrawText(
+                StackTime.ToString(),
+                position + new Vector2(stackTimeTextSize.X, 60),
+                new Vector2(16),
+                Color.White,
+                FontFlags.None);
+
             if (DrawPullTime)
             {
-                // 4th line
+                // 5th line
                 Drawing.DrawText(
                     "Pull time:",
-                    new Vector2(position.X - 20, position.Y + 60),
+                    new Vector2(position.X - 20, position.Y + 80),
                     new Vector2(15),
                     Color.White,
                     FontFlags.None);
 
                 Drawing.DrawText(
                     PullTime,
-                    position + new Vector2(pullTimeTextSize.X + 12, 60),
+                    position + new Vector2(pullTimeTextSize.X + 12, 80),
                     new Vector2(16),
                     Color.White,
                     FontFlags.None);
