@@ -262,7 +262,9 @@
             }
 
             foreach (var unit in ObjectManager.GetEntitiesParallel<Unit>()
-                .Where(x => x.IsValid && x.IsAlive && x.IsSpawned && x.Team != HeroTeam && x.Distance2D(Hero) < 1325))
+                .Where(
+                    x => x.IsValid && x.IsAlive && x.IsSpawned && x.Team == Variables.EnemyTeam
+                         && x.Distance2D(Hero) < 1325))
             {
                 foreach (var modifier in unit.Modifiers.Where(x => !x.IsHidden))
                 {
@@ -522,7 +524,9 @@
             }
 
             var nearEnemies = ObjectManager.GetEntitiesParallel<Unit>()
-                .Any(x => x.IsValid && x.Team != HeroTeam && x.IsAlive && x.IsSpawned && x.Distance2D(Hero) < 1000);
+                .Any(
+                    x => x.IsValid && x.Team == Variables.EnemyTeam && x.IsAlive && x.IsSpawned
+                         && x.Distance2D(Hero) < 1000);
 
             if (Hero.Health < Menu.ArmletHpThreshold && canToggle
                 && (nearEnemies || !Menu.ArmletEnemiesCheck && !manualDisable))
