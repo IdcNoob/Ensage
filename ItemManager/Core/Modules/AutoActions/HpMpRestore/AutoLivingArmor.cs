@@ -130,6 +130,24 @@
                 {
                     PrintMessage(lowHpCreep);
                     livingArmor.Use(lowHpCreep);
+                    return;
+                }
+            }
+
+            if (menu.IsEnabledBarracks)
+            {
+                var rax = manager.Units.OfType<Building>()
+                    .Where(
+                        x => x.IsValid && x.UnitType == 80 && x.IsAlive && x.Team == manager.MyHero.Team
+                             && !x.HasModifier(ModifierUtils.LivingArmorModifier))
+                    .OrderBy(x => x.HealthPercentage())
+                    .FirstOrDefault(x => x.HealthPercentage() < menu.BarracksHpThreshold);
+
+                if (rax != null)
+                {
+                    PrintMessage(rax);
+                    livingArmor.Use(rax);
+                    return;
                 }
             }
         }

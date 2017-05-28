@@ -29,6 +29,7 @@
             Handle = ability.Handle;
             Id = ability.Id;
             Name = ability.Name;
+            CastPoint = ability.GetCastPoint(0) * 1000;
         }
 
         public uint Handle { get; }
@@ -42,6 +43,8 @@
         public bool IsSleeping => Sleeper.Sleeping;
 
         public string Name { get; }
+
+        protected float CastPoint { get; }
 
         public virtual bool CanBeCasted()
         {
@@ -61,7 +64,7 @@
 
         public virtual void Use(Unit target = null, bool queue = false)
         {
-            SetSleep(200);
+            SetSleep(CastPoint + 200);
 
             if (Ability.IsAbilityBehavior(AbilityBehavior.NoTarget))
             {

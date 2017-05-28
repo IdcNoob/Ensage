@@ -58,8 +58,7 @@
 
             if (IsInInventory())
             {
-                var regeneration = Manager.MyHero.Hero.FindModifier(ModifierUtils.BottleRegeneration);
-                return regeneration == null || regeneration.RemainingTime < 0.15 + Game.Ping / 1000;
+                return true;
             }
 
             if (IsInStash())
@@ -91,6 +90,12 @@
 
         public override void Use(Unit target = null, bool queue = false)
         {
+            var regeneration = Manager.MyHero.Hero.FindModifier(ModifierUtils.BottleRegeneration);
+            if (IsInInventory() && !Manager.MyHero.IsAtBase() && regeneration?.RemainingTime > 0.15 + Game.Ping / 1000)
+            {
+                return;
+            }
+
             if (IsInStash())
             {
                 Manager.MyHero.SaveItemSlot(bottle, ItemStoredPlace.Stash);

@@ -78,12 +78,29 @@
             creepHpThreshold.ValueChanged += (sender, args) => CreepHpThreshold = args.GetNewValue<Slider>().Value;
             CreepHpThreshold = creepHpThreshold.GetValue<Slider>().Value;
 
+            var raxMenu = new Menu("Barracks", "livingArmorBarracks");
+
+            var raxEnabled = new MenuItem("livingArmorBarracksEnabled", "Enabled").SetValue(true);
+            raxMenu.AddItem(raxEnabled);
+            raxEnabled.ValueChanged += (sender, args) => IsEnabledBarracks = args.GetNewValue<bool>();
+            IsEnabledBarracks = raxEnabled.IsActive();
+
+            var raxHpThreshold =
+                new MenuItem("livingArmorBarracksHp", "Barracks HP% threshold").SetValue(new Slider(80));
+            raxHpThreshold.SetTooltip("Use living armor if ally barracks has less hp%");
+            raxMenu.AddItem(raxHpThreshold);
+            raxHpThreshold.ValueChanged += (sender, args) => BarracksHpThreshold = args.GetNewValue<Slider>().Value;
+            BarracksHpThreshold = raxHpThreshold.GetValue<Slider>().Value;
+
             menu.AddSubMenu(heroMenu);
             menu.AddSubMenu(towerMenu);
             menu.AddSubMenu(creepMenu);
+            menu.AddSubMenu(raxMenu);
 
             rootMenu.AddSubMenu(menu);
         }
+
+        public int BarracksHpThreshold { get; private set; }
 
         public int CreepHpThreshold { get; private set; }
 
@@ -94,6 +111,8 @@
         public bool IgnoreSelf { get; private set; }
 
         public bool IsEnabled { get; private set; }
+
+        public bool IsEnabledBarracks { get; private set; }
 
         public bool IsEnabledCreep { get; private set; }
 

@@ -36,7 +36,7 @@
                 return;
             }
 
-            SetSleep(200);
+            SetSleep(CastPoint + 200);
             Ability.UseAbility(target, queue);
         }
     }
