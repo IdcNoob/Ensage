@@ -30,7 +30,7 @@
             { AbilityId.item_blade_mail, "Blade mail" },
             { AbilityId.item_lotus_orb, "Lotus orb" },
             { AbilityId.item_black_king_bar, "Black king bar" },
-            { AbilityId.item_shivas_guard, "Shivas Guard" },
+            { AbilityId.item_shivas_guard, "Shivas guard" },
             { AbilityId.item_mjollnir, "Mjollnir" },
             { AbilityId.item_hurricane_pike, "Hurricane pike" },
         };
