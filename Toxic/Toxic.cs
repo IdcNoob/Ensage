@@ -32,16 +32,19 @@
             {
                 try
                 {
-                    if (settings.Enabled && !Game.IsPaused)
+                    if (!settings.Enabled || Game.IsPaused)
                     {
-                        foreach (var hero in EntityManager<Hero>.Entities.Where(
-                            x => x.IsValid && settings.Heroes.Value.IsEnabled(x.Name)))
-                        {
-                            Network.MapPing(
-                                hero.Position.ToVector2(),
-                                settings.DangerPing ? PingType.Danger : PingType.Normal);
-                            await Task.Delay(25);
-                        }
+                        await Task.Delay(500);
+                        continue;
+                    }
+
+                    foreach (var hero in EntityManager<Hero>.Entities.Where(
+                        x => x.IsValid && settings.Heroes.Value.IsEnabled(x.Name)))
+                    {
+                        Network.MapPing(
+                            hero.Position.ToVector2(),
+                            settings.DangerPing ? PingType.Danger : PingType.Normal);
+                        await Task.Delay(25);
                     }
 
                     await Task.Delay(25);
