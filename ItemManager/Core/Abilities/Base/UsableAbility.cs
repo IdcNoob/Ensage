@@ -38,8 +38,6 @@
 
         public bool IsItem { get; }
 
-        public bool IsOffensiveAbility { get; protected set; }
-
         public bool IsSleeping => Sleeper.Sleeping;
 
         public string Name { get; }

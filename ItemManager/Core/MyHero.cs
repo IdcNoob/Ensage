@@ -398,8 +398,8 @@ namespace ItemManager.Core
 
             if (args.OrderId == OrderId.AttackTarget)
             {
-                var target = args.Target as Unit;
-                if (target != null)
+                var target = args.Target as Hero;
+                if (target != null && target.IsAlive && !target.IsIllusion)
                 {
                     Target = target;
                 }

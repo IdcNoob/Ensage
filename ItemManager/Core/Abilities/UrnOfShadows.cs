@@ -16,15 +16,13 @@
     using Utils;
 
     [Ability(AbilityId.item_urn_of_shadows)]
-    internal class UrnOfShadows : UsableAbility, IRecoveryAbility, IOffensiveAbility
+    internal class UrnOfShadows : OffensiveAbility, IRecoveryAbility
     {
         private readonly Item urnOfShadows;
 
         public UrnOfShadows(Ability ability, Manager manager)
             : base(ability, manager)
         {
-            IsOffensiveAbility = true;
-
             urnOfShadows = ability as Item;
 
             ManaRestore = 0;
@@ -48,9 +46,9 @@
                    && !Manager.MyHero.HasModifier(ModifierUtils.UrnRegeneration);
         }
 
-        public bool CanBeCasted(Unit target)
+        public override bool CanBeCasted(Unit target)
         {
-            return base.CanBeCasted() && urnOfShadows.CurrentCharges > 0
+            return base.CanBeCasted(target) && urnOfShadows.CurrentCharges > 0
                    && !target.HasModifier(ModifierUtils.UrnDebuff);
         }
 

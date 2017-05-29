@@ -4,6 +4,8 @@
 
     internal static class ModifierUtils
     {
+        public static string BladeMailReflect { get; } = "modifier_item_blade_mail_reflect";
+
         public static string BottleRegeneration { get; } = "modifier_bottle_regeneration";
 
         public static List<string> CanUseAbilitiesInInvis { get; } = new List<string>

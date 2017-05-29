@@ -3,8 +3,18 @@
     using Attributes;
 
     using Ensage;
+    using Ensage.Common.Extensions;
+    using Ensage.Common.Objects;
+    using Ensage.SDK.Extensions;
 
     using Interfaces;
+
+    using Menus.Modules.OffensiveAbilities.AbilitySettings;
+
+    using Utils;
+
+    using EntityExtensions = Ensage.SDK.Extensions.EntityExtensions;
+    using UnitExtensions = Ensage.SDK.Extensions.UnitExtensions;
 
     [Ability(AbilityId.item_orchid)]
     [Ability(AbilityId.item_sheepstick)]
@@ -21,12 +31,55 @@
         public OffensiveAbility(Ability ability, Manager manager)
             : base(ability, manager)
         {
-            IsOffensiveAbility = true;
         }
+
+        public OffensiveAbilitySettings Menu { get; set; }
 
         public virtual bool CanBeCasted(Unit target)
         {
-            return base.CanBeCasted();
+            if (target == null || !target.IsValid || !Menu.IsEnabled(target.StoredName()))
+            {
+                return false;
+            }
+
+            if (!target.IsAlive || !target.IsVisible || UnitExtensions.IsMagicImmune(target)
+                || EntityExtensions.Distance2D(target, Manager.MyHero.Position) > GetCastRange() || target.IsInvul()
+                || target.IsReflectingAbilities())
+            {
+                return false;
+            }
+
+            if (!Menu.BreakLinkens && UnitExtensions.IsLinkensProtected(target))
+            {
+                return false;
+            }
+
+            if (!Menu.HexStack && target.IsReallyHexed())
+            {
+                return false;
+            }
+
+            if (!Menu.SilenceStack && UnitExtensions.IsSilenced(target) && !target.IsReallyHexed())
+            {
+                return false;
+            }
+
+            if (!Menu.RootStack && target.IsRooted())
+            {
+                return false;
+            }
+
+            if (!Menu.StunStack && UnitExtensions.IsStunned(target))
+            {
+                return false;
+            }
+
+            if (!Menu.DisarmStack && UnitExtensions.IsDisarmed(target) && !target.IsReallyHexed())
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public override void Use(Unit target = null, bool queue = false)

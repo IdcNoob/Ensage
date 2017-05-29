@@ -22,6 +22,11 @@
             radius = ability.AbilitySpecialData.First(x => x.Name == "debuff_radius").Value;
         }
 
+        public override bool CanBeCasted(Unit target)
+        {
+            return base.CanBeCasted(target) && !target.HasModifier("modifier_item_veil_of_discord_debuff");
+        }
+
         public override void Use(Unit target = null, bool queue = false)
         {
             if (target == null)

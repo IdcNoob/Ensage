@@ -7,6 +7,7 @@
     using Modules.AbilityHelper;
     using Modules.AutoActions;
     using Modules.CourierHelper;
+    using Modules.DefensiveAbilities;
     using Modules.GoldSpender;
     using Modules.ItemSwap;
     using Modules.OffensiveAbilities;
@@ -22,7 +23,8 @@
         {
             mainMenu = new Menu(" Item Manager", "itemManager", true, "courier_go_to_secretshop", true);
 
-            OffensiveItemsMenu = new OffensiveItemsMenu(mainMenu);
+            OffensiveAbilitiesMenu = new OffensiveAbilitiesMenu(mainMenu);
+            DefensiveAbilitiesMenu = new DefensiveAbilitiesMenu(mainMenu);
             AutoActionsMenu = new AutoActionsMenu(mainMenu);
             AbilityHelperMenu = new AbilityHelperMenu(mainMenu);
             RecoveryMenu = new RecoveryMenu(mainMenu);
@@ -41,11 +43,13 @@
 
         public CourierHelperMenu CourierHelperMenu { get; }
 
+        public DefensiveAbilitiesMenu DefensiveAbilitiesMenu { get; }
+
         public GoldSpenderMenu GoldSpenderMenu { get; }
 
         public ItemSwapMenu ItemSwapMenu { get; }
 
-        public OffensiveItemsMenu OffensiveItemsMenu { get; }
+        public OffensiveAbilitiesMenu OffensiveAbilitiesMenu { get; }
 
         public RecoveryMenu RecoveryMenu { get; }
 

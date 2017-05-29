@@ -90,7 +90,8 @@
 
         public override void Use(Unit target = null, bool queue = false)
         {
-            var regeneration = Manager.MyHero.Hero.FindModifier(ModifierUtils.BottleRegeneration);
+            var regeneration = target?.FindModifier(ModifierUtils.BottleRegeneration)
+                               ?? Manager.MyHero.Hero.FindModifier(ModifierUtils.BottleRegeneration);
             if (IsInInventory() && !Manager.MyHero.IsAtBase() && regeneration?.RemainingTime > 0.15 + Game.Ping / 1000)
             {
                 return;
