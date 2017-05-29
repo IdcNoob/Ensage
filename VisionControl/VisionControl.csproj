@@ -58,7 +58,6 @@
     <Compile Include="MenuManager.cs" />
     <Compile Include="Units\IUpdatable.cs" />
     <Compile Include="Variables.cs" />
-    <Compile Include="Utils.cs" />
     <Compile Include="Heroes\EnemyHero.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

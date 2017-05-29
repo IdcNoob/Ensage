@@ -48,7 +48,7 @@
             {
                 if (unit.ShowTexture)
                 {
-                    var position = Utils.WorldToMiniMap(unit.Position, new Vector2(35, 20));
+                    var position = unit.Position.WorldToMinimap() - new Vector2(8, 15);
                     textFont.DrawText(
                         null,
                         "*",
