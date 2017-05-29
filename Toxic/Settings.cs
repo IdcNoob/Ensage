@@ -14,6 +14,7 @@
         {
             factory = MenuFactory.Create("TOXIC");
             Enabled = factory.Item("Enabled", false);
+            Enabled.Item.SetTooltip("ONLY YOUR ALLIES WILL SEE PINGS, BUT NOT YOU!");
             DangerPing = factory.Item("Use danger ping type", true);
             Heroes = factory.Item("Ping:", new HeroToggler(new Dictionary<string, bool>(), false, true, false));
         }
