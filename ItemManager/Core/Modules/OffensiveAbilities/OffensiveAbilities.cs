@@ -24,6 +24,13 @@
     [Module]
     internal class OffensiveAbilities : IDisposable
     {
+        private readonly Dictionary<AbilityId, string> forcedNames = new Dictionary<AbilityId, string>
+        {
+            { AbilityId.item_bloodthorn, "item_orchid" },
+            { AbilityId.item_diffusal_blade_2, "item_diffusal_blade" },
+            { AbilityId.item_solar_crest, "item_medallion_of_courage" }
+        };
+
         private readonly Manager manager;
 
         private readonly OffensiveAbilitiesMenu menu;
@@ -33,8 +40,8 @@
         private readonly Dictionary<AbilityId, string> offensiveAbilityNames = new Dictionary<AbilityId, string>
         {
             { AbilityId.item_abyssal_blade, "Abyssal blade" },
-            { AbilityId.item_recipe_diffusal_blade, "Diffusal blade" },
-            { AbilityId.item_recipe_diffusal_blade_2, "Diffusal blade" },
+            { AbilityId.item_diffusal_blade, "Diffusal blade" },
+            { AbilityId.item_diffusal_blade_2, "Diffusal blade" },
             { AbilityId.item_ethereal_blade, "Ethereal blade" },
             { AbilityId.item_cyclone, "Euls scepter of divinity" },
             { AbilityId.item_heavens_halberd, "Heavens halberd" },
@@ -88,9 +95,15 @@
                 return;
             }
 
-            var name = offensiveAbilityNames.FirstOrDefault(x => x.Key == ability.Id).Value;
+            var forcedName = forcedNames.FirstOrDefault(x => x.Key == ability.Id).Value;
+            if (!string.IsNullOrEmpty(forcedName))
+            {
+                usableAbility.ChangeName(forcedName);
+            }
 
-            menu.CreateMenu(usableAbility, name);
+            var menuName = offensiveAbilityNames.FirstOrDefault(x => x.Key == ability.Id).Value;
+
+            menu.CreateMenu(usableAbility, menuName);
             offensiveAbilities.Add(usableAbility);
             updateHandler.IsEnabled = true;
         }

@@ -18,6 +18,8 @@
 
         bool CanBeCasted();
 
+        void ChangeName(string name);
+
         void Use(Unit target, bool queue = false);
     }
 }

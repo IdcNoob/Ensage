@@ -40,7 +40,7 @@
 
         public bool IsSleeping => Sleeper.Sleeping;
 
-        public string Name { get; }
+        public string Name { get; protected set; }
 
         protected float CastPoint { get; }
 
@@ -48,6 +48,11 @@
         {
             return !IsSleeping && Ability.IsValid && Ability.CanBeCasted()
                    && (!IsItem || Manager.MyHero.GetItems(ItemStoredPlace.Inventory).Any(x => x.Handle == Handle));
+        }
+
+        public void ChangeName(string name)
+        {
+            Name = name;
         }
 
         public float GetCastRange()
