@@ -526,8 +526,8 @@
             if (Menu.Hotkeys.ForceBlink)
             {
                 var blinkDagger =
-                    abilityUpdater.UsableAbilities.FirstOrDefault(
-                        x => x.ClassId == ClassId.CDOTA_Item_BlinkDagger) as BlinkDagger;
+                    abilityUpdater.UsableAbilities.FirstOrDefault(x => x.ClassId == ClassId.CDOTA_Item_BlinkDagger) as
+                        BlinkDagger;
 
                 if (blinkDagger != null && blinkDagger.CanBeCasted(null, null))
                 {
@@ -602,8 +602,8 @@
                 foreach (var obstacle in multiIntersection)
                 {
                     var ability =
-                        abilityUpdater.EvadableAbilities.FirstOrDefault(
-                            x => x.Obstacle == obstacle && x.IsDisable) as AOE;
+                        abilityUpdater.EvadableAbilities.FirstOrDefault(x => x.Obstacle == obstacle && x.IsDisable) as
+                            AOE;
 
                     if (ability == null || sleeper.Sleeping(ability))
                     {
@@ -689,13 +689,15 @@
             var allyMagicImmune = ally.IsMagicImmune();
             var allyIsMe = ally.Equals(Hero);
             var allyHp = ally.Health;
-            //var heroMp = Hero.Mana;
+            var heroMp = Hero.Mana;
 
-            foreach (var ability in intersection.Select(
+            foreach (var ability in intersection
+                .Select(
                     x => abilityUpdater.EvadableAbilities.FirstOrDefault(
                         z => z.Obstacle == x && (z.AllyHpIgnore <= 0 || allyHp < z.AllyHpIgnore)
-                             //&& (z.HeroMpIgnore <= 0 || heroMp > z.HeroMpIgnore)
-                             && (z.AbilityLevelIgnore <= 0 || z.Level > z.AbilityLevelIgnore)))
+                             && (z.HeroMpIgnore <= 0 || heroMp > z.HeroMpIgnore)
+                             && (z.AbilityLevelIgnore <= 0 || z.Level > z.AbilityLevelIgnore)
+                             && (z.AbilityTimeIgnore <= 0 || Game.GameTime / 60 < z.AbilityTimeIgnore)))
                 .Where(x => x != null)
                 .OrderByDescending(x => x.IsDisable))
             {
@@ -992,10 +994,11 @@
                                     continue;
                                 }
 
-                                var requiredTime = counterAbility.GetRequiredTime(
-                                                       ability,
-                                                       targetEnemy ? abilityOwner : ally,
-                                                       remainingTime) + Game.Ping / 1000 + 0.07f;
+                                var requiredTime =
+                                    counterAbility.GetRequiredTime(
+                                        ability,
+                                        targetEnemy ? abilityOwner : ally,
+                                        remainingTime) + Game.Ping / 1000 + 0.07f;
 
                                 var ignoreRemainingTime = false;
 

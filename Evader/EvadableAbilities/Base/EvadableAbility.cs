@@ -49,6 +49,8 @@
 
         public Unit AbilityOwner { get; }
 
+        public int AbilityTimeIgnore { get; set; }
+
         public float AdditionalDelay { get; protected set; }
 
         public int AllyHpIgnore { get; set; }
@@ -71,6 +73,8 @@
 
         public uint Handle { get; }
 
+        public int HeroMpIgnore { get; set; }
+
         public bool IsDisable { get; protected set; }
 
         public bool IsInPhase => Ability.IsInAbilityPhase;
@@ -78,8 +82,6 @@
         public uint Level => Ability.Level;
 
         public bool ModifierCounterEnabled { get; set; }
-
-        //public int HeroMpIgnore { get; set; }
 
         public string Name { get; protected set; }
 

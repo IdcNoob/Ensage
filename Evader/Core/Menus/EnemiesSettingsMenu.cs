@@ -45,12 +45,12 @@
 
                 if (ability is IModifier)
                 {
-                    var modiferCounterItem = menu.Item(menuItemName + "modifier");
-                    modiferCounterItem.ValueChanged += (sender, args) =>
+                    var modifierCounterItem = menu.Item(menuItemName + "modifier");
+                    modifierCounterItem.ValueChanged += (sender, args) =>
                         {
                             ability.ModifierCounterEnabled = args.GetNewValue<bool>();
                         };
-                    ability.ModifierCounterEnabled = modiferCounterItem.IsActive();
+                    ability.ModifierCounterEnabled = modifierCounterItem.IsActive();
                 }
 
                 if (!modifierOnly)
@@ -222,6 +222,14 @@
                     (sender, args) => ability.AbilityLevelIgnore = args.GetNewValue<Slider>().Value;
                 ability.AbilityLevelIgnore = abilityLevelIgnore.GetValue<Slider>().Value;
 
+                var abilityTimeIgnore = new MenuItem(
+                    menuItemName + "timeIgnore",
+                    "Ignore if game time is passed (minutes)").SetValue(new Slider(0, 0, 60));
+                abilityMenu.AddItem(abilityTimeIgnore);
+                abilityTimeIgnore.ValueChanged +=
+                    (sender, args) => ability.AbilityTimeIgnore = args.GetNewValue<Slider>().Value;
+                ability.AbilityTimeIgnore = abilityTimeIgnore.GetValue<Slider>().Value;
+
                 abilityPriority.ValueChanged += (sender, args) =>
                     {
                         var changer = args.GetNewValue<PriorityChanger>();
@@ -309,16 +317,12 @@
                 hpIgnore.ValueChanged += (sender, args) => ability.AllyHpIgnore = args.GetNewValue<Slider>().Value;
                 ability.AllyHpIgnore = hpIgnore.GetValue<Slider>().Value;
 
-                //var mpIgnore =
-                //    new MenuItem(menuName + "mpIgnore", "Ignore if your hero has less mp than").SetValue(
-                //        new Slider(0, 0, 1000)).SetTooltip("If value is 0 check will be ignored");
-                //await Task.Delay(100);
-                //mpIgnore.ValueChanged += (sender, args) =>
-                //{
-                //    ability.HeroMpIgnore = args.GetNewValue<Slider>().Value;
-                //};
-                //ability.HeroMpIgnore = mpIgnore.GetValue<Slider>().Value;
-                //abilityMenu.AddItem(mpIgnore);
+                var mpIgnore = new MenuItem(menuItemName + "mpIgnore", "Ignore if your hero has less mp than")
+                    .SetValue(new Slider(0, 0, 1000))
+                    .SetTooltip("If value is 0 check will be ignored");
+                abilityMenu.AddItem(mpIgnore);
+                mpIgnore.ValueChanged += (sender, args) => ability.HeroMpIgnore = args.GetNewValue<Slider>().Value;
+                ability.HeroMpIgnore = mpIgnore.GetValue<Slider>().Value;
 
                 var abilityChanger = abilityPriority.GetValue<PriorityChanger>();
                 foreach (var priority in abilityChanger.Dictionary.OrderByDescending(x => x.Value)
@@ -346,12 +350,12 @@
             heroMenu.AddSubMenu(abilityMenu);
             addedAbilities.Add(menuItemName);
         }
-        //    {
-        //    if (ownerName == "npc_dota_neutral_mud_golem_split")
-        //    var ownerName = ability.Name.StartsWith("item_") ? "items" : ability.AbilityOwner.Name;
-        //{
 
         //public async Task AddAbility(EvadableAbility ability)
+        //{
+        //    var ownerName = ability.Name.StartsWith("item_") ? "items" : ability.AbilityOwner.Name;
+        //    if (ownerName == "npc_dota_neutral_mud_golem_split")
+        //    {
         //        ownerName = "npc_dota_neutral_mud_golem";
         //    }
         //    var abilityName = ability.Name;

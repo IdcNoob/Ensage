@@ -3,8 +3,6 @@
     using Base;
     using Base.Interfaces;
 
-    using Common;
-
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Extensions.SharpDX;
