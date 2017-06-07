@@ -24,7 +24,7 @@
             Aggro
         }
 
-        private readonly List<uint> addedHeroes = new List<uint>();
+        private readonly List<HeroId> addedHeroes = new List<HeroId>();
 
         private readonly Dictionary<string, Item> addedItems = new Dictionary<string, Item>();
 
@@ -105,10 +105,10 @@
 
             foreach (var hero in allHeroes)
             {
-                if (!addedHeroes.Contains(hero.Handle))
+                if (!addedHeroes.Contains(hero.HeroId))
                 {
                     menu.AddHeroMenu(hero);
-                    addedHeroes.Add(hero.Handle);
+                    addedHeroes.Add(hero.HeroId);
                 }
 
                 if (menu.IsItemsMenuEnabled(hero))
