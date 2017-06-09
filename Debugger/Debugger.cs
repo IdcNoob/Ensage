@@ -18,6 +18,10 @@
 
         private MenuManager mainMenu;
 
+        private Player player;
+
+        private Entity SelectedEntity => player.QueryUnit ?? player.Selection.FirstOrDefault();
+
         public void OnClose()
         {
             Unit.OnModifierAdded -= OnModifierAdded;
@@ -55,6 +59,7 @@
         {
             mainMenu = new MenuManager();
             logger = new Logger();
+            player = ObjectManager.LocalPlayer;
 
             Unit.OnModifierAdded += OnModifierAdded;
             Unit.OnModifierRemoved += OnModifierRemoved;
@@ -87,8 +92,7 @@
 
         private void ItemsOnDump(object sender, EventArgs e)
         {
-            var unit = ObjectManager.LocalPlayer.Selection.FirstOrDefault(x => x.IsValid) as Unit;
-
+            var unit = SelectedEntity as Unit;
             if (unit == null)
             {
                 return;
@@ -163,7 +167,7 @@
 
         private void ModifiersOnDump(object sender, EventArgs e)
         {
-            var unit = ObjectManager.LocalPlayer.Selection.FirstOrDefault(x => x.IsValid) as Unit;
+            var unit = SelectedEntity as Unit;
 
             if (unit == null)
             {
@@ -650,7 +654,7 @@
                         }
 
                         const Color Color = Color.Green;
-                        const Logger.Type Type = Logger.Type.Partcile;
+                        const Logger.Type Type = Logger.Type.Particle;
 
                         logger.Write("Particle added", Type, Color, true);
                         logger.Write("Name: " + args.Name, Type, Color);
@@ -778,7 +782,7 @@
 
         private void SpellsOnDump(object sender, EventArgs eventArgs)
         {
-            var unit = ObjectManager.LocalPlayer.Selection.FirstOrDefault(x => x.IsValid) as Unit;
+            var unit = SelectedEntity as Unit;
 
             if (unit == null)
             {
@@ -848,7 +852,7 @@
 
         private void UnitsOnDump(object sender, EventArgs e)
         {
-            var unit = ObjectManager.LocalPlayer.Selection.FirstOrDefault(x => x.IsValid) as Unit;
+            var unit = SelectedEntity as Unit;
 
             if (unit == null)
             {

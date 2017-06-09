@@ -20,9 +20,8 @@
 
         public MenuManager()
         {
-            menu =
-                new Menu(" Debugger", "debugger", true, "chaos_knight_reality_rift", true).SetFontColor(
-                    Color.PaleVioletRed);
+            menu = new Menu(" Debugger", "debugger", true, "chaos_knight_reality_rift", true).SetFontColor(
+                Color.PaleVioletRed);
 
             OnAddRemove = new OnAddRemoveMenu(menu);
             OnChangeMenu = new OnChangeMenu(menu);

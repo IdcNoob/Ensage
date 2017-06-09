@@ -10,7 +10,7 @@
         {
             Modifier,
 
-            Partcile,
+            Particle,
 
             Unit,
 
