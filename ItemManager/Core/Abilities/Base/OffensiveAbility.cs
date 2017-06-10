@@ -64,7 +64,7 @@
                 return false;
             }
 
-            if (!Menu.RootStack && target.IsRooted())
+            if (!Menu.RootStack && UnitExtensions.IsRooted(target))
             {
                 return false;
             }
