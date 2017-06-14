@@ -9,6 +9,8 @@
     using Ensage;
     using Ensage.Common.Extensions.SharpDX;
 
+    using EventArgs;
+
     using Interfaces;
 
     using Menus;
@@ -31,13 +33,18 @@
             AbilityId = abilityId;
             Refresh();
 
-            Player.OnExecuteOrder += OnExecuteOrder;
+            if (this.menu.IsEnabled)
+            {
+                Player.OnExecuteOrder += OnExecuteOrder;
+            }
+            this.menu.OnEnabledChange += MenuOnEnabledChange;
         }
 
         public AbilityId AbilityId { get; }
 
         public void Dispose()
         {
+            menu.OnEnabledChange -= MenuOnEnabledChange;
             Player.OnExecuteOrder -= OnExecuteOrder;
         }
 
@@ -46,10 +53,22 @@
             blinkDagger = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId) as BlinkDagger;
         }
 
+        private void MenuOnEnabledChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (boolEventArgs.Enabled)
+            {
+                Player.OnExecuteOrder += OnExecuteOrder;
+            }
+            else
+            {
+                Player.OnExecuteOrder -= OnExecuteOrder;
+            }
+        }
+
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!menu.IsEnabled || !args.Entities.Contains(manager.MyHero.Hero) || args.IsQueued
-                || manager.MyHero.IsChanneling || !args.Process || blinkDagger.IsSleeping)
+            if (!args.Entities.Contains(manager.MyHero.Hero) || args.IsQueued || manager.MyHero.IsChanneling
+                || !args.Process || blinkDagger.IsSleeping)
             {
                 return;
             }

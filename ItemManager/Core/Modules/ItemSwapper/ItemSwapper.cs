@@ -24,8 +24,6 @@
     [Module]
     internal class ItemSwapper : IDisposable
     {
-        private readonly List<Courier> couriers = new List<Courier>();
-
         private readonly Manager manager;
 
         private readonly ItemSwapMenu menu;
@@ -54,7 +52,6 @@
             Entity.OnInt32PropertyChange += OnInt32PropertyChange;
             manager.OnItemAdd += OnItemAdd;
             manager.OnItemRemove += OnItemRemove;
-            manager.OnUnitAdd += OnUnitAdd;
         }
 
         public void Dispose()
@@ -66,9 +63,6 @@
             Entity.OnInt32PropertyChange -= OnInt32PropertyChange;
             manager.OnItemAdd -= OnItemAdd;
             manager.OnItemRemove -= OnItemRemove;
-            manager.OnUnitAdd -= OnUnitAdd;
-
-            couriers.Clear();
         }
 
         private void BackpackOnSwap(object sender, EventArgs eventArgs)
@@ -283,15 +277,6 @@
             }
         }
 
-        private void OnUnitAdd(object sender, UnitEventArgs unitEventArgs)
-        {
-            var courier = unitEventArgs.Unit as Courier;
-            if (courier != null && courier.Team == manager.MyHero.Team)
-            {
-                couriers.Add(courier);
-            }
-        }
-
         private void OnUpdate()
         {
             if (sleeper.Sleeping)
@@ -299,7 +284,9 @@
                 return;
             }
 
-            var courier = couriers.FirstOrDefault(x => x.IsValid && x.IsAlive);
+            var courier =
+                EntityManager<Courier>.Entities.FirstOrDefault(
+                    x => x.IsValid && x.IsAlive && x.Team == manager.MyHero.Team);
             if (courier == null || !manager.MyHero.IsAlive)
             {
                 DisableCourierItemSwap();

@@ -9,6 +9,8 @@
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Handlers;
+    using Ensage.SDK.Helpers;
 
     using EventArgs;
 
@@ -26,9 +28,9 @@
 
         private readonly CourierHelperMenu menu;
 
-        private readonly Sleeper sleeper;
+        private readonly Sleeper sleeper = new Sleeper();
 
-        private bool bottleAbuseActive;
+        private readonly IUpdateHandler updateHandler;
 
         private bool courierFollowing;
 
@@ -36,40 +38,36 @@
         {
             this.manager = manager;
             this.menu = menu.CourierHelperMenu;
-            sleeper = new Sleeper();
 
             Entity.OnInt32PropertyChange += OnInt32PropertyChange;
-            this.menu.OnBottleAbuse += OnBottleAbuse;
-
+            updateHandler = UpdateManager.Subscribe(OnUpdate, 100, false);
             manager.OnUnitAdd += OnUnitAdd;
+            this.menu.OnBottleAbuse += MenuOnBottleAbuse;
         }
 
         public void Dispose()
         {
+            menu.OnBottleAbuse -= MenuOnBottleAbuse;
+            manager.OnUnitAdd -= OnUnitAdd;
             Entity.OnInt32PropertyChange -= OnInt32PropertyChange;
-            Game.OnUpdate -= OnUpdate;
-            menu.OnBottleAbuse -= OnBottleAbuse;
-
-            couriers.Clear();
+            UpdateManager.Unsubscribe(OnUpdate);
         }
 
         private void DisableAbuse()
         {
-            bottleAbuseActive = false;
             courierFollowing = false;
-            Game.OnUpdate -= OnUpdate;
+            updateHandler.IsEnabled = false;
         }
 
-        private void OnBottleAbuse(object sender, EventArgs eventArgs)
+        private void MenuOnBottleAbuse(object sender, EventArgs eventArgs)
         {
-            if (bottleAbuseActive)
+            if (updateHandler.IsEnabled)
             {
                 courierFollowing = false;
                 return;
             }
 
-            bottleAbuseActive = true;
-            Game.OnUpdate += OnUpdate;
+            updateHandler.IsEnabled = true;
         }
 
         private void OnInt32PropertyChange(Entity sender, Int32PropertyChangeEventArgs args)
@@ -85,7 +83,7 @@
                 return;
             }
 
-            if (bottleAbuseActive)
+            if (updateHandler.IsEnabled)
             {
                 DisableAbuse();
             }
@@ -131,7 +129,7 @@
             }
         }
 
-        private void OnUpdate(EventArgs args)
+        private void OnUpdate()
         {
             if (sleeper.Sleeping)
             {

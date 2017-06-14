@@ -1,6 +1,10 @@
 ﻿namespace ItemManager.Menus.Modules.AutoActions.Actions
 {
+    using System;
+
     using Ensage.Common.Menu;
+
+    using EventArgs;
 
     internal class TechiesMinesDestroyerMenu
     {
@@ -8,11 +12,15 @@
         {
             var menu = new Menu("Mines destroyer", "minesDestroyer");
 
-            var destroyMines = new MenuItem("destroyerMines", "Destroy techies mines").SetValue(true);
-            destroyMines.SetTooltip("Auto use quelling blade, iron talon and battle fury on remote/stasis mines");
-            menu.AddItem(destroyMines);
-            destroyMines.ValueChanged += (sender, args) => DestroyMines = args.GetNewValue<bool>();
-            DestroyMines = destroyMines.IsActive();
+            var enabled = new MenuItem("destroyerMines", "Enabled").SetValue(true);
+            enabled.SetTooltip("Auto use quelling blade, iron talon and battle fury on remote/stasis mines");
+            menu.AddItem(enabled);
+            enabled.ValueChanged += (sender, args) =>
+                {
+                    IsEnabled = args.GetNewValue<bool>();
+                    OnEnabledChange?.Invoke(null, new BoolEventArgs(IsEnabled));
+                };
+            IsEnabled = enabled.IsActive();
 
             var attackMines = new MenuItem("attackMines", "Attack techies mines").SetValue(true);
             attackMines.SetTooltip(
@@ -27,20 +35,28 @@
             attackMinesInvisible.ValueChanged += (sender, args) => AttackMinesInvisible = args.GetNewValue<bool>();
             AttackMinesInvisible = attackMinesInvisible.IsActive();
 
-            var updateRate = new MenuItem("techiesMinesUpdateRate", "Update rate").SetValue(new Slider(200, 0, 500));
+            var updateRate = new MenuItem("techiesMinesUpdateRate", "Update rate").SetValue(new Slider(200, 1, 500));
             updateRate.SetTooltip("Lower value => faster reaction, but requires more resources");
             menu.AddItem(updateRate);
-            updateRate.ValueChanged += (sender, args) => UpdateRate = args.GetNewValue<Slider>().Value;
+            updateRate.ValueChanged += (sender, args) =>
+                {
+                    UpdateRate = args.GetNewValue<Slider>().Value;
+                    OnUpdateRateChange?.Invoke(null, new IntEventArgs(UpdateRate));
+                };
             UpdateRate = updateRate.GetValue<Slider>().Value;
 
             mainMenu.AddSubMenu(menu);
         }
 
+        public event EventHandler<BoolEventArgs> OnEnabledChange;
+
+        public event EventHandler<IntEventArgs> OnUpdateRateChange;
+
         public bool AttackMines { get; private set; }
 
         public bool AttackMinesInvisible { get; private set; }
 
-        public bool DestroyMines { get; private set; }
+        public bool IsEnabled { get; private set; }
 
         public int UpdateRate { get; private set; }
     }

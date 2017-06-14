@@ -1,6 +1,10 @@
 ﻿namespace ItemManager.Menus.Modules.AutoActions.Actions
 {
+    using System;
+
     using Ensage.Common.Menu;
+
+    using EventArgs;
 
     internal class MidasMenu
     {
@@ -11,7 +15,11 @@
             var enabled = new MenuItem("midasEnabled", "Enabled").SetValue(true);
             enabled.SetTooltip("Auto use hand of midas");
             menu.AddItem(enabled);
-            enabled.ValueChanged += (sender, args) => IsEnabled = args.GetNewValue<bool>();
+            enabled.ValueChanged += (sender, args) =>
+                {
+                    IsEnabled = args.GetNewValue<bool>();
+                    OnEnabledChange?.Invoke(null, new BoolEventArgs(IsEnabled));
+                };
             IsEnabled = enabled.IsActive();
 
             var healthThresholdPct = new MenuItem("midasHealthPct", "HP% threshold").SetValue(new Slider(70, 0, 100));
@@ -30,6 +38,8 @@
 
             mainMenu.AddSubMenu(menu);
         }
+
+        public event EventHandler<BoolEventArgs> OnEnabledChange;
 
         public int ExperienceThreshold { get; private set; }
 

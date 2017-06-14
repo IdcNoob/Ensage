@@ -1,6 +1,10 @@
 ﻿namespace ItemManager.Menus.Modules.AutoActions.Actions
 {
+    using System;
+
     using Ensage.Common.Menu;
+
+    using EventArgs;
 
     internal class IronTalonMenu
     {
@@ -11,7 +15,11 @@
             var enabled = new MenuItem("ironTalonEnabled", "Enabled").SetValue(true);
             enabled.SetTooltip("Auto use iron talon on creeps");
             menu.AddItem(enabled);
-            enabled.ValueChanged += (sender, args) => IsEnabled = args.GetNewValue<bool>();
+            enabled.ValueChanged += (sender, args) =>
+                {
+                    IsEnabled = args.GetNewValue<bool>();
+                    OnEnabledChange?.Invoke(null, new BoolEventArgs(IsEnabled));
+                };
             IsEnabled = enabled.IsActive();
 
             var damageThreshold =
@@ -23,6 +31,8 @@
 
             mainMenu.AddSubMenu(menu);
         }
+
+        public event EventHandler<BoolEventArgs> OnEnabledChange;
 
         public int DamageThreshold { get; private set; }
 

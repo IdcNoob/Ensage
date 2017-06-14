@@ -12,6 +12,7 @@ namespace ItemManager.Core
     using Ensage.Common;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Helpers;
 
     using SharpDX;
 
@@ -293,9 +294,10 @@ namespace ItemManager.Core
                 return 0;
             }
 
-            var physicalItems = ObjectManager.GetEntitiesParallel<PhysicalItem>()
+            var physicalItems = EntityManager<PhysicalItem>.Entities
                 .Where(x => x.IsVisible && x.Distance2D(Hero) < 800 && DroppedItems.Contains(x.Item))
-                .Reverse();
+                .Reverse()
+                .ToList();
 
             if (!physicalItems.Any())
             {

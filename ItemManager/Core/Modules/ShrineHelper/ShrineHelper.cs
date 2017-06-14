@@ -7,6 +7,9 @@
 
     using Ensage;
     using Ensage.Common.Extensions;
+    using Ensage.SDK.Helpers;
+
+    using EventArgs;
 
     using Menus;
     using Menus.Modules.ShrineHelper;
@@ -25,19 +28,54 @@
             this.manager = manager;
             this.menu = menu.ShrineHelperMenu;
 
-            Player.OnExecuteOrder += OnExecuteOrder;
-            Unit.OnModifierAdded += OnModifierAdded;
+            if (this.menu.BlockShrineUsage)
+            {
+                Player.OnExecuteOrder += OnExecuteOrder;
+            }
+            if (this.menu.AutoDisableItems)
+            {
+                Unit.OnModifierAdded += OnModifierAdded;
+            }
+
+            this.menu.OnBlockEnabledChange += MenuOnBlockEnabledChange;
+            this.menu.OnDisableItemsChange += MenuOnDisableItemsChange;
         }
 
         public void Dispose()
         {
+            menu.OnBlockEnabledChange -= MenuOnBlockEnabledChange;
+            menu.OnDisableItemsChange -= MenuOnDisableItemsChange;
             Player.OnExecuteOrder -= OnExecuteOrder;
             Unit.OnModifierAdded -= OnModifierAdded;
         }
 
+        private void MenuOnBlockEnabledChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (boolEventArgs.Enabled)
+            {
+                Player.OnExecuteOrder -= OnExecuteOrder;
+            }
+            else
+            {
+                Player.OnExecuteOrder -= OnExecuteOrder;
+            }
+        }
+
+        private void MenuOnDisableItemsChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (boolEventArgs.Enabled)
+            {
+                Unit.OnModifierAdded += OnModifierAdded;
+            }
+            else
+            {
+                Unit.OnModifierAdded -= OnModifierAdded;
+            }
+        }
+
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!menu.BlockShrineUsage || !args.IsPlayerInput || !args.Entities.Contains(manager.MyHero.Hero))
+            if (!args.IsPlayerInput || !args.Entities.Contains(manager.MyHero.Hero))
             {
                 return;
             }
@@ -53,8 +91,7 @@
 
         private void OnModifierAdded(Unit sender, ModifierChangedEventArgs args)
         {
-            if (!menu.AutoDisableItems || sender.Handle != manager.MyHero.Handle
-                || args.Modifier.Name != ModifierUtils.ShrineRegeneration)
+            if (sender.Handle != manager.MyHero.Handle || args.Modifier.Name != ModifierUtils.ShrineRegeneration)
             {
                 return;
             }
@@ -65,10 +102,9 @@
                 return;
             }
 
-            if (ObjectManager.GetEntitiesParallel<Hero>()
-                .Any(
-                    x => x.IsValid && x.IsVisible && x.IsAlive && x.Team != manager.MyHero.Team
-                         && x.Distance2D(manager.MyHero.Position) < 1000))
+            if (EntityManager<Hero>.Entities.Any(
+                x => x.IsValid && x.IsVisible && x.IsAlive && x.Team != manager.MyHero.Team
+                     && x.Distance2D(manager.MyHero.Position) < 1000))
             {
                 return;
             }

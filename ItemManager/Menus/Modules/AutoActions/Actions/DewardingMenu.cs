@@ -1,10 +1,13 @@
 ﻿namespace ItemManager.Menus.Modules.AutoActions.Actions
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
     using Ensage;
     using Ensage.Common.Menu;
+
+    using EventArgs;
 
     internal class DewardingMenu
     {
@@ -19,7 +22,11 @@
             var enabled = new MenuItem("dewardEnabled", "Enabled").SetValue(true);
             enabled.SetTooltip("Auto use quelling blade, tangos, iron talon etc. enemy on wards");
             menu.AddItem(enabled);
-            enabled.ValueChanged += (sender, args) => IsEnabled = args.GetNewValue<bool>();
+            enabled.ValueChanged += (sender, args) =>
+                {
+                    IsEnabled = args.GetNewValue<bool>();
+                    OnEnabledChange?.Invoke(null, new BoolEventArgs(IsEnabled));
+                };
             IsEnabled = enabled.IsActive();
 
             var tangoHpThreshold =
@@ -29,10 +36,14 @@
             tangoHpThreshold.ValueChanged += (sender, args) => TangoHpThreshold = args.GetNewValue<Slider>().Value;
             TangoHpThreshold = tangoHpThreshold.GetValue<Slider>().Value;
 
-            var updateRate = new MenuItem("dewardUpdateRate", "Update rate").SetValue(new Slider(200, 0, 500));
+            var updateRate = new MenuItem("dewardUpdateRate", "Update rate").SetValue(new Slider(200, 1, 500));
             updateRate.SetTooltip("Lower value => faster reaction, but requires more resources");
             menu.AddItem(updateRate);
-            updateRate.ValueChanged += (sender, args) => UpdateRate = args.GetNewValue<Slider>().Value;
+            updateRate.ValueChanged += (sender, args) =>
+                {
+                    UpdateRate = args.GetNewValue<Slider>().Value;
+                    OnUpdateRateChange?.Invoke(null, new IntEventArgs(UpdateRate));
+                };
             UpdateRate = updateRate.GetValue<Slider>().Value;
 
             menu.AddItem(
@@ -45,6 +56,10 @@
 
             mainMenu.AddSubMenu(menu);
         }
+
+        public event EventHandler<BoolEventArgs> OnEnabledChange;
+
+        public event EventHandler<IntEventArgs> OnUpdateRateChange;
 
         public bool IsEnabled { get; private set; }
 

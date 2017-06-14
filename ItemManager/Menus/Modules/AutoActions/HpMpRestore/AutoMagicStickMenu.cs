@@ -1,6 +1,10 @@
 ﻿namespace ItemManager.Menus.Modules.AutoActions.HpMpRestore
 {
+    using System;
+
     using Ensage.Common.Menu;
+
+    using EventArgs;
 
     internal class AutoMagicStickMenu
     {
@@ -11,7 +15,11 @@
             var enabled = new MenuItem("magicStickEnabled", "Enabled").SetValue(true);
             enabled.SetTooltip("Auto use magic stick/wand on low health");
             menu.AddItem(enabled);
-            enabled.ValueChanged += (sender, args) => IsEnabled = args.GetNewValue<bool>();
+            enabled.ValueChanged += (sender, args) =>
+                {
+                    IsEnabled = args.GetNewValue<bool>();
+                    OnEnabledChange?.Invoke(null, new BoolEventArgs(IsEnabled));
+                };
             IsEnabled = enabled.IsActive();
 
             var hpThreshold = new MenuItem("magicStickHp", "HP threshold").SetValue(new Slider(150, 50, 500));
@@ -36,6 +44,8 @@
 
             mainMenu.AddSubMenu(menu);
         }
+
+        public event EventHandler<BoolEventArgs> OnEnabledChange;
 
         public int EnemySearchRange { get; private set; }
 

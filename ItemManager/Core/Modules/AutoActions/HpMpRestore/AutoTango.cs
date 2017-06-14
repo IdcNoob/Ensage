@@ -6,6 +6,7 @@
 
     using Ensage;
     using Ensage.Common.Extensions;
+    using Ensage.SDK.Handlers;
     using Ensage.SDK.Helpers;
 
     using EventArgs;
@@ -25,7 +26,7 @@
 
         private readonly AutoTangoMenu menu;
 
-        private float branchRemovalTime;
+        private readonly IUpdateHandler updateHandler;
 
         public AutoTango(Manager manager, MenuManager menu, AbilityId abilityId)
         {
@@ -35,14 +36,19 @@
             AbilityId = abilityId;
             Refresh();
 
-            UpdateManager.Subscribe(OnUpdate, 500);
-            manager.OnItemRemove += OnItemRemove;
+            updateHandler = UpdateManager.Subscribe(OnUpdate, 100, false);
+            if (this.menu.IsEnabled)
+            {
+                manager.OnItemRemove += OnItemRemove;
+            }
+            this.menu.OnEnabledChange += MenuOnEnabledChange;
         }
 
         public AbilityId AbilityId { get; }
 
         public void Dispose()
         {
+            menu.OnEnabledChange -= MenuOnEnabledChange;
             manager.OnItemRemove -= OnItemRemove;
             UpdateManager.Unsubscribe(OnUpdate);
         }
@@ -51,28 +57,38 @@
         {
         }
 
+        private void MenuOnEnabledChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (boolEventArgs.Enabled)
+            {
+                manager.OnItemRemove += OnItemRemove;
+            }
+            else
+            {
+                manager.OnItemRemove -= OnItemRemove;
+            }
+        }
+
         private void OnItemRemove(object sender, ItemEventArgs itemEventArgs)
         {
             if (itemEventArgs.Item.Id == AbilityId.item_branches)
             {
-                branchRemovalTime = Game.RawGameTime;
-                UpdateManager.BeginInvoke(OnUpdate, 100);
+                updateHandler.IsEnabled = true;
+                UpdateManager.BeginInvoke(() => updateHandler.IsEnabled = false, 20000);
             }
         }
 
         private void OnUpdate()
         {
-            if (!menu.IsEnabled || branchRemovalTime + 10 < Game.RawGameTime || Game.IsPaused
-                || manager.MyHero.MissingHealth < menu.HealthThreshold
+            if (Game.IsPaused || manager.MyHero.MissingHealth < menu.HealthThreshold
                 || manager.MyHero.HasModifier(ModifierUtils.TangoRegeneration) || !manager.MyHero.CanUseItems())
             {
                 return;
             }
 
-            var happyKappaTree = ObjectManager.GetEntitiesParallel<Tree>()
-                .FirstOrDefault(
-                    x => x.IsValid && x.IsAlive && x.Distance2D(manager.MyHero.Position) < 300
-                         && x.ClassId == ClassId.CDOTA_TempTree);
+            var happyKappaTree = EntityManager<Tree>.Entities.FirstOrDefault(
+                x => x.IsValid && x.IsAlive && x.Distance2D(manager.MyHero.Position) < 300
+                     && x.ClassId == ClassId.CDOTA_TempTree);
 
             if (happyKappaTree == null)
             {
@@ -82,7 +98,13 @@
             var tango = manager.MyHero.GetItems(ItemStoredPlace.Inventory)
                 .FirstOrDefault(x => x.IsTango() && x.CanBeCasted());
 
-            tango?.UseAbility(happyKappaTree);
+            if (tango == null)
+            {
+                return;
+            }
+
+            tango.UseAbility(happyKappaTree);
+            updateHandler.IsEnabled = false;
         }
     }
 }

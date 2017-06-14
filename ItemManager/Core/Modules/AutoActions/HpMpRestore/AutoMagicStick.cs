@@ -10,6 +10,8 @@
     using Ensage.Common.Extensions;
     using Ensage.SDK.Helpers;
 
+    using EventArgs;
+
     using Interfaces;
 
     using Menus;
@@ -35,14 +37,19 @@
             AbilityId = abilityId;
             Refresh();
 
-            UpdateManager.Subscribe(OnUpdate, 100);
+            if (this.menu.IsEnabled)
+            {
+                Entity.OnInt32PropertyChange += OnInt32PropertyChange;
+            }
+            this.menu.OnEnabledChange += MenuOnEnabledChange;
         }
 
         public AbilityId AbilityId { get; }
 
         public void Dispose()
         {
-            UpdateManager.Unsubscribe(OnUpdate);
+            menu.OnEnabledChange -= MenuOnEnabledChange;
+            Entity.OnInt32PropertyChange -= OnInt32PropertyChange;
         }
 
         public void Refresh()
@@ -50,24 +57,43 @@
             magicStick = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId) as MagicStick;
         }
 
-        private void OnUpdate()
+        private void MenuOnEnabledChange(object sender, BoolEventArgs boolEventArgs)
         {
-            if (Game.IsPaused || !manager.MyHero.CanUseItems() || !magicStick.CanBeCasted()
+            if (boolEventArgs.Enabled)
+            {
+                Entity.OnInt32PropertyChange += OnInt32PropertyChange;
+            }
+            else
+            {
+                Entity.OnInt32PropertyChange -= OnInt32PropertyChange;
+            }
+        }
+
+        private void OnInt32PropertyChange(Entity sender, Int32PropertyChangeEventArgs args)
+        {
+            if (sender.Handle != manager.MyHero.Handle || args.NewValue <= 0 || args.NewValue == args.OldValue
+                || args.PropertyName != "m_iHealth")
+            {
+                return;
+            }
+
+            if (!manager.MyHero.CanUseItems() || !magicStick.CanBeCasted()
                 || manager.MyHero.HasModifier(ModifierUtils.IceBlastDebuff))
             {
                 return;
             }
 
-            if (menu.EnemySearchRange > 0 && !ObjectManager.GetEntitiesParallel<Hero>()
-                    .Any(
-                        x => x.IsAlive && !x.IsIllusion && x.IsVisible && x.Team != manager.MyHero.Team
-                             && x.Distance2D(manager.MyHero.Position) <= menu.EnemySearchRange))
+            if (menu.EnemySearchRange > 0 && !EntityManager<Hero>.Entities.Any(
+                    x => x.IsAlive && !x.IsIllusion && x.IsVisible && x.Team != manager.MyHero.Team
+                         && x.Distance2D(manager.MyHero.Position) <= menu.EnemySearchRange))
             {
                 return;
             }
 
-            if (manager.MyHero.Health <= menu.HealthThreshold
-                || manager.MyHero.HealthPercentage <= menu.HealthThresholdPct)
+            var hp = args.NewValue;
+            var hpPercentage = (float)hp / manager.MyHero.Hero.MaximumHealth * 100;
+
+            if (hp <= menu.HealthThreshold || hpPercentage <= menu.HealthThresholdPct)
             {
                 magicStick.Use();
             }

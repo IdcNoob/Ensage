@@ -24,6 +24,15 @@
         {
             var menu = new Menu("Snatcher", "snatcher");
 
+            var enabled = new MenuItem("snatcherEnabled", "Enabled").SetValue(true);
+            menu.AddItem(enabled);
+            enabled.ValueChanged += (sender, args) =>
+                {
+                    IsEnabled = args.GetNewValue<bool>();
+                    OnEnabledChange?.Invoke(null, new BoolEventArgs(IsEnabled));
+                };
+            IsEnabled = enabled.IsActive();
+
             var holdKey = new MenuItem("holdSnatchKey", "Hold key").SetValue(new KeyBind('O', KeyBindType.Press));
             menu.AddItem(holdKey);
             holdKey.ValueChanged += (sender, args) => HoldKey = args.GetNewValue<KeyBind>().Active;
@@ -70,10 +79,14 @@
                 (sender, args) => ItemMoveCostThreshold = args.GetNewValue<Slider>().Value;
             ItemMoveCostThreshold = itemMoveCostThreshold.GetValue<Slider>().Value;
 
-            var updateRate = new MenuItem("snatcherUpdateRate", "Update rate").SetValue(new Slider(0, 0, 500));
+            var updateRate = new MenuItem("snatcherUpdateRate", "Update rate").SetValue(new Slider(1, 1, 500));
             updateRate.SetTooltip("Lower value => faster reaction, but requires more resources");
             menu.AddItem(updateRate);
-            updateRate.ValueChanged += (sender, args) => UpdateRate = args.GetNewValue<Slider>().Value;
+            updateRate.ValueChanged += (sender, args) =>
+                {
+                    UpdateRate = args.GetNewValue<Slider>().Value;
+                    OnUpdateRateChange?.Invoke(null, new IntEventArgs(UpdateRate));
+                };
             UpdateRate = updateRate.GetValue<Slider>().Value;
 
             SetEnabledItems(holdItems.GetValue<AbilityToggler>().Dictionary, EnabledHoldItems);
@@ -82,6 +95,10 @@
             mainMenu.AddSubMenu(menu);
         }
 
+        public event EventHandler<BoolEventArgs> OnEnabledChange;
+
+        public event EventHandler<IntEventArgs> OnUpdateRateChange;
+
         public event EventHandler<BoolEventArgs> OnUseOtherUnitsChange;
 
         public List<AbilityId> EnabledHoldItems { get; } = new List<AbilityId>();
@@ -89,6 +106,8 @@
         public List<AbilityId> EnabledToggleItems { get; } = new List<AbilityId>();
 
         public bool HoldKey { get; private set; }
+
+        public bool IsEnabled { get; private set; }
 
         public int ItemMoveCostThreshold { get; private set; }
 

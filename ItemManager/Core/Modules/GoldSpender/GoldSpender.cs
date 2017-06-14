@@ -10,6 +10,7 @@ namespace ItemManager.Core.Modules.GoldSpender
     using Ensage.Common;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Handlers;
     using Ensage.SDK.Helpers;
 
     using EventArgs;
@@ -22,8 +23,6 @@ namespace ItemManager.Core.Modules.GoldSpender
     [Module]
     internal class GoldSpender : IDisposable
     {
-        private readonly List<Courier> couriers = new List<Courier>();
-
         private readonly List<Ability> invisAbilities = new List<Ability>();
 
         private readonly Manager manager;
@@ -32,15 +31,21 @@ namespace ItemManager.Core.Modules.GoldSpender
 
         private readonly Sleeper sleeper = new Sleeper();
 
+        private readonly IUpdateHandler updateHandler;
+
         public GoldSpender(Manager manager, MenuManager menu)
         {
             this.manager = manager;
             this.menu = menu.GoldSpenderMenu;
 
-            UpdateManager.Subscribe(OnUpdate, 100);
-            manager.OnUnitAdd += OnUnitAdd;
+            updateHandler = UpdateManager.Subscribe(OnUpdate, 200, this.menu.IsEnabled);
             manager.OnAbilityAdd += OnAbilityAdd;
             manager.OnAbilityRemove += OnAbilityRemove;
+            if (this.menu.IsEnabled)
+            {
+                Entity.OnInt32PropertyChange += OnInt32PropertyChange;
+            }
+            this.menu.OnEnabledChange += MenuOnEnabledChange;
         }
 
         public void BuyItems()
@@ -64,7 +69,9 @@ namespace ItemManager.Core.Modules.GoldSpender
             int unreliableGold, reliableGold;
             GetAvailableGold(menu.SaveForBuyback, out reliableGold, out unreliableGold);
 
-            var courier = couriers.FirstOrDefault(x => x.IsValid && x.IsAlive);
+            var courier =
+                EntityManager<Courier>.Entities.FirstOrDefault(
+                    x => x.IsValid && x.IsAlive && x.Team == manager.MyHero.Team);
 
             foreach (var item in enabledItems)
             {
@@ -150,13 +157,11 @@ namespace ItemManager.Core.Modules.GoldSpender
 
         public void Dispose()
         {
+            menu.OnEnabledChange -= MenuOnEnabledChange;
+            Entity.OnInt32PropertyChange -= OnInt32PropertyChange;
             UpdateManager.Unsubscribe(OnUpdate);
-            manager.OnUnitAdd -= OnUnitAdd;
             manager.OnAbilityAdd -= OnAbilityAdd;
             manager.OnAbilityRemove -= OnAbilityRemove;
-
-            couriers.Clear();
-            invisAbilities.Clear();
         }
 
         private void GetAvailableGold(float time, out int reliable, out int unreliable)
@@ -198,6 +203,20 @@ namespace ItemManager.Core.Modules.GoldSpender
                       + manager.MyHero.Items.Sum(x => (int)x.Cost)) / 40);
         }
 
+        private void MenuOnEnabledChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (boolEventArgs.Enabled)
+            {
+                Entity.OnInt32PropertyChange += OnInt32PropertyChange;
+                updateHandler.IsEnabled = true;
+            }
+            else
+            {
+                Entity.OnInt32PropertyChange -= OnInt32PropertyChange;
+                updateHandler.IsEnabled = false;
+            }
+        }
+
         private void OnAbilityAdd(object sender, AbilityEventArgs abilityEventArgs)
         {
             if (!abilityEventArgs.Ability.IsInvis())
@@ -224,39 +243,36 @@ namespace ItemManager.Core.Modules.GoldSpender
             invisAbilities.Remove(abilityEventArgs.Ability);
         }
 
-        private void OnUnitAdd(object sender, UnitEventArgs unitEventArgs)
+        private void OnInt32PropertyChange(Entity sender, Int32PropertyChangeEventArgs args)
         {
-            var courier = unitEventArgs.Unit as Courier;
-            if (courier != null && courier.Team == manager.MyHero.Team)
-            {
-                couriers.Add(courier);
-            }
-        }
-
-        private void OnUpdate()
-        {
-            if (sleeper.Sleeping || !menu.SpendGold || Game.IsPaused || !manager.MyHero.IsAlive)
+            if (sender.Handle != manager.MyHero.Handle || args.NewValue <= 0 || args.NewValue == args.OldValue
+                || args.PropertyName != "m_iHealth" || sleeper.Sleeping)
             {
                 return;
             }
 
-            if (!Utils.SleepCheck("GoldSpender.ForceSpend"))
-            {
-                BuyItems();
-                return;
-            }
+            var hp = args.NewValue;
+            var hpPercentage = (float)hp / manager.MyHero.Hero.MaximumHealth * 100;
 
-            if (manager.MyHero.Health > menu.HpThreshold && manager.MyHero.HealthPercentage > menu.HpThresholdPct)
+            if (hp > menu.HpThreshold && hpPercentage > menu.HpThresholdPct)
             {
                 return;
             }
 
             var distance = menu.EnemyDistance;
-            if (distance <= 0 || ObjectManager.GetEntitiesParallel<Hero>()
-                    .Any(
-                        x => x.IsValid && x.Team == manager.MyHero.EnemyTeam && !x.IsIllusion && x.IsAlive
-                             && x.Distance2D(manager.MyHero.Position) <= distance))
+            if (distance <= 0 || !EntityManager<Hero>.Entities.Any(
+                    x => x.IsValid && x.Team == manager.MyHero.EnemyTeam && !x.IsIllusion && x.IsAlive
+                         && x.Distance2D(manager.MyHero.Position) <= distance))
             {
+                BuyItems();
+            }
+        }
+
+        private void OnUpdate()
+        {
+            if (!sleeper.Sleeping && !Utils.SleepCheck("GoldSpender.ForceSpend"))
+            {
+                // Evader force spend
                 BuyItems();
             }
         }

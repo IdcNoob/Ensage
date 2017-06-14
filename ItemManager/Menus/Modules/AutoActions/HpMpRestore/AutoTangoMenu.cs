@@ -1,6 +1,10 @@
 ﻿namespace ItemManager.Menus.Modules.AutoActions.HpMpRestore
 {
+    using System;
+
     using Ensage.Common.Menu;
+
+    using EventArgs;
 
     internal class AutoTangoMenu
     {
@@ -11,7 +15,11 @@
             var enabled = new MenuItem("tangoEnabled", "Enabled").SetValue(true);
             enabled.SetTooltip("Auto use tango on happy little tree");
             menu.AddItem(enabled);
-            enabled.ValueChanged += (sender, args) => IsEnabled = args.GetNewValue<bool>();
+            enabled.ValueChanged += (sender, args) =>
+                {
+                    IsEnabled = args.GetNewValue<bool>();
+                    OnEnabledChange?.Invoke(null, new BoolEventArgs(IsEnabled));
+                };
             IsEnabled = enabled.IsActive();
 
             var missingHp = new MenuItem("tangoMissingHp", "Health threshold").SetValue(new Slider(150, 50, 250));
@@ -22,6 +30,8 @@
 
             mainMenu.AddSubMenu(menu);
         }
+
+        public event EventHandler<BoolEventArgs> OnEnabledChange;
 
         public int HealthThreshold { get; private set; }
 

@@ -45,15 +45,12 @@
 
         public MyHero MyHero { get; }
 
-        public List<Unit> Units { get; } = new List<Unit>();
-
         public void Dispose()
         {
             ObjectManager.OnAddEntity -= OnAddEntity;
             ObjectManager.OnRemoveEntity -= OnRemoveEntity;
 
             MyHero.Dispose();
-            Units.Clear();
             types.Clear();
         }
 
@@ -84,9 +81,17 @@
             }
 
             foreach (var unit in ObjectManager.GetEntitiesParallel<Unit>()
-                .Where(x => !added.Contains(x.Handle) && x.IsValid))
+                .Where(x => x.IsValid && !added.Contains(x.Handle)))
             {
                 OnAddEntity(new EntityEventArgs(unit));
+                added.Add(unit.Handle);
+            }
+
+            foreach (var physicalItem in ObjectManager.GetEntitiesParallel<PhysicalItem>()
+                .Where(x => x.IsValid && !added.Contains(x.Handle) && !added.Contains(x.Item.Handle)))
+            {
+                OnAddEntity(new EntityEventArgs(physicalItem.Item));
+                added.Add(physicalItem.Item.Handle);
             }
 
             ObjectManager.OnAddEntity += OnAddEntity;
@@ -131,7 +136,6 @@
             var unit = args.Entity as Unit;
             if (unit != null && unit.IsValid && unit.IsRealUnit())
             {
-                Units.Add(unit);
                 OnUnitAdd?.Invoke(null, new UnitEventArgs(unit));
             }
         }
@@ -178,7 +182,6 @@
             var unit = args.Entity as Unit;
             if (unit != null && unit.IsValid && unit.IsRealUnit())
             {
-                Units.Remove(unit);
                 OnUnitRemove?.Invoke(null, new UnitEventArgs(unit));
             }
         }

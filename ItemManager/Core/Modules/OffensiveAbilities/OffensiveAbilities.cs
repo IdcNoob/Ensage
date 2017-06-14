@@ -9,7 +9,6 @@
     using Attributes;
 
     using Ensage;
-    using Ensage.Common;
     using Ensage.Common.Objects;
     using Ensage.Common.Objects.UtilityObjects;
     using Ensage.SDK.Extensions;
@@ -161,8 +160,7 @@
                     return;
                 }
 
-                DelayAction.Add(
-                    offensiveAbility.Menu.Delay,
+                UpdateManager.BeginInvoke(
                     () =>
                         {
                             if (!offensiveAbility.CanBeCasted() || !offensiveAbility.CanBeCasted(target))
@@ -171,7 +169,8 @@
                             }
 
                             offensiveAbility.Use(target);
-                        });
+                        },
+                    offensiveAbility.Menu.Delay);
 
                 sleeper.Sleep(Math.Max(500, offensiveAbility.Menu.Delay), target);
             }

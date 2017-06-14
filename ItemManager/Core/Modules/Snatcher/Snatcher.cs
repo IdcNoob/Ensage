@@ -10,12 +10,15 @@
 
     using Ensage;
     using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Handlers;
     using Ensage.SDK.Helpers;
 
     using EventArgs;
 
     using Menus;
     using Menus.Modules.Snatcher;
+
+    using Utils;
 
     using Hero = Controllables.Hero;
 
@@ -32,6 +35,8 @@
 
         private readonly MultiSleeper sleeper = new MultiSleeper();
 
+        private readonly IUpdateHandler updateHandler;
+
         public Snatcher(Manager manager, MenuManager menu)
         {
             this.manager = manager;
@@ -47,26 +52,29 @@
                 manager.OnUnitAdd += OnUnitAdd;
             }
 
-            UpdateManager.Subscribe(OnUpdate);
+            updateHandler = UpdateManager.Subscribe(OnUpdate, this.menu.UpdateRate, this.menu.IsEnabled);
             Player.OnExecuteOrder += OnExecuteOrder;
-            this.menu.OnUseOtherUnitsChange += OnUseOtherUnitsChange;
+            this.menu.OnUseOtherUnitsChange += MenuOnUseOtherUnitsChange;
+            this.menu.OnUpdateRateChange += MenuOnUpdateRateChange;
+            this.menu.OnEnabledChange += MenuOnEnabledChange;
         }
 
         public void Dispose()
         {
+            menu.OnEnabledChange -= MenuOnEnabledChange;
+            menu.OnUseOtherUnitsChange -= MenuOnUseOtherUnitsChange;
+            menu.OnUpdateRateChange -= MenuOnUpdateRateChange;
             UpdateManager.Unsubscribe(OnUpdate);
             Player.OnExecuteOrder -= OnExecuteOrder;
-            menu.OnUseOtherUnitsChange -= OnUseOtherUnitsChange;
             manager.OnUnitAdd -= OnUnitAdd;
             manager.OnUnitRemove -= OnUnitRemove;
-
-            controllables.Clear();
-            ignoredItems.Clear();
         }
 
         private void AddOtherUnits()
         {
-            var controllableUnits = manager.Units.Where(x => x.IsValid && x.IsControllable && !x.IsIllusion).ToList();
+            var controllableUnits = EntityManager<Unit>.Entities
+                .Where(x => x.IsValid && x.Team == manager.MyHero.Team && x.IsControllable && !x.IsIllusion)
+                .ToList();
 
             var spiritBear = controllableUnits.FirstOrDefault(x => x.ClassId == ClassId.CDOTA_Unit_SpiritBear);
             if (spiritBear != null)
@@ -78,6 +86,32 @@
                 x => x.ClassId == ClassId.CDOTA_Unit_Hero_Meepo && x.Handle != manager.MyHero.Handle))
             {
                 controllables.Add(new MeepoClone(meepo));
+            }
+        }
+
+        private void MenuOnEnabledChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            updateHandler.IsEnabled = boolEventArgs.Enabled;
+        }
+
+        private void MenuOnUpdateRateChange(object sender, IntEventArgs intEventArgs)
+        {
+            updateHandler.SetUpdateRate(intEventArgs.Time);
+        }
+
+        private void MenuOnUseOtherUnitsChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (boolEventArgs.Enabled)
+            {
+                AddOtherUnits();
+                manager.OnUnitAdd += OnUnitAdd;
+                manager.OnUnitRemove += OnUnitRemove;
+            }
+            else
+            {
+                controllables.RemoveAll(x => x.Handle != manager.MyHero.Handle);
+                manager.OnUnitAdd -= OnUnitAdd;
+                manager.OnUnitRemove -= OnUnitRemove;
             }
         }
 
@@ -136,18 +170,17 @@
 
         private void OnUpdate()
         {
-            if (sleeper.Sleeping(this) || Game.IsPaused)
+            if (Game.IsPaused)
             {
                 return;
             }
-
-            sleeper.Sleep(menu.UpdateRate, this);
 
             var validControllables = controllables.Where(x => x.IsValid()).ToList();
 
             if (menu.ToggleKey && menu.EnabledToggleItems.Contains(0)
                 || menu.HoldKey && menu.EnabledHoldItems.Contains(0))
             {
+                //var runes = EntityManager<Rune>.Entities
                 var runes = ObjectManager.GetEntitiesParallel<Rune>()
                     .Where(x => !sleeper.Sleeping(x.Handle) && x.IsVisible);
 
@@ -165,11 +198,10 @@
                 }
             }
 
-            var items = ObjectManager.GetEntitiesParallel<PhysicalItem>()
-                .Where(
-                    x => x.IsVisible && !ignoredItems.Contains(x.Item.Handle) && !sleeper.Sleeping(x.Handle)
-                         && (menu.ToggleKey && menu.EnabledToggleItems.Contains(x.Item.Id)
-                             || menu.HoldKey && menu.EnabledHoldItems.Contains(x.Item.Id)));
+            var items = EntityManager<PhysicalItem>.Entities.Where(
+                x => x.IsVisible && !ignoredItems.Contains(x.Item.Handle) && !sleeper.Sleeping(x.Handle)
+                     && (menu.ToggleKey && menu.EnabledToggleItems.Contains(x.Item.Id)
+                         || menu.HoldKey && menu.EnabledHoldItems.Contains(x.Item.Id)));
 
             foreach (var item in items)
             {
@@ -182,22 +214,6 @@
                         break;
                     }
                 }
-            }
-        }
-
-        private void OnUseOtherUnitsChange(object sender, BoolEventArgs boolEventArgs)
-        {
-            if (boolEventArgs.Enabled)
-            {
-                AddOtherUnits();
-                manager.OnUnitAdd += OnUnitAdd;
-                manager.OnUnitRemove += OnUnitRemove;
-            }
-            else
-            {
-                controllables.RemoveAll(x => x.Handle != manager.MyHero.Handle);
-                manager.OnUnitAdd -= OnUnitAdd;
-                manager.OnUnitRemove -= OnUnitRemove;
             }
         }
     }

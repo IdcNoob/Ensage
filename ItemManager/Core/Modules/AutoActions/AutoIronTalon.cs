@@ -8,7 +8,10 @@
 
     using Ensage;
     using Ensage.Common.Extensions;
+    using Ensage.SDK.Handlers;
     using Ensage.SDK.Helpers;
+
+    using EventArgs;
 
     using Interfaces;
 
@@ -22,6 +25,8 @@
 
         private readonly IronTalonMenu menu;
 
+        private readonly IUpdateHandler updateHandler;
+
         private IronTalon ironTalon;
 
         public AutoIronTalon(Manager manager, MenuManager menu, AbilityId abilityId)
@@ -32,13 +37,15 @@
             AbilityId = abilityId;
             Refresh();
 
-            UpdateManager.Subscribe(OnUpdate, 500);
+            updateHandler = UpdateManager.Subscribe(OnUpdate, 500, this.menu.IsEnabled);
+            this.menu.OnEnabledChange += MenuOnEnabledChange;
         }
 
         public AbilityId AbilityId { get; }
 
         public void Dispose()
         {
+            menu.OnEnabledChange -= MenuOnEnabledChange;
             UpdateManager.Unsubscribe(OnUpdate);
         }
 
@@ -47,15 +54,19 @@
             ironTalon = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId) as IronTalon;
         }
 
+        private void MenuOnEnabledChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            updateHandler.IsEnabled = boolEventArgs.Enabled;
+        }
+
         private void OnUpdate()
         {
-            if (!menu.IsEnabled || !manager.MyHero.CanUseItems() || !ironTalon.CanBeCasted() || Game.IsPaused)
+            if (Game.IsPaused || !manager.MyHero.CanUseItems() || !ironTalon.CanBeCasted())
             {
                 return;
             }
 
-            var creep = ObjectManager.GetEntitiesParallel<Creep>()
-                .Where(
+            var creep = EntityManager<Creep>.Entities.Where(
                     x => x.IsValid && x.IsAlive && x.IsSpawned && x.IsVisible
                          && x.Distance2D(manager.MyHero.Position) <= ironTalon.GetCastRange()
                          && x.Team != manager.MyHero.Team && !x.IsAncient

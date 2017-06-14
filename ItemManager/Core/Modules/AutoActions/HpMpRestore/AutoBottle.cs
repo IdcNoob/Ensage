@@ -9,7 +9,10 @@
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Handlers;
     using Ensage.SDK.Helpers;
+
+    using EventArgs;
 
     using Interfaces;
 
@@ -34,6 +37,8 @@
 
         private readonly MultiSleeper sleeper = new MultiSleeper();
 
+        private readonly IUpdateHandler updateHandler;
+
         private Bottle bottle;
 
         public AutoBottle(Manager manager, MenuManager menu, AbilityId abilityId)
@@ -49,8 +54,12 @@
             AbilityId = abilityId;
             Refresh();
 
-            UpdateManager.Subscribe(OnUpdate, 300);
-            Player.OnExecuteOrder += OnExecuteOrder;
+            updateHandler = UpdateManager.Subscribe(OnUpdate, 300, this.menu.IsEnabled);
+            if (this.menu.IsEnabled)
+            {
+                Player.OnExecuteOrder += OnExecuteOrder;
+            }
+            this.menu.OnEnabledChange += MenuOnEnabledChange;
         }
 
         public AbilityId AbilityId { get; }
@@ -78,6 +87,7 @@
 
         public void Dispose()
         {
+            menu.OnEnabledChange -= MenuOnEnabledChange;
             UpdateManager.Unsubscribe(OnUpdate);
             Player.OnExecuteOrder -= OnExecuteOrder;
         }
@@ -85,6 +95,20 @@
         public void Refresh()
         {
             bottle = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId) as Bottle;
+        }
+
+        private void MenuOnEnabledChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (boolEventArgs.Enabled)
+            {
+                Player.OnExecuteOrder += OnExecuteOrder;
+                updateHandler.IsEnabled = true;
+            }
+            else
+            {
+                Player.OnExecuteOrder -= OnExecuteOrder;
+                updateHandler.IsEnabled = false;
+            }
         }
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
@@ -111,8 +135,8 @@
 
         private void OnUpdate()
         {
-            if (Game.IsPaused || recoveryMenu.IsActive || !manager.MyHero.CanUseItems() || !bottle.CanBeAutoCasted()
-                || !BottleCanBeRefilled())
+            if (Game.IsPaused || recoveryMenu.IsActive || !bottle.CanBeAutoCasted() || !BottleCanBeRefilled()
+                || !manager.MyHero.CanUseItems())
             {
                 return;
             }
@@ -120,10 +144,10 @@
             var useOnAllies = menu.AutoAllyBottle;
             var useOnSelf = menu.AutoSelfBottle;
 
-            var bottleTarget = ObjectManager.GetEntitiesParallel<Hero>()
+            var bottleTarget = EntityManager<Hero>.Entities
                 .Where(
-                    x => !x.IsIllusion && x.Distance2D(manager.MyHero.Position) <= bottle.GetCastRange() && x.IsAlive
-                         && x.Team == manager.MyHero.Team && !x.IsInvul())
+                    x => x.IsValid && x.IsAlive && x.Team == manager.MyHero.Team && !x.IsIllusion
+                         && x.Distance2D(manager.MyHero.Position) <= bottle.GetCastRange() && !x.IsInvul())
                 .OrderBy(x => x.FindModifier(ModifierUtils.BottleRegeneration)?.RemainingTime)
                 .FirstOrDefault(
                     x => (useOnAllies && x.Handle != manager.MyHero.Handle

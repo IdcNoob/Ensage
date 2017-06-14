@@ -10,6 +10,8 @@
     using Ensage;
     using Ensage.Common.Extensions;
 
+    using EventArgs;
+
     using Interfaces;
 
     using Menus;
@@ -32,13 +34,18 @@
             AbilityId = abilityId;
             Refresh();
 
-            Player.OnExecuteOrder += OnExecuteOrder;
+            if (this.menu.IsEnabled)
+            {
+                Player.OnExecuteOrder += OnExecuteOrder;
+            }
+            this.menu.OnEnabledChange += MenuOnEnabledChange;
         }
 
         public AbilityId AbilityId { get; }
 
         public void Dispose()
         {
+            menu.OnEnabledChange -= MenuOnEnabledChange;
             Player.OnExecuteOrder -= OnExecuteOrder;
         }
 
@@ -47,9 +54,21 @@
             phaseBoots = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_phase_boots);
         }
 
+        private void MenuOnEnabledChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (boolEventArgs.Enabled)
+            {
+                Player.OnExecuteOrder += OnExecuteOrder;
+            }
+            else
+            {
+                Player.OnExecuteOrder -= OnExecuteOrder;
+            }
+        }
+
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!menu.IsEnabled || !args.Entities.Contains(manager.MyHero.Hero) || args.IsQueued || !args.Process)
+            if (!args.Entities.Contains(manager.MyHero.Hero) || args.IsQueued || !args.Process)
             {
                 return;
             }

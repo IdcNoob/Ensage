@@ -9,7 +9,6 @@
     using Attributes;
 
     using Ensage;
-    using Ensage.Common;
     using Ensage.Common.Objects.UtilityObjects;
     using Ensage.SDK.Extensions;
     using Ensage.SDK.Handlers;
@@ -128,8 +127,7 @@
                 if (enemies.Count(x => x.Distance2D(manager.MyHero.Position) <= defensiveAbility.Menu.Range)
                     >= defensiveAbility.Menu.EnemyCount)
                 {
-                    DelayAction.Add(
-                        defensiveAbility.Menu.Delay,
+                    UpdateManager.BeginInvoke(
                         () =>
                             {
                                 if (!defensiveAbility.CanBeCasted())
@@ -138,7 +136,9 @@
                                 }
 
                                 defensiveAbility.Use();
-                            });
+                            },
+                        defensiveAbility.Menu.Delay);
+
                     sleeper.Sleep(defensiveAbility.Menu.Delay + 100);
                     return;
                 }

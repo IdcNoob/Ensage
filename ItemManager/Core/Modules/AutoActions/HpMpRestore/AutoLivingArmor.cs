@@ -8,7 +8,10 @@
 
     using Ensage;
     using Ensage.Common.Extensions;
+    using Ensage.SDK.Handlers;
     using Ensage.SDK.Helpers;
+
+    using EventArgs;
 
     using Interfaces;
 
@@ -24,6 +27,8 @@
 
         private readonly LivingArmorMenu menu;
 
+        private readonly IUpdateHandler updateHandler;
+
         private UsableAbility livingArmor;
 
         public AutoLivingArmor(Manager manager, MenuManager menu, AbilityId abilityId)
@@ -34,13 +39,15 @@
             AbilityId = abilityId;
             Refresh();
 
-            UpdateManager.Subscribe(OnUpdate, 300);
+            updateHandler = UpdateManager.Subscribe(OnUpdate, 300, this.menu.IsEnabled);
+            this.menu.OnEnabledChange += MenuOnEnabledChange;
         }
 
         public AbilityId AbilityId { get; }
 
         public void Dispose()
         {
+            menu.OnEnabledChange -= MenuOnEnabledChange;
             UpdateManager.Unsubscribe(OnUpdate);
         }
 
@@ -49,16 +56,21 @@
             livingArmor = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId);
         }
 
+        private void MenuOnEnabledChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            updateHandler.IsEnabled = boolEventArgs.Enabled;
+        }
+
         private void OnUpdate()
         {
-            if (!menu.IsEnabled || !manager.MyHero.CanUseAbilities() || !livingArmor.CanBeCasted() || Game.IsPaused)
+            if (Game.IsPaused || !livingArmor.CanBeCasted() || !manager.MyHero.CanUseAbilities())
             {
                 return;
             }
 
             if (menu.IsEnabledHero)
             {
-                var hero = manager.Units.OfType<Hero>()
+                var hero = EntityManager<Hero>.Entities
                     .Where(
                         x => x.IsValid && x.IsAlive && x.Team == manager.MyHero.Team
                              && (!menu.IgnoreSelf || x.Handle != manager.MyHero.Handle) && !x.IsIllusion && !x.IsInvul()
@@ -68,11 +80,10 @@
 
                 if (hero != null)
                 {
-                    if (menu.HeroEnemySearchRange <= 0 || ObjectManager.GetEntitiesParallel<Hero>()
-                            .Any(
-                                x => x.IsAlive && !x.IsIllusion && x.IsVisible && x.Team != manager.MyHero.Team
-                                     && x.Distance2D(hero) <= menu.HeroEnemySearchRange
-                                     && !x.HasModifier(ModifierUtils.LivingArmorModifier)))
+                    if (menu.HeroEnemySearchRange <= 0 || EntityManager<Hero>.Entities.Any(
+                            x => x.IsAlive && !x.IsIllusion && x.IsVisible && x.Team != manager.MyHero.Team
+                                 && x.Distance2D(hero) <= menu.HeroEnemySearchRange
+                                 && !x.HasModifier(ModifierUtils.LivingArmorModifier)))
                     {
                         PrintMessage(hero);
                         livingArmor.Use(hero);
@@ -83,7 +94,7 @@
 
             if (menu.IsEnabledTower)
             {
-                var tower = manager.Units.OfType<Tower>()
+                var tower = EntityManager<Tower>.Entities
                     .Where(
                         x => x.IsValid && x.IsAlive && x.Team == manager.MyHero.Team
                              && !x.HasModifier(ModifierUtils.LivingArmorModifier))
@@ -102,7 +113,7 @@
             {
                 if (menu.IsEnabledCreepUnderTower)
                 {
-                    var creep = manager.Units.OfType<Tower>()
+                    var creep = EntityManager<Tower>.Entities
                         .Where(x => x.IsValid && x.IsAlive && x.Team != manager.MyHero.Team)
                         .Select(x => x.AttackTarget)
                         .Where(
@@ -119,7 +130,7 @@
                     }
                 }
 
-                var lowHpCreep = manager.Units.OfType<Creep>()
+                var lowHpCreep = EntityManager<Creep>.Entities
                     .Where(
                         x => x.IsValid && x.IsAlive && x.IsSpawned && x.Team == manager.MyHero.Team && !x.IsInvul()
                              && !x.HasModifier(ModifierUtils.LivingArmorModifier))
@@ -136,7 +147,7 @@
 
             if (menu.IsEnabledBarracks)
             {
-                var rax = manager.Units.OfType<Building>()
+                var rax = EntityManager<Building>.Entities
                     .Where(
                         x => x.IsValid && x.UnitType == 80 && x.IsAlive && x.Team == manager.MyHero.Team
                              && !x.HasModifier(ModifierUtils.LivingArmorModifier))

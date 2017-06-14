@@ -47,7 +47,8 @@
         public virtual bool CanBeCasted()
         {
             return !IsSleeping && Ability.IsValid && Ability.CanBeCasted()
-                   && (!IsItem || Manager.MyHero.GetItems(ItemStoredPlace.Inventory).Any(x => x.Handle == Handle));
+                   && (!IsItem || Manager.MyHero.GetItems(ItemStoredPlace.Inventory).Any(x => x.Handle == Handle)
+                       && ((Item)Ability).IsEnabled);
         }
 
         public void ChangeName(string name)

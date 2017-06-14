@@ -9,6 +9,7 @@
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Handlers;
     using Ensage.SDK.Helpers;
 
     using EventArgs;
@@ -38,6 +39,8 @@
             AbilityId.item_bfury
         };
 
+        private IUpdateHandler updateHandler;
+
         public TechiesMinesDestroyer(Manager manager, MenuManager menu)
         {
             this.manager = manager;
@@ -48,13 +51,41 @@
                 .Value;
 
             manager.OnUnitAdd += OnUnitAdd;
+            this.menu.OnEnabledChange += MenuOnEnabledChange;
+            this.menu.OnUpdateRateChange += MenuOnUpdateRateChange;
         }
 
         public void Dispose()
         {
+            menu.OnEnabledChange -= MenuOnEnabledChange;
+            menu.OnUpdateRateChange -= MenuOnUpdateRateChange;
             manager.OnUnitAdd -= OnUnitAdd;
             UpdateManager.Unsubscribe(OnUpdate);
             Player.OnExecuteOrder -= OnExecuteOrder;
+        }
+
+        private void MenuOnEnabledChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (updateHandler == null)
+            {
+                return;
+            }
+
+            if (boolEventArgs.Enabled)
+            {
+                updateHandler.IsEnabled = true;
+                Player.OnExecuteOrder += OnExecuteOrder;
+            }
+            else
+            {
+                updateHandler.IsEnabled = false;
+                Player.OnExecuteOrder -= OnExecuteOrder;
+            }
+        }
+
+        private void MenuOnUpdateRateChange(object sender, IntEventArgs intEventArgs)
+        {
+            updateHandler?.SetUpdateRate(intEventArgs.Time);
         }
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
@@ -71,27 +102,22 @@
         {
             var hero = unitEventArgs.Unit as Hero;
             if (hero != null && (hero.HeroId == HeroId.npc_dota_hero_techies && hero.Team != manager.MyHero.Team
-                                 || hero.HeroId == HeroId.npc_dota_hero_rubick && manager.Units.OfType<Hero>()
-                                     .Any(
-                                         x => x.IsValid && x.HeroId == HeroId.npc_dota_hero_techies
-                                              && x.Team == manager.MyHero.Team)))
+                                 || hero.HeroId == HeroId.npc_dota_hero_rubick && EntityManager<Hero>.Entities.Any(
+                                     x => x.IsValid && x.HeroId == HeroId.npc_dota_hero_techies
+                                          && x.Team == manager.MyHero.Team)))
             {
                 manager.OnUnitAdd -= OnUnitAdd;
-                UpdateManager.Subscribe(OnUpdate);
-                Player.OnExecuteOrder += OnExecuteOrder;
+                updateHandler = UpdateManager.Subscribe(OnUpdate, menu.UpdateRate, menu.IsEnabled);
+                if (menu.IsEnabled)
+                {
+                    Player.OnExecuteOrder += OnExecuteOrder;
+                }
             }
         }
 
         private void OnUpdate()
         {
-            if (sleeper.Sleeping || Game.IsPaused)
-            {
-                return;
-            }
-
-            sleeper.Sleep(menu.UpdateRate);
-
-            if (!menu.DestroyMines)
+            if (Game.IsPaused)
             {
                 return;
             }
@@ -104,7 +130,7 @@
                 return;
             }
 
-            var techiesMines = ObjectManager.GetEntitiesParallel<Unit>()
+            var techiesMines = EntityManager<Unit>.Entities
                 .Where(
                     x => x.IsValid && x.IsTechiesMine() && !x.IsInvul() && x.IsAlive && x.Team != manager.MyHero.Team
                          && x.Distance2D(manager.MyHero.Position) <= 1000)

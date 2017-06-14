@@ -13,6 +13,7 @@
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects;
     using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Handlers;
     using Ensage.SDK.Helpers;
 
     using EventArgs;
@@ -42,6 +43,8 @@
 
         private readonly MultiSleeper sleeper = new MultiSleeper();
 
+        private readonly IUpdateHandler updateHandler;
+
         private PowerTreads powerTreads;
 
         public PowerTreadsSwitcher(Manager manager, MenuManager menu, AbilityId abilityId)
@@ -61,24 +64,27 @@
 
             manager.OnAbilityAdd += OnAbilityAdd;
             manager.OnAbilityRemove += OnAbilityRemove;
-            Player.OnExecuteOrder += OnExecuteOrder;
-            UpdateManager.Subscribe(OnUpdate, 100);
-            Unit.OnModifierAdded += OnModifierAdded;
-            Unit.OnModifierRemoved += OnModifierRemoved;
+            updateHandler = UpdateManager.Subscribe(OnUpdate, 100, this.menu.IsEnabled);
+            if (this.menu.IsEnabled)
+            {
+                Unit.OnModifierAdded += OnModifierAdded;
+                Unit.OnModifierRemoved += OnModifierRemoved;
+                Player.OnExecuteOrder += OnExecuteOrder;
+            }
+            this.menu.OnEnabledChange += MenuOnEnabledChange;
         }
 
         public AbilityId AbilityId { get; }
 
         public void Dispose()
         {
+            menu.OnEnabledChange -= MenuOnEnabledChange;
             Player.OnExecuteOrder -= OnExecuteOrder;
-            UpdateManager.Unsubscribe(OnUpdate);
             Unit.OnModifierAdded -= OnModifierAdded;
             Unit.OnModifierRemoved -= OnModifierRemoved;
+            UpdateManager.Unsubscribe(OnUpdate);
             manager.OnAbilityAdd -= OnAbilityAdd;
             manager.OnAbilityRemove -= OnAbilityRemove;
-
-            activeDelaySwitchModifiers.Clear();
         }
 
         public void Refresh()
@@ -109,6 +115,24 @@
             }
 
             return switchAttribute;
+        }
+
+        private void MenuOnEnabledChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (boolEventArgs.Enabled)
+            {
+                Unit.OnModifierAdded += OnModifierAdded;
+                Unit.OnModifierRemoved += OnModifierRemoved;
+                Player.OnExecuteOrder += OnExecuteOrder;
+                updateHandler.IsEnabled = true;
+            }
+            else
+            {
+                Player.OnExecuteOrder -= OnExecuteOrder;
+                Unit.OnModifierAdded -= OnModifierAdded;
+                Unit.OnModifierRemoved -= OnModifierRemoved;
+                updateHandler.IsEnabled = false;
+            }
         }
 
         private void OnAbilityAdd(object sender, AbilityEventArgs abilityEventArgs)
@@ -323,9 +347,8 @@
 
             sleeper.Sleep(200, this);
 
-            if (!menu.IsEnabled || sleeper.Sleeping(AbilityId) || !powerTreads.CanBeCasted()
-                || !manager.MyHero.CanUseItems() || powerTreads.ActiveAttribute == powerTreads.DefaultAttribute
-                || activeDelaySwitchModifiers.Any())
+            if (sleeper.Sleeping(AbilityId) || !powerTreads.CanBeCasted() || !manager.MyHero.CanUseItems()
+                || powerTreads.ActiveAttribute == powerTreads.DefaultAttribute || activeDelaySwitchModifiers.Any())
             {
                 return;
             }

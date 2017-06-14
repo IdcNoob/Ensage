@@ -1,8 +1,11 @@
 ﻿namespace ItemManager.Menus.Modules.AutoActions.Actions
 {
+    using System;
     using System.Collections.Generic;
 
     using Ensage.Common.Menu;
+
+    using EventArgs;
 
     internal class SoulRingMenu
     {
@@ -15,7 +18,11 @@
             var enabled = new MenuItem("autoSoulRing", "Enabled").SetValue(true);
             enabled.SetTooltip("Auto soul ring when using abilities");
             menu.AddItem(enabled);
-            enabled.ValueChanged += (sender, args) => IsEnabled = args.GetNewValue<bool>();
+            enabled.ValueChanged += (sender, args) =>
+                {
+                    IsEnabled = args.GetNewValue<bool>();
+                    OnEnabledChange?.Invoke(null, new BoolEventArgs(IsEnabled));
+                };
             IsEnabled = enabled.IsActive();
 
             var universal = new MenuItem("srUniversalUse", "Universal use").SetValue(true);
@@ -50,6 +57,8 @@
 
             mainMenu.AddSubMenu(menu);
         }
+
+        public event EventHandler<BoolEventArgs> OnEnabledChange;
 
         public int HpThreshold { get; private set; }
 

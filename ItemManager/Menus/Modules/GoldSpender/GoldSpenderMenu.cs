@@ -1,10 +1,13 @@
 ﻿namespace ItemManager.Menus.Modules.GoldSpender
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
     using Ensage;
     using Ensage.Common.Menu;
+
+    using EventArgs;
 
     internal class GoldSpenderMenu
     {
@@ -19,8 +22,12 @@
             var enabled = new MenuItem("spendGold", "Enabled").SetValue(true);
             enabled.SetTooltip("Buy items when you are about to die");
             menu.AddItem(enabled);
-            enabled.ValueChanged += (sender, args) => SpendGold = args.GetNewValue<bool>();
-            SpendGold = enabled.IsActive();
+            enabled.ValueChanged += (sender, args) =>
+                {
+                    IsEnabled = args.GetNewValue<bool>();
+                    OnEnabledChange?.Invoke(null, new BoolEventArgs(IsEnabled));
+                };
+            IsEnabled = enabled.IsActive();
 
             var hpThreshold = new MenuItem("goldSpenderHpThreshold", "HP threshold").SetValue(new Slider(150, 1, 500));
             hpThreshold.SetTooltip("Buy items if you have less HP");
@@ -59,11 +66,15 @@
             mainMenu.AddSubMenu(menu);
         }
 
+        public event EventHandler<BoolEventArgs> OnEnabledChange;
+
         public int EnemyDistance { get; private set; }
 
         public int HpThreshold { get; private set; }
 
         public int HpThresholdPct { get; private set; }
+
+        public bool IsEnabled { get; private set; }
 
         public Dictionary<string, AbilityId> ItemsToBuy { get; } = new Dictionary<string, AbilityId>
         {
@@ -77,8 +88,6 @@
         };
 
         public float SaveForBuyback { get; private set; }
-
-        public bool SpendGold { get; private set; }
 
         public uint GetAbilityPriority(string itemName)
         {

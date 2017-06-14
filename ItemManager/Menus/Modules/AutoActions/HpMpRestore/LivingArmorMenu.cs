@@ -1,6 +1,10 @@
 ﻿namespace ItemManager.Menus.Modules.AutoActions.HpMpRestore
 {
+    using System;
+
     using Ensage.Common.Menu;
+
+    using EventArgs;
 
     internal class LivingArmorMenu
     {
@@ -10,7 +14,11 @@
 
             var enabled = new MenuItem("livingArmorEnabled", "Enabled").SetValue(true);
             menu.AddItem(enabled);
-            enabled.ValueChanged += (sender, args) => IsEnabled = args.GetNewValue<bool>();
+            enabled.ValueChanged += (sender, args) =>
+                {
+                    IsEnabled = args.GetNewValue<bool>();
+                    OnEnabledChange?.Invoke(null, new BoolEventArgs(IsEnabled));
+                };
             IsEnabled = enabled.IsActive();
 
             var notification = new MenuItem("livingArmorNotification", "Show notification").SetValue(true);
@@ -59,6 +67,20 @@
             towerHpThreshold.ValueChanged += (sender, args) => TowerHpThreshold = args.GetNewValue<Slider>().Value;
             TowerHpThreshold = towerHpThreshold.GetValue<Slider>().Value;
 
+            var raxMenu = new Menu("Barracks", "livingArmorBarracks");
+
+            var raxEnabled = new MenuItem("livingArmorBarracksEnabled", "Enabled").SetValue(true);
+            raxMenu.AddItem(raxEnabled);
+            raxEnabled.ValueChanged += (sender, args) => IsEnabledBarracks = args.GetNewValue<bool>();
+            IsEnabledBarracks = raxEnabled.IsActive();
+
+            var raxHpThreshold =
+                new MenuItem("livingArmorBarracksHp", "Barracks HP% threshold").SetValue(new Slider(80));
+            raxHpThreshold.SetTooltip("Use living armor if ally barracks has less hp%");
+            raxMenu.AddItem(raxHpThreshold);
+            raxHpThreshold.ValueChanged += (sender, args) => BarracksHpThreshold = args.GetNewValue<Slider>().Value;
+            BarracksHpThreshold = raxHpThreshold.GetValue<Slider>().Value;
+
             var creepMenu = new Menu("Creep", "livingArmorCreep");
 
             var creepEnabled = new MenuItem("livingArmorCreepEnabled", "Enabled").SetValue(false);
@@ -78,27 +100,15 @@
             creepHpThreshold.ValueChanged += (sender, args) => CreepHpThreshold = args.GetNewValue<Slider>().Value;
             CreepHpThreshold = creepHpThreshold.GetValue<Slider>().Value;
 
-            var raxMenu = new Menu("Barracks", "livingArmorBarracks");
-
-            var raxEnabled = new MenuItem("livingArmorBarracksEnabled", "Enabled").SetValue(true);
-            raxMenu.AddItem(raxEnabled);
-            raxEnabled.ValueChanged += (sender, args) => IsEnabledBarracks = args.GetNewValue<bool>();
-            IsEnabledBarracks = raxEnabled.IsActive();
-
-            var raxHpThreshold =
-                new MenuItem("livingArmorBarracksHp", "Barracks HP% threshold").SetValue(new Slider(80));
-            raxHpThreshold.SetTooltip("Use living armor if ally barracks has less hp%");
-            raxMenu.AddItem(raxHpThreshold);
-            raxHpThreshold.ValueChanged += (sender, args) => BarracksHpThreshold = args.GetNewValue<Slider>().Value;
-            BarracksHpThreshold = raxHpThreshold.GetValue<Slider>().Value;
-
             menu.AddSubMenu(heroMenu);
             menu.AddSubMenu(towerMenu);
-            menu.AddSubMenu(creepMenu);
             menu.AddSubMenu(raxMenu);
+            menu.AddSubMenu(creepMenu);
 
             rootMenu.AddSubMenu(menu);
         }
+
+        public event EventHandler<BoolEventArgs> OnEnabledChange;
 
         public int BarracksHpThreshold { get; private set; }
 

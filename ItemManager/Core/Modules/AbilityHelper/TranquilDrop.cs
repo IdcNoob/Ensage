@@ -37,8 +37,8 @@
 
             AbilityId = abilityId;
 
-            this.menu.OnTranquilDrop += OnTranquilDrop;
             updateHandler = UpdateManager.Subscribe(OnUpdate, 100, false);
+            this.menu.OnTranquilDrop += OnTranquilDrop;
         }
 
         public AbilityId AbilityId { get; }
@@ -83,10 +83,9 @@
                 return;
             }
 
-            if (ObjectManager.GetEntitiesParallel<Hero>()
-                .Any(
-                    x => x.IsValid && x.IsValid && x.IsAlive && x.Team != manager.MyHero.Team
-                         && x.Distance2D(manager.MyHero.Position) < 800))
+            if (EntityManager<Hero>.Entities.Any(
+                x => x.IsValid && x.IsValid && x.IsAlive && x.Team != manager.MyHero.Team
+                     && x.Distance2D(manager.MyHero.Position) < 800))
             {
                 manager.MyHero.PickUpItems();
                 sleeper.Sleep(500);

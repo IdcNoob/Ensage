@@ -112,6 +112,7 @@
     <Compile Include="Core\MyHero.cs" />
     <Compile Include="EventArgs\AbilityEventArgs.cs" />
     <Compile Include="EventArgs\BoolEventArgs.cs" />
+    <Compile Include="EventArgs\IntEventArgs.cs" />
     <Compile Include="EventArgs\ItemEventArgs.cs" />
     <Compile Include="EventArgs\UnitEventArgs.cs" />
     <Compile Include="Menus\Modules\AbilityHelper\AbilityHelperMenu.cs" />
@@ -158,6 +159,7 @@
     <Compile Include="Utils\EntityUtils.cs" />
     <Compile Include="Utils\ItemUtils.cs" />
     <Compile Include="Utils\ModifierUtils.cs" />
+    <Compile Include="Utils\ModuleUtils.cs" />
     <Compile Include="Utils\UnitUtils.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -8,7 +8,10 @@
 
     using Ensage;
     using Ensage.Common.Extensions;
+    using Ensage.SDK.Handlers;
     using Ensage.SDK.Helpers;
+
+    using EventArgs;
 
     using Interfaces;
 
@@ -24,6 +27,8 @@
 
         private readonly MidasMenu menu;
 
+        private readonly IUpdateHandler updateHandler;
+
         private UsableAbility handOfMidas;
 
         public AutoMidas(Manager manager, MenuManager menu, AbilityId abilityId)
@@ -34,13 +39,15 @@
             AbilityId = abilityId;
             Refresh();
 
-            UpdateManager.Subscribe(OnUpdate, 500);
+            updateHandler = UpdateManager.Subscribe(OnUpdate, 500, this.menu.IsEnabled);
+            this.menu.OnEnabledChange += MenuOnEnabledChange;
         }
 
         public AbilityId AbilityId { get; }
 
         public void Dispose()
         {
+            menu.OnEnabledChange -= MenuOnEnabledChange;
             UpdateManager.Unsubscribe(OnUpdate);
         }
 
@@ -49,20 +56,23 @@
             handOfMidas = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId);
         }
 
+        private void MenuOnEnabledChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            updateHandler.IsEnabled = boolEventArgs.Enabled;
+        }
+
         private void OnUpdate()
         {
-            if (!menu.IsEnabled || !manager.MyHero.CanUseItems() || !handOfMidas.CanBeCasted() || Game.IsPaused)
+            if (!manager.MyHero.CanUseItems() || !handOfMidas.CanBeCasted() || Game.IsPaused)
             {
                 return;
             }
 
-            var creeps = ObjectManager.GetEntitiesParallel<Creep>()
-                .Where(
-                    x => x.IsValid && x.IsAlive && x.IsSpawned && x.IsVisible
-                         && x.Distance2D(manager.MyHero.Position) <= handOfMidas.GetCastRange()
-                         && x.Team != manager.MyHero.Team && !x.IsAncient
-                         && x.HealthPercentage() >= menu.HealthThresholdPct
-                         && (x.GetGrantedExperience() >= menu.ExperienceThreshold || manager.MyHero.Level >= 25));
+            var creeps = EntityManager<Creep>.Entities.Where(
+                x => x.IsValid && x.IsAlive && x.IsSpawned && x.IsVisible && !x.IsAncient
+                     && x.Distance2D(manager.MyHero.Position) <= handOfMidas.GetCastRange()
+                     && x.Team != manager.MyHero.Team && x.HealthPercentage() >= menu.HealthThresholdPct
+                     && (x.GetGrantedExperience() >= menu.ExperienceThreshold || manager.MyHero.Level >= 25));
 
             var creep = manager.MyHero.Level >= 25
                             ? creeps.OrderBy(x => x.GetGrantedExperience()).FirstOrDefault()

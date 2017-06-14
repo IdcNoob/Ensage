@@ -8,7 +8,10 @@
 
     using Ensage;
     using Ensage.Common.Extensions;
+    using Ensage.SDK.Handlers;
     using Ensage.SDK.Helpers;
+
+    using EventArgs;
 
     using Interfaces;
 
@@ -26,6 +29,8 @@
 
         private readonly AutoArcaneBootsMenu menu;
 
+        private readonly IUpdateHandler updateHandler;
+
         private ArcaneBoots arcaneBoots;
 
         private bool notified;
@@ -42,14 +47,19 @@
             AbilityId = abilityId;
             Refresh();
 
-            UpdateManager.Subscribe(OnUpdate, 500);
-            Player.OnExecuteOrder += OnExecuteOrder;
+            updateHandler = UpdateManager.Subscribe(OnUpdate, 500, this.menu.IsEnabled);
+            if (this.menu.IsEnabled)
+            {
+                Player.OnExecuteOrder += OnExecuteOrder;
+            }
+            this.menu.OnEnabledChange += MenuOnEnabledChange;
         }
 
         public AbilityId AbilityId { get; }
 
         public void Dispose()
         {
+            menu.OnEnabledChange -= MenuOnEnabledChange;
             UpdateManager.Unsubscribe(OnUpdate);
             Player.OnExecuteOrder -= OnExecuteOrder;
         }
@@ -57,6 +67,20 @@
         public void Refresh()
         {
             arcaneBoots = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId) as ArcaneBoots;
+        }
+
+        private void MenuOnEnabledChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (boolEventArgs.Enabled)
+            {
+                Player.OnExecuteOrder += OnExecuteOrder;
+                updateHandler.IsEnabled = true;
+            }
+            else
+            {
+                Player.OnExecuteOrder -= OnExecuteOrder;
+                updateHandler.IsEnabled = false;
+            }
         }
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
@@ -74,20 +98,18 @@
 
         private void OnUpdate()
         {
-            if (!menu.AutoUse || Game.IsPaused || !manager.MyHero.CanUseItems() || !arcaneBoots.CanBeCasted()
+            if (!menu.IsEnabled || Game.IsPaused || !manager.MyHero.CanUseItems() || !arcaneBoots.CanBeCasted()
                 || manager.MyHero.MissingMana < arcaneBoots.ManaRestore
                 || manager.MyHero.Distance2D(fountain) < menu.FountainRange)
             {
                 return;
             }
 
-            if (manager.Units.OfType<Hero>()
-                .Any(
-                    x => x.IsValid && x.Handle != manager.MyHero.Handle && x.IsAlive && !x.IsIllusion
-                         && x.Team == manager.MyHero.Team
-                         && x.Distance2D(manager.MyHero.Position) <= menu.AllySearchRange
-                         && x.Distance2D(manager.MyHero.Position) > arcaneBoots.GetCastRange()
-                         && x.MaximumMana - x.Mana > arcaneBoots.ManaRestore))
+            if (EntityManager<Hero>.Entities.Any(
+                x => x.IsValid && x.Handle != manager.MyHero.Handle && x.IsAlive && !x.IsIllusion
+                     && x.Team == manager.MyHero.Team && x.Distance2D(manager.MyHero.Position) <= menu.AllySearchRange
+                     && x.Distance2D(manager.MyHero.Position) > arcaneBoots.GetCastRange()
+                     && x.MaximumMana - x.Mana > arcaneBoots.ManaRestore))
             {
                 if (!notified && menu.NotifyAllies)
                 {

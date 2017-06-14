@@ -104,11 +104,11 @@
                     .Where(x => menu.IsAbilityEnabled(x.Name))
                     .OrderByDescending(x => menu.GetAbilityPriority(x.Name))
                     .ToList();
+
                 var usableRecoveryAbilities = recoveryAbilities.Where(x => x.CanBeCasted()).ToList();
 
-                if (usableRecoveryAbilities.Any(x => x.CanBeCasted())
-                    && (manager.MyHero.Mana < manager.MyHero.MaximumMana
-                        || manager.MyHero.Health < manager.MyHero.MaximumHealth))
+                if (usableRecoveryAbilities.Any() && (manager.MyHero.Mana < manager.MyHero.MaximumMana
+                                                      || manager.MyHero.Health < manager.MyHero.MaximumHealth))
                 {
                     usingItems = true;
                     manager.MyHero.Hero.Stop();
@@ -238,10 +238,9 @@
 
         private bool ShouldPickUpItems(IEnumerable<IRecoveryAbility> usableAbilities)
         {
-            if (ObjectManager.GetEntitiesParallel<Hero>()
-                .Any(
-                    x => x.IsValid && x.IsVisible && x.IsAlive && x.Team != manager.MyHero.Team
-                         && x.Distance2D(manager.MyHero.Position) < 800))
+            if (EntityManager<Hero>.Entities.Any(
+                x => x.IsValid && x.IsVisible && x.IsAlive && x.Team != manager.MyHero.Team
+                     && x.Distance2D(manager.MyHero.Position) < 800))
             {
                 return true;
             }

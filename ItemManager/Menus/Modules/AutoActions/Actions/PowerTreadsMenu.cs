@@ -1,8 +1,11 @@
 ﻿namespace ItemManager.Menus.Modules.AutoActions.Actions
 {
+    using System;
     using System.Collections.Generic;
 
     using Ensage.Common.Menu;
+
+    using EventArgs;
 
     internal class PowerTreadsMenu
     {
@@ -15,7 +18,11 @@
             var enabled = new MenuItem("ptSwitcherEnabled", "Enabled").SetValue(true);
             enabled.SetTooltip("Auto switch power treads when using abilities");
             menu.AddItem(enabled);
-            enabled.ValueChanged += (sender, args) => IsEnabled = args.GetNewValue<bool>();
+            enabled.ValueChanged += (sender, args) =>
+                {
+                    IsEnabled = args.GetNewValue<bool>();
+                    OnEnabledChange?.Invoke(null, new BoolEventArgs(IsEnabled));
+                };
             IsEnabled = enabled.IsActive();
 
             var universal = new MenuItem("ptUniversalUse", "Universal use").SetValue(true);
@@ -58,6 +65,8 @@
 
             mainMenu.AddSubMenu(menu);
         }
+
+        public event EventHandler<BoolEventArgs> OnEnabledChange;
 
         public bool IsEnabled { get; private set; }
 

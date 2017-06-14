@@ -1,6 +1,10 @@
 ﻿namespace ItemManager.Menus.Modules.AutoActions.HpMpRestore
 {
+    using System;
+
     using Ensage.Common.Menu;
+
+    using EventArgs;
 
     internal class AutoArcaneBootsMenu
     {
@@ -8,11 +12,15 @@
         {
             var menu = new Menu("Arcane boots", "autoArcaneBoots");
 
-            var autoUse = new MenuItem("autoUseArcaneBoots", "Auto use").SetValue(true);
-            autoUse.SetTooltip("Auto use arcane boots when you are missing mp");
-            menu.AddItem(autoUse);
-            autoUse.ValueChanged += (sender, args) => AutoUse = args.GetNewValue<bool>();
-            AutoUse = autoUse.IsActive();
+            var enabled = new MenuItem("autoUseArcaneBoots", "Enabled").SetValue(true);
+            enabled.SetTooltip("Auto use arcane boots when you are missing mp");
+            menu.AddItem(enabled);
+            enabled.ValueChanged += (sender, args) =>
+                {
+                    IsEnabled = args.GetNewValue<bool>();
+                    OnEnabledChange?.Invoke(null, new BoolEventArgs(IsEnabled));
+                };
+            IsEnabled = enabled.IsActive();
 
             var allyRange = new MenuItem("autoBootsAllyRange", "Ally search range").SetValue(new Slider(2000, 0, 5000));
             allyRange.SetTooltip("Don't use if ally with low mp in range");
@@ -36,11 +44,13 @@
             mainMenu.AddSubMenu(menu);
         }
 
+        public event EventHandler<BoolEventArgs> OnEnabledChange;
+
         public int AllySearchRange { get; private set; }
 
-        public bool AutoUse { get; private set; }
-
         public int FountainRange { get; private set; }
+
+        public bool IsEnabled { get; private set; }
 
         public bool NotifyAllies { get; private set; }
     }

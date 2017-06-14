@@ -43,21 +43,38 @@
 
             manager.OnAbilityAdd += OnAbilityAdd;
             manager.OnAbilityRemove += OnAbilityRemove;
-            Player.OnExecuteOrder += OnExecuteOrder;
+            if (this.menu.IsEnabled)
+            {
+                Player.OnExecuteOrder += OnExecuteOrder;
+            }
+            this.menu.OnEnabledChange += MenuOnEnabledChange;
         }
 
         public AbilityId AbilityId { get; }
 
         public void Dispose()
         {
-            Player.OnExecuteOrder -= OnExecuteOrder;
+            menu.OnEnabledChange -= MenuOnEnabledChange;
             manager.OnAbilityAdd -= OnAbilityAdd;
             manager.OnAbilityRemove -= OnAbilityRemove;
+            Player.OnExecuteOrder -= OnExecuteOrder;
         }
 
         public void Refresh()
         {
             soulRing = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId) as SoulRing;
+        }
+
+        private void MenuOnEnabledChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (boolEventArgs.Enabled)
+            {
+                Player.OnExecuteOrder += OnExecuteOrder;
+            }
+            else
+            {
+                Player.OnExecuteOrder -= OnExecuteOrder;
+            }
         }
 
         private void OnAbilityAdd(object sender, AbilityEventArgs abilityEventArgs)
@@ -88,11 +105,6 @@
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!menu.IsEnabled)
-            {
-                return;
-            }
-
             switch (args.OrderId)
             {
                 case OrderId.AbilityTarget:
