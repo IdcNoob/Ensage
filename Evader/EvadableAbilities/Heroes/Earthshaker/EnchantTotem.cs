@@ -16,6 +16,7 @@
             CounterAbilities.Add(SleightOfFist);
             CounterAbilities.AddRange(VsLowDisable);
             CounterAbilities.AddRange(VsDamage);
+            CounterAbilities.Add(HurricanePike);
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Remove("abaddon_aphotic_shield");

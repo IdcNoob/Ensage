@@ -18,6 +18,7 @@
             CounterAbilities.Add(SleightOfFist);
             CounterAbilities.Add(Eul);
             CounterAbilities.Add(Manta);
+            CounterAbilities.Add(HurricanePike);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.Add(SnowBall);
             CounterAbilities.Add(Armlet);

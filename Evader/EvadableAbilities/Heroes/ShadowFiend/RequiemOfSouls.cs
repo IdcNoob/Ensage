@@ -29,6 +29,7 @@
 
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(Eul);
+            CounterAbilities.Add(HurricanePike);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);
             CounterAbilities.AddRange(Invis);

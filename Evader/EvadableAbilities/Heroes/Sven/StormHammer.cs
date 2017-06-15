@@ -42,6 +42,7 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Lotus);
+            CounterAbilities.Add(HurricanePike);
             CounterAbilities.Remove("abaddon_aphotic_shield");
 
             Modifier.AllyCounterAbilities.Add(Enrage);

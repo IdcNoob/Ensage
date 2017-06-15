@@ -20,6 +20,7 @@
             CounterAbilities.Add(SleightOfFist);
             CounterAbilities.Add(Manta);
             CounterAbilities.Add(Eul);
+            CounterAbilities.Add(HurricanePike);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);

@@ -29,6 +29,7 @@
             CounterAbilities.Add(Eul);
             CounterAbilities.Add(Manta);
             CounterAbilities.AddRange(StrongDefUltimates);
+            CounterAbilities.Add(HurricanePike);
             CounterAbilities.AddRange(VsDisable);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsPhys);

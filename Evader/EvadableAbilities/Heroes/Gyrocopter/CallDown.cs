@@ -25,6 +25,7 @@
             CounterAbilities.Add(BallLightning);
             CounterAbilities.Add(Eul);
             CounterAbilities.Add(Manta);
+            CounterAbilities.Add(HurricanePike);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);
             CounterAbilities.Add(SnowBall);

@@ -23,6 +23,7 @@
             CounterAbilities.AddRange(StrongDefUltimates);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);
+            CounterAbilities.Add(HurricanePike);
             CounterAbilities.AddRange(Invis);
             CounterAbilities.Add(SnowBall);
             CounterAbilities.Add(Armlet);

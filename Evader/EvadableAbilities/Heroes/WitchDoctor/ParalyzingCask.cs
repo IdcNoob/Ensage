@@ -23,6 +23,7 @@
             CounterAbilities.AddRange(Invis);
             CounterAbilities.Add(Lotus);
             CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(HurricanePike);
         }
     }
 }

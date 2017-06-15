@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     using Core;
     using Core.Menus;
@@ -11,7 +12,7 @@
 
     using Ensage;
     using Ensage.Common.Extensions;
-    using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Helpers;
 
     using EvadableAbilities.Base;
 
@@ -28,13 +29,10 @@
 
         private readonly EnemyAbilities enemyAbilitiesData;
 
-        private readonly Sleeper sleeper;
-
-        //private bool processing;
+        private bool processing = true;
 
         public AbilityUpdater()
         {
-            sleeper = new Sleeper();
             allyAbilitiesData = new AllyAbilities();
             enemyAbilitiesData = new EnemyAbilities();
 
@@ -46,10 +44,7 @@
             Debugger.WriteLine("* Total usable counter abilities: " + allyAbilitiesData.CounterAbilities.Count);
             Debugger.WriteLine("* Total usable disable abilities: " + allyAbilitiesData.DisableAbilities.Count);
 
-            sleeper.Sleep(1000);
-
-            //GameDispatcher.OnUpdate += OnUpdate;
-            Game.OnUpdate += OnUpdate;
+            UpdateManager.BeginInvoke(OnUpdate);
             ObjectManager.OnRemoveEntity += OnRemoveEntity;
             Entity.OnInt64PropertyChange += EntityOnOnInt64PropertyChange;
         }
@@ -68,9 +63,8 @@
 
         public void Dispose()
         {
+            processing = false;
             ObjectManager.OnRemoveEntity -= OnRemoveEntity;
-            //GameDispatcher.OnUpdate -= OnUpdate;
-            Game.OnUpdate -= OnUpdate;
             Entity.OnInt64PropertyChange -= EntityOnOnInt64PropertyChange;
 
             foreach (var disposable in UsableAbilities.OfType<IDisposable>())
@@ -90,173 +84,90 @@
             UsableAbilities.RemoveAll(x => x.Handle == handle);
         }
 
-        public void OnUpdate(EventArgs args)
+        public async void OnUpdate()
         {
-            if (sleeper.Sleeping)
+            while (processing)
             {
-                return;
+                await Task.Delay(2000);
+
+                foreach (var unit in ObjectManager.GetEntitiesParallel<Unit>()
+                    .Where(
+                        x => !(x is Building) && x.IsValid && x.IsAlive && x.IsSpawned
+                             && (!x.IsIllusion || x.HasModifiers(
+                                     new[]
+                                     {
+                                         "modifier_arc_warden_tempest_double",
+                                         "modifier_vengefulspirit_hybrid_special",
+                                         "modifier_morph_hybrid_special"
+                                     },
+                                     false))))
+                {
+                    var abilities = new List<Ability>();
+
+                    try
+                    {
+                        abilities.AddRange(unit.Spellbook.Spells.ToList());
+
+                        if (unit.HasInventory)
+                        {
+                            abilities.AddRange(unit.Inventory.Items);
+                        }
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+
+                    foreach (var ability in abilities.Where(
+                        x => x.IsValid && !addedAbilities.Contains(x.Handle) && x.Level > 0))
+                    {
+                        if (unit.Equals(Hero))
+                        {
+                            var abilityName = ability.Name;
+
+                            Func<Ability, UsableAbility> func;
+                            if (allyAbilitiesData.CounterAbilities.TryGetValue(abilityName, out func))
+                            {
+                                Menu.UsableAbilities.AddAbility(abilityName, AbilityType.Counter);
+                                UsableAbilities.Add(func.Invoke(ability));
+                            }
+                            if (allyAbilitiesData.DisableAbilities.TryGetValue(abilityName, out func))
+                            {
+                                Menu.UsableAbilities.AddAbility(abilityName, AbilityType.Disable);
+                                UsableAbilities.Add(func.Invoke(ability));
+                            }
+                            if (allyAbilitiesData.BlinkAbilities.TryGetValue(abilityName, out func))
+                            {
+                                Menu.UsableAbilities.AddAbility(abilityName, AbilityType.Blink);
+                                UsableAbilities.Add(func.Invoke(ability));
+                            }
+                        }
+                        else if (unit.Team != HeroTeam || ability.ClassId
+                                 == ClassId.CDOTA_Ability_FacelessVoid_Chronosphere)
+                        {
+                            Func<Ability, EvadableAbility> func;
+                            if (enemyAbilitiesData.EvadableAbilities.TryGetValue(ability.Name, out func))
+                            {
+                                var evadableAbility = func.Invoke(ability);
+
+                                if (Menu.Debug.FastAbilityAdd)
+                                {
+                                    Menu.EnemiesSettings.AddAbility(evadableAbility);
+                                }
+                                else
+                                {
+                                    await Menu.EnemiesSettings.AddAbility(evadableAbility);
+                                }
+
+                                EvadableAbilities.Add(evadableAbility);
+                            }
+                        }
+
+                        addedAbilities.Add(ability.Handle);
+                    }
+                }
             }
-
-            foreach (var unit in ObjectManager.GetEntitiesParallel<Unit>()
-                .Where(
-                    x => !(x is Building) && x.IsValid && x.IsAlive && x.IsSpawned
-                         && (!x.IsIllusion || x.HasModifiers(
-                                 new[]
-                                 {
-                                     "modifier_arc_warden_tempest_double",
-                                     "modifier_vengefulspirit_hybrid_special",
-                                     "modifier_morph_hybrid_special"
-                                 },
-                                 false))))
-            {
-                var abilities = new List<Ability>();
-
-                try
-                {
-                    abilities.AddRange(unit.Spellbook.Spells.ToList());
-
-                    if (unit.HasInventory)
-                    {
-                        abilities.AddRange(unit.Inventory.Items);
-                    }
-                }
-                catch
-                {
-                    continue;
-                }
-
-                foreach (var ability in abilities.Where(
-                    x => x.IsValid && !addedAbilities.Contains(x.Handle) && x.Level > 0))
-                {
-                    if (unit.Equals(Hero))
-                    {
-                        var abilityName = ability.Name;
-
-                        Func<Ability, UsableAbility> func;
-                        if (allyAbilitiesData.CounterAbilities.TryGetValue(abilityName, out func))
-                        {
-                            Menu.UsableAbilities.AddAbility(abilityName, AbilityType.Counter);
-                            UsableAbilities.Add(func.Invoke(ability));
-                        }
-                        if (allyAbilitiesData.DisableAbilities.TryGetValue(abilityName, out func))
-                        {
-                            Menu.UsableAbilities.AddAbility(abilityName, AbilityType.Disable);
-                            UsableAbilities.Add(func.Invoke(ability));
-                        }
-                        if (allyAbilitiesData.BlinkAbilities.TryGetValue(abilityName, out func))
-                        {
-                            Menu.UsableAbilities.AddAbility(abilityName, AbilityType.Blink);
-                            UsableAbilities.Add(func.Invoke(ability));
-                        }
-                    }
-                    else if (unit.Team != HeroTeam || ability.ClassId
-                             == ClassId.CDOTA_Ability_FacelessVoid_Chronosphere)
-                    {
-                        Func<Ability, EvadableAbility> func;
-                        if (enemyAbilitiesData.EvadableAbilities.TryGetValue(ability.Name, out func))
-                        {
-                            var evadableAbility = func.Invoke(ability);
-
-                            Menu.EnemiesSettings.AddAbility(evadableAbility);
-                            EvadableAbilities.Add(evadableAbility);
-                        }
-                    }
-
-                    addedAbilities.Add(ability.Handle);
-                }
-            }
-
-            sleeper.Sleep(3000);
         }
-
-        //public async void OnUpdate(EventArgs args)
-        //{
-        //    if (processing || sleeper.Sleeping || !Game.IsInGame)
-        //    {
-        //        return;
-        //    }
-
-        //    processing = true;
-
-        //    foreach (var unit in ObjectManager.GetEntitiesParallel<Unit>()
-        //        .Where(
-        //            x => !(x is Building) && x.IsValid && x.IsAlive && x.IsSpawned && (!x.IsIllusion || x.HasModifiers(
-        //                                                                                   new[]
-        //                                                                                   {
-        //                                                                                       "modifier_arc_warden_tempest_double",
-        //                                                                                       "modifier_vengefulspirit_hybrid_special",
-        //                                                                                       "modifier_morph_hybrid_special"
-        //                                                                                   },
-        //                                                                                   false))))
-        //    {
-        //        var abilities = new List<Ability>();
-
-        //        try
-        //        {
-        //            abilities.AddRange(unit.Spellbook.Spells.ToList());
-
-        //            if (unit.HasInventory)
-        //            {
-        //                abilities.AddRange(unit.Inventory.Items);
-        //            }
-        //        }
-        //        catch
-        //        {
-        //            continue;
-        //        }
-
-        //        foreach (var ability in abilities.Where(
-        //            x => x.IsValid && !addedAbilities.Contains(x.Handle) && x.Level > 0))
-        //        {
-        //            if (unit.Equals(Hero))
-        //            {
-        //                var abilityName = ability.Name;
-
-        //                Func<Ability, UsableAbility> func;
-        //                if (allyAbilitiesData.CounterAbilities.TryGetValue(abilityName, out func))
-        //                {
-        //                    Menu.UsableAbilities.AddAbility(abilityName, AbilityType.Counter);
-        //                    UsableAbilities.Add(func.Invoke(ability));
-        //                }
-        //                if (allyAbilitiesData.DisableAbilities.TryGetValue(abilityName, out func))
-        //                {
-        //                    Menu.UsableAbilities.AddAbility(abilityName, AbilityType.Disable);
-        //                    UsableAbilities.Add(func.Invoke(ability));
-        //                }
-        //                if (allyAbilitiesData.BlinkAbilities.TryGetValue(abilityName, out func))
-        //                {
-        //                    Menu.UsableAbilities.AddAbility(abilityName, AbilityType.Blink);
-        //                    UsableAbilities.Add(func.Invoke(ability));
-        //                }
-        //            }
-        //            else if (unit.Team != HeroTeam || ability.ClassId
-        //                     == ClassId.CDOTA_Ability_FacelessVoid_Chronosphere)
-        //            {
-        //                Func<Ability, EvadableAbility> func;
-        //                if (enemyAbilitiesData.EvadableAbilities.TryGetValue(ability.Name, out func))
-        //                {
-        //                    var evadableAbility = func.Invoke(ability);
-
-        //                    if (Menu.Debug.FastAbilityAdd)
-        //                    {
-        //                        Menu.EnemiesSettings.AddAbility(evadableAbility);
-        //                    }
-        //                    else
-        //                    {
-        //                        await Menu.EnemiesSettings.AddAbility(evadableAbility);
-        //                    }
-
-        //                    EvadableAbilities.Add(evadableAbility);
-        //                }
-        //            }
-
-        //            addedAbilities.Add(ability.Handle);
-        //        }
-        //    }
-
-        //    sleeper.Sleep(3000);
-        //    processing = false;
-        //}
 
         private void EntityOnOnInt64PropertyChange(Entity sender, Int64PropertyChangeEventArgs args)
         {

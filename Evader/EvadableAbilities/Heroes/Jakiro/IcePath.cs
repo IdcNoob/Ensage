@@ -30,6 +30,7 @@
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(BallLightning);
             CounterAbilities.Add(Eul);
+            CounterAbilities.Add(HurricanePike);
             CounterAbilities.AddRange(VsDisable);
             CounterAbilities.Add(SnowBall);
             CounterAbilities.Add(Armlet);

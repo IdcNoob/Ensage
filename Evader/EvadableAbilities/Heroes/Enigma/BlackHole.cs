@@ -31,6 +31,7 @@
             CounterAbilities.Add(BallLightning);
             CounterAbilities.Add(Eul);
             CounterAbilities.AddRange(StrongDefUltimates);
+            CounterAbilities.Add(HurricanePike);
             CounterAbilities.AddRange(VsDisable);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);

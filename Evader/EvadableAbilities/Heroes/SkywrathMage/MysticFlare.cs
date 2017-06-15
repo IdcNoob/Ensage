@@ -19,6 +19,7 @@
                 EvadableModifier.GetHeroType.LowestHealth,
                 ignoreRemainingTime: true);
 
+            Modifier.AllyCounterAbilities.Add(HurricanePike);
             Modifier.AllyCounterAbilities.Add(PhaseShift);
             Modifier.AllyCounterAbilities.Add(Eul);
             Modifier.AllyCounterAbilities.Add(TricksOfTheTrade);

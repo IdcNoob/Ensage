@@ -22,6 +22,7 @@
             CounterAbilities.Add(Manta);
             CounterAbilities.Add(Eul);
             CounterAbilities.Add(BallLightning);
+            CounterAbilities.Add(HurricanePike);
 
             Modifier.AllyCounterAbilities.Add(Lotus);
             Modifier.AllyCounterAbilities.Add(FortunesEnd);

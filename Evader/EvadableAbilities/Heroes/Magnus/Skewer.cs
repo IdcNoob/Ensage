@@ -14,6 +14,7 @@
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(BallLightning);
             CounterAbilities.Add(Eul);
+            CounterAbilities.Add(HurricanePike);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);
         }

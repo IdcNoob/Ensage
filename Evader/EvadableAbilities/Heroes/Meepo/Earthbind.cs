@@ -17,6 +17,8 @@
         {
             Modifier = new EvadableModifier(HeroTeam, EvadableModifier.GetHeroType.LowestHealth);
 
+            CounterAbilities.Add(HurricanePike);
+
             Modifier.AllyCounterAbilities.Add(Eul);
             Modifier.AllyCounterAbilities.Add(Lotus);
             Modifier.AllyCounterAbilities.Add(Manta);

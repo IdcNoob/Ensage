@@ -25,6 +25,7 @@
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
             Modifier.AllyCounterAbilities.AddRange(VsMagic);
 
+            Modifier.EnemyCounterAbilities.Add(HurricanePike);
             Modifier.EnemyCounterAbilities.Add(FortunesEnd);
             Modifier.EnemyCounterAbilities.Add(Eul);
         }

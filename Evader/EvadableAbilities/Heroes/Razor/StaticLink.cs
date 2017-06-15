@@ -24,6 +24,7 @@
 
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
 
+            Modifier.EnemyCounterAbilities.Add(HurricanePike);
             Modifier.EnemyCounterAbilities.Add(Eul);
             Modifier.EnemyCounterAbilities.Add(FortunesEnd);
             Modifier.EnemyCounterAbilities.Add(Decrepify);

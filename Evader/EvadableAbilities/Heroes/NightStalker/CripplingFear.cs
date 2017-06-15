@@ -20,6 +20,7 @@
             CounterAbilities.Add(SleightOfFist);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsPhys);
+            CounterAbilities.Add(HurricanePike);
 
             Modifier.AllyCounterAbilities.Add(Lotus);
             Modifier.AllyCounterAbilities.Add(Manta);

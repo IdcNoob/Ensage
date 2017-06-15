@@ -40,6 +40,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\BanIsComing\References\Ensage.Common.dll</HintPath>
     </Reference>
+    <Reference Include="Ensage.SDK">
+      <HintPath>C:\BanIsComing\References\Ensage.SDK.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX">
       <HintPath>C:\BanIsComing\References\SharpDX.dll</HintPath>
     </Reference>
@@ -409,6 +412,7 @@
     <Compile Include="UsableAbilities\Abilities\FireRemnant.cs" />
     <Compile Include="UsableAbilities\Abilities\FortunesEnd.cs" />
     <Compile Include="UsableAbilities\Items\BlinkDagger.cs" />
+    <Compile Include="UsableAbilities\Items\HurricanePike.cs" />
     <Compile Include="UsableAbilities\Items\LinkensSphere.cs" />
     <Compile Include="UsableAbilities\Abilities\SearingChains.cs" />
     <Compile Include="UsableAbilities\Abilities\SleightOfFist.cs" />

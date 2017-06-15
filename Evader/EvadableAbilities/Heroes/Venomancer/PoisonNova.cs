@@ -36,6 +36,7 @@
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);
             CounterAbilities.Add(SnowBall);
+            CounterAbilities.Add(HurricanePike);
 
             speed = ability.GetProjectileSpeed();
             tavelTime = GetRadius() / speed;

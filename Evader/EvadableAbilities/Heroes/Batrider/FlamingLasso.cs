@@ -19,6 +19,7 @@
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(Manta);
             CounterAbilities.Add(Eul);
+            CounterAbilities.Add(HurricanePike);
             CounterAbilities.Add(SleightOfFist);
             CounterAbilities.AddRange(VsDisable);
             CounterAbilities.AddRange(VsDamage);

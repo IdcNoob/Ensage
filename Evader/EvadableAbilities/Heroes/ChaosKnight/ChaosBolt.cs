@@ -26,6 +26,7 @@
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsPhys);
             CounterAbilities.AddRange(Invis);
+            CounterAbilities.Add(HurricanePike);
             CounterAbilities.Add(SnowBall);
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);

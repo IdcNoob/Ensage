@@ -26,6 +26,7 @@
             DisableAbilities.AddRange(DisableAbilityNames);
 
             CounterAbilities.Add(Lotus);
+            CounterAbilities.Add(HurricanePike);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsPhys);
             CounterAbilities.AddRange(Invis);

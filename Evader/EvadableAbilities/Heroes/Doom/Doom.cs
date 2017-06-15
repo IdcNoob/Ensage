@@ -27,6 +27,7 @@
             CounterAbilities.AddRange(Invis);
             CounterAbilities.Add(SnowBall);
             CounterAbilities.Add(Lotus);
+            CounterAbilities.Add(HurricanePike);
 
             Modifier.AllyCounterAbilities.AddRange(AllyShields);
             Modifier.AllyCounterAbilities.AddRange(Invul);

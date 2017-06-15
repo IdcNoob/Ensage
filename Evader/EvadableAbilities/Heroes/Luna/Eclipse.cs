@@ -31,6 +31,7 @@
             CounterAbilities.Add(Eul);
             CounterAbilities.Add(Manta);
             CounterAbilities.Add(TricksOfTheTrade);
+            CounterAbilities.Add(HurricanePike);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(Invul);
             CounterAbilities.Add(SnowBall);

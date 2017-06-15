@@ -142,6 +142,8 @@
 
         public static string Greaves { get; } = "item_guardian_greaves";
 
+        public static string HurricanePike { get; } = "item_hurricane_pike";
+
         public static string[] Invis { get; } =
         {
             "bounty_hunter_wind_walk",

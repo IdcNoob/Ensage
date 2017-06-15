@@ -23,6 +23,7 @@
             CounterAbilities.Add(Manta);
             CounterAbilities.Add(SleightOfFist);
             CounterAbilities.Add(TricksOfTheTrade);
+            CounterAbilities.Add(HurricanePike);
             CounterAbilities.AddRange(VsDisable);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);

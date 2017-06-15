@@ -15,6 +15,7 @@
             CounterAbilities.Add(BallLightning);
             CounterAbilities.Add(SleightOfFist);
             CounterAbilities.Add(Eul);
+            CounterAbilities.Add(HurricanePike);
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);
             CounterAbilities.Add(Armlet);

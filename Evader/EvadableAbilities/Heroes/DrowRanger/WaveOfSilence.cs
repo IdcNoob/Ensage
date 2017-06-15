@@ -21,6 +21,7 @@
             CounterAbilities.Add(Eul);
             CounterAbilities.AddRange(VsDisable);
             CounterAbilities.AddRange(VsPhys);
+            CounterAbilities.Add(HurricanePike);
             CounterAbilities.AddRange(Invis);
             CounterAbilities.Add(SnowBall);
             CounterAbilities.Add(Armlet);

@@ -18,6 +18,7 @@
 
             CounterAbilities.AddRange(VsDamage);
             CounterAbilities.AddRange(VsMagic);
+            CounterAbilities.Add(HurricanePike);
 
             Modifier.AllyCounterAbilities.Add(Lotus);
             Modifier.AllyCounterAbilities.Add(Eul);

@@ -21,6 +21,7 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
             CounterAbilities.Add(Lotus);
+            CounterAbilities.Add(HurricanePike);
         }
     }
 }

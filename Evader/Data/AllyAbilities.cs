@@ -142,6 +142,10 @@ namespace Evader.Data
                         AbilityCastTarget.Ally | AbilityCastTarget.Enemy)
                 },
                 {
+                    "item_hurricane_pike",
+                    ability => new HurricanePike(ability, AbilityType.Counter, AbilityCastTarget.Enemy)
+                },
+                {
                     "item_diffusal_blade",
                     ability => new Targetable(ability, AbilityType.Counter, AbilityCastTarget.Enemy)
                 },
