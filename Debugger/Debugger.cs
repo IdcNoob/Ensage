@@ -10,6 +10,8 @@
 
     using Menus;
 
+    using SharpDX;
+
     using Color = System.ConsoleColor;
 
     internal class Debugger
@@ -47,6 +49,8 @@
             Game.OnMessage -= OnMessage;
             Game.OnUIStateChanged -= OnUiStateChanged;
 
+            Drawing.OnDraw -= OnDraw;
+
             mainMenu.DumpingMenu.Spells.OnDump -= SpellsOnDump;
             mainMenu.DumpingMenu.Items.OnDump -= ItemsOnDump;
             mainMenu.DumpingMenu.Modifiers.OnDump -= ModifiersOnDump;
@@ -83,6 +87,8 @@
             Game.OnGCMessageReceive += OnGcMessageReceive;
             Game.OnMessage += OnMessage;
             Game.OnUIStateChanged += OnUiStateChanged;
+
+            Drawing.OnDraw += OnDraw;
 
             mainMenu.DumpingMenu.Spells.OnDump += SpellsOnDump;
             mainMenu.DumpingMenu.Items.OnDump += ItemsOnDump;
@@ -254,6 +260,21 @@
             logger.Write("Property name: " + args.PropertyName, Type, Color);
             logger.Write("Property values: " + args.OldValue + " => " + args.NewValue, Type, Color);
             logger.EmptyLine();
+        }
+
+        private void OnDraw(EventArgs args)
+        {
+            if (mainMenu.InfoMenu.ShowGameMousePosition)
+            {
+                Drawing.DrawText(
+                    Math.Round(Game.MousePosition.X) + " " + Math.Round(Game.MousePosition.Y) + " "
+                    + Math.Round(Game.MousePosition.Z),
+                    "Arial",
+                    Game.MouseScreenPosition + new Vector2(35, 0),
+                    new Vector2(20),
+                    SharpDX.Color.White,
+                    FontFlags.None);
+            }
         }
 
         private void OnEntityAdded(EntityEventArgs args)

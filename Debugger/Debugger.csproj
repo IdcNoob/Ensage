@@ -65,6 +65,7 @@
     <Compile Include="Menus\GameEvents\GcMessage.cs" />
     <Compile Include="Menus\GameEvents\Message.cs" />
     <Compile Include="Menus\GameEvents\UiState.cs" />
+    <Compile Include="Menus\Info\InfoMenu.cs" />
     <Compile Include="Menus\MenuManager.cs" />
     <Compile Include="Menus\OnAddRemove\Abilities.cs" />
     <Compile Include="Menus\OnAddRemove\Modifiers.cs" />

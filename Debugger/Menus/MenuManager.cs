@@ -6,6 +6,8 @@
 
     using GameEvents;
 
+    using Info;
+
     using OnAddRemove;
 
     using OnChange;
@@ -28,6 +30,7 @@
             OnExecuteOrderMenu = new OnExecuteOrderMenu(menu);
             GameEventsMenu = new GameEventsMenu(menu);
             DumpingMenu = new DumpingMenu(menu);
+            InfoMenu = new InfoMenu(menu);
 
             menu.AddToMainMenu();
         }
@@ -35,6 +38,8 @@
         public DumpingMenu DumpingMenu { get; }
 
         public GameEventsMenu GameEventsMenu { get; }
+
+        public InfoMenu InfoMenu { get; }
 
         public OnAddRemoveMenu OnAddRemove { get; }
 
