@@ -20,15 +20,11 @@
     using Menus.Modules.AutoActions.HpMpRestore;
     using Menus.Modules.Recovery;
 
-    using SharpDX;
-
     using Utils;
 
     [AbilityBasedModule(AbilityId.item_bottle)]
     internal class AutoBottle : IAbilityBasedModule
     {
-        private readonly Vector3 fountain;
-
         private readonly Manager manager;
 
         private readonly AutoBottleMenu menu;
@@ -41,15 +37,13 @@
 
         private Bottle bottle;
 
+        private Unit fountain;
+
         public AutoBottle(Manager manager, MenuManager menu, AbilityId abilityId)
         {
             this.manager = manager;
             this.menu = menu.AutoActionsMenu.AutoHealsMenu.AutoBottleMenu;
             recoveryMenu = menu.RecoveryMenu;
-
-            fountain = ObjectManager.GetEntitiesParallel<Unit>()
-                .First(x => x.IsValid && x.ClassId == ClassId.CDOTA_Unit_Fountain && x.Team == manager.MyHero.Team)
-                .Position;
 
             AbilityId = abilityId;
             Refresh();
@@ -64,9 +58,19 @@
 
         public AbilityId AbilityId { get; }
 
+        private Unit Fountain
+        {
+            get
+            {
+                return fountain ?? (fountain = EntityManager<Unit>.Entities.FirstOrDefault(
+                                        x => x.IsValid && x.ClassId == ClassId.CDOTA_Unit_Fountain
+                                             && x.Team == manager.MyHero.Team));
+            }
+        }
+
         public bool BottleCanBeRefilled()
         {
-            if (manager.MyHero.Distance2D(fountain) < 1300)
+            if (Fountain != null && manager.MyHero.Distance2D(Fountain) < 1300)
             {
                 return true;
             }

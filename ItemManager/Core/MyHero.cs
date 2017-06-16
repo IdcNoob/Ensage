@@ -24,7 +24,7 @@ namespace ItemManager.Core
 
         private readonly MultiSleeper disabledItems = new MultiSleeper();
 
-        private readonly List<OrderId> dropTarget = new List<OrderId>
+        private readonly List<OrderId> dropTargetOrders = new List<OrderId>
         {
             OrderId.Hold,
             OrderId.Stop,
@@ -131,11 +131,6 @@ namespace ItemManager.Core
         public void Dispose()
         {
             Player.OnExecuteOrder -= OnExecuteOrder;
-            DroppedItems.Clear();
-            UsableAbilities.Clear();
-            abilities.Clear();
-            items.Clear();
-            itemSlots.Clear();
         }
 
         public float Distance2D(Entity entity)
@@ -406,7 +401,7 @@ namespace ItemManager.Core
                     Target = target;
                 }
             }
-            else if (dropTarget.Contains(args.OrderId))
+            else if (dropTargetOrders.Contains(args.OrderId))
             {
                 Target = null;
             }

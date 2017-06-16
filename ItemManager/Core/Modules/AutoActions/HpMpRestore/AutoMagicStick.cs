@@ -91,7 +91,7 @@
             }
 
             var hp = args.NewValue;
-            var hpPercentage = (float)hp / manager.MyHero.Hero.MaximumHealth * 100;
+            var hpPercentage = hp / manager.MyHero.MaximumHealth * 100;
 
             if (hp <= menu.HealthThreshold || hpPercentage <= menu.HealthThresholdPct)
             {

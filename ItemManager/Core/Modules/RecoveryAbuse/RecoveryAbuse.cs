@@ -12,6 +12,7 @@
     using Ensage;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Handlers;
     using Ensage.SDK.Helpers;
 
     using EventArgs;
@@ -33,6 +34,8 @@
 
         private readonly TranquilMenu tranquilDropMenu;
 
+        private readonly IUpdateHandler updateHandler;
+
         private bool usingItems;
 
         public RecoveryAbuse(Manager manager, MenuManager menu)
@@ -41,16 +44,37 @@
             this.menu = menu.RecoveryMenu;
             tranquilDropMenu = menu.AbilityHelperMenu.TranquilMenu;
 
-            UpdateManager.Subscribe(OnUpdate);
-            Player.OnExecuteOrder += OnExecuteOrder;
-            this.menu.OnAbuseChange += OnAbuseChange;
+            updateHandler = UpdateManager.Subscribe(OnUpdate, 0, this.menu.IsEnabled);
+            if (this.menu.IsEnabled)
+            {
+                Player.OnExecuteOrder += OnExecuteOrder;
+                this.menu.OnAbuseChange += OnAbuseChange;
+            }
+            this.menu.OnEnabledChange += MenuOnEnabledChange;
         }
 
         public void Dispose()
         {
+            menu.OnEnabledChange -= MenuOnEnabledChange;
             UpdateManager.Unsubscribe(OnUpdate);
             Player.OnExecuteOrder -= OnExecuteOrder;
             menu.OnAbuseChange -= OnAbuseChange;
+        }
+
+        private void MenuOnEnabledChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (boolEventArgs.Enabled)
+            {
+                Player.OnExecuteOrder += OnExecuteOrder;
+                menu.OnAbuseChange += OnAbuseChange;
+                updateHandler.IsEnabled = true;
+            }
+            else
+            {
+                Player.OnExecuteOrder -= OnExecuteOrder;
+                menu.OnAbuseChange -= OnAbuseChange;
+                updateHandler.IsEnabled = false;
+            }
         }
 
         private void OnAbuseChange(object sender, BoolEventArgs boolEventArgs)
@@ -72,7 +96,7 @@
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!args.Entities.Contains(manager.MyHero.Hero) || !menu.IsEnabled || !args.IsPlayerInput)
+            if (!args.Entities.Contains(manager.MyHero.Hero) || !args.IsPlayerInput)
             {
                 return;
             }
@@ -86,7 +110,7 @@
 
         private void OnUpdate()
         {
-            if (sleeper.Sleeping(this) || Game.IsPaused || !menu.IsEnabled)
+            if (sleeper.Sleeping(this) || Game.IsPaused)
             {
                 return;
             }

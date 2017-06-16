@@ -25,7 +25,11 @@
 
             var enabled = new MenuItem("abuseEnabled", "Enabled").SetValue(true);
             menu.AddItem(enabled);
-            enabled.ValueChanged += (sender, args) => IsEnabled = args.GetNewValue<bool>();
+            enabled.ValueChanged += (sender, args) =>
+                {
+                    IsEnabled = args.GetNewValue<bool>();
+                    OnEnabledChange?.Invoke(null, new BoolEventArgs(IsEnabled));
+                };
             IsEnabled = enabled.IsActive();
 
             var key = new MenuItem("recoveryKey", "Hotkey").SetValue(new KeyBind('-', KeyBindType.Press));
@@ -62,6 +66,8 @@
         }
 
         public event EventHandler<BoolEventArgs> OnAbuseChange;
+
+        public event EventHandler<BoolEventArgs> OnEnabledChange;
 
         public bool IsActive { get; private set; }
 

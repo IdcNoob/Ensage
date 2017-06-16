@@ -17,13 +17,13 @@
 
     internal class Manager : IDisposable
     {
-        private readonly List<Type> types;
+        private readonly List<Type> abilityTypes;
 
         public Manager(Hero hero)
         {
             MyHero = new MyHero(hero);
 
-            types = Assembly.GetExecutingAssembly()
+            abilityTypes = Assembly.GetExecutingAssembly()
                 .GetTypes()
                 .Where(x => x.IsClass && x.Namespace?.Contains("ItemManager.Core.Abilities") == true)
                 .ToList();
@@ -51,7 +51,6 @@
             ObjectManager.OnRemoveEntity -= OnRemoveEntity;
 
             MyHero.Dispose();
-            types.Clear();
         }
 
         private void AddCurrentObjects()
@@ -108,7 +107,7 @@
                 {
                     MyHero.AddAbility(ability);
 
-                    var type = types.FirstOrDefault(
+                    var type = abilityTypes.FirstOrDefault(
                         x => x.GetCustomAttributes<AbilityAttribute>().Any(z => z.AbilityId == ability.Id));
 
                     if (type != null)

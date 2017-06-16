@@ -18,13 +18,9 @@
     using Menus;
     using Menus.Modules.AutoActions.HpMpRestore;
 
-    using SharpDX;
-
     [AbilityBasedModule(AbilityId.item_arcane_boots)]
     internal class AutoArcaneBoots : IAbilityBasedModule
     {
-        private readonly Vector3 fountain;
-
         private readonly Manager manager;
 
         private readonly AutoArcaneBootsMenu menu;
@@ -33,16 +29,14 @@
 
         private ArcaneBoots arcaneBoots;
 
+        private Unit fountain;
+
         private bool notified;
 
         public AutoArcaneBoots(Manager manager, MenuManager menu, AbilityId abilityId)
         {
             this.manager = manager;
             this.menu = menu.AutoActionsMenu.AutoHealsMenu.AutoArcaneBootsMenu;
-
-            fountain = ObjectManager.GetEntitiesParallel<Unit>()
-                .First(x => x.IsValid && x.ClassId == ClassId.CDOTA_Unit_Fountain && x.Team == manager.MyHero.Team)
-                .Position;
 
             AbilityId = abilityId;
             Refresh();
@@ -56,6 +50,16 @@
         }
 
         public AbilityId AbilityId { get; }
+
+        private Unit Fountain
+        {
+            get
+            {
+                return fountain ?? (fountain = EntityManager<Unit>.Entities.FirstOrDefault(
+                                        x => x.IsValid && x.ClassId == ClassId.CDOTA_Unit_Fountain
+                                             && x.Team == manager.MyHero.Team));
+            }
+        }
 
         public void Dispose()
         {
@@ -99,8 +103,8 @@
         private void OnUpdate()
         {
             if (!menu.IsEnabled || Game.IsPaused || !manager.MyHero.CanUseItems() || !arcaneBoots.CanBeCasted()
-                || manager.MyHero.MissingMana < arcaneBoots.ManaRestore
-                || manager.MyHero.Distance2D(fountain) < menu.FountainRange)
+                || manager.MyHero.MissingMana < arcaneBoots.ManaRestore || Fountain != null
+                && manager.MyHero.Distance2D(Fountain) < menu.FountainRange)
             {
                 return;
             }

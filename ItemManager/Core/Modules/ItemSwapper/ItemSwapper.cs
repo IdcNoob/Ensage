@@ -48,14 +48,18 @@
             this.menu.Backpack.OnSwap += BackpackOnSwap;
             this.menu.Stash.OnSwap += StashOnSwap;
             this.menu.Courier.OnSwap += CourierOnSwap;
-            Unit.OnModifierAdded += OnModifierAdded;
-            Entity.OnInt32PropertyChange += OnInt32PropertyChange;
+            if (this.menu.Auto.SwapTpScroll)
+            {
+                Unit.OnModifierAdded += OnModifierAdded;
+            }
             manager.OnItemAdd += OnItemAdd;
             manager.OnItemRemove += OnItemRemove;
+            this.menu.Auto.OnAutoMoveTpScrollChange += AutoOnAutoMoveTpScrollChange;
         }
 
         public void Dispose()
         {
+            menu.Auto.OnAutoMoveTpScrollChange -= AutoOnAutoMoveTpScrollChange;
             menu.Backpack.OnSwap -= BackpackOnSwap;
             menu.Stash.OnSwap -= StashOnSwap;
             menu.Courier.OnSwap -= CourierOnSwap;
@@ -63,6 +67,19 @@
             Entity.OnInt32PropertyChange -= OnInt32PropertyChange;
             manager.OnItemAdd -= OnItemAdd;
             manager.OnItemRemove -= OnItemRemove;
+            UpdateManager.Unsubscribe(OnUpdate);
+        }
+
+        private void AutoOnAutoMoveTpScrollChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (boolEventArgs.Enabled)
+            {
+                Unit.OnModifierAdded += OnModifierAdded;
+            }
+            else
+            {
+                Unit.OnModifierAdded -= OnModifierAdded;
+            }
         }
 
         private void BackpackOnSwap(object sender, EventArgs eventArgs)
@@ -89,6 +106,7 @@
             }
 
             updateHandler.IsEnabled = true;
+            Entity.OnInt32PropertyChange += OnInt32PropertyChange;
         }
 
         private void DisableCourierItemSwap()
@@ -96,6 +114,7 @@
             courierFollowing = false;
             itemsMovedToCourier = false;
             updateHandler.IsEnabled = false;
+            Entity.OnInt32PropertyChange -= OnInt32PropertyChange;
         }
 
         private void MoveItem(
@@ -205,7 +224,7 @@
 
         private void OnInt32PropertyChange(Entity sender, Int32PropertyChangeEventArgs args)
         {
-            if (!updateHandler.IsEnabled || args.OldValue == args.NewValue || args.PropertyName != "m_nCourierState")
+            if (args.OldValue == args.NewValue || args.PropertyName != "m_nCourierState")
             {
                 return;
             }
@@ -258,8 +277,7 @@
 
         private void OnModifierAdded(Unit sender, ModifierChangedEventArgs args)
         {
-            if (!menu.Auto.SwapTpScroll || sender.Handle != manager.MyHero.Handle
-                || args.Modifier.TextureName != "item_tpscroll")
+            if (sender.Handle != manager.MyHero.Handle || args.Modifier.TextureName != "item_tpscroll")
             {
                 return;
             }
@@ -287,6 +305,7 @@
             var courier =
                 EntityManager<Courier>.Entities.FirstOrDefault(
                     x => x.IsValid && x.IsAlive && x.Team == manager.MyHero.Team);
+
             if (courier == null || !manager.MyHero.IsAlive)
             {
                 DisableCourierItemSwap();
