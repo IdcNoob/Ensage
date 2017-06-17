@@ -59,6 +59,7 @@
 
             AddTowers();
             AddCreeps();
+            AddCouriers();
 
             ObjectManager.OnAddEntity += OnAddEntity;
             ObjectManager.OnRemoveEntity += OnRemoveEntity;
@@ -68,17 +69,38 @@
             Drawing.OnDraw += OnDraw;
         }
 
+        private void AddCouriers()
+        {
+            foreach (var courier in ObjectManager.GetEntities<Courier>()
+                .Where(x => x.IsValid && x.IsVisible && x.Team != hero.Team))
+            {
+                killableUnits.Add(new KillableCourier(courier));
+            }
+
+            foreach (var courier in ObjectManager.GetDormantEntities<Courier>()
+                .Where(x => x.IsValid && x.Team != hero.Team && killableUnits.All(z => z.Handle != x.Handle)))
+            {
+                killableUnits.Add(new KillableCourier(courier));
+            }
+        }
+
         private void AddCreeps()
         {
-            foreach (var tower in ObjectManager.GetEntitiesParallel<Creep>().Where(x => x.IsValid && x.IsAlive))
+            foreach (var creep in ObjectManager.GetEntities<Creep>().Where(x => x.IsValid && x.IsAlive && x.IsVisible))
             {
-                killableUnits.Add(new KillableCreep(tower));
+                killableUnits.Add(new KillableCreep(creep));
+            }
+
+            foreach (var creep in ObjectManager.GetDormantEntities<Creep>()
+                .Where(x => x.IsValid && x.IsAlive && killableUnits.All(z => z.Handle != x.Handle)))
+            {
+                killableUnits.Add(new KillableCreep(creep));
             }
         }
 
         private void AddTowers()
         {
-            foreach (var tower in ObjectManager.GetEntitiesParallel<Tower>().Where(x => x.IsValid && x.IsAlive))
+            foreach (var tower in ObjectManager.GetEntities<Tower>().Where(x => x.IsValid && x.IsAlive))
             {
                 killableUnits.Add(new KillableTower(tower));
             }
@@ -96,6 +118,14 @@
 
         private void OnAddEntity(EntityEventArgs args)
         {
+            var courier = args.Entity as Courier;
+            if (courier != null && courier.IsValid && courier.Team != hero.Team
+                && killableUnits.All(x => x.Handle != args.Entity.Handle))
+            {
+                killableUnits.Add(new KillableCourier(courier));
+                return;
+            }
+
             var creep = args.Entity as Creep;
             if (creep != null && creep.IsValid && killableUnits.All(x => x.Handle != args.Entity.Handle))
             {
@@ -174,6 +204,31 @@
                         new Vector2(size, hpBarSize.Y),
                         color,
                         false);
+
+                    if (menu.AutoAttackMenu.SplitHpBar && myAutoAttackDamageDone > 30)
+                    {
+                        // damage split
+                        for (var i = 1; i <= health / myAutoAttackDamageDone; i++)
+                        {
+                            Drawing.DrawRect(
+                                hpBarPosition + new Vector2(size * i - 1, 0),
+                                new Vector2(2, hpBarSize.Y),
+                                Color.Black,
+                                true);
+                        }
+                    }
+
+                    if (unit.TowerHelperHits > 0)
+                    {
+                        // tower helper hits
+                        Drawing.DrawText(
+                            "+" + unit.TowerHelperHits,
+                            "Arial",
+                            hpBarPosition + new Vector2(hpBarSize.X + 5, 0),
+                            new Vector2(21),
+                            Color.White,
+                            FontFlags.None);
+                    }
                 }
 
                 if (menu.AbilitiesMenu.IsEnabled && unit.AbilityDamageCalculated)
@@ -218,7 +273,7 @@
                         var borderWidth = menu.AbilitiesMenu.Texture.Size * 0.1f;
                         var startBorderPosition = hpBarPosition + startPositionShift;
 
-                        //border
+                        // border
                         Drawing.DrawRect(
                             startBorderPosition + new Vector2(-borderWidth),
                             new Vector2(
@@ -229,6 +284,7 @@
 
                     for (var i = 0; i < abilitiesCount; i++)
                     {
+                        // ability texture
                         Drawing.DrawRect(
                             hpBarPosition + startPositionShift + new Vector2(menu.AbilitiesMenu.Texture.Size * i, 0),
                             new Vector2(menu.AbilitiesMenu.Texture.Size),
@@ -251,7 +307,7 @@
                 return;
             }
 
-            sleeper.Sleep(750);
+            sleeper.Sleep(menu.UpdateRate);
 
             if (!menu.IsEnabled || !hero.IsAlive)
             {
@@ -263,6 +319,34 @@
                 unit.CalculateAutoAttackDamageTaken(hero);
                 unit.CalculateAbilityDamageTaken(hero, menu.AbilitiesMenu);
             }
+
+            var tower = killableUnits.OfType<KillableTower>()
+                .FirstOrDefault(x => x.IsValid() && x.Team == hero.Team && x.Distance(hero) < 1000);
+            if (tower == null)
+            {
+                return;
+            }
+
+            var towerTarget = killableUnits.FirstOrDefault(x => x.IsValid() && x.Handle == tower.Target?.Handle);
+            if (towerTarget == null)
+            {
+                return;
+            }
+
+            var towerDamage = tower.CalculateAverageDamageOn(towerTarget);
+            if (towerDamage <= 0)
+            {
+                return;
+            }
+
+            var hits = Math.Floor(towerTarget.Health / towerDamage);
+            var hpLeft = towerTarget.Health - towerDamage * hits;
+            if (hpLeft < 5 && hits > 1)
+            {
+                hpLeft = towerTarget.Health - towerDamage * (hits - 1);
+            }
+
+            towerTarget.TowerHelperHits = (int)Math.Floor(hpLeft / towerTarget.MyAutoAttackDamageDone);
         }
     }
 }

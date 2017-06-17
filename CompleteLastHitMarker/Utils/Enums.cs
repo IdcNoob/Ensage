@@ -4,6 +4,8 @@
     {
         Creep,
 
-        Tower
+        Tower,
+
+        Courier
     }
 }

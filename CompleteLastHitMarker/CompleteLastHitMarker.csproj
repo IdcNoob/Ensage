@@ -89,6 +89,7 @@
     <Compile Include="Menus\MenuManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Units\KillableCourier.cs" />
     <Compile Include="Units\KillableCreep.cs" />
     <Compile Include="Units\KillableTower.cs" />
     <Compile Include="Units\Base\KillableUnit.cs" />

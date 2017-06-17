@@ -85,6 +85,7 @@
             switch (unit.UnitType)
             {
                 case UnitType.Creep:
+                case UnitType.Courier:
                 {
                     return unit.HpBarPosition + new Vector2(CreepX, CreepY);
                 }
@@ -104,6 +105,7 @@
             switch (unit.UnitType)
             {
                 case UnitType.Creep:
+                case UnitType.Courier:
                 {
                     return unit.HpBarSize + new Vector2(CreepSizeX, CreepSizeY);
                 }

@@ -25,6 +25,12 @@
             fillHpBar.ValueChanged += (sender, args) => FillHpBar = args.GetNewValue<bool>();
             FillHpBar = fillHpBar.IsActive();
 
+            var splitHpBar = new MenuItem("autoAttackSplitHpBar", "Split hp bar").SetValue(false);
+            splitHpBar.SetTooltip("Split hp bar by my damage");
+            menu.AddItem(splitHpBar);
+            splitHpBar.ValueChanged += (sender, args) => SplitHpBar = args.GetNewValue<bool>();
+            SplitHpBar = splitHpBar.IsActive();
+
             AutoAttackColors = new AutoAttackColors(menu);
             AutoAttackHealthBar = new AutoAttackHealthBar(menu);
 
@@ -40,5 +46,7 @@
         public bool IsEnabled { get; private set; }
 
         public bool ShowDamageFromRight { get; private set; }
+
+        public bool SplitHpBar { get; private set; }
     }
 }

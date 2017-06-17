@@ -6,6 +6,8 @@
 
     internal interface IActiveAbility
     {
+        AbilityId AbilityId { get; }
+
         DamageType DamageType { get; }
 
         bool DealsAutoAttackDamage { get; }

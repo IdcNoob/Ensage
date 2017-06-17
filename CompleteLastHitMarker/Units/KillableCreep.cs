@@ -17,7 +17,7 @@
             : base(unit)
         {
             hpBarPositionFix = new Vector2(13, 21);
-            HpBarSize = new Vector2(HUDInfo.GetHPBarSizeX(Unit) - 24, HUDInfo.GetHpBarSizeY(Unit) / 2);
+            HpBarSize = new Vector2(HUDInfo.GetHPBarSizeX(Unit) - 26, HUDInfo.GetHpBarSizeY(Unit) / 2);
             DefaultTextureY = -50;
             UnitType = UnitType.Creep;
         }

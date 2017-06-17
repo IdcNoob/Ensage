@@ -19,8 +19,6 @@
 
     internal abstract class KillableUnit
     {
-        protected Unit Unit;
-
         protected KillableUnit(Unit unit)
         {
             Unit = unit;
@@ -59,9 +57,13 @@
 
         public Team Team { get; }
 
+        public int TowerHelperHits { get; set; }
+
+        public Unit Unit { get; }
+
         public UnitType UnitType { get; protected set; }
 
-        public void CalculateAbilityDamageTaken(MyHero hero, AbilitiesMenu menu)
+        public virtual void CalculateAbilityDamageTaken(MyHero hero, AbilitiesMenu menu)
         {
             if (hero.Team == Team)
             {
