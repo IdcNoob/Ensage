@@ -48,6 +48,15 @@ namespace ItemManager.Core.Modules.GoldSpender
             this.menu.OnEnabledChange += MenuOnEnabledChange;
         }
 
+        private int BuybackCost => (int)(100 + Math.Pow(manager.MyHero.Level, 2) * 1.5 + Game.GameTime / 60 * 15);
+
+        private int GoldLossOnDeath => Math.Min(
+            manager.MyHero.Player.UnreliableGold,
+            50 + (manager.MyHero.Player.ReliableGold + manager.MyHero.Player.UnreliableGold
+                  + manager.MyHero.Items.Sum(x => (int)x.Cost)) / 40);
+
+        private float RespawnTime => (float)3.8 * manager.MyHero.Level + 5 + manager.MyHero.Hero.RespawnTimePenalty;
+
         public void BuyItems()
         {
             var enabledItems = menu.ItemsToBuy.OrderByDescending(x => menu.GetAbilityPriority(x.Key))
@@ -146,7 +155,7 @@ namespace ItemManager.Core.Modules.GoldSpender
                 }
             }
 
-            if (!itemsToBuy.Any() || unreliableGold > GoldLossOnDeath() || !manager.MyHero.IsAlive)
+            if (!itemsToBuy.Any() || unreliableGold > GoldLossOnDeath || !manager.MyHero.IsAlive)
             {
                 return;
             }
@@ -169,13 +178,12 @@ namespace ItemManager.Core.Modules.GoldSpender
             reliable = manager.MyHero.Player.ReliableGold;
             unreliable = manager.MyHero.Player.UnreliableGold;
 
-            if (time <= 0 || Game.GameTime / 60 < time || manager.MyHero.Player.BuybackCooldownTime
-                >= manager.MyHero.RespawnTime)
+            if (time <= 0 || Game.GameTime / 60 < time || manager.MyHero.Player.BuybackCooldownTime >= RespawnTime)
             {
                 return;
             }
 
-            var requiredGold = manager.MyHero.BuybackCost + GoldLossOnDeath();
+            var requiredGold = BuybackCost + GoldLossOnDeath;
 
             if (unreliable + reliable >= requiredGold)
             {
@@ -193,14 +201,6 @@ namespace ItemManager.Core.Modules.GoldSpender
                     reliable -= requiredGold;
                 }
             }
-        }
-
-        private int GoldLossOnDeath()
-        {
-            return Math.Min(
-                manager.MyHero.Player.UnreliableGold,
-                50 + (manager.MyHero.Player.ReliableGold + manager.MyHero.Player.UnreliableGold
-                      + manager.MyHero.Items.Sum(x => (int)x.Cost)) / 40);
         }
 
         private void MenuOnEnabledChange(object sender, BoolEventArgs boolEventArgs)

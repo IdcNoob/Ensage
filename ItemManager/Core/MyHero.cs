@@ -48,8 +48,6 @@ namespace ItemManager.Core
 
         public IEnumerable<Ability> Abilities => abilities.Where(x => x.IsValid);
 
-        public int BuybackCost => (int)(100 + Math.Pow(Hero.Level, 2) * 1.5 + Game.GameTime / 60 * 15);
-
         public float Damage => Hero.MinimumDamage + Hero.BonusDamage;
 
         public List<Item> DroppedItems { get; } = new List<Item>();
@@ -89,8 +87,6 @@ namespace ItemManager.Core
         public Player Player { get; }
 
         public Vector3 Position => Hero.Position;
-
-        public float RespawnTime => (float)3.8 * Hero.Level + 5 + Hero.RespawnTimePenalty;
 
         public Unit Target { get; private set; }
 

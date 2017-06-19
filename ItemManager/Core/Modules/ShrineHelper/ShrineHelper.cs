@@ -53,7 +53,7 @@
         {
             if (boolEventArgs.Enabled)
             {
-                Player.OnExecuteOrder -= OnExecuteOrder;
+                Player.OnExecuteOrder += OnExecuteOrder;
             }
             else
             {
@@ -109,7 +109,10 @@
                 return;
             }
 
-            manager.MyHero.DropItems(ItemStats.Any, true);
+            if (manager.MyHero.ItemsCanBeDisabled())
+            {
+                manager.MyHero.DropItems(ItemStats.Any, true);
+            }
         }
     }
 }

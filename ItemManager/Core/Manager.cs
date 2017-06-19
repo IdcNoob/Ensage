@@ -55,42 +55,26 @@
 
         private void AddCurrentObjects()
         {
-            var added = new List<uint>();
+            var entities = new List<Entity>();
 
-            foreach (var hero in ObjectManager.GetEntitiesParallel<Player>()
-                .Where(x => x != null && x.IsValid && x.Hero != null && x.Hero.IsValid)
-                .Select(x => x.Hero)
-                .OrderByDescending(x => x.Team == MyHero.Team))
+            entities.AddRange(ObjectManager.GetEntitiesParallel<Unit>().Where(x => x.IsValid && x.UnitType != 0));
+            entities.AddRange(ObjectManager.GetDormantEntities<Unit>().Where(x => x.IsValid && x.UnitType != 0));
+
+            entities.AddRange(ObjectManager.GetEntitiesParallel<Ability>().Where(x => x.IsValid));
+            entities.AddRange(ObjectManager.GetDormantEntities<Ability>().Where(x => x.IsValid));
+
+            entities.AddRange(
+                ObjectManager.GetEntitiesParallel<PhysicalItem>()
+                    .Where(x => x.IsValid && x.Item.IsValid)
+                    .Select(x => x.Item));
+            entities.AddRange(
+                ObjectManager.GetDormantEntities<PhysicalItem>()
+                    .Where(x => x.IsValid && x.Item.IsValid)
+                    .Select(x => x.Item));
+
+            foreach (var entity in entities)
             {
-                OnAddEntity(new EntityEventArgs(hero));
-                added.Add(hero.Handle);
-
-                var abilities = new List<Ability>();
-
-                abilities.AddRange(hero.Spellbook.Spells);
-                abilities.AddRange(hero.Inventory.Items);
-                abilities.AddRange(hero.Inventory.Stash);
-                abilities.AddRange(hero.Inventory.Backpack);
-
-                foreach (var ability in abilities)
-                {
-                    OnAddEntity(new EntityEventArgs(ability));
-                    added.Add(ability.Handle);
-                }
-            }
-
-            foreach (var unit in ObjectManager.GetEntitiesParallel<Unit>()
-                .Where(x => x.IsValid && !added.Contains(x.Handle)))
-            {
-                OnAddEntity(new EntityEventArgs(unit));
-                added.Add(unit.Handle);
-            }
-
-            foreach (var physicalItem in ObjectManager.GetEntitiesParallel<PhysicalItem>()
-                .Where(x => x.IsValid && !added.Contains(x.Handle) && !added.Contains(x.Item.Handle)))
-            {
-                OnAddEntity(new EntityEventArgs(physicalItem.Item));
-                added.Add(physicalItem.Item.Handle);
+                OnAddEntity(new EntityEventArgs(entity));
             }
 
             ObjectManager.OnAddEntity += OnAddEntity;
