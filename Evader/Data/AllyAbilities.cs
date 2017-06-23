@@ -62,6 +62,8 @@ namespace Evader.Data
                     ability => new DarkRift(ability, AbilityType.Counter, AbilityCastTarget.Ally)
                 },
                 { "item_sphere", ability => new LinkensSphere(ability, AbilityType.Counter, AbilityCastTarget.Ally) },
+                { "item_solar_crest", ability => new MedallionOfCourage(ability, AbilityType.Counter, AbilityCastTarget.Ally) },
+                { "item_medallion_of_courage", ability => new MedallionOfCourage(ability, AbilityType.Counter, AbilityCastTarget.Ally) },
                 { "item_bloodstone", ability => new Bloodstone(ability, AbilityType.Counter) },
                 { "item_armlet", ability => new ArmletOfMordiggian(ability, AbilityType.Counter) },
                 { "puck_phase_shift", ability => new PhaseShift(ability, AbilityType.Counter) },

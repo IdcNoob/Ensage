@@ -266,13 +266,14 @@
             "item_buckler",
             "invoker_deafening_blast",
             "item_heavens_halberd",
+            "item_solar_crest",
             "keeper_of_the_light_blinding_light",
             "brewmaster_drunken_haze",
-            "item_rod_of_atos",
+            "item_medallion_of_courage",
             "tusk_frozen_sigil",
             //"oracle_fates_edict",
-            "lich_frost_armor",
             "bane_enfeeble",
+            "lich_frost_armor"
         };
     }
 }
