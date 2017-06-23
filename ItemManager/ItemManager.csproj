@@ -142,6 +142,7 @@
     <Compile Include="Menus\Modules\ItemSwap\ItemSwapMenu.cs" />
     <Compile Include="Menus\MenuManager.cs" />
     <Compile Include="Menus\Modules\AutoActions\Actions\PowerTreadsMenu.cs" />
+    <Compile Include="Menus\Modules\OffensiveAbilities\AbilitySettings\DiffusalBladeSettings.cs" />
     <Compile Include="Menus\Modules\OffensiveAbilities\AbilitySettings\OffensiveAbilitySettings.cs" />
     <Compile Include="Menus\Modules\OffensiveAbilities\OffensiveAbilitiesMenu.cs" />
     <Compile Include="Menus\Modules\Recovery\ItemSettings\BottleSettings.cs" />

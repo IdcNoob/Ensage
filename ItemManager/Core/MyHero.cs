@@ -392,7 +392,7 @@ namespace ItemManager.Core
             if (args.OrderId == OrderId.AttackTarget)
             {
                 var target = args.Target as Hero;
-                if (target != null && target.IsAlive && !target.IsIllusion)
+                if (target != null && target.IsAlive && !target.IsIllusion && target.Team != Team)
                 {
                     Target = target;
                 }

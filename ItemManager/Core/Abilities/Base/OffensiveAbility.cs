@@ -3,7 +3,6 @@
     using Attributes;
 
     using Ensage;
-    using Ensage.Common.Extensions;
     using Ensage.Common.Objects;
     using Ensage.SDK.Extensions;
 
@@ -42,14 +41,14 @@
                 return false;
             }
 
-            if (!target.IsAlive || !target.IsVisible || UnitExtensions.IsMagicImmune(target)
-                || EntityExtensions.Distance2D(target, Manager.MyHero.Position) > GetCastRange() || target.IsInvul()
+            if (!target.IsAlive || !target.IsVisible || target.IsMagicImmune()
+                || target.Distance2D(Manager.MyHero.Position) > GetCastRange() || target.IsInvulnerable()
                 || target.IsReflectingAbilities())
             {
                 return false;
             }
 
-            if (!Menu.BreakLinkens && UnitExtensions.IsLinkensProtected(target))
+            if (!Menu.BreakLinkens && target.IsLinkensProtected())
             {
                 return false;
             }
@@ -59,22 +58,22 @@
                 return false;
             }
 
-            if (!Menu.SilenceStack && UnitExtensions.IsSilenced(target) && !target.IsReallyHexed())
+            if (!Menu.SilenceStack && target.IsSilenced() && !target.IsReallyHexed())
             {
                 return false;
             }
 
-            if (!Menu.RootStack && UnitExtensions.IsRooted(target))
+            if (!Menu.RootStack && target.IsRooted())
             {
                 return false;
             }
 
-            if (!Menu.StunStack && UnitExtensions.IsStunned(target))
+            if (!Menu.StunStack && target.IsStunned())
             {
                 return false;
             }
 
-            if (!Menu.DisarmStack && UnitExtensions.IsDisarmed(target) && !target.IsReallyHexed())
+            if (!Menu.DisarmStack && target.IsDisarmed() && !target.IsReallyHexed())
             {
                 return false;
             }

@@ -23,7 +23,7 @@
             BlockShrineUsage = enabled.IsActive();
 
             var hpUseThreshold =
-                new MenuItem("shrineHpThreshold", "HP% threshold  (use)").SetValue(new Slider(85, 50, 99));
+                new MenuItem("shrineHpThreshold", "HP% threshold (use)").SetValue(new Slider(85, 50, 99));
             hpUseThreshold.SetTooltip("Block shrine usage if you have more hp%");
             menu.AddItem(hpUseThreshold);
             hpUseThreshold.ValueChanged += (sender, args) => HpUseThreshold = args.GetNewValue<Slider>().Value;
