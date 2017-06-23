@@ -46,12 +46,12 @@
 
                 if (ability is IModifier)
                 {
-                    var modiferCounterItem = menu.Item(menuItemName + "modifier");
-                    modiferCounterItem.ValueChanged += (sender, args) =>
+                    var modifierCounterItem = menu.Item(menuItemName + "modifier");
+                    modifierCounterItem.ValueChanged += (sender, args) =>
                         {
                             ability.ModifierCounterEnabled = args.GetNewValue<bool>();
                         };
-                    ability.ModifierCounterEnabled = modiferCounterItem.IsActive();
+                    ability.ModifierCounterEnabled = modifierCounterItem.IsActive();
                 }
 
                 if (!modifierOnly)
@@ -172,13 +172,13 @@
 
             if (ability is IModifier)
             {
-                var modiferCounter = new MenuItem(menuItemName + "modifier", "Modifer counter").SetValue(true);
-                abilityMenu.AddItem(modiferCounter);
-                modiferCounter.ValueChanged += (sender, args) =>
+                var modifierCounter = new MenuItem(menuItemName + "modifier", "Modifier counter").SetValue(true);
+                abilityMenu.AddItem(modifierCounter);
+                modifierCounter.ValueChanged += (sender, args) =>
                     {
                         ability.ModifierCounterEnabled = args.GetNewValue<bool>();
                     };
-                ability.ModifierCounterEnabled = modiferCounter.IsActive();
+                ability.ModifierCounterEnabled = modifierCounter.IsActive();
                 abilityMenu.DisplayName = "  *" + (modifierOnly ? "*" : string.Empty);
                 await Task.Delay(100);
             }

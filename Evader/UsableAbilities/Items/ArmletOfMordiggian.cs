@@ -345,7 +345,7 @@
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!Menu.ArmletAutoToggle || !args.IsPlayerInput || !args.Entities.Contains(Hero)
+            if (!Menu.ArmletAutoToggle || !args.Entities.Contains(Hero)
                 || args.OrderId != OrderId.ToggleAbility || args.Ability?.ClassId != ClassId.CDOTA_Item_Armlet)
             {
                 return;
@@ -354,6 +354,11 @@
             if (Sleeper.Sleeping || !canToggle)
             {
                 args.Process = false;
+                return;
+            }
+
+            if (!args.IsPlayerInput)
+            {
                 return;
             }
 
