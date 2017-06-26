@@ -38,7 +38,9 @@
 
             ExecuteOrder,
 
-            GameEvent
+            GameEvent,
+
+            Information
         }
 
         public void EmptyLine()

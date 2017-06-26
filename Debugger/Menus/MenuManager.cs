@@ -29,13 +29,13 @@
             OnChangeMenu = new OnChangeMenu(menu);
             OnExecuteOrderMenu = new OnExecuteOrderMenu(menu);
             GameEventsMenu = new GameEventsMenu(menu);
-            DumpingMenu = new DumpingMenu(menu);
+            DumpMenu = new DumpMenu(menu);
             InfoMenu = new InfoMenu(menu);
 
             menu.AddToMainMenu();
         }
 
-        public DumpingMenu DumpingMenu { get; }
+        public DumpMenu DumpMenu { get; }
 
         public GameEventsMenu GameEventsMenu { get; }
 

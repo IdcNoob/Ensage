@@ -11,7 +11,6 @@
             var enabled = new MenuItem("handlesEnabled", "Enabled").SetValue(false)
                 .SetTooltip("Entity.OnHandlePropertyChange");
             menu.AddItem(enabled);
-            enabled.ValueChanged += (sender, args) => Enabled = args.GetNewValue<bool>();
             enabled.ValueChanged += (sender, args) =>
                 {
                     Enabled = args.GetNewValue<bool>();

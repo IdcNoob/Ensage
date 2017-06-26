@@ -11,7 +11,6 @@
             var enabled = new MenuItem("int64Enabled", "Enabled").SetValue(false)
                 .SetTooltip("Entity.OnInt64PropertyChange");
             menu.AddItem(enabled);
-            enabled.ValueChanged += (sender, args) => Enabled = args.GetNewValue<bool>();
             enabled.ValueChanged += (sender, args) =>
                 {
                     Enabled = args.GetNewValue<bool>();

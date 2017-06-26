@@ -11,7 +11,6 @@
             var enabled = new MenuItem("boolsEnabled", "Enabled").SetValue(false)
                 .SetTooltip("Entity.OnBoolPropertyChange");
             menu.AddItem(enabled);
-            enabled.ValueChanged += (sender, args) => Enabled = args.GetNewValue<bool>();
             enabled.ValueChanged += (sender, args) =>
                 {
                     Enabled = args.GetNewValue<bool>();
@@ -35,10 +34,18 @@
             heroesOnly.ValueChanged += (sender, args) => HeroesOnly = args.GetNewValue<bool>();
             HeroesOnly = heroesOnly.IsActive();
 
+            var ignoreUseless = new MenuItem("ignoreBools", "Ignore useless bools").SetValue(false);
+            menu.AddItem(ignoreUseless);
+            ignoreUseless.ValueChanged += (sender, args) => IgnoreUseless = args.GetNewValue<bool>();
+            IgnoreUseless = ignoreUseless.IsActive();
+
+
             mainMenu.AddSubMenu(menu);
         }
 
         public bool Enabled { get; private set; }
+
+        public bool IgnoreUseless { get; private set; }
 
         public bool HeroesOnly { get; private set; }
     }

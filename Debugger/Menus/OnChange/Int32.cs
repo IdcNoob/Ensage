@@ -11,7 +11,6 @@
             var enabled = new MenuItem("int32Enabled", "Enabled").SetValue(false)
                 .SetTooltip("Entity.OnInt32PropertyChange");
             menu.AddItem(enabled);
-            enabled.ValueChanged += (sender, args) => Enabled = args.GetNewValue<bool>();
             enabled.ValueChanged += (sender, args) =>
                 {
                     Enabled = args.GetNewValue<bool>();
@@ -40,6 +39,11 @@
             ignoreUseless.ValueChanged += (sender, args) => IgnoreUseless = args.GetNewValue<bool>();
             IgnoreUseless = ignoreUseless.IsActive();
 
+            var ignoreSemiUseless = new MenuItem("semiIgnoreInt32", "Ignore semi useless ints").SetValue(false);
+            menu.AddItem(ignoreSemiUseless);
+            ignoreSemiUseless.ValueChanged += (sender, args) => IgnoreSemiUseless = args.GetNewValue<bool>();
+            IgnoreSemiUseless = ignoreSemiUseless.IsActive();
+
             mainMenu.AddSubMenu(menu);
         }
 
@@ -48,5 +52,7 @@
         public bool HeroesOnly { get; private set; }
 
         public bool IgnoreUseless { get; private set; }
+
+        public bool IgnoreSemiUseless { get; private set; }
     }
 }

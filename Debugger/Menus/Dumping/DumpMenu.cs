@@ -2,9 +2,9 @@
 {
     using Ensage.Common.Menu;
 
-    internal class DumpingMenu
+    internal class DumpMenu
     {
-        public DumpingMenu(Menu mainMenu)
+        public DumpMenu(Menu mainMenu)
         {
             var menu = new Menu("Info dumping", "infoDumping");
 

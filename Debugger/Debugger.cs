@@ -50,11 +50,12 @@
             Game.OnUIStateChanged -= OnUiStateChanged;
 
             Drawing.OnDraw -= OnDraw;
+            Game.OnWndProc -= GameOnOnWndProc;
 
-            mainMenu.DumpingMenu.Spells.OnDump -= SpellsOnDump;
-            mainMenu.DumpingMenu.Items.OnDump -= ItemsOnDump;
-            mainMenu.DumpingMenu.Modifiers.OnDump -= ModifiersOnDump;
-            mainMenu.DumpingMenu.Units.OnDump -= UnitsOnDump;
+            mainMenu.DumpMenu.Spells.OnDump -= SpellsOnDump;
+            mainMenu.DumpMenu.Items.OnDump -= ItemsOnDump;
+            mainMenu.DumpMenu.Modifiers.OnDump -= ModifiersOnDump;
+            mainMenu.DumpMenu.Units.OnDump -= UnitsOnDump;
 
             mainMenu.OnClose();
         }
@@ -89,11 +90,24 @@
             Game.OnUIStateChanged += OnUiStateChanged;
 
             Drawing.OnDraw += OnDraw;
+            Game.OnWndProc += GameOnOnWndProc;
 
-            mainMenu.DumpingMenu.Spells.OnDump += SpellsOnDump;
-            mainMenu.DumpingMenu.Items.OnDump += ItemsOnDump;
-            mainMenu.DumpingMenu.Modifiers.OnDump += ModifiersOnDump;
-            mainMenu.DumpingMenu.Units.OnDump += UnitsOnDump;
+            mainMenu.DumpMenu.Spells.OnDump += SpellsOnDump;
+            mainMenu.DumpMenu.Items.OnDump += ItemsOnDump;
+            mainMenu.DumpMenu.Modifiers.OnDump += ModifiersOnDump;
+            mainMenu.DumpMenu.Units.OnDump += UnitsOnDump;
+        }
+
+        private void GameOnOnWndProc(WndEventArgs args)
+        {
+            if (mainMenu.InfoMenu.ShowGameMousePosition && args.Msg == (uint)WindowsMessages.LBUTTONDOWN)
+            {
+                logger.Write(
+                    "Mouse position: " + Math.Round(Game.MousePosition.X) + ", " + Math.Round(Game.MousePosition.Y)
+                    + ", " + Math.Round(Game.MousePosition.Z),
+                    Logger.Type.Information,
+                    Color.White);
+            }
         }
 
         private void ItemsOnDump(object sender, EventArgs e)
@@ -104,7 +118,7 @@
                 return;
             }
 
-            var menu = mainMenu.DumpingMenu.Items;
+            var menu = mainMenu.DumpMenu.Items;
 
             const Color Color = Color.Yellow;
             const Logger.Type Type = Logger.Type.Item;
@@ -180,7 +194,7 @@
                 return;
             }
 
-            var menu = mainMenu.DumpingMenu.Modifiers;
+            var menu = mainMenu.DumpMenu.Modifiers;
 
             const Color Color = Color.Yellow;
             const Logger.Type Type = Logger.Type.Modifier;
@@ -233,6 +247,11 @@
             logger.Write("Animation changed", Type, Color, true);
             logger.Write("Sender name: " + sender.Name, Type, Color);
             logger.Write("Sender classID: " + sender.ClassId, Type, Color);
+            if (sender.Owner != null)
+            {
+                logger.Write("Owner Name: " + sender.Owner.Name, Type, Color);
+                logger.Write("Owner classID: " + sender.Owner.ClassId, Type, Color);
+            }
             logger.Write("Name: " + sender.Animation.Name, Type, Color);
             logger.EmptyLine();
         }
@@ -246,17 +265,23 @@
 
             var menu = mainMenu.OnChangeMenu.Bools;
 
-            if (!menu.Enabled || menu.HeroesOnly && !(sender is Hero))
+            if (!menu.Enabled || menu.HeroesOnly && !(sender is Hero)
+                || menu.IgnoreUseless && Data.IgnoredBools.Contains(args.PropertyName))
             {
                 return;
             }
-
+            
             const Color Color = Color.Cyan;
             const Logger.Type Type = Logger.Type.Bool;
 
             logger.Write("Bool property changed", Type, Color, true);
             logger.Write("Sender name: " + sender.Name, Type, Color);
             logger.Write("Sender classID: " + sender.ClassId, Type, Color);
+            if (sender.Owner != null)
+            {
+                logger.Write("Owner Name: " + sender.Owner.Name, Type, Color);
+                logger.Write("Owner classID: " + sender.Owner.ClassId, Type, Color);
+            }
             logger.Write("Property name: " + args.PropertyName, Type, Color);
             logger.Write("Property values: " + args.OldValue + " => " + args.NewValue, Type, Color);
             logger.EmptyLine();
@@ -469,7 +494,8 @@
             var menu = mainMenu.OnChangeMenu.Floats;
 
             if (!menu.Enabled || menu.HeroesOnly && !(sender is Hero)
-                || menu.IgnoreUseless && Data.IgnoredFloats.Contains(args.PropertyName))
+                || menu.IgnoreUseless && Data.IgnoredFloats.Contains(args.PropertyName)
+                || menu.IgnoreSemiUseless && Data.SemiIgnoredFloats.Contains(args.PropertyName))
             {
                 return;
             }
@@ -480,6 +506,11 @@
             logger.Write("Float property changed", Type, Color, true);
             logger.Write("Sender name: " + sender.Name, Type, Color);
             logger.Write("Sender classID: " + sender.ClassId, Type, Color);
+            if (sender.Owner != null)
+            {
+                logger.Write("Owner Name: " + sender.Owner.Name, Type, Color);
+                logger.Write("Owner classID: " + sender.Owner.ClassId, Type, Color);
+            }
             logger.Write("Property name: " + args.PropertyName, Type, Color);
             logger.Write("Property values: " + args.OldValue + " => " + args.NewValue, Type, Color);
             logger.EmptyLine();
@@ -517,6 +548,11 @@
             logger.Write("Handle property changed", Type, Color, true);
             logger.Write("Sender name: " + sender.Name, Type, Color);
             logger.Write("Sender classID: " + sender.ClassId, Type, Color);
+            if (sender.Owner != null)
+            {
+                logger.Write("Owner Name: " + sender.Owner.Name, Type, Color);
+                logger.Write("Owner classID: " + sender.Owner.ClassId, Type, Color);
+            }
             logger.Write("Property name: " + args.PropertyName, Type, Color);
             logger.Write("Property value: " + args.OldValue?.Name, Type, Color);
             logger.EmptyLine();
@@ -532,7 +568,8 @@
             var menu = mainMenu.OnChangeMenu.Int32;
 
             if (!menu.Enabled || menu.HeroesOnly && !(sender is Hero)
-                || menu.IgnoreUseless && Data.IgnoredInt32.Contains(args.PropertyName))
+                || menu.IgnoreUseless && Data.IgnoredInt32.Contains(args.PropertyName)
+                || menu.IgnoreSemiUseless && Data.SemiIgnoredInt32.Contains(args.PropertyName))
             {
                 return;
             }
@@ -543,6 +580,11 @@
             logger.Write("Int32 property changed", Type, Color, true);
             logger.Write("Sender name: " + sender.Name, Type, Color);
             logger.Write("Sender classID: " + sender.ClassId, Type, Color);
+            if (sender.Owner != null)
+            {
+                logger.Write("Owner Name: " + sender.Owner.Name, Type, Color);
+                logger.Write("Owner classID: " + sender.Owner.ClassId, Type, Color);
+            }
             logger.Write("Property name: " + args.PropertyName, Type, Color);
             logger.Write("Property values: " + args.OldValue + " => " + args.NewValue, Type, Color);
             logger.EmptyLine();
@@ -568,6 +610,11 @@
             logger.Write("Int64 property changed", Type, Color, true);
             logger.Write("Sender name: " + sender.Name, Type, Color);
             logger.Write("Sender classID: " + sender.ClassId, Type, Color);
+            if (sender.Owner != null)
+            {
+                logger.Write("Owner Name: " + sender.Owner.Name, Type, Color);
+                logger.Write("Owner classID: " + sender.Owner.ClassId, Type, Color);
+            }
             logger.Write("Property name: " + args.PropertyName, Type, Color);
             logger.Write("Property values: " + args.OldValue + " => " + args.NewValue, Type, Color);
             logger.EmptyLine();
@@ -719,6 +766,11 @@
             logger.Write("String property changed", Type, Color, true);
             logger.Write("Sender name: " + sender.Name, Type, Color);
             logger.Write("Sender classID: " + sender.ClassId, Type, Color);
+            if (sender.Owner != null)
+            {
+                logger.Write("Owner Name: " + sender.Owner.Name, Type, Color);
+                logger.Write("Owner classID: " + sender.Owner.ClassId, Type, Color);
+            }
             logger.Write("Property name: " + args.PropertyName, Type, Color);
             logger.Write("Property values: " + args.OldValue + " => " + args.NewValue, Type, Color);
             logger.EmptyLine();
@@ -810,7 +862,7 @@
                 return;
             }
 
-            var menu = mainMenu.DumpingMenu.Spells;
+            var menu = mainMenu.DumpMenu.Spells;
 
             const Color Color = Color.Yellow;
             const Logger.Type Type = Logger.Type.Spell;
