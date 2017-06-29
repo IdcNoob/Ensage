@@ -12,9 +12,6 @@
 
     using Utils;
 
-    using EntityExtensions = Ensage.SDK.Extensions.EntityExtensions;
-    using UnitExtensions = Ensage.SDK.Extensions.UnitExtensions;
-
     [Ability(AbilityId.item_orchid)]
     [Ability(AbilityId.item_sheepstick)]
     [Ability(AbilityId.item_bloodthorn)]

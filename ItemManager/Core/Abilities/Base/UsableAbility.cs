@@ -24,6 +24,14 @@
         public UsableAbility(Ability ability, Manager manager)
         {
             Manager = manager;
+
+            if (ability == null)
+            {
+                //shrine
+                Name = "filler_ability";
+                return;
+            }
+
             Ability = ability;
             IsItem = ability is Item;
             Handle = ability.Handle;

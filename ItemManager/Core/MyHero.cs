@@ -160,6 +160,11 @@ namespace ItemManager.Core
             {
                 if (toBackpack && ItemsCanBeDisabled())
                 {
+                    if (!item.CanBeMovedToBackpack())
+                    {
+                        continue;
+                    }
+
                     var slot = GetSlot(item.Handle, ItemStoredPlace.Inventory);
                     item.MoveItem(ItemSlot.BackPack_1);
                     disabledItems.Sleep(6000, item.Handle);

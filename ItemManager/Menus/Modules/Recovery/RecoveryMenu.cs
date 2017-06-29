@@ -86,7 +86,8 @@
             AbilityId.item_guardian_greaves,
             AbilityId.item_mekansm,
             AbilityId.item_soul_ring,
-            AbilityId.item_arcane_boots
+            AbilityId.item_arcane_boots,
+            AbilityId.filler_ability
         };
 
         public void ForceDisable()

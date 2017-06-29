@@ -22,6 +22,7 @@
         public Manager(Hero hero)
         {
             MyHero = new MyHero(hero);
+            MyHero.UsableAbilities.Add(new Shrine(this));
 
             abilityTypes = Assembly.GetExecutingAssembly()
                 .GetTypes()

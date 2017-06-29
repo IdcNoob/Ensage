@@ -111,6 +111,7 @@
             {
                 case AbilityId.item_gem:
                 case AbilityId.item_rapier:
+                case AbilityId.item_bloodstone:
                 {
                     return false;
                 }

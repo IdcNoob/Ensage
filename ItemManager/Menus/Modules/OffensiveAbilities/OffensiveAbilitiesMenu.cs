@@ -49,8 +49,8 @@
                 abilityToggler.Add(ability.Name, false);
                 priorityChanger.Add(ability.Name);
                 abilitySettingsMenu = ability.Name == "item_diffusal_blade"
-                                          ? new DiffusalBladeSettings(this.settingsMenu, displayName, ability.Name)
-                                          : new OffensiveAbilitySettings(this.settingsMenu, displayName, ability.Name);
+                                          ? new DiffusalBladeSettings(settingsMenu, displayName, ability.Name)
+                                          : new OffensiveAbilitySettings(settingsMenu, displayName, ability.Name);
                 abilityMenus.Add(displayName, abilitySettingsMenu);
             }
 

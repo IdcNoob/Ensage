@@ -62,6 +62,7 @@
     <Compile Include="Attributes\ModuleAttribute.cs" />
     <Compile Include="Core\Abilities\Base\DefensiveAbility.cs" />
     <Compile Include="Core\Abilities\Base\OffensiveAbility.cs" />
+    <Compile Include="Core\Abilities\Base\Shrine.cs" />
     <Compile Include="Core\Abilities\BlinkDagger.cs" />
     <Compile Include="Core\Abilities\DiffusalBlade.cs" />
     <Compile Include="Core\Abilities\GuardianGreaves.cs" />

@@ -8,7 +8,7 @@
     using Ensage.Common.Objects;
     using Ensage.SDK.Extensions;
 
-    using ItemManager.Menus.Modules.OffensiveAbilities.AbilitySettings;
+    using Menus.Modules.OffensiveAbilities.AbilitySettings;
 
     using Utils;
 
@@ -84,7 +84,7 @@
             {
                 return false;
             }
-        
+
             return true;
         }
     }
