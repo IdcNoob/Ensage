@@ -68,12 +68,17 @@
             blockAbilityUsage.ValueChanged += (sender, args) => BlockAbilityUsage = args.GetNewValue<bool>();
             BlockAbilityUsage = blockAbilityUsage.IsActive();
 
-            var blockOnlyPlayerInput = new MenuItem("blockPlayerInput", "Block only player input").SetValue(false)
-                .SetTooltip(
-                    "If disabled input will be blocked from all assemblies when avoiding, otherwise only from player");
-            menu.AddItem(blockOnlyPlayerInput);
-            blockOnlyPlayerInput.ValueChanged += (sender, args) => BlockOnlyPlayerInput = args.GetNewValue<bool>();
-            BlockOnlyPlayerInput = blockOnlyPlayerInput.IsActive();
+            var blockPlayerInout = new MenuItem("blockPlayerInput", "Block player input").SetValue(true)
+                .SetTooltip("Block actions from player when evading");
+            menu.AddItem(blockPlayerInout);
+            blockPlayerInout.ValueChanged += (sender, args) => BlockPlayerInput = args.GetNewValue<bool>();
+            BlockPlayerInput = blockPlayerInout.IsActive();
+
+            var blockAssemblyInout = new MenuItem("blockAssemblyInput", "Block script input").SetValue(true)
+                .SetTooltip("Block actions from other assemblies when evading");
+            menu.AddItem(blockAssemblyInout);
+            blockAssemblyInout.ValueChanged += (sender, args) => BlockAssemblyInput = args.GetNewValue<bool>();
+            BlockAssemblyInput = blockAssemblyInout.IsActive();
 
             var invisIgnore = new MenuItem("invisIgnore", "Ignore counter if invisible").SetValue(false)
                 .SetTooltip("Don't counter enemy abilities if your hero is invisible");
@@ -122,7 +127,9 @@
 
         public bool BlockAbilityUsage { get; private set; }
 
-        public bool BlockOnlyPlayerInput { get; private set; }
+        public bool BlockPlayerInput { get; private set; }
+
+        public bool BlockAssemblyInput { get; private set; }
 
         public bool CancelAnimation { get; private set; }
 

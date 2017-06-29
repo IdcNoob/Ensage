@@ -169,8 +169,13 @@
 
         public void OnExecuteAction(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!args.Entities.Contains(Hero) || !Menu.Hotkeys.EnabledEvader
-                || Menu.Settings.BlockOnlyPlayerInput && !args.IsPlayerInput)
+            if (!args.Entities.Contains(Hero) || !Menu.Hotkeys.EnabledEvader)
+            {
+                return;
+            }
+
+            if (!Menu.Settings.BlockPlayerInput && args.IsPlayerInput
+                || !Menu.Settings.BlockAssemblyInput && !args.IsPlayerInput)
             {
                 return;
             }
@@ -777,7 +782,7 @@
 
                                     if (!ability.ObstacleStays)
                                     {
-                                        Pathfinder.CalculatePathFromObstacle(remainingWalkTime - 0.2f, out success);
+                                        Pathfinder.CalculatePathFromObstacle(remainingWalkTime - 0.3f, out success);
 
                                         if (success)
                                         {
@@ -789,7 +794,7 @@
 
                                     if (success)
                                     {
-                                        var time = 0.1f;
+                                        var time = 0.15f;
                                         for (var i = 0; i < path.Count; i++)
                                         {
                                             Hero.Move(path[i], i != 0);
@@ -843,7 +848,7 @@
                                 else
                                 {
                                     Pathfinder.CalculatePathFromObstacle(
-                                        Math.Max(remainingWalkTime - 0.2f, 0),
+                                        Math.Max(remainingWalkTime - 0.25f, 0),
                                         out success);
 
                                     if (success)
@@ -856,7 +861,7 @@
 
                                     if (success)
                                     {
-                                        var time = 0.1f;
+                                        var time = 0.15f;
 
                                         if (Menu.Settings.CancelAnimation && ability.IsDisable)
                                         {
