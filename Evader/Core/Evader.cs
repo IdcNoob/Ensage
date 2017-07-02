@@ -153,13 +153,13 @@
         {
             statusDrawer.Draw();
 
-            if (Menu.Debug.DrawAbilities)
-            {
-                foreach (var evadableAbility in abilityUpdater.EvadableAbilities)
-                {
-                    evadableAbility.Draw();
-                }
-            }
+            //if (Menu.Debug.DrawAbilities)
+            //{
+            //    foreach (var evadableAbility in abilityUpdater.EvadableAbilities)
+            //    {
+            //        evadableAbility.Draw();
+            //    }
+            //}
 
             if (Menu.Debug.DrawMap)
             {
