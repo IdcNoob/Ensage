@@ -21,7 +21,6 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
         }
-
         public override void Check()
         {
             if (StartCast <= 0 && IsInPhase && AbilityOwner.IsVisible)

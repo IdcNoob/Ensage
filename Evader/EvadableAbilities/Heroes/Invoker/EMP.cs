@@ -18,7 +18,6 @@
             DisablePathfinder = true;
 
             CounterAbilities.Add(PhaseShift);
-            CounterAbilities.Add(BallLightning);
             CounterAbilities.Add(SleightOfFist);
             CounterAbilities.Add(Manta);
             CounterAbilities.Add(Eul);
