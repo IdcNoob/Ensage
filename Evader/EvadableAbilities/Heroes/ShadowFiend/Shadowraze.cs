@@ -21,7 +21,10 @@
             CounterAbilities.Add(Armlet);
             CounterAbilities.Add(Bloodstone);
         }
-
+        protected override float GetRadius()
+        {
+            return base.GetRadius() + 200;
+        }
         public override void Check()
         {
             if (StartCast <= 0 && IsInPhase && AbilityOwner.IsVisible)
