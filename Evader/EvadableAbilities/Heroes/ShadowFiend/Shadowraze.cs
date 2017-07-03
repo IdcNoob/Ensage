@@ -23,7 +23,7 @@
         }
         protected override float GetRadius()
         {
-            return base.GetRadius() + 200;
+            return base.GetRadius() + 100;
         }
         public override void Check()
         {
