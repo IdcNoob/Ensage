@@ -15,7 +15,6 @@
             DisableAbilities.AddRange(DisableAbilityNames);
 
             CounterAbilities.Add(PhaseShift);
-            CounterAbilities.Add(BallLightning);
             CounterAbilities.Add(Eul);
             CounterAbilities.Add(TricksOfTheTrade);
             CounterAbilities.AddRange(VsDamage);
