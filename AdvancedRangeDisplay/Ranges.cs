@@ -107,8 +107,8 @@
             {
                 if (!addedHeroes.Contains(hero.HeroId))
                 {
-                    menu.AddHeroMenu(hero);
                     addedHeroes.Add(hero.HeroId);
+                    menu.AddHeroMenu(hero);
                 }
 
                 if (menu.IsItemsMenuEnabled(hero))
