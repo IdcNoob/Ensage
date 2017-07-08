@@ -57,11 +57,17 @@
             mainMenu.DumpMenu.Modifiers.OnDump -= ModifiersOnDump;
             mainMenu.DumpMenu.Units.OnDump -= UnitsOnDump;
 
-            mainMenu.OnClose();
+            mainMenu?.OnClose();
         }
 
         public void OnLoad()
         {
+            if (!Game.IsLobbyGame)
+            {
+                // dont load in real games
+                return;
+            }
+
             mainMenu = new MenuManager();
             logger = new Logger();
             player = ObjectManager.LocalPlayer;
@@ -270,7 +276,7 @@
             {
                 return;
             }
-            
+
             const Color Color = Color.Cyan;
             const Logger.Type Type = Logger.Type.Bool;
 
@@ -494,8 +500,8 @@
             var menu = mainMenu.OnChangeMenu.Floats;
 
             if (!menu.Enabled || menu.HeroesOnly && !(sender is Hero)
-                || menu.IgnoreUseless && Data.IgnoredFloats.Contains(args.PropertyName)
-                || menu.IgnoreSemiUseless && Data.SemiIgnoredFloats.Contains(args.PropertyName))
+                || menu.IgnoreUseless && Data.IgnoredFloats.Contains(args.PropertyName) || menu.IgnoreSemiUseless
+                && Data.SemiIgnoredFloats.Contains(args.PropertyName))
             {
                 return;
             }
@@ -568,8 +574,8 @@
             var menu = mainMenu.OnChangeMenu.Int32;
 
             if (!menu.Enabled || menu.HeroesOnly && !(sender is Hero)
-                || menu.IgnoreUseless && Data.IgnoredInt32.Contains(args.PropertyName)
-                || menu.IgnoreSemiUseless && Data.SemiIgnoredInt32.Contains(args.PropertyName))
+                || menu.IgnoreUseless && Data.IgnoredInt32.Contains(args.PropertyName) || menu.IgnoreSemiUseless
+                && Data.SemiIgnoredInt32.Contains(args.PropertyName))
             {
                 return;
             }

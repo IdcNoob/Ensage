@@ -39,7 +39,6 @@
             ignoreUseless.ValueChanged += (sender, args) => IgnoreUseless = args.GetNewValue<bool>();
             IgnoreUseless = ignoreUseless.IsActive();
 
-
             mainMenu.AddSubMenu(menu);
         }
 
