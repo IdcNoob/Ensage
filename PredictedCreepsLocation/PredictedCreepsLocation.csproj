@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D887453A-1D2F-4F49-8AC6-243EC39B202D}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <ProjectGuid>{79525185-3EA8-4E51-A5C0-FF212F554C95}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <RootNamespace>PredictedCreepsLocation</RootNamespace>
     <AssemblyName>PredictedCreepsLocation</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ensage">
       <HintPath>C:\BanIsComing\References\Ensage.dll</HintPath>
@@ -39,39 +42,35 @@
     <Reference Include="Ensage.Common">
       <HintPath>C:\BanIsComing\References\Ensage.Common.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\BanIsComing\References\SharpDX.dll</HintPath>
+    <Reference Include="Ensage.SDK">
+      <HintPath>C:\BanIsComing\References\Ensage.SDK.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Direct3D9">
-      <HintPath>C:\BanIsComing\References\SharpDX.Direct3D9.dll</HintPath>
+    <Reference Include="PlaySharp.Toolkit">
+      <HintPath>C:\BanIsComing\References\PlaySharp.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX">
+      <HintPath>C:\BanIsComing\References\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Mathematics">
       <HintPath>C:\BanIsComing\References\SharpDX.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Drawing" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bootstrap.cs" />
-    <Compile Include="CreepsData.cs" />
-    <Compile Include="CreepWave.cs" />
-    <Compile Include="LaneData.cs" />
-    <Compile Include="Predictions.cs" />
-    <Compile Include="MenuManager.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Core\Settings.cs" />
+    <Compile Include="Core\IWaveManager.cs" />
+    <Compile Include="Creeps\CreepWave.cs" />
+    <Compile Include="Core\WaveManager.cs" />
+    <Compile Include="Data\LanePaths.cs" />
+    <Compile Include="Core\Prediction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
