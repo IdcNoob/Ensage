@@ -2,36 +2,117 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.Composition;
     using System.Linq;
 
     using Ensage;
     using Ensage.Common;
-    using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Helpers;
+    using Ensage.SDK.Service;
+    using Ensage.SDK.Service.Metadata;
 
     using SharpDX;
 
-    internal class ExperienceTracker
+    [ExportPlugin("Experience Tracker", StartupMode.Auto, "IdcNoob")]
+    internal class ExperienceTracker : Plugin
     {
         private readonly Dictionary<Creep, int> deadCreeps = new Dictionary<Creep, int>();
 
         private readonly List<Enemy> enemies = new List<Enemy>();
 
-        private Hero hero;
-
-        private Team heroTeam;
+        private readonly Team heroTeam;
 
         private MenuManager menu;
 
-        private MultiSleeper sleeper;
-
-        public ExperienceTracker()
+        [ImportingConstructor]
+        public ExperienceTracker([Import] IServiceContext context)
         {
-            Events.OnLoad += EventsOnLoad;
+            heroTeam = context.Owner.Team;
         }
 
-        private void DrawingOnDraw(EventArgs args)
+        protected override void OnActivate()
         {
-            foreach (var enemy in enemies.Where(x => x.WarningIsActive()))
+            menu = new MenuManager();
+
+            EntityManager<Hero>.EntityAdded += OnEntityAdded;
+            Entity.OnInt32PropertyChange += EntityOnInt32PropertyChange;
+            Drawing.OnDraw += OnDraw;
+
+            foreach (var entity in ObjectManager.GetEntities<Hero>().Concat(ObjectManager.GetDormantEntities<Hero>()))
+            {
+                OnEntityAdded(null, entity);
+            }
+        }
+
+        protected override void OnDeactivate()
+        {
+            Entity.OnInt32PropertyChange -= EntityOnInt32PropertyChange;
+            Drawing.OnDraw -= OnDraw;
+            EntityManager<Hero>.EntityAdded -= OnEntityAdded;
+
+            menu.Dispose();
+            enemies.Clear();
+            deadCreeps.Clear();
+        }
+
+        private void CheckExperience()
+        {
+            foreach (var pair in deadCreeps)
+            {
+                var deadCreep = pair.Key;
+                var enemiesInExpRange = enemies.Where(x => x.IsInExperienceRange(deadCreep)).ToList();
+
+                foreach (var enemy in enemiesInExpRange)
+                {
+                    var totalExp = enemy.CalculateGainedExperience(
+                        deadCreeps.Where(x => enemy.IsInExperienceRange(x.Key)).Sum(x => x.Value));
+                    if (enemy.OldExperience + totalExp / enemiesInExpRange.Count != enemy.NewExperience)
+                    {
+                        enemy.SetWarning(totalExp, enemiesInExpRange.Count, menu.WarningTime);
+                    }
+                }
+            }
+
+            deadCreeps.Clear();
+        }
+
+        private void EntityOnInt32PropertyChange(Entity sender, Int32PropertyChangeEventArgs args)
+        {
+            if (args.NewValue == args.OldValue)
+            {
+                return;
+            }
+
+            if (args.PropertyName == "m_iCurrentXP")
+            {
+                enemies.FirstOrDefault(x => x.Handle == sender.Handle)?.SetExperience(args.OldValue, args.NewValue);
+                return;
+            }
+
+            if (!menu.Enabled || args.NewValue > 0 || args.PropertyName != "m_iHealth")
+            {
+                return;
+            }
+
+            var creep = sender as Creep;
+            if (creep == null || !creep.IsValid || creep.Team != heroTeam)
+            {
+                return;
+            }
+
+            var exp = creep.GetGrantedExperience();
+            if (exp <= 0 || deadCreeps.ContainsKey(creep))
+            {
+                return;
+            }
+
+            deadCreeps.Add(creep, exp);
+            UpdateManager.BeginInvoke(CheckExperience, 150);
+        }
+
+        private void OnDraw(EventArgs args)
+        {
+            foreach (var enemy in enemies.Where(x => x.WarningIsActive))
             {
                 var warningText = enemy.EnemiesWarning.ToString();
 
@@ -50,99 +131,15 @@
             }
         }
 
-        private void EntityOnInt32PropertyChange(Entity sender, Int32PropertyChangeEventArgs args)
+        private void OnEntityAdded(object sender, Hero enemy)
         {
-            if (args.PropertyName == "m_iCurrentXP")
-            {
-                enemies.FirstOrDefault(x => x.Handle == sender.Handle)?.SetExperience(args.OldValue, args.NewValue);
-                return;
-            }
-
-            if (!menu.Enabled || args.NewValue > 0 || args.OldValue <= 0 || args.PropertyName != "m_iHealth")
+            if (!enemy.IsValid || enemy.Team == heroTeam || enemy.IsIllusion
+                || enemies.Any(x => x.Handle == enemy.Handle))
             {
                 return;
             }
 
-            var creep = sender as Creep;
-            if (creep == null || !creep.IsValid || creep.Team != heroTeam)
-            {
-                return;
-            }
-
-            var exp = creep.GetGrantedExperience();
-            if (exp <= 0 || deadCreeps.ContainsKey(creep))
-            {
-                return;
-            }
-
-            //delay check to prevent incorrect information
-            //when multiple creeps die at the same time
-            deadCreeps.Add(creep, exp);
-            sleeper.Sleep(150, deadCreeps);
-        }
-
-        private void EventsOnClose(object sender, EventArgs eventArgs)
-        {
-            Entity.OnInt32PropertyChange -= EntityOnInt32PropertyChange;
-            Game.OnIngameUpdate -= GameOnIngameUpdate;
-            Events.OnClose -= EventsOnClose;
-            Drawing.OnDraw -= DrawingOnDraw;
-
-            menu.OnClose();
-            enemies.Clear();
-            deadCreeps.Clear();
-        }
-
-        private void EventsOnLoad(object sender, EventArgs eventArgs)
-        {
-            hero = ObjectManager.LocalHero;
-            heroTeam = hero.Team;
-            sleeper = new MultiSleeper();
-            menu = new MenuManager();
-
-            Entity.OnInt32PropertyChange += EntityOnInt32PropertyChange;
-            Game.OnIngameUpdate += GameOnIngameUpdate;
-            Events.OnClose += EventsOnClose;
-            Drawing.OnDraw += DrawingOnDraw;
-        }
-
-        private void GameOnIngameUpdate(EventArgs args)
-        {
-            if (!sleeper.Sleeping(deadCreeps) && deadCreeps.Any())
-            {
-                foreach (var pair in deadCreeps)
-                {
-                    var deadCreep = pair.Key;
-                    var enemiesInExpRange = enemies.Where(x => x.IsInExperienceRange(deadCreep)).ToList();
-
-                    foreach (var enemy in enemiesInExpRange)
-                    {
-                        var totalExp = enemy.CalculateGainedExperience(
-                            deadCreeps.Where(x => enemy.IsInExperienceRange(x.Key)).Sum(x => x.Value));
-                        if (enemy.OldExperience + totalExp / enemiesInExpRange.Count != enemy.NewExperience)
-                        {
-                            enemy.SetWarning(totalExp, enemiesInExpRange.Count, menu.WarningTime);
-                        }
-                    }
-                }
-
-                deadCreeps.Clear();
-            }
-
-            if (sleeper.Sleeping(enemies))
-            {
-                return;
-            }
-
-            foreach (var enemy in ObjectManager.GetEntitiesParallel<Hero>()
-                .Where(
-                    x => x.IsValid && !enemies.Exists(z => z.Handle == x.Handle) && x.Team != heroTeam
-                         && !x.IsIllusion))
-            {
-                enemies.Add(new Enemy(enemy));
-            }
-
-            sleeper.Sleep(2000, enemies);
+            enemies.Add(new Enemy(enemy));
         }
     }
 }

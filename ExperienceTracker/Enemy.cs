@@ -35,6 +35,8 @@
 
         public int OldExperience { get; private set; }
 
+        public bool WarningIsActive => Hero.IsVisible && timeToShowWarning >= Game.RawGameTime;
+
         public int CalculateGainedExperience(int exp)
         {
             return Hero.Level >= 25 ? 0 : xpTalent?.Level > 0 ? (int)(exp * bonusXp) : exp;
@@ -47,7 +49,7 @@
 
         public void SetExperience(int oldExp, int newExp)
         {
-            if (newExp == NewExperience || oldExp > newExp)
+            if (oldExp > newExp)
             {
                 return;
             }
@@ -72,11 +74,6 @@
             }
 
             timeToShowWarning = Game.RawGameTime + warningTime;
-        }
-
-        public bool WarningIsActive()
-        {
-            return Hero.IsVisible && timeToShowWarning >= Game.RawGameTime;
         }
     }
 }
