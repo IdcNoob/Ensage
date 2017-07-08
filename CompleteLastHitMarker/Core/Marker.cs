@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.Composition;
     using System.Linq;
     using System.Reflection;
 
@@ -10,7 +11,11 @@
     using Attributes;
 
     using Ensage;
-    using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.Common.Menu;
+    using Ensage.SDK.Handlers;
+    using Ensage.SDK.Helpers;
+    using Ensage.SDK.Service;
+    using Ensage.SDK.Service.Metadata;
 
     using Menus;
 
@@ -19,43 +24,37 @@
     using Units;
     using Units.Base;
 
-    internal class Marker
+    [ExportPlugin("Complete Last Hit Marker", StartupMode.Auto, "IdcNoob")]
+    internal class Marker : Plugin
     {
+        private readonly Type[] abilityTypes;
+
+        private readonly Hero hero;
+
         private readonly List<KillableUnit> killableUnits = new List<KillableUnit>();
-
-        private List<Type> abilityTypes;
-
-        private MyHero hero;
 
         private MenuManager menu;
 
-        private Sleeper sleeper;
+        private MyHero myHero;
 
-        public void OnClose()
+        private IUpdateHandler updateHandler;
+
+        [ImportingConstructor]
+        public Marker([Import] IServiceContext context)
         {
-            ObjectManager.OnAddEntity -= OnAddEntity;
-            ObjectManager.OnRemoveEntity -= OnRemoveEntity;
-            Game.OnUpdate -= OnUpdate;
-            Drawing.OnDraw -= OnDraw;
-            Unit.OnModifierAdded -= ModifierChanged;
-            Unit.OnModifierRemoved -= ModifierChanged;
-
-            killableUnits.Clear();
-            menu.OnClose();
-        }
-
-        public void OnLoad()
-        {
+            hero = context.Owner as Hero;
             abilityTypes = Assembly.GetExecutingAssembly()
                 .GetTypes()
                 .Where(
                     x => x.Namespace == "CompleteLastHitMarker.Abilities.Passive"
                          || x.Namespace == "CompleteLastHitMarker.Abilities.Active")
-                .ToList();
+                .ToArray();
+        }
 
+        protected override void OnActivate()
+        {
             menu = new MenuManager();
-            hero = new MyHero(ObjectManager.LocalHero, menu, abilityTypes);
-            sleeper = new Sleeper();
+            myHero = new MyHero(hero, menu, abilityTypes);
 
             AddTowers();
             AddCreeps();
@@ -65,20 +64,35 @@
             ObjectManager.OnRemoveEntity += OnRemoveEntity;
             Unit.OnModifierAdded += ModifierChanged;
             Unit.OnModifierRemoved += ModifierChanged;
-            Game.OnUpdate += OnUpdate;
             Drawing.OnDraw += OnDraw;
+            updateHandler = UpdateManager.Subscribe(OnUpdate, menu.UpdateRate, menu.IsEnabled);
+            menu.UpdateRate.Item.ValueChanged += UpdateRateOnValueChanged;
+        }
+
+        protected override void OnDeactivate()
+        {
+            ObjectManager.OnAddEntity -= OnAddEntity;
+            ObjectManager.OnRemoveEntity -= OnRemoveEntity;
+            Drawing.OnDraw -= OnDraw;
+            Unit.OnModifierAdded -= ModifierChanged;
+            Unit.OnModifierRemoved -= ModifierChanged;
+            UpdateManager.Unsubscribe(OnUpdate);
+            menu.UpdateRate.Item.ValueChanged -= UpdateRateOnValueChanged;
+
+            killableUnits.Clear();
+            menu.Dispose();
         }
 
         private void AddCouriers()
         {
             foreach (var courier in ObjectManager.GetEntities<Courier>()
-                .Where(x => x.IsValid && x.IsVisible && x.Team != hero.Team))
+                .Where(x => x.IsValid && x.IsVisible && x.Team != myHero.Team))
             {
                 killableUnits.Add(new KillableCourier(courier));
             }
 
             foreach (var courier in ObjectManager.GetDormantEntities<Courier>()
-                .Where(x => x.IsValid && x.Team != hero.Team && killableUnits.All(z => z.Handle != x.Handle)))
+                .Where(x => x.IsValid && x.Team != myHero.Team && killableUnits.All(z => z.Handle != x.Handle)))
             {
                 killableUnits.Add(new KillableCourier(courier));
             }
@@ -108,18 +122,18 @@
 
         private void ModifierChanged(Unit sender, ModifierChangedEventArgs args)
         {
-            if (sender.Handle != hero.Handle)
+            if (sender.Handle != myHero.Handle)
             {
                 return;
             }
 
-            sleeper.Sleep(75);
+            OnUpdate();
         }
 
         private void OnAddEntity(EntityEventArgs args)
         {
             var courier = args.Entity as Courier;
-            if (courier != null && courier.IsValid && courier.Team != hero.Team
+            if (courier != null && courier.IsValid && courier.Team != myHero.Team
                 && killableUnits.All(x => x.Handle != args.Entity.Handle))
             {
                 killableUnits.Add(new KillableCourier(courier));
@@ -134,14 +148,14 @@
             }
 
             var item = args.Entity as Item;
-            if (item != null && item.IsValid && item.Purchaser?.Hero?.Handle == hero.Handle)
+            if (item != null && item.IsValid && item.Purchaser?.Hero?.Handle == myHero.Handle)
             {
                 var type = abilityTypes.FirstOrDefault(
                     x => x.GetCustomAttribute<AbilityAttribute>()?.AbilityId == item.Id);
 
                 if (type != null)
                 {
-                    hero.AddNewAbility((DefaultAbility)Activator.CreateInstance(type, item));
+                    myHero.AddNewAbility((DefaultAbility)Activator.CreateInstance(type, item));
                 }
             }
         }
@@ -185,8 +199,8 @@
                     }
 
                     var color = canBeKilled
-                                    ? menu.AutoAttackMenu.AutoAttackColors.CanBeKilledColor(hero.Team, unit.Team)
-                                    : menu.AutoAttackMenu.AutoAttackColors.CanNotBeKilledColor(hero.Team, unit.Team);
+                                    ? menu.AutoAttackMenu.AutoAttackColors.CanBeKilledColor(myHero.Team, unit.Team)
+                                    : menu.AutoAttackMenu.AutoAttackColors.CanNotBeKilledColor(myHero.Team, unit.Team);
 
                     // empty hp + border
                     Drawing.DrawRect(hpBarPosition + new Vector2(-1), hpBarSize + new Vector2(2), Color.Black, false);
@@ -195,7 +209,7 @@
                     Drawing.DrawRect(
                         hpBarPosition,
                         new Vector2(currentHpBarSize, hpBarSize.Y),
-                        menu.AutoAttackMenu.AutoAttackColors.DefaultHealthColor(hero.Team, unit.Team),
+                        menu.AutoAttackMenu.AutoAttackColors.DefaultHealthColor(myHero.Team, unit.Team),
                         false);
 
                     // damage
@@ -297,31 +311,24 @@
         private void OnRemoveEntity(EntityEventArgs args)
         {
             killableUnits.RemoveAll(x => x.Handle == args.Entity.Handle);
-            hero.RemoveAbility(args.Entity.Handle);
+            myHero.RemoveAbility(args.Entity.Handle);
         }
 
-        private void OnUpdate(EventArgs args)
+        private void OnUpdate()
         {
-            if (sleeper.Sleeping)
+            if (!menu.IsEnabled || !myHero.IsAlive)
             {
                 return;
             }
 
-            sleeper.Sleep(menu.UpdateRate);
-
-            if (!menu.IsEnabled || !hero.IsAlive)
+            foreach (var unit in killableUnits.Where(x => x.IsValid() && x.Distance(myHero) < 2000))
             {
-                return;
-            }
-
-            foreach (var unit in killableUnits.Where(x => x.IsValid() && x.Distance(hero) < 2000))
-            {
-                unit.CalculateAutoAttackDamageTaken(hero);
-                unit.CalculateAbilityDamageTaken(hero, menu.AbilitiesMenu);
+                unit.CalculateAutoAttackDamageTaken(myHero);
+                unit.CalculateAbilityDamageTaken(myHero, menu.AbilitiesMenu);
             }
 
             var tower = killableUnits.OfType<KillableTower>()
-                .FirstOrDefault(x => x.IsValid() && x.Team == hero.Team && x.Distance(hero) < 1000);
+                .FirstOrDefault(x => x.IsValid() && x.Team == myHero.Team && x.Distance(myHero) < 1000);
             if (tower == null)
             {
                 return;
@@ -347,6 +354,15 @@
             }
 
             towerTarget.TowerHelperHits = (int)Math.Floor(hpLeft / towerTarget.MyAutoAttackDamageDone);
+        }
+
+        private void UpdateRateOnValueChanged(object sender, OnValueChangeEventArgs args)
+        {
+            var timeoutHandler = updateHandler.Executor as TimeoutHandler;
+            if (timeoutHandler != null)
+            {
+                timeoutHandler.Timeout = args.GetNewValue<Slider>().Value;
+            }
         }
     }
 }

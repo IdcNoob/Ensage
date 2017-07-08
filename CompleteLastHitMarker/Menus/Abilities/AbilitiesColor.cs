@@ -1,102 +1,72 @@
 ﻿namespace CompleteLastHitMarker.Menus.Abilities
 {
     using Ensage.Common.Menu;
+    using Ensage.SDK.Menu;
 
     using SharpDX;
 
+    using Utils;
+
     internal class AbilitiesColor
     {
-        public AbilitiesColor(Menu rootMenu)
+        public AbilitiesColor(MenuFactory factory)
         {
-            var menu = new Menu("Border colors", "borderColors");
+            var subFactory = factory.Menu("Border colors");
 
             var canBeKilledText = new MenuItem("canBeKilledColor", "Can be killed");
             var cantBeKilledText = new MenuItem("cantBeKilledColor", "Can not be killed");
 
-            menu.AddItem(canBeKilledText);
+            subFactory.Target.AddItem(canBeKilledText);
 
-            var canRed = new MenuItem("canBeKilledRed", "Red").SetValue(new Slider(139, 0, 255));
-            menu.AddItem(canRed);
-            canRed.ValueChanged += (sender, args) =>
+            var canRed = subFactory.Item("Red", "canBeKilledRed", new Slider(139, 0, 255));
+            canRed.Item.ValueChanged += (sender, args) =>
                 {
-                    CanBeKilledColor = new Color(
-                        args.GetNewValue<Slider>().Value,
-                        CanBeKilledColor.G,
-                        CanBeKilledColor.B);
+                    CanBeKilledColor = CanBeKilledColor.SetRed(args.GetNewValue<Slider>().Value);
                     canBeKilledText.SetFontColor(CanBeKilledColor);
                 };
 
-            var canGreen = new MenuItem("canBeKilledGreen", "Green").SetValue(new Slider(244, 0, 255));
-            menu.AddItem(canGreen);
-            canGreen.ValueChanged += (sender, args) =>
+            var canGreen = subFactory.Item("Green", "canBeKilledGreen", new Slider(244, 0, 255));
+            canGreen.Item.ValueChanged += (sender, args) =>
                 {
-                    CanBeKilledColor = new Color(
-                        CanBeKilledColor.R,
-                        args.GetNewValue<Slider>().Value,
-                        CanBeKilledColor.B);
+                    CanBeKilledColor = CanBeKilledColor.SetGreen(args.GetNewValue<Slider>().Value);
                     canBeKilledText.SetFontColor(CanBeKilledColor);
                 };
 
-            var canBlue = new MenuItem("canBeKilledBlue", "Blue").SetValue(new Slider(102, 0, 255));
-            menu.AddItem(canBlue);
-            canBlue.ValueChanged += (sender, args) =>
+            var canBlue = subFactory.Item("Blue", "canBeKilledBlue", new Slider(102, 0, 255));
+            canBlue.Item.ValueChanged += (sender, args) =>
                 {
-                    CanBeKilledColor = new Color(
-                        CanBeKilledColor.R,
-                        CanBeKilledColor.G,
-                        args.GetNewValue<Slider>().Value);
+                    CanBeKilledColor = CanBeKilledColor.SetBlue(args.GetNewValue<Slider>().Value);
                     canBeKilledText.SetFontColor(CanBeKilledColor);
                 };
 
-            menu.AddItem(cantBeKilledText);
+            subFactory.Target.AddItem(cantBeKilledText);
 
-            var cantRed = new MenuItem("cantBeKilledRed", "Red").SetValue(new Slider(222, 0, 255));
-            menu.AddItem(cantRed);
-            cantRed.ValueChanged += (sender, args) =>
+            var cantRed = subFactory.Item("Red", "cantBeKilledRed", new Slider(222, 0, 255));
+            cantRed.Item.ValueChanged += (sender, args) =>
                 {
-                    CanNotBeKilledColor = new Color(
-                        args.GetNewValue<Slider>().Value,
-                        CanNotBeKilledColor.G,
-                        CanNotBeKilledColor.B);
+                    CanNotBeKilledColor = CanNotBeKilledColor.SetRed(args.GetNewValue<Slider>().Value);
                     cantBeKilledText.SetFontColor(CanNotBeKilledColor);
                 };
 
-            var cantGreen = new MenuItem("cantBeKilledGreen", "Green").SetValue(new Slider(127, 0, 255));
-            menu.AddItem(cantGreen);
-            cantGreen.ValueChanged += (sender, args) =>
+            var cantGreen = subFactory.Item("Green", "cantBeKilledGreen", new Slider(127, 0, 255));
+            cantGreen.Item.ValueChanged += (sender, args) =>
                 {
-                    CanNotBeKilledColor = new Color(
-                        CanNotBeKilledColor.R,
-                        args.GetNewValue<Slider>().Value,
-                        CanNotBeKilledColor.B);
+                    CanNotBeKilledColor = CanNotBeKilledColor.SetGreen(args.GetNewValue<Slider>().Value);
                     cantBeKilledText.SetFontColor(CanNotBeKilledColor);
                 };
 
-            var cantBlue = new MenuItem("cantBeKilledBlue", "Blue").SetValue(new Slider(97, 0, 255));
-            menu.AddItem(cantBlue);
-            cantBlue.ValueChanged += (sender, args) =>
+            var cantBlue = subFactory.Item("Blue", "cantBeKilledBlue", new Slider(97, 0, 255));
+            cantBlue.Item.ValueChanged += (sender, args) =>
                 {
-                    CanNotBeKilledColor = new Color(
-                        CanNotBeKilledColor.R,
-                        CanNotBeKilledColor.G,
-                        args.GetNewValue<Slider>().Value);
+                    CanNotBeKilledColor = CanNotBeKilledColor.SetGreen(args.GetNewValue<Slider>().Value);
                     cantBeKilledText.SetFontColor(CanNotBeKilledColor);
                 };
 
-            CanBeKilledColor = new Color(
-                canRed.GetValue<Slider>().Value,
-                canGreen.GetValue<Slider>().Value,
-                canBlue.GetValue<Slider>().Value);
-
-            CanNotBeKilledColor = new Color(
-                cantRed.GetValue<Slider>().Value,
-                cantGreen.GetValue<Slider>().Value,
-                cantBlue.GetValue<Slider>().Value);
+            CanBeKilledColor = new Color(canRed, canGreen, canBlue);
+            CanNotBeKilledColor = new Color(cantRed, cantGreen, cantBlue);
 
             canBeKilledText.SetFontColor(CanBeKilledColor);
             cantBeKilledText.SetFontColor(CanNotBeKilledColor);
-
-            rootMenu.AddSubMenu(menu);
         }
 
         public Color CanBeKilledColor { get; private set; }

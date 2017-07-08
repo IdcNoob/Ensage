@@ -1,47 +1,40 @@
 ﻿namespace CompleteLastHitMarker.Menus
 {
+    using System;
+
     using Abilities;
 
     using AutoAttack;
 
     using Ensage.Common.Menu;
+    using Ensage.SDK.Menu;
 
-    internal class MenuManager
+    internal class MenuManager : IDisposable
     {
-        private readonly Menu rootMenu;
+        private readonly MenuFactory factory;
 
         public MenuManager()
         {
-            rootMenu = new Menu("CLH Marker", "completeLastHitMarker", true);
+            factory = MenuFactory.Create("CLH Marker");
 
-            AutoAttackMenu = new AutoAttackMenu(rootMenu);
-            AbilitiesMenu = new AbilitiesMenu(rootMenu);
+            AutoAttackMenu = new AutoAttackMenu(factory);
+            AbilitiesMenu = new AbilitiesMenu(factory);
 
-            var enabled = new MenuItem("enabled", "Enabled").SetValue(true);
-            rootMenu.AddItem(enabled);
-            enabled.ValueChanged += (sender, args) => IsEnabled = args.GetNewValue<bool>();
-            IsEnabled = enabled.IsActive();
-
-            var updateRate = new MenuItem("updateRate", "Update rate").SetValue(new Slider(500, 100, 1000));
-            updateRate.SetTooltip("Lower value => faster calculations, but requires more resources");
-            rootMenu.AddItem(updateRate);
-            updateRate.ValueChanged += (sender, args) => UpdateRate = args.GetNewValue<Slider>().Value;
-            UpdateRate = updateRate.GetValue<Slider>().Value;
-
-            rootMenu.AddToMainMenu();
+            IsEnabled = factory.Item("Enabled", true);
+            UpdateRate = factory.Item("Update rate", new Slider(500, 100, 1000));
         }
 
         public AbilitiesMenu AbilitiesMenu { get; }
 
         public AutoAttackMenu AutoAttackMenu { get; }
 
-        public bool IsEnabled { get; private set; }
+        public MenuItem<bool> IsEnabled { get; }
 
-        public int UpdateRate { get; private set; }
+        public MenuItem<Slider> UpdateRate { get; }
 
-        public void OnClose()
+        public void Dispose()
         {
-            rootMenu.RemoveFromMainMenu();
+            factory.Dispose();
         }
     }
 }

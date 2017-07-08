@@ -26,7 +26,7 @@
 
         private readonly MenuManager menu;
 
-        public MyHero(Hero hero, MenuManager menuManager, IReadOnlyCollection<Type> abilityTypes)
+        public MyHero(Hero hero, MenuManager menuManager, Type[] abilityTypes)
         {
             Hero = hero;
             Handle = hero.Handle;

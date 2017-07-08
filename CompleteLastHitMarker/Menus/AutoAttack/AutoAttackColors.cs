@@ -2,19 +2,20 @@
 {
     using Ensage;
     using Ensage.Common.Menu;
+    using Ensage.SDK.Menu;
 
     using SharpDX;
 
+    using Utils;
+
     internal class AutoAttackColors
     {
-        public AutoAttackColors(Menu rootMenu)
+        public AutoAttackColors(MenuFactory factory)
         {
-            // i fucking hope there is no mistakes
+            var subFactory = factory.Menu("Colors");
 
-            var menu = new Menu("Colors", "autoAttackColors");
-
-            var allyColorsMenu = new Menu("Ally", "allyColors");
-            var enemyColorsMenu = new Menu("Enemy", "enemyColors");
+            var allyColorsFactory = subFactory.Menu("Ally");
+            var enemyColorsFactory = subFactory.Menu("Enemy");
 
             var canBeKilledAllyText = new MenuItem("canBeKilledAllyColor", "Can be killed");
             var canBeKilledEnemyText = new MenuItem("canBeKilledEnemyColor", "Can be killed");
@@ -23,245 +24,150 @@
             var defaultAllyHpText = new MenuItem("normalAllyHpColor", "Default health color");
             var defaultEnemyHpText = new MenuItem("normalEnemyHpColor", "Default health color");
 
-            allyColorsMenu.AddItem(canBeKilledAllyText);
+            allyColorsFactory.Target.AddItem(canBeKilledAllyText);
 
-            var canAllyRed = new MenuItem("canBeKilledAllyRed", "Red").SetValue(new Slider(139, 0, 255));
-            allyColorsMenu.AddItem(canAllyRed);
-            canAllyRed.ValueChanged += (sender, args) =>
+            var canAllyRed = allyColorsFactory.Item("Red", "canBeKilledAllyRed", new Slider(139, 0, 255));
+            canAllyRed.Item.ValueChanged += (sender, args) =>
                 {
-                    CanBeKilledAllyColor = new Color(
-                        args.GetNewValue<Slider>().Value,
-                        CanBeKilledAllyColor.G,
-                        CanBeKilledAllyColor.B);
+                    CanBeKilledAllyColor = CanBeKilledAllyColor.SetRed(args.GetNewValue<Slider>().Value);
                     canBeKilledAllyText.SetFontColor(CanBeKilledAllyColor);
                 };
 
-            var canAllyGreen = new MenuItem("canBeKilledAllyGreen", "Green").SetValue(new Slider(244, 0, 255));
-            allyColorsMenu.AddItem(canAllyGreen);
-            canAllyGreen.ValueChanged += (sender, args) =>
+            var canAllyGreen = allyColorsFactory.Item("Green", "canBeKilledAllyGreen", new Slider(244, 0, 255));
+            canAllyGreen.Item.ValueChanged += (sender, args) =>
                 {
-                    CanBeKilledAllyColor = new Color(
-                        CanBeKilledAllyColor.R,
-                        args.GetNewValue<Slider>().Value,
-                        CanBeKilledAllyColor.B);
+                    CanBeKilledAllyColor = CanBeKilledAllyColor.SetGreen(args.GetNewValue<Slider>().Value);
                     canBeKilledAllyText.SetFontColor(CanBeKilledAllyColor);
                 };
 
-            var canAllyBlue = new MenuItem("canBeKilledAllyBlue", "Blue").SetValue(new Slider(102, 0, 255));
-            allyColorsMenu.AddItem(canAllyBlue);
-            canAllyBlue.ValueChanged += (sender, args) =>
+            var canAllyBlue = allyColorsFactory.Item("Blue", "canBeKilledAllyBlue", new Slider(102, 0, 255));
+            canAllyBlue.Item.ValueChanged += (sender, args) =>
                 {
-                    CanBeKilledAllyColor = new Color(
-                        CanBeKilledAllyColor.R,
-                        CanBeKilledAllyColor.G,
-                        args.GetNewValue<Slider>().Value);
+                    CanBeKilledAllyColor = CanBeKilledAllyColor.SetBlue(args.GetNewValue<Slider>().Value);
                     canBeKilledAllyText.SetFontColor(CanBeKilledAllyColor);
                 };
 
-            allyColorsMenu.AddItem(cantBeKilledAllyText);
+            allyColorsFactory.Target.AddItem(cantBeKilledAllyText);
 
-            var cantAllyRed = new MenuItem("cantBeKilledAllyRed", "Red").SetValue(new Slider(19, 0, 255));
-            allyColorsMenu.AddItem(cantAllyRed);
-            cantAllyRed.ValueChanged += (sender, args) =>
+            var cantAllyRed = allyColorsFactory.Item("Red", "cantBeKilledAllyRed", new Slider(19, 0, 255));
+            cantAllyRed.Item.ValueChanged += (sender, args) =>
                 {
-                    CanNotBeKilledAllyColor = new Color(
-                        args.GetNewValue<Slider>().Value,
-                        CanNotBeKilledAllyColor.G,
-                        CanNotBeKilledAllyColor.B);
+                    CanNotBeKilledAllyColor = CanNotBeKilledAllyColor.SetRed(args.GetNewValue<Slider>().Value);
                     cantBeKilledAllyText.SetFontColor(CanNotBeKilledAllyColor);
                 };
 
-            var cantAllyGreen = new MenuItem("cantBeKilledAllyGreen", "Green").SetValue(new Slider(173, 0, 255));
-            allyColorsMenu.AddItem(cantAllyGreen);
-            cantAllyGreen.ValueChanged += (sender, args) =>
+            var cantAllyGreen = allyColorsFactory.Item("Green", "cantBeKilledAllyGreen", new Slider(173, 0, 255));
+            cantAllyGreen.Item.ValueChanged += (sender, args) =>
                 {
-                    CanNotBeKilledAllyColor = new Color(
-                        CanNotBeKilledAllyColor.R,
-                        args.GetNewValue<Slider>().Value,
-                        CanNotBeKilledAllyColor.B);
+                    CanNotBeKilledAllyColor = CanNotBeKilledAllyColor.SetGreen(args.GetNewValue<Slider>().Value);
                     cantBeKilledAllyText.SetFontColor(CanNotBeKilledAllyColor);
                 };
 
-            var cantAllyBlue = new MenuItem("cantBeKilledAllyBlue", "Blue").SetValue(new Slider(16, 0, 255));
-            allyColorsMenu.AddItem(cantAllyBlue);
-            cantAllyBlue.ValueChanged += (sender, args) =>
+            var cantAllyBlue = allyColorsFactory.Item("Blue", "cantBeKilledAllyBlue", new Slider(16, 0, 255));
+            cantAllyBlue.Item.ValueChanged += (sender, args) =>
                 {
-                    CanNotBeKilledAllyColor = new Color(
-                        CanNotBeKilledAllyColor.R,
-                        CanNotBeKilledAllyColor.G,
-                        args.GetNewValue<Slider>().Value);
+                    CanNotBeKilledAllyColor = CanNotBeKilledAllyColor.SetBlue(args.GetNewValue<Slider>().Value);
                     cantBeKilledAllyText.SetFontColor(CanNotBeKilledAllyColor);
                 };
 
-            allyColorsMenu.AddItem(defaultAllyHpText);
+            allyColorsFactory.Target.AddItem(defaultAllyHpText);
 
-            var defaultAllyRed = new MenuItem("defaultAllyRed", "Red").SetValue(new Slider(20, 0, 255));
-            allyColorsMenu.AddItem(defaultAllyRed);
-            defaultAllyRed.ValueChanged += (sender, args) =>
+            var defaultAllyRed = allyColorsFactory.Item("Red", "defaultAllyRed", new Slider(20, 0, 255));
+            defaultAllyRed.Item.ValueChanged += (sender, args) =>
                 {
-                    DefaultAllyHealthColor = new Color(
-                        args.GetNewValue<Slider>().Value,
-                        DefaultAllyHealthColor.G,
-                        DefaultAllyHealthColor.B);
+                    DefaultAllyHealthColor = DefaultAllyHealthColor.SetRed(args.GetNewValue<Slider>().Value);
                     defaultAllyHpText.SetFontColor(DefaultAllyHealthColor);
                 };
 
-            var defaultAllyGreen = new MenuItem("defaultAllyGreen", "Green").SetValue(new Slider(107, 0, 255));
-            allyColorsMenu.AddItem(defaultAllyGreen);
-            defaultAllyGreen.ValueChanged += (sender, args) =>
+            var defaultAllyGreen = allyColorsFactory.Item("Green", "defaultAllyGreen", new Slider(107, 0, 255));
+            defaultAllyGreen.Item.ValueChanged += (sender, args) =>
                 {
-                    DefaultAllyHealthColor = new Color(
-                        DefaultAllyHealthColor.R,
-                        args.GetNewValue<Slider>().Value,
-                        DefaultAllyHealthColor.B);
+                    DefaultAllyHealthColor = DefaultAllyHealthColor.SetGreen(args.GetNewValue<Slider>().Value);
                     defaultAllyHpText.SetFontColor(DefaultAllyHealthColor);
                 };
 
-            var defaultAllyBlue = new MenuItem("defaultAllyBlue", "Blue").SetValue(new Slider(41, 0, 255));
-            allyColorsMenu.AddItem(defaultAllyBlue);
-            defaultAllyBlue.ValueChanged += (sender, args) =>
+            var defaultAllyBlue = allyColorsFactory.Item("Blue", "defaultAllyBlue", new Slider(41, 0, 255));
+            defaultAllyBlue.Item.ValueChanged += (sender, args) =>
                 {
-                    DefaultAllyHealthColor = new Color(
-                        DefaultAllyHealthColor.R,
-                        DefaultAllyHealthColor.G,
-                        args.GetNewValue<Slider>().Value);
+                    DefaultAllyHealthColor = DefaultAllyHealthColor.SetBlue(args.GetNewValue<Slider>().Value);
                     defaultAllyHpText.SetFontColor(DefaultAllyHealthColor);
                 };
 
-            enemyColorsMenu.AddItem(canBeKilledEnemyText);
+            enemyColorsFactory.Target.AddItem(canBeKilledEnemyText);
 
-            var canEnemyRed = new MenuItem("canBeKilledEnemyRed", "Red").SetValue(new Slider(222, 0, 255));
-            enemyColorsMenu.AddItem(canEnemyRed);
-            canEnemyRed.ValueChanged += (sender, args) =>
+            var canEnemyRed = enemyColorsFactory.Item("Red", "canBeKilledEnemyRed", new Slider(222, 0, 255));
+            canEnemyRed.Item.ValueChanged += (sender, args) =>
                 {
-                    CanBeKilledEnemyColor = new Color(
-                        args.GetNewValue<Slider>().Value,
-                        CanBeKilledEnemyColor.G,
-                        CanBeKilledEnemyColor.B);
+                    CanBeKilledEnemyColor = CanBeKilledEnemyColor.SetRed(args.GetNewValue<Slider>().Value);
                     canBeKilledEnemyText.SetFontColor(CanBeKilledEnemyColor);
                 };
 
-            var canEnemyGreen = new MenuItem("canBeKilledEnemyGreen", "Green").SetValue(new Slider(127, 0, 255));
-            enemyColorsMenu.AddItem(canEnemyGreen);
-            canEnemyGreen.ValueChanged += (sender, args) =>
+            var canEnemyGreen = enemyColorsFactory.Item("Green", "canBeKilledEnemyGreen", new Slider(127, 0, 255));
+            canEnemyGreen.Item.ValueChanged += (sender, args) =>
                 {
-                    CanBeKilledEnemyColor = new Color(
-                        CanBeKilledEnemyColor.R,
-                        args.GetNewValue<Slider>().Value,
-                        CanBeKilledEnemyColor.B);
+                    CanBeKilledEnemyColor = CanBeKilledEnemyColor.SetGreen(args.GetNewValue<Slider>().Value);
                     canBeKilledEnemyText.SetFontColor(CanBeKilledEnemyColor);
                 };
 
-            var canEnemyBlue = new MenuItem("canBeKilledEnemyBlue", "Blue").SetValue(new Slider(97, 0, 255));
-            enemyColorsMenu.AddItem(canEnemyBlue);
-            canEnemyBlue.ValueChanged += (sender, args) =>
+            var canEnemyBlue = enemyColorsFactory.Item("Blue", "canBeKilledEnemyBlue", new Slider(97, 0, 255));
+            canEnemyBlue.Item.ValueChanged += (sender, args) =>
                 {
-                    CanBeKilledEnemyColor = new Color(
-                        CanBeKilledEnemyColor.R,
-                        CanBeKilledEnemyColor.G,
-                        args.GetNewValue<Slider>().Value);
+                    CanBeKilledEnemyColor = CanBeKilledEnemyColor.SetBlue(args.GetNewValue<Slider>().Value);
                     canBeKilledEnemyText.SetFontColor(CanBeKilledEnemyColor);
                 };
 
-            enemyColorsMenu.AddItem(cantBeKilledEnemyText);
+            enemyColorsFactory.Target.AddItem(cantBeKilledEnemyText);
 
-            var cantEnemyRed = new MenuItem("cantBeKilledEnemyRed", "Red").SetValue(new Slider(158, 0, 255));
-            enemyColorsMenu.AddItem(cantEnemyRed);
-            cantEnemyRed.ValueChanged += (sender, args) =>
+            var cantEnemyRed = enemyColorsFactory.Item("Red", "cantBeKilledEnemyRed", new Slider(158, 0, 255));
+            cantEnemyRed.Item.ValueChanged += (sender, args) =>
                 {
-                    CanNotBeKilledEnemyColor = new Color(
-                        args.GetNewValue<Slider>().Value,
-                        CanNotBeKilledEnemyColor.G,
-                        CanNotBeKilledEnemyColor.B);
+                    CanNotBeKilledEnemyColor = CanNotBeKilledEnemyColor.SetRed(args.GetNewValue<Slider>().Value);
                     cantBeKilledEnemyText.SetFontColor(CanNotBeKilledEnemyColor);
                 };
 
-            var cantEnemyGreen = new MenuItem("cantBeKilledEnemyGreen", "Green").SetValue(new Slider(77, 0, 255));
-            enemyColorsMenu.AddItem(cantEnemyGreen);
-            cantEnemyGreen.ValueChanged += (sender, args) =>
+            var cantEnemyGreen = enemyColorsFactory.Item("Green", "cantBeKilledEnemyGreen", new Slider(77, 0, 255));
+            cantEnemyGreen.Item.ValueChanged += (sender, args) =>
                 {
-                    CanNotBeKilledEnemyColor = new Color(
-                        CanNotBeKilledEnemyColor.R,
-                        args.GetNewValue<Slider>().Value,
-                        CanNotBeKilledEnemyColor.B);
+                    CanNotBeKilledEnemyColor = CanNotBeKilledEnemyColor.SetGreen(args.GetNewValue<Slider>().Value);
                     cantBeKilledEnemyText.SetFontColor(CanNotBeKilledEnemyColor);
                 };
 
-            var cantEnemyBlue = new MenuItem("cantBeKilledEnemyBlue", "Blue").SetValue(new Slider(39, 0, 255));
-            enemyColorsMenu.AddItem(cantEnemyBlue);
-            cantEnemyBlue.ValueChanged += (sender, args) =>
+            var cantEnemyBlue = enemyColorsFactory.Item("Blue", "cantBeKilledEnemyBlue", new Slider(39, 0, 255));
+            cantEnemyBlue.Item.ValueChanged += (sender, args) =>
                 {
-                    CanNotBeKilledEnemyColor = new Color(
-                        CanNotBeKilledEnemyColor.R,
-                        CanNotBeKilledEnemyColor.G,
-                        args.GetNewValue<Slider>().Value);
+                    CanNotBeKilledEnemyColor = CanNotBeKilledEnemyColor.SetBlue(args.GetNewValue<Slider>().Value);
                     cantBeKilledEnemyText.SetFontColor(CanNotBeKilledEnemyColor);
                 };
 
-            enemyColorsMenu.AddItem(defaultEnemyHpText);
+            enemyColorsFactory.Target.AddItem(defaultEnemyHpText);
 
-            var defaultEnemyRed = new MenuItem("defaultEnemyRed", "Red").SetValue(new Slider(109, 0, 255));
-            enemyColorsMenu.AddItem(defaultEnemyRed);
-            defaultEnemyRed.ValueChanged += (sender, args) =>
+            var defaultEnemyRed = enemyColorsFactory.Item("Red", "defaultEnemyRed", new Slider(109, 0, 255));
+            defaultEnemyRed.Item.ValueChanged += (sender, args) =>
                 {
-                    DefaultEnemyHealthColor = new Color(
-                        args.GetNewValue<Slider>().Value,
-                        DefaultEnemyHealthColor.G,
-                        DefaultEnemyHealthColor.B);
+                    DefaultEnemyHealthColor = DefaultEnemyHealthColor.SetRed(args.GetNewValue<Slider>().Value);
                     defaultEnemyHpText.SetFontColor(DefaultEnemyHealthColor);
                 };
 
-            var defaultEnemyGreen = new MenuItem("defaultEnemyGreen", "Green").SetValue(new Slider(41, 0, 255));
-            enemyColorsMenu.AddItem(defaultEnemyGreen);
-            defaultEnemyGreen.ValueChanged += (sender, args) =>
+            var defaultEnemyGreen = enemyColorsFactory.Item("Green", "defaultEnemyGreen", new Slider(41, 0, 255));
+            defaultEnemyGreen.Item.ValueChanged += (sender, args) =>
                 {
-                    DefaultEnemyHealthColor = new Color(
-                        DefaultEnemyHealthColor.R,
-                        args.GetNewValue<Slider>().Value,
-                        DefaultEnemyHealthColor.B);
+                    DefaultEnemyHealthColor = DefaultEnemyHealthColor.SetGreen(args.GetNewValue<Slider>().Value);
                     defaultEnemyHpText.SetFontColor(DefaultEnemyHealthColor);
                 };
 
-            var defaultEnemyBlue = new MenuItem("defaultEnemyBlue", "Blue").SetValue(new Slider(0, 0, 255));
-            enemyColorsMenu.AddItem(defaultEnemyBlue);
-            defaultEnemyBlue.ValueChanged += (sender, args) =>
+            var defaultEnemyBlue = enemyColorsFactory.Item("Blue", "defaultEnemyBlue", new Slider(0, 0, 255));
+            defaultEnemyBlue.Item.ValueChanged += (sender, args) =>
                 {
-                    DefaultEnemyHealthColor = new Color(
-                        DefaultEnemyHealthColor.R,
-                        DefaultEnemyHealthColor.G,
-                        args.GetNewValue<Slider>().Value);
+                    DefaultEnemyHealthColor = DefaultEnemyHealthColor.SetBlue(args.GetNewValue<Slider>().Value);
                     defaultEnemyHpText.SetFontColor(DefaultEnemyHealthColor);
                 };
 
-            CanBeKilledAllyColor = new Color(
-                canAllyRed.GetValue<Slider>().Value,
-                canAllyGreen.GetValue<Slider>().Value,
-                canAllyBlue.GetValue<Slider>().Value);
-
-            CanNotBeKilledAllyColor = new Color(
-                cantAllyRed.GetValue<Slider>().Value,
-                cantAllyGreen.GetValue<Slider>().Value,
-                cantAllyBlue.GetValue<Slider>().Value);
-
-            DefaultAllyHealthColor = new Color(
-                defaultAllyRed.GetValue<Slider>().Value,
-                defaultAllyGreen.GetValue<Slider>().Value,
-                defaultAllyBlue.GetValue<Slider>().Value);
-
-            CanBeKilledEnemyColor = new Color(
-                canEnemyRed.GetValue<Slider>().Value,
-                canEnemyGreen.GetValue<Slider>().Value,
-                canEnemyBlue.GetValue<Slider>().Value);
-
-            CanNotBeKilledEnemyColor = new Color(
-                cantEnemyRed.GetValue<Slider>().Value,
-                cantEnemyGreen.GetValue<Slider>().Value,
-                cantEnemyBlue.GetValue<Slider>().Value);
-
-            DefaultEnemyHealthColor = new Color(
-                defaultEnemyRed.GetValue<Slider>().Value,
-                defaultEnemyGreen.GetValue<Slider>().Value,
-                defaultEnemyBlue.GetValue<Slider>().Value);
+            CanBeKilledAllyColor = new Color(canAllyRed, canAllyGreen, canAllyBlue);
+            CanNotBeKilledAllyColor = new Color(cantAllyRed, cantAllyGreen, cantAllyBlue);
+            DefaultAllyHealthColor = new Color(defaultAllyRed, defaultAllyGreen, defaultAllyBlue);
+            CanBeKilledEnemyColor = new Color(canEnemyRed, canEnemyGreen, canEnemyBlue);
+            CanNotBeKilledEnemyColor = new Color(cantEnemyRed, cantEnemyGreen, cantEnemyBlue);
+            DefaultEnemyHealthColor = new Color(defaultEnemyRed, defaultEnemyGreen, defaultEnemyBlue);
 
             canBeKilledAllyText.SetFontColor(CanBeKilledAllyColor);
             cantBeKilledAllyText.SetFontColor(CanNotBeKilledAllyColor);
@@ -269,11 +175,6 @@
             canBeKilledEnemyText.SetFontColor(CanBeKilledEnemyColor);
             cantBeKilledEnemyText.SetFontColor(CanNotBeKilledEnemyColor);
             defaultEnemyHpText.SetFontColor(DefaultEnemyHealthColor);
-
-            menu.AddSubMenu(allyColorsMenu);
-            menu.AddSubMenu(enemyColorsMenu);
-
-            rootMenu.AddSubMenu(menu);
         }
 
         public Color CanBeKilledAllyColor { get; private set; }
