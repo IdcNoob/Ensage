@@ -67,12 +67,14 @@
     <Compile Include="Modules\CourierPinger.cs" />
     <Compile Include="Interfaces\IModule.cs" />
     <Compile Include="Modules\DroppedItemPinger.cs" />
+    <Compile Include="Modules\HeroPinger.cs" />
     <Compile Include="Modules\ItemPinger.cs" />
     <Compile Include="Modules\RoshanPinger.cs" />
     <Compile Include="Modules\RunePinger.cs" />
     <Compile Include="Modules\WardPinger.cs" />
     <Compile Include="PingTypes\AbilityPing.cs" />
     <Compile Include="PingTypes\ChatWheelPing.cs" />
+    <Compile Include="PingTypes\HeroChatWheelPing.cs" />
     <Compile Include="PingTypes\ItemPing.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
