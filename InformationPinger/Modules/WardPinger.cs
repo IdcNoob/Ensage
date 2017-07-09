@@ -128,7 +128,7 @@
 
         private void OnUpdate()
         {
-            if (sleeper.Sleeping)
+            if (sleeper.Sleeping || Game.GameTime < 300)
             {
                 return;
             }
