@@ -1,27 +1,86 @@
 ﻿namespace InformationPinger.Modules
 {
-    using System;
+    using System.ComponentModel.Composition;
 
     using Ensage;
-    using Ensage.Common;
+    using Ensage.Common.Menu;
+    using Ensage.SDK.Helpers;
+    using Ensage.SDK.Menu;
 
-    internal class RoshanPinger
+    using Interfaces;
+
+    using PingTypes;
+
+    [Export(typeof(IModule))]
+    internal class RoshanPinger : IModule
     {
-        private readonly Random random;
+        private readonly IInformationPinger informationPinger;
 
-        public RoshanPinger()
+        private readonly IMenuManager rootMenu;
+
+        private MenuItem<bool> enabled;
+
+        [ImportingConstructor]
+        public RoshanPinger([Import] IMenuManager menu, [Import] IInformationPinger pinger)
         {
-            Game.OnFireEvent += Game_OnFireEvent;
-            random = new Random();
+            rootMenu = menu;
+            informationPinger = pinger;
         }
 
+        public bool IsActive { get; private set; }
+
         public bool RoshanKilled { get; set; }
+
+        public void Activate()
+        {
+            CreateMenu();
+
+            if (enabled)
+            {
+                Game.OnFireEvent += Game_OnFireEvent;
+            }
+            enabled.Item.ValueChanged += ItemOnValueChanged;
+        }
+
+        public void Dispose()
+        {
+            Game.OnFireEvent -= Game_OnFireEvent;
+            enabled.Item.ValueChanged -= ItemOnValueChanged;
+        }
+
+        private void CreateMenu()
+        {
+            if (IsActive)
+            {
+                return;
+            }
+
+            IsActive = true;
+
+            var menu = rootMenu.MenuFactory.Menu("Roshan");
+            enabled = menu.Item("Enabled", true);
+            enabled.Item.SetTooltip("Roshan death time");
+        }
 
         private void Game_OnFireEvent(FireEventEventArgs args)
         {
             if (args.GameEvent.Name == "dota_roshan_kill")
             {
-                DelayAction.Add(random.Next(500, 2500), () => RoshanKilled = true);
+                UpdateManager.BeginInvoke(
+                    () => { informationPinger.AddPing(new ChatWheelPing(ChatWheelMessage.Roshan, true)); },
+                    1000);
+            }
+        }
+
+        private void ItemOnValueChanged(object sender, OnValueChangeEventArgs args)
+        {
+            if (args.GetNewValue<bool>())
+            {
+                Game.OnFireEvent += Game_OnFireEvent;
+            }
+            else
+            {
+                Game.OnFireEvent -= Game_OnFireEvent;
             }
         }
     }

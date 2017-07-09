@@ -5,13 +5,14 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{4D0A6F43-EFA6-4E69-963B-66F5698F35FD}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>InformationPinger</RootNamespace>
     <AssemblyName>InformationPinger</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -24,13 +25,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ensage">
@@ -39,29 +43,45 @@
     <Reference Include="Ensage.Common">
       <HintPath>C:\BanIsComing\References\Ensage.Common.dll</HintPath>
     </Reference>
+    <Reference Include="Ensage.SDK">
+      <HintPath>C:\BanIsComing\References\Ensage.SDK.dll</HintPath>
+    </Reference>
+    <Reference Include="PlaySharp.Toolkit">
+      <HintPath>C:\BanIsComing\References\PlaySharp.Toolkit.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX.Mathematics">
       <HintPath>C:\BanIsComing\References\SharpDX.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bootstrap.cs" />
-    <Compile Include="Modules\ChatWheel.cs" />
-    <Compile Include="InformationPinger.cs" />
-    <Compile Include="MenuManager.cs" />
+    <Compile Include="Core\Bootstrap.cs" />
+    <Compile Include="Core\InformationPinger.cs" />
+    <Compile Include="Core\MenuManager.cs" />
+    <Compile Include="Interfaces\IInformationPinger.cs" />
+    <Compile Include="Interfaces\IMenuManager.cs" />
+    <Compile Include="Interfaces\IPing.cs" />
+    <Compile Include="Modules\AbilityPinger.cs" />
     <Compile Include="Modules\CourierPinger.cs" />
-    <Compile Include="Modules\HeroPinger.cs" />
+    <Compile Include="Interfaces\IModule.cs" />
+    <Compile Include="Modules\DroppedItemPinger.cs" />
+    <Compile Include="Modules\ItemPinger.cs" />
     <Compile Include="Modules\RoshanPinger.cs" />
     <Compile Include="Modules\RunePinger.cs" />
     <Compile Include="Modules\WardPinger.cs" />
-    <Compile Include="Variables.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="PingTypes\AbilityPing.cs" />
+    <Compile Include="PingTypes\ChatWheelPing.cs" />
+    <Compile Include="PingTypes\ItemPing.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
