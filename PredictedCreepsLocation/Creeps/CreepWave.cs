@@ -93,7 +93,7 @@
         {
             get
             {
-                return Creeps.Any(x => x.IsVisible);
+                return Creeps.Any(x => x.IsValid && x.IsVisible);
             }
         }
 
@@ -107,7 +107,7 @@
         {
             get
             {
-                var creeps = Creeps.Where(x => x.IsVisible).ToList();
+                var creeps = Creeps.Where(x => x.IsValid && x.IsVisible).ToList();
 
                 if (creeps.Count(x => x.IsVisible) <= creeps.Count / 2)
                 {
@@ -189,7 +189,7 @@
             }
         }
 
-        public bool WasVisible => Creeps.Any(x => x.IsSpawned);
+        public bool WasVisible => Creeps.Any(x => x.IsValid && x.IsSpawned);
 
         public void Spawn()
         {
