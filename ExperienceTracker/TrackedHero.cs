@@ -1,23 +1,28 @@
 ﻿namespace ExperienceTracker
 {
+    using System;
     using System.Linq;
 
     using Ensage;
     using Ensage.Common.Extensions;
+    using Ensage.SDK.Helpers;
 
-    internal class Enemy
+    internal class TrackedHero
     {
         private readonly float bonusXp;
+
+        private readonly Team team;
 
         private readonly Ability xpTalent;
 
         private float timeToShowWarning;
 
-        public Enemy(Hero enemy)
+        public TrackedHero(Hero enemy)
         {
-            Handle = enemy.Handle;
             Hero = enemy;
-            NewExperience = OldExperience = (int)enemy.CurrentXP;
+            Handle = enemy.Handle;
+            team = enemy.Team;
+            OldExperience = (int)enemy.CurrentXP;
             xpTalent = enemy.Spellbook.Spells.FirstOrDefault(x => x.Name.Contains("special_bonus_exp_boost"));
             if (xpTalent != null)
             {
@@ -30,6 +35,8 @@
         public uint Handle { get; }
 
         public Hero Hero { get; }
+
+        public bool IsValid => Hero.IsValid;
 
         public int NewExperience { get; private set; }
 
@@ -44,7 +51,8 @@
 
         public bool IsInExperienceRange(Creep creep)
         {
-            return creep != null && creep.IsValid && Hero.IsVisible && Hero.IsAlive && Hero.Distance2D(creep) <= 1300;
+            return creep != null && creep.IsValid && creep.Team != team && Hero.IsVisible && Hero.IsAlive
+                   && Hero.Distance2D(creep) <= 1300;
         }
 
         public void SetExperience(int oldExp, int newExp)
@@ -54,8 +62,8 @@
                 return;
             }
 
-            OldExperience = oldExp;
             NewExperience = newExp;
+            UpdateManager.BeginInvoke(() => OldExperience = oldExp, 130);
         }
 
         public void SetWarning(int totalExp, int enemies, int warningTime)
@@ -66,13 +74,13 @@
                 return;
             }
 
-            EnemiesWarning = (totalExp - earnedExp * enemies) / earnedExp;
-
-            if (EnemiesWarning <= 0)
+            var count = Math.Round((totalExp - earnedExp * enemies) / (float)earnedExp);
+            if (count <= 0)
             {
                 return;
             }
 
+            EnemiesWarning = (int)count;
             timeToShowWarning = Game.RawGameTime + warningTime;
         }
     }
