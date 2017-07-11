@@ -62,9 +62,8 @@
         {
             get
             {
-                return fountain ?? (fountain = EntityManager<Unit>.Entities.FirstOrDefault(
-                                        x => x.IsValid && x.ClassId == ClassId.CDOTA_Unit_Fountain
-                                             && x.Team == manager.MyHero.Team));
+                return fountain ?? (fountain = EntityManager<Building>.Entities.FirstOrDefault(
+                                        x => x.IsValid && x.Name == "dota_fountain" && x.Team == manager.MyHero.Team));
             }
         }
 

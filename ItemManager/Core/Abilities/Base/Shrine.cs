@@ -12,6 +12,16 @@
 
     internal class Shrine : UsableAbility, IRecoveryAbility
     {
+        private readonly float duration;
+
+        private readonly float hpGrow;
+
+        private readonly float hpHeal;
+
+        private readonly float mpGrow;
+
+        private readonly float mpHeal;
+
         public Shrine(Manager manager)
             : base(null, manager)
         {
@@ -25,16 +35,6 @@
             PowerTreadsAttribute = Attribute.Agility;
             RestoredStats = RestoredStats.All;
         }
-
-        private readonly float hpHeal;
-
-        private readonly float mpHeal;
-
-        private readonly float hpGrow;
-
-        private readonly float mpGrow;
-
-        private readonly float duration;
 
         public float HealthRestore => (hpHeal + hpGrow * (Game.RawGameTime / 60)) * duration;
 

@@ -58,20 +58,10 @@
         {
             var entities = new List<Entity>();
 
-            entities.AddRange(ObjectManager.GetEntitiesParallel<Unit>().Where(x => x.IsValid && x.UnitType != 0));
-            entities.AddRange(ObjectManager.GetDormantEntities<Unit>().Where(x => x.IsValid && x.UnitType != 0));
-
-            entities.AddRange(ObjectManager.GetEntitiesParallel<Ability>().Where(x => x.IsValid));
-            entities.AddRange(ObjectManager.GetDormantEntities<Ability>().Where(x => x.IsValid));
-
+            entities.AddRange(EntityManager<Unit>.Entities.Where(x => x.IsValid && x.UnitType != 0));
+            entities.AddRange(EntityManager<Ability>.Entities.Where(x => x.IsValid));
             entities.AddRange(
-                ObjectManager.GetEntitiesParallel<PhysicalItem>()
-                    .Where(x => x.IsValid && x.Item.IsValid)
-                    .Select(x => x.Item));
-            entities.AddRange(
-                ObjectManager.GetDormantEntities<PhysicalItem>()
-                    .Where(x => x.IsValid && x.Item.IsValid)
-                    .Select(x => x.Item));
+                EntityManager<PhysicalItem>.Entities.Where(x => x.IsValid && x.Item.IsValid).Select(x => x.Item));
 
             foreach (var entity in entities)
             {

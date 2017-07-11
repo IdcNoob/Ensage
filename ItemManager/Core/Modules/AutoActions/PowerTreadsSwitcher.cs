@@ -163,7 +163,7 @@
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!menu.IsEnabled || !args.Process || args.IsQueued || !args.Entities.Contains(manager.MyHero.Hero)
+            if (!args.Process || args.IsQueued || !args.Entities.Contains(manager.MyHero.Hero)
                 || !args.IsPlayerInput && !menu.UniversalUseEnabled || manager.MyHero.IsInvisible()
                 && !manager.MyHero.CanUseAbilitiesInInvisibility())
             {

@@ -5,6 +5,7 @@
     using System.Linq;
 
     using Ensage;
+    using Ensage.Common;
     using Ensage.Common.Menu;
 
     using EventArgs;
@@ -23,6 +24,49 @@
         public SnatcherMenu(Menu mainMenu)
         {
             var menu = new Menu("Snatcher", "snatcher");
+
+            var notificationMenu = new Menu("Notification", "snatcherNotification");
+
+            var notificationEnabled = new MenuItem("snatcherNotificationEnabled", "Enabled").SetValue(false);
+            notificationEnabled.SetTooltip("Show notification when snatched is enabled");
+            notificationMenu.AddItem(notificationEnabled);
+            notificationEnabled.ValueChanged += (sender, args) =>
+                {
+                    IsNotificationEnabled = args.GetNewValue<bool>();
+                    OnNotificationEnabledChange?.Invoke(null, new BoolEventArgs(IsNotificationEnabled));
+                };
+            IsNotificationEnabled = notificationEnabled.IsActive();
+
+            var notificationHoldKey =
+                new MenuItem("snatcherNotificationHoldKey", "Enabled for hold key").SetValue(false);
+            notificationMenu.AddItem(notificationHoldKey);
+            notificationHoldKey.ValueChanged += (sender, args) => { NotificationHold = args.GetNewValue<bool>(); };
+            NotificationHold = notificationHoldKey.IsActive();
+
+            var notificationToggleKey =
+                new MenuItem("snatcherNotificationToggleKey", "Enabled for toggle key").SetValue(true);
+            notificationMenu.AddItem(notificationToggleKey);
+            notificationToggleKey.ValueChanged += (sender, args) => { NotificationToggle = args.GetNewValue<bool>(); };
+            NotificationToggle = notificationToggleKey.IsActive();
+
+            var notificationSize = new MenuItem("snatcherNotificationSize", "Size").SetValue(new Slider(22, 15, 30));
+            notificationMenu.AddItem(notificationSize);
+            notificationSize.ValueChanged += (sender, args) => { NotificationSize = args.GetNewValue<Slider>().Value; };
+            NotificationSize = notificationSize.GetValue<Slider>().Value;
+
+            var notificationX =
+                new MenuItem("snatcherNotificationX", "Coordinates X").SetValue(
+                    new Slider(15, 0, (int)HUDInfo.ScreenSizeX()));
+            notificationMenu.AddItem(notificationX);
+            notificationX.ValueChanged += (sender, args) => { NotificationX = args.GetNewValue<Slider>().Value; };
+            NotificationX = notificationX.GetValue<Slider>().Value;
+
+            var notificationY =
+                new MenuItem("snatcherNotificationY", "Coordinates Y").SetValue(
+                    new Slider(50, 0, (int)HUDInfo.ScreenSizeY()));
+            notificationMenu.AddItem(notificationY);
+            notificationY.ValueChanged += (sender, args) => { NotificationY = args.GetNewValue<Slider>().Value; };
+            NotificationY = notificationY.GetValue<Slider>().Value;
 
             var enabled = new MenuItem("snatcherEnabled", "Enabled").SetValue(true);
             menu.AddItem(enabled);
@@ -92,10 +136,13 @@
             SetEnabledItems(holdItems.GetValue<AbilityToggler>().Dictionary, EnabledHoldItems);
             SetEnabledItems(toggleItems.GetValue<AbilityToggler>().Dictionary, EnabledToggleItems);
 
+            menu.AddSubMenu(notificationMenu);
             mainMenu.AddSubMenu(menu);
         }
 
         public event EventHandler<BoolEventArgs> OnEnabledChange;
+
+        public event EventHandler<BoolEventArgs> OnNotificationEnabledChange;
 
         public event EventHandler<IntEventArgs> OnUpdateRateChange;
 
@@ -109,7 +156,19 @@
 
         public bool IsEnabled { get; private set; }
 
+        public bool IsNotificationEnabled { get; private set; }
+
         public int ItemMoveCostThreshold { get; private set; }
+
+        public bool NotificationHold { get; private set; }
+
+        public int NotificationSize { get; private set; }
+
+        public bool NotificationToggle { get; private set; }
+
+        public int NotificationX { get; private set; }
+
+        public int NotificationY { get; private set; }
 
         public bool ToggleKey { get; private set; }
 

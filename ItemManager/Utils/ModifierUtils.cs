@@ -8,15 +8,6 @@
 
         public static string BottleRegeneration { get; } = "modifier_bottle_regeneration";
 
-        public static List<string> DiffusalRemovableModifiers { get; } = new List<string>
-        {
-            "modifier_eul_cyclone",
-            "modifier_ghost_state",
-            "modifier_necrolyte_sadist_active",
-            "modifier_omninight_guardian_angel",
-            "modifier_item_glimmer_cape_fade"
-        };
-
         public static List<string> CanUseAbilitiesInInvis { get; } = new List<string>
         {
             "modifier_broodmother_spin_web_invisible_applier",
@@ -60,6 +51,15 @@
         };
 
         public static string DiffusalDebuff { get; } = "modifier_item_diffusal_blade_slow";
+
+        public static List<string> DiffusalRemovableModifiers { get; } = new List<string>
+        {
+            "modifier_eul_cyclone",
+            "modifier_ghost_state",
+            "modifier_necrolyte_sadist_active",
+            "modifier_omninight_guardian_angel",
+            "modifier_item_glimmer_cape_fade"
+        };
 
         public static string FountainRegeneration { get; } = "modifier_fountain_aura_buff";
 

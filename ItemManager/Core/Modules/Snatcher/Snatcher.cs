@@ -18,6 +18,8 @@
     using Menus;
     using Menus.Modules.Snatcher;
 
+    using SharpDX;
+
     using Utils;
 
     using Hero = Controllables.Hero;
@@ -57,6 +59,11 @@
             this.menu.OnUseOtherUnitsChange += MenuOnUseOtherUnitsChange;
             this.menu.OnUpdateRateChange += MenuOnUpdateRateChange;
             this.menu.OnEnabledChange += MenuOnEnabledChange;
+            this.menu.OnNotificationEnabledChange += MenuOnNotificationEnabledChange;
+            if (this.menu.IsNotificationEnabled && this.menu.IsEnabled)
+            {
+                Drawing.OnDraw += OnDraw;
+            }
         }
 
         public void Dispose()
@@ -68,6 +75,7 @@
             Player.OnExecuteOrder -= OnExecuteOrder;
             manager.OnUnitAdd -= OnUnitAdd;
             manager.OnUnitRemove -= OnUnitRemove;
+            Drawing.OnDraw -= OnDraw;
         }
 
         private void AddOtherUnits()
@@ -91,7 +99,31 @@
 
         private void MenuOnEnabledChange(object sender, BoolEventArgs boolEventArgs)
         {
-            updateHandler.IsEnabled = boolEventArgs.Enabled;
+            if (boolEventArgs.Enabled)
+            {
+                updateHandler.IsEnabled = true;
+                if (menu.IsNotificationEnabled)
+                {
+                    Drawing.OnDraw += OnDraw;
+                }
+            }
+            else
+            {
+                updateHandler.IsEnabled = false;
+                Drawing.OnDraw -= OnDraw;
+            }
+        }
+
+        private void MenuOnNotificationEnabledChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (boolEventArgs.Enabled && menu.IsEnabled)
+            {
+                Drawing.OnDraw += OnDraw;
+            }
+            else
+            {
+                Drawing.OnDraw -= OnDraw;
+            }
         }
 
         private void MenuOnUpdateRateChange(object sender, IntEventArgs intEventArgs)
@@ -113,6 +145,22 @@
                 manager.OnUnitAdd -= OnUnitAdd;
                 manager.OnUnitRemove -= OnUnitRemove;
             }
+        }
+
+        private void OnDraw(EventArgs args)
+        {
+            if ((!menu.NotificationHold || !menu.HoldKey) && (!menu.NotificationToggle || !menu.ToggleKey))
+            {
+                return;
+            }
+
+            Drawing.DrawText(
+                "Snatcher",
+                "Arial",
+                new Vector2(menu.NotificationX, menu.NotificationY),
+                new Vector2(menu.NotificationSize),
+                Color.Orange,
+                FontFlags.None);
         }
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)

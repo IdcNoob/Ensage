@@ -9,8 +9,6 @@
     {
         private readonly Dictionary<string, bool> heroToggler = new Dictionary<string, bool>();
 
-        protected Menu Menu { get; }
-
         public OffensiveAbilitySettings(Menu mainMenu, string name, string texture = null)
         {
             var simpleName = name.ToLower().Replace(" ", string.Empty);
@@ -78,6 +76,8 @@
         public bool SilenceStack { get; private set; }
 
         public bool StunStack { get; private set; }
+
+        protected Menu Menu { get; }
 
         public bool IsEnabled(string heroName)
         {

@@ -55,9 +55,8 @@
         {
             get
             {
-                return fountain ?? (fountain = EntityManager<Unit>.Entities.FirstOrDefault(
-                                        x => x.IsValid && x.ClassId == ClassId.CDOTA_Unit_Fountain
-                                             && x.Team == manager.MyHero.Team));
+                return fountain ?? (fountain = EntityManager<Building>.Entities.FirstOrDefault(
+                                        x => x.IsValid && x.Name == "dota_fountain" && x.Team == manager.MyHero.Team));
             }
         }
 
@@ -102,7 +101,7 @@
 
         private void OnUpdate()
         {
-            if (!menu.IsEnabled || Game.IsPaused || !manager.MyHero.CanUseItems() || !arcaneBoots.CanBeCasted()
+            if (Game.IsPaused || !manager.MyHero.CanUseItems() || !arcaneBoots.CanBeCasted()
                 || manager.MyHero.MissingMana < arcaneBoots.ManaRestore || Fountain != null
                 && manager.MyHero.Distance2D(Fountain) < menu.FountainRange)
             {
