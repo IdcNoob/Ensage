@@ -117,7 +117,7 @@
 
         private void OnUpdate()
         {
-            if (Game.IsPaused)
+            if (Game.IsPaused || sleeper.Sleeping)
             {
                 return;
             }
@@ -132,8 +132,8 @@
 
             var techiesMines = EntityManager<Unit>.Entities
                 .Where(
-                    x => x.IsValid && x.IsTechiesMine() && !x.IsInvul() && x.IsAlive && x.Team != manager.MyHero.Team
-                         && x.Distance2D(manager.MyHero.Position) <= 1000)
+                    x => x.IsValid && x.IsVisible && x.IsTechiesMine() && !x.IsInvul() && x.IsAlive
+                         && x.Team != manager.MyHero.Team && x.Distance2D(manager.MyHero.Position) <= 1000)
                 .ToList();
 
             var attackRange = manager.MyHero.Hero.GetAttackRange();
@@ -151,7 +151,7 @@
                     if (item != null)
                     {
                         item.UseAbility(mine);
-                        sleeper.Sleep(500);
+                        sleeper.Sleep(1000);
                         return;
                     }
                 }
@@ -171,7 +171,7 @@
                                 (float)(Math.Max(0, distance - attackRange) / manager.MyHero.Hero.MovementSpeed
                                         + manager.MyHero.Hero.AttackPoint() + manager.MyHero.Hero.GetTurnTime(mine))
                                 * 1000 + Game.Ping);
-                            sleeper.Sleep(500);
+                            sleeper.Sleep(1000);
                             return;
                         }
                     }

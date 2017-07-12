@@ -261,7 +261,7 @@ namespace ItemManager.Core.Modules.GoldSpender
 
             var distance = menu.EnemyDistance;
             if (distance <= 0 || !EntityManager<Hero>.Entities.Any(
-                    x => x.IsValid && x.Team == manager.MyHero.EnemyTeam && !x.IsIllusion && x.IsAlive
+                    x => x.IsValid && x.IsVisible && x.Team == manager.MyHero.EnemyTeam && !x.IsIllusion && x.IsAlive
                          && x.Distance2D(manager.MyHero.Position) <= distance))
             {
                 BuyItems();

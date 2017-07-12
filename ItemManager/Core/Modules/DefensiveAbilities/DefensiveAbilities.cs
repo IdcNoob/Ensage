@@ -108,7 +108,7 @@
             }
 
             var enemies = EntityManager<Hero>.Entities
-                .Where(x => x.IsValid && x.IsAlive && x.IsVisible && x.Team != manager.MyHero.Team && !x.IsIllusion)
+                .Where(x => x.IsValid && x.IsVisible && x.IsAlive && x.Team != manager.MyHero.Team && !x.IsIllusion)
                 .ToList();
 
             if (!enemies.Any())

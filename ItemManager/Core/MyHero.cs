@@ -291,7 +291,7 @@ namespace ItemManager.Core
             }
 
             var physicalItems = EntityManager<PhysicalItem>.Entities
-                .Where(x => x.IsVisible && x.Distance2D(Hero) < 800 && DroppedItems.Contains(x.Item))
+                .Where(x => x.IsValid && x.IsVisible && x.Distance2D(Hero) < 800 && DroppedItems.Contains(x.Item))
                 .Reverse()
                 .ToList();
 

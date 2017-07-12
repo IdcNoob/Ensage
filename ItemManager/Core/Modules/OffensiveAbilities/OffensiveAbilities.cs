@@ -149,7 +149,7 @@
                 {
                     target = EntityManager<Hero>.Entities
                         .Where(
-                            x => x.IsValid && !sleeper.Sleeping(x) && x.Team != manager.MyHero.Team
+                            x => x.IsValid && x.IsVisible && !sleeper.Sleeping(x) && x.Team != manager.MyHero.Team
                                  && menu.IsHeroEnabled(x.StoredName()) && !x.IsIllusion)
                         .OrderBy(x => manager.MyHero.Hero.FindRotationAngle(x.Position))
                         .FirstOrDefault(x => offensiveAbility.CanBeCasted(x));

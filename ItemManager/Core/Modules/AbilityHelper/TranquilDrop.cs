@@ -84,7 +84,7 @@
             }
 
             if (EntityManager<Hero>.Entities.Any(
-                x => x.IsValid && x.IsValid && x.IsAlive && x.Team != manager.MyHero.Team
+                x => x.IsValid && x.IsVisible && x.IsAlive && x.Team != manager.MyHero.Team
                      && x.Distance2D(manager.MyHero.Position) < 800))
             {
                 manager.MyHero.PickUpItems();

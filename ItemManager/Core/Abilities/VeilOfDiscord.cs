@@ -41,8 +41,8 @@
             var inRange = new List<Hero>();
 
             foreach (var enemy in EntityManager<Hero>.Entities.Where(
-                x => x.IsValid && !x.Equals(target) && !x.IsIllusion && x.IsAlive && x.Team != Manager.MyHero.Team
-                     && !x.IsInvul() && x.Distance2D(target) < radius * 2))
+                x => x.IsValid && x.IsVisible && !x.Equals(target) && !x.IsIllusion && x.IsAlive
+                     && x.Team != Manager.MyHero.Team && !x.IsInvul() && x.Distance2D(target) < radius * 2))
             {
                 tempPosition = (tempPosition + enemy.Position) / 2;
 

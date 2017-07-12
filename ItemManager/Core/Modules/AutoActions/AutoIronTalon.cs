@@ -67,7 +67,7 @@
             }
 
             var creep = EntityManager<Creep>.Entities.Where(
-                    x => x.IsValid && x.IsAlive && x.IsSpawned && x.IsVisible
+                    x => x.IsValid && x.IsVisible && x.IsAlive && x.IsSpawned
                          && x.Distance2D(manager.MyHero.Position) <= ironTalon.GetCastRange()
                          && x.Team != manager.MyHero.Team && !x.IsAncient
                          && x.Health * ironTalon.Damage >= menu.DamageThreshold)

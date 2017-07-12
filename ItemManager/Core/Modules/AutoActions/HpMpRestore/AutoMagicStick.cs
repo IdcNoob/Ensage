@@ -84,7 +84,7 @@
             }
 
             if (menu.EnemySearchRange > 0 && !EntityManager<Hero>.Entities.Any(
-                    x => x.IsAlive && !x.IsIllusion && x.IsVisible && x.Team != manager.MyHero.Team
+                    x => x.IsValid && x.IsVisible && x.IsAlive && !x.IsIllusion && x.Team != manager.MyHero.Team
                          && x.Distance2D(manager.MyHero.Position) <= menu.EnemySearchRange))
             {
                 return;

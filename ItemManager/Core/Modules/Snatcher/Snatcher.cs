@@ -247,7 +247,7 @@
             }
 
             var items = EntityManager<PhysicalItem>.Entities.Where(
-                x => x.IsVisible && !ignoredItems.Contains(x.Item.Handle) && !sleeper.Sleeping(x.Handle)
+                x => x.IsValid && x.IsVisible && !ignoredItems.Contains(x.Item.Handle) && !sleeper.Sleeping(x.Handle)
                      && (menu.ToggleKey && menu.EnabledToggleItems.Contains(x.Item.Id)
                          || menu.HoldKey && menu.EnabledHoldItems.Contains(x.Item.Id)));
 
