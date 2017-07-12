@@ -51,7 +51,7 @@
 
         public bool IsInExperienceRange(Creep creep)
         {
-            return creep != null && creep.IsValid && creep.Team != team && Hero.IsVisible && Hero.IsAlive
+            return creep.IsValid && Hero.IsValid && creep.Team != team && Hero.IsVisible && Hero.IsAlive
                    && Hero.Distance2D(creep) <= 1300;
         }
 
