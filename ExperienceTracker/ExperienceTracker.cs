@@ -160,7 +160,8 @@
                 () =>
                     {
                         var creep = deadCreeps.FirstOrDefault(
-                            x => x.Key.Position.Distance2D(args.ParticleEffect.GetControlPoint(0)) < 10);
+                            x => x.Key.IsValid && x.Key.Position.Distance2D(args.ParticleEffect.GetControlPoint(0))
+                                 < 10);
 
                         if (creep.Key != null)
                         {
