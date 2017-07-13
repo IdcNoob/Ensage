@@ -246,10 +246,13 @@
                 }
             }
 
-            var items = EntityManager<PhysicalItem>.Entities.Where(
-                x => x.IsValid && x.IsVisible && !ignoredItems.Contains(x.Item.Handle) && !sleeper.Sleeping(x.Handle)
-                     && (menu.ToggleKey && menu.EnabledToggleItems.Contains(x.Item.Id)
-                         || menu.HoldKey && menu.EnabledHoldItems.Contains(x.Item.Id)));
+            var items = EntityManager<PhysicalItem>.Entities
+                .Where(
+                    x => x.IsValid && x.IsVisible && !ignoredItems.Contains(x.Item.Handle)
+                         && !sleeper.Sleeping(x.Handle)
+                         && (menu.ToggleKey && menu.EnabledToggleItems.Contains(x.Item.Id)
+                             || menu.HoldKey && menu.EnabledHoldItems.Contains(x.Item.Id)))
+                .OrderByDescending(x => x.Item.Id == AbilityId.item_aegis);
 
             foreach (var item in items)
             {
