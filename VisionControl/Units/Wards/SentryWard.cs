@@ -2,44 +2,72 @@
 {
     using System.Linq;
 
+    using Attributes;
+
+    using Core;
+
     using Ensage;
+    using Ensage.Common.Extensions;
+
+    using Interfaces;
 
     using SharpDX;
 
-    internal class SentryWard : Ward
+    [Unit("item_ward_sentry", "npc_dota_sentry_wards")]
+    internal class SentryWard : BaseUnit, IWard
     {
-        private const string AbilityName = "item_ward_sentry";
+        private bool timerEnabled;
 
-        private bool showTimer;
-
-        public SentryWard(Unit unit)
-            : base(unit, AbilityName)
+        public SentryWard(Unit unit, Settings settings)
+            : base(unit)
         {
-            Initialize();
+            SetData(settings);
         }
 
-        public SentryWard(Vector3 position)
-            : base(position, AbilityName)
+        public SentryWard(Vector3 position, Settings settings)
+            : base(position)
         {
-            Initialize();
-            Duration = Ability.GetAbilityDataByName(AbilityName)
-                .AbilitySpecialData.First(x => x.Name == "lifetime")
-                .Value;
-            EndTime = Game.RawGameTime + Duration;
+            RequiresUpdate = true;
+            SetData(settings);
         }
 
-        public override bool ShowTimer => showTimer && base.ShowTimer;
+        public bool RequiresUpdate { get; private set; }
 
-        public override void UpdateData(Unit unit)
+        public override bool ShowTexture => RequiresUpdate || base.ShowTexture;
+
+        public override bool ShowTimer => timerEnabled && ShowTexture;
+
+        public int UpdatableDistance { get; } = 400;
+
+        public float Distance(Entity unit)
         {
-            base.UpdateData(unit);
-            ParticleEffect?.Dispose();
-            DrawRange();
+            return Position.Distance2D(unit);
         }
 
-        private void DrawRange()
+        public void UpdateData(Unit unit)
         {
-            if (ParticleEffect == null)
+            Unit = unit;
+            Handle = unit.Handle;
+            Position = unit.Position;
+            RequiresUpdate = false;
+        }
+
+        private void SetData(Settings settings)
+        {
+            AbilityName = "item_ward_sentry";
+            Duration = Unit?.FindModifier("modifier_item_buff_ward")?.RemainingTime ?? Ability
+                           .GetAbilityDataByName(AbilityName)
+                           .AbilitySpecialData.First(x => x.Name == "lifetime")
+                           .Value;
+            EndTime = CreateTime + Duration;
+            Radius = Ability.GetAbilityDataByName(AbilityName)
+                         .AbilitySpecialData.First(x => x.Name == "true_sight_range")
+                         .Value + 25;
+            Texture = Drawing.GetTexture("materials/ensage_ui/other/item_ward_sentry");
+            TextureSize = new Vector2(50, 35);
+            timerEnabled = settings.TimerEnabled(AbilityName);
+
+            if (!settings.RangeEnabled(AbilityName))
             {
                 return;
             }
@@ -47,17 +75,6 @@
             ParticleEffect = new ParticleEffect("particles/ui_mouseactions/drag_selected_ring.vpcf", Position);
             ParticleEffect.SetControlPoint(1, new Vector3(30, 100, 255));
             ParticleEffect.SetControlPoint(2, new Vector3(Radius, 255, 0));
-        }
-
-        private void Initialize()
-        {
-            showTimer = Menu.TimerEnabled(AbilityName);
-            PositionCorrection = new Vector2(25);
-            Radius = Ability.GetAbilityDataByName(AbilityName)
-                .AbilitySpecialData.First(x => x.Name == "true_sight_range")
-                .Value;
-            DrawRange();
-            Texture = Drawing.GetTexture("materials/ensage_ui/other/item_ward_sentry");
         }
     }
 }

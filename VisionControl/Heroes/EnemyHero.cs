@@ -4,18 +4,19 @@
 
     using Ensage;
     using Ensage.Common.Extensions;
+    using Ensage.SDK.Helpers;
 
     using SharpDX;
 
-    using Units.Wards;
+    using Units.Interfaces;
 
     internal class EnemyHero
     {
-        private const string DispenserName = "item_ward_dispenser";
+        private const AbilityId DispenserId = AbilityId.item_ward_dispenser;
 
-        private const string ObserverName = "item_ward_observer";
+        private const AbilityId ObserverId = AbilityId.item_ward_observer;
 
-        private const string SentryName = "item_ward_sentry";
+        private const AbilityId SentryId = AbilityId.item_ward_sentry;
 
         private readonly Hero hero;
 
@@ -23,8 +24,8 @@
         {
             hero = enemy;
             Handle = enemy.Handle;
-            ObserversCount = CountObservers();
-            SentryCount = CountSentries();
+            ObserversCount = CountWards(ObserverId);
+            SentryCount = CountWards(SentryId);
         }
 
         public uint Handle { get; }
@@ -41,32 +42,17 @@
 
         public uint SentryCount { get; set; }
 
-        public double Angle(Ward ward)
+        public double Angle(IWard ward)
         {
             return hero.FindRelativeAngle(ward.Position);
         }
 
-        public uint CountObservers()
+        public uint CountWards(AbilityId id)
         {
-            return (hero.FindItem(ObserverName)?.CurrentCharges ?? 0)
-                   + (hero.FindItem(DispenserName)?.CurrentCharges ?? 0)
-                   + (hero.Inventory.Backpack.FirstOrDefault(x => x.IsValid && x.Name == ObserverName)?.CurrentCharges
-                      ?? 0) + (hero.Inventory.Backpack.FirstOrDefault(x => x.IsValid && x.Name == DispenserName)
-                                   ?.CurrentCharges ?? 0);
-        }
-
-        public uint CountSentries()
-        {
-            return (hero.FindItem(SentryName)?.CurrentCharges ?? 0)
-                   + (hero.FindItem(DispenserName)?.SecondaryCharges ?? 0)
-                   + (hero.Inventory.Backpack.FirstOrDefault(x => x.IsValid && x.Name == SentryName)?.CurrentCharges
-                      ?? 0) + (hero.Inventory.Backpack.FirstOrDefault(x => x.IsValid && x.Name == DispenserName)
-                                   ?.SecondaryCharges ?? 0);
-        }
-
-        public uint CountWards(ClassId id)
-        {
-            return id == ClassId.CDOTA_Item_ObserverWard ? CountObservers() : CountSentries();
+            var items = hero.Inventory.Items.Concat(hero.Inventory.Backpack).ToList();
+            return (uint)(items.Where(x => x.Id == id).Sum(x => x.CurrentCharges) + items
+                              .Where(x => x.Id == DispenserId)
+                              .Sum(x => id == AbilityId.item_ward_observer ? x.CurrentCharges : x.SecondaryCharges));
         }
 
         public float Distance(EnemyHero enemy)
@@ -74,19 +60,20 @@
             return hero.Distance2D(enemy.Position);
         }
 
-        public bool DroppedWard(ClassId id)
+        public bool DroppedWard(AbilityId id)
         {
-            return ObjectManager.GetEntities<PhysicalItem>().Any(x => x.Item.ClassId == id && x.Distance2D(hero) < 100);
+            return EntityManager<PhysicalItem>.Entities.Any(
+                x => (x.Item.Id == id || x.Item.Id == DispenserId) && x.Distance2D(hero) < 300);
         }
 
-        public uint GetWardsCount(ClassId id)
+        public uint GetWardsCount(AbilityId id)
         {
-            return id == ClassId.CDOTA_Item_ObserverWard ? ObserversCount : SentryCount;
+            return id == ObserverId ? ObserversCount : SentryCount;
         }
 
-        public void SetWardsCount(ClassId id, uint count)
+        public void SetWardsCount(AbilityId id, uint count)
         {
-            if (id == ClassId.CDOTA_Item_ObserverWard)
+            if (id == ObserverId)
             {
                 ObserversCount = count;
             }

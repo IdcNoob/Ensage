@@ -2,61 +2,44 @@
 {
     using System.Linq;
 
+    using Attributes;
+
+    using Core;
+
     using Ensage;
 
     using SharpDX;
 
-    internal class NetherWard : IUnit
+    [Unit(
+        "pugna_nether_ward",
+        "npc_dota_pugna_nether_ward_1",
+        "npc_dota_pugna_nether_ward_2",
+        "npc_dota_pugna_nether_ward_3",
+        "npc_dota_pugna_nether_ward_4")]
+    internal class NetherWard : BaseUnit
     {
-        private const string AbilityName = "pugna_nether_ward";
-
-        private readonly Unit unit;
-
-        public NetherWard(Unit unit)
+        public NetherWard(Unit unit, Settings settings)
+            : base(unit)
         {
-            this.unit = unit;
-            PositionCorrection = new Vector2(25);
+            AbilityName = "pugna_nether_ward";
             Radius = Ability.GetAbilityDataByName(AbilityName).AbilitySpecialData.First(x => x.Name == "radius").Value;
             Duration = Ability.GetAbilityDataByName(AbilityName)
                 .AbilitySpecialData.First(x => x.Name == "ward_duration_tooltip")
                 .Value;
-            Position = unit.Position;
             Texture = Drawing.GetTexture("materials/ensage_ui/other/nether_ward");
-            Handle = unit.Handle;
-            TextureSize = new Vector2(40);
             EndTime = Game.RawGameTime + Duration;
-            ShowTimer = Menu.TimerEnabled(AbilityName);
+            ShowTimer = settings.RangeEnabled(AbilityName);
 
-            if (Menu.RangeEnabled(AbilityName))
+            if (!settings.RangeEnabled(AbilityName))
             {
-                ParticleEffect = new ParticleEffect("particles/ui_mouseactions/drag_selected_ring.vpcf", Position);
-                ParticleEffect.SetControlPoint(1, new Vector3(124, 252, 0));
-                ParticleEffect.SetControlPoint(2, new Vector3(Radius, 255, 0));
+                return;
             }
+
+            ParticleEffect = new ParticleEffect("particles/ui_mouseactions/drag_selected_ring.vpcf", Position);
+            ParticleEffect.SetControlPoint(1, new Vector3(124, 252, 0));
+            ParticleEffect.SetControlPoint(2, new Vector3(Radius, 255, 0));
         }
 
-        public float Duration { get; }
-
-        public float EndTime { get; }
-
-        public uint Handle { get; }
-
-        public ParticleEffect ParticleEffect { get; }
-
-        public Vector3 Position { get; }
-
-        public Vector2 PositionCorrection { get; }
-
-        public float Radius { get; }
-
-        public bool ShowTexture => !unit.IsVisible;
-
-        public bool ShowTimer { get; }
-
-        public DotaTexture Texture { get; }
-
-        public Vector2 TextureSize { get; set; }
-
-        private static MenuManager Menu => Variables.Menu;
+        public override bool ShowTimer { get; }
     }
 }

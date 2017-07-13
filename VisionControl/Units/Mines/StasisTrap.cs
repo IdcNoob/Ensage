@@ -2,29 +2,37 @@
 {
     using System.Linq;
 
+    using Attributes;
+
+    using Core;
+
     using Ensage;
 
     using SharpDX;
 
-    internal class StasisTrap : Mine
+    [Unit("techies_stasis_trap", "npc_dota_techies_stasis_trap")]
+    internal class StasisTrap : BaseUnit
     {
-        private const string AbilityName = "techies_stasis_trap";
-
-        public StasisTrap(Unit unit)
-            : base(unit, AbilityName)
+        public StasisTrap(Unit unit, Settings settings)
+            : base(unit)
         {
-            PositionCorrection = new Vector2(25);
+            AbilityName = "techies_stasis_trap";
             Radius = Ability.GetAbilityDataByName(AbilityName)
                 .AbilitySpecialData.First(x => x.Name == "activation_radius")
                 .Value;
+            Texture = Drawing.GetTexture("materials/ensage_ui/other/npc_dota_techies_stasis_trap");
+            ShowTimer = false;
 
-            if (ParticleEffect != null)
+            if (!settings.RangeEnabled(AbilityName))
             {
-                ParticleEffect.SetControlPoint(1, new Vector3(65, 105, 225));
-                ParticleEffect.SetControlPoint(2, new Vector3(Radius, 255, 0));
+                return;
             }
+
+            ParticleEffect = new ParticleEffect("particles/ui_mouseactions/drag_selected_ring.vpcf", Position);
+            ParticleEffect.SetControlPoint(1, new Vector3(65, 105, 225));
+            ParticleEffect.SetControlPoint(2, new Vector3(Radius, 255, 0));
         }
 
-        public override bool ShowTimer { get; } = false;
+        public override bool ShowTimer { get; }
     }
 }

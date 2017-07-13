@@ -2,66 +2,47 @@
 {
     using System.Linq;
 
+    using Attributes;
+
+    using Core;
+
     using Ensage;
 
     using SharpDX;
 
-    internal class Tombstone : IUnit
+    [Unit(
+        "undying_tombstone",
+        "npc_dota_unit_tombstone1",
+        "npc_dota_unit_tombstone2",
+        "npc_dota_unit_tombstone3",
+        "npc_dota_unit_tombstone4")]
+    internal class Tombstone : BaseUnit
     {
-        private const string AbilityName = "undying_tombstone";
-
-        private readonly Unit unit;
-
-        public Tombstone(Unit unit)
+        public Tombstone(Unit unit, Settings settings)
+            : base(unit)
         {
-            this.unit = unit;
-            PositionCorrection = new Vector2(25);
-            var level = (uint)char.GetNumericValue(unit.Name.Last());
+            var level = (uint)char.GetNumericValue(unit.Name.Last()) - 1;
+            AbilityName = "undying_tombstone";
             Radius = Ability.GetAbilityDataByName(AbilityName)
                 .AbilitySpecialData.First(x => x.Name == "radius")
-                .GetValue(level - 1);
+                .GetValue(level);
             Duration = Ability.GetAbilityDataByName(AbilityName)
                 .AbilitySpecialData.First(x => x.Name == "duration")
-                .GetValue(level - 1);
-            Position = unit.Position;
+                .GetValue(level);
             Texture = Drawing.GetTexture("materials/ensage_ui/other/tombstone");
-            Handle = unit.Handle;
-            TextureSize = new Vector2(40);
             EndTime = Game.RawGameTime + Duration;
-            ShowTimer = Menu.TimerEnabled(AbilityName);
+            ShowTimer = settings.RangeEnabled(AbilityName);
 
-            if (Menu.RangeEnabled(AbilityName))
+            if (!settings.RangeEnabled(AbilityName))
             {
-                ParticleEffect = new ParticleEffect("particles/ui_mouseactions/drag_selected_ring.vpcf", Position);
-                ParticleEffect.SetControlPoint(1, new Vector3(128, 128, 128));
-                ParticleEffect.SetControlPoint(2, new Vector3(Radius, 255, 0));
+                return;
             }
+
+            ParticleEffect = new ParticleEffect("particles/ui_mouseactions/drag_selected_ring.vpcf", Position);
+            ParticleEffect.SetControlPoint(1, new Vector3(128, 128, 128));
+            ParticleEffect.SetControlPoint(2, new Vector3(Radius, 255, 0));
         }
 
-        public float Duration { get; }
-
-        public float EndTime { get; }
-
-        public uint Handle { get; }
-
-        public bool IsVisible => unit.IsVisible;
-
-        public ParticleEffect ParticleEffect { get; }
-
-        public Vector3 Position { get; }
-
-        public Vector2 PositionCorrection { get; }
-
-        public float Radius { get; }
-
-        public bool ShowTexture => !unit.IsVisible;
-
-        public bool ShowTimer { get; }
-
-        public DotaTexture Texture { get; }
-
-        public Vector2 TextureSize { get; set; }
-
-        private static MenuManager Menu => Variables.Menu;
+        public override bool ShowTimer { get; }
     }
 }

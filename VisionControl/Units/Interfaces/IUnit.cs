@@ -1,4 +1,4 @@
-namespace VisionControl.Units
+namespace VisionControl.Units.Interfaces
 {
     using Ensage;
 
@@ -26,6 +26,6 @@ namespace VisionControl.Units
 
         DotaTexture Texture { get; }
 
-        Vector2 TextureSize { get; set; }
+        Vector2 TextureSize { get; }
     }
 }
