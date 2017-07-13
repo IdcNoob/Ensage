@@ -15,6 +15,8 @@
 
     using EventArgs;
 
+    using AbilityEventArgs = EventArgs.AbilityEventArgs;
+
     internal class Manager : IDisposable
     {
         private readonly List<Type> abilityTypes;

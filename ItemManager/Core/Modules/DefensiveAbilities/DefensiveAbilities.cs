@@ -14,10 +14,10 @@
     using Ensage.SDK.Handlers;
     using Ensage.SDK.Helpers;
 
-    using EventArgs;
-
     using Menus;
     using Menus.Modules.DefensiveAbilities;
+
+    using AbilityEventArgs = EventArgs.AbilityEventArgs;
 
     [Module]
     internal class DefensiveAbilities : IDisposable

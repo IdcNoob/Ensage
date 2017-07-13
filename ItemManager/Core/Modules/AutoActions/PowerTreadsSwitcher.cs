@@ -26,6 +26,7 @@
 
     using Utils;
 
+    using AbilityEventArgs = EventArgs.AbilityEventArgs;
     using Attribute = Ensage.Attribute;
 
     [AbilityBasedModule(AbilityId.item_power_treads)]

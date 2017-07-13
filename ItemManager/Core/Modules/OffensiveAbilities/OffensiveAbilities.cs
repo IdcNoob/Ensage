@@ -15,10 +15,10 @@
     using Ensage.SDK.Handlers;
     using Ensage.SDK.Helpers;
 
-    using EventArgs;
-
     using Menus;
     using Menus.Modules.OffensiveAbilities;
+
+    using AbilityEventArgs = EventArgs.AbilityEventArgs;
 
     [Module]
     internal class OffensiveAbilities : IDisposable

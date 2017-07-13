@@ -20,6 +20,8 @@ namespace ItemManager.Core.Modules.GoldSpender
 
     using Utils;
 
+    using AbilityEventArgs = EventArgs.AbilityEventArgs;
+
     [Module]
     internal class GoldSpender : IDisposable
     {
