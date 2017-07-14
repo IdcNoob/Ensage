@@ -24,7 +24,7 @@
         {
             // todo: fix ally check
 
-            if (ObjectManager.GetEntitiesParallel<Unit>()
+            if (ObjectManager.GetEntities<Unit>()
                     .Count(
                         x => x.IsValid && x.IsAlive && x.IsSpawned && x.Team != HeroTeam && !x.IsMagicImmune()
                              && x.Distance2D(Hero) <= GetCastRange()) >= 3)

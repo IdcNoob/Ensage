@@ -261,7 +261,7 @@
                 }
             }
 
-            foreach (var unit in ObjectManager.GetEntitiesParallel<Unit>()
+            foreach (var unit in ObjectManager.GetEntities<Unit>()
                 .Where(
                     x => x.IsValid && x.IsAlive && x.IsSpawned && x.Team == Variables.EnemyTeam
                          && x.Distance2D(Hero) < 1325))
@@ -476,7 +476,7 @@
 
                 if (Hero.HasModifier("modifier_invoker_cold_snap"))
                 {
-                    var quas = ObjectManager.GetEntitiesParallel<Ability>()
+                    var quas = ObjectManager.GetEntities<Ability>()
                         .FirstOrDefault(x => x.Id == AbilityId.invoker_quas);
                     if (quas != null)
                     {
@@ -528,7 +528,7 @@
                 return;
             }
 
-            var nearEnemies = ObjectManager.GetEntitiesParallel<Unit>()
+            var nearEnemies = ObjectManager.GetEntities<Unit>()
                 .Any(
                     x => x.IsValid && x.Team == Variables.EnemyTeam && x.IsAlive && x.IsSpawned
                          && x.Distance2D(Hero) < 1000);

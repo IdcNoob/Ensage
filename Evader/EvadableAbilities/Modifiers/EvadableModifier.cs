@@ -106,7 +106,7 @@
             return true;
         }
 
-        public Hero GetAllyHero(ParallelQuery<Hero> allies)
+        public Hero GetAllyHero(IEnumerable<Hero> allies)
         {
             switch (Type)
             {

@@ -229,8 +229,7 @@
                 || menu.HoldKey && menu.EnabledHoldItems.Contains(0))
             {
                 //var runes = EntityManager<Rune>.Entities
-                var runes = ObjectManager.GetEntitiesParallel<Rune>()
-                    .Where(x => !sleeper.Sleeping(x.Handle) && x.IsVisible);
+                var runes = ObjectManager.GetEntities<Rune>().Where(x => !sleeper.Sleeping(x.Handle));
 
                 foreach (var rune in runes)
                 {

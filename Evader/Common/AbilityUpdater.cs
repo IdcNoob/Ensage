@@ -90,7 +90,7 @@
             {
                 await Task.Delay(2000);
 
-                foreach (var unit in ObjectManager.GetEntitiesParallel<Unit>()
+                foreach (var unit in ObjectManager.GetEntities<Unit>()
                     .Where(
                         x => !(x is Building) && x.IsValid && x.IsAlive && x.IsSpawned
                              && (!x.IsIllusion || x.HasModifiers(

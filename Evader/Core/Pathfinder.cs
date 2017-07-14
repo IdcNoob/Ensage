@@ -204,7 +204,7 @@
         {
             if (!sleeper.Sleeping(units))
             {
-                foreach (var unit in ObjectManager.GetEntitiesParallel<Unit>()
+                foreach (var unit in ObjectManager.GetEntities<Unit>()
                     .Where(x => x.IsValid && !units.ContainsKey(x) && x.IsSpawned && x.IsAlive && !x.Equals(Hero)))
                 {
                     var obstacle = AddObstacle(unit.NetworkPosition, unit.HullRadius);

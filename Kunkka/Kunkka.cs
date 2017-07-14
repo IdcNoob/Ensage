@@ -205,7 +205,7 @@
                         return;
                     }
 
-                    var fountain = ObjectManager.GetEntitiesParallel<Unit>()
+                    var fountain = ObjectManager.GetEntities<Unit>()
                         .FirstOrDefault(
                             x => x.Team == heroTeam && x.ClassId == ClassId.CDOTA_Unit_Fountain
                                  && x.Distance2D(hero) > 2000);
@@ -304,7 +304,7 @@
                     return;
                 }
 
-                var reincarnating = ObjectManager.GetEntitiesParallel<Hero>()
+                var reincarnating = ObjectManager.GetEntities<Hero>()
                     .FirstOrDefault(
                         x => x.IsValid && !x.IsIllusion && x.IsReincarnating && x.Distance2D(hero) < torrent.CastRange);
 
@@ -342,7 +342,7 @@
             if (!targetLocked && !xMark.IsInPhase)
             {
                 var mouse = Game.MousePosition;
-                target = ObjectManager.GetEntitiesParallel<Hero>()
+                target = ObjectManager.GetEntities<Hero>()
                     .Where(
                         x => x.IsValid && x.IsAlive && x.IsVisible && !x.IsIllusion && x.Team != heroTeam
                              && x.Distance2D(mouse) < 600)
@@ -612,7 +612,7 @@
 
         private Unit GetTorrentThinker()
         {
-            return ObjectManager.GetEntitiesParallel<Unit>()
+            return ObjectManager.GetEntities<Unit>()
                 .FirstOrDefault(
                     x => x.ClassId == ClassId.CDOTA_BaseNPC
                          && x.Modifiers.Any(z => z.Name == "modifier_kunkka_torrent_thinker") && x.Team == heroTeam);

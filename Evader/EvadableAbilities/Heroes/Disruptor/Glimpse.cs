@@ -72,7 +72,7 @@
             }
             else if (Obstacle != null)
             {
-                var hero = ObjectManager.GetEntitiesParallel<Hero>()
+                var hero = ObjectManager.GetEntities<Hero>()
                     .Where(
                         x => x.IsValid && x.Team == HeroTeam && x.IsAlive && !x.IsMagicImmune()
                              && x.Distance2D(heroPosition) < 75)

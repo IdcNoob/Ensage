@@ -80,7 +80,7 @@
             if (Menu.Debug.LogInformation && dayVision > 0)
             {
                 Debugger.Write("  = >   Unit (" + unit.Name + ") with vision: " + dayVision + " // ");
-                var closestHero = ObjectManager.GetEntitiesParallel<Hero>()
+                var closestHero = ObjectManager.GetEntities<Hero>()
                     .Where(x => x.IsValid && x.IsAlive)
                     .OrderBy(x => x.Distance2D(unit))
                     .FirstOrDefault();
@@ -382,10 +382,10 @@
                 return;
             }
 
-            var allies = ObjectManager.GetEntitiesParallel<Hero>()
+            var allies = ObjectManager.GetEntities<Hero>()
                 .Where(
                     x => x.Equals(Hero) || Menu.AlliesSettings.HelpAllies && Menu.AlliesSettings.Enabled(x.StoredName())
-                         && x.IsValid && x.Team == HeroTeam && x.IsAlive && !x.IsIllusion && x.Distance2D(Hero) < 3000);
+                         && x.IsValid && x.Team == HeroTeam && x.IsAlive && !x.IsIllusion && x.Distance2D(Hero) < 3000).ToList();
 
             foreach (var ability in abilityUpdater.EvadableAbilities)
             {

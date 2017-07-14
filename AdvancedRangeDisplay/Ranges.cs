@@ -101,7 +101,7 @@
                 return;
             }
 
-            var allHeroes = ObjectManager.GetEntitiesParallel<Hero>().Where(x => x.IsValid && !x.IsIllusion);
+            var allHeroes = ObjectManager.GetEntities<Hero>().Where(x => x.IsValid && !x.IsIllusion);
 
             foreach (var hero in allHeroes)
             {

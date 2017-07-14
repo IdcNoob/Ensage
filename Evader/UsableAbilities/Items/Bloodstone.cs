@@ -126,7 +126,7 @@
             }
 
             if ((float)Hero.Health / Hero.MaximumHealth * 100 <= Menu.BloodstoneHpThreshold && ObjectManager
-                    .GetEntitiesParallel<Hero>()
+                    .GetEntities<Hero>()
                     .Any(
                         x => x.IsValid && x.IsAlive && !x.IsIllusion && x.Team != HeroTeam
                              && x.Distance2D(Hero) < Menu.BloodstoneEnemyRange))
