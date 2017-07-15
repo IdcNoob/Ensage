@@ -236,7 +236,7 @@ namespace ItemManager.Core.Modules.GoldSpender
             var ability = abilityEventArgs.Ability;
             if (ability.Owner?.Team == manager.MyHero.EnemyTeam)
             {
-                invisAbilities.Add(item);
+                invisAbilities.Add(ability);
             }
         }
 
