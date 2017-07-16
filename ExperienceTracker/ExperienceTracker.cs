@@ -140,7 +140,7 @@
             }
 
             var creep = sender as Creep;
-            if (creep == null || !creep.IsValid)
+            if (creep == null || !creep.IsValid || deadCreeps.ContainsKey(creep))
             {
                 return;
             }
