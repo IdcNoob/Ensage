@@ -19,7 +19,7 @@ namespace Evader.Data
                 { "item_blink", ability => new BlinkDagger(ability, AbilityType.Blink) },
                 { "antimage_blink", ability => new BlinkAbility(ability, AbilityType.Blink) },
                 { "queenofpain_blink", ability => new BlinkAbility(ability, AbilityType.Blink) },
-                { "faceless_void_time_walk", ability => new BlinkAbility(ability, AbilityType.Blink) },
+                { "faceless_void_time_walk", ability => new TimeWalk(ability, AbilityType.Blink) },
                 { "magnataur_skewer", ability => new BlinkAbility(ability, AbilityType.Blink) },
                 { "morphling_waveform", ability => new BlinkAbility(ability, AbilityType.Blink) },
                 { "phantom_lancer_doppelwalk", ability => new BlinkAbility(ability, AbilityType.Blink) },
