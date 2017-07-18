@@ -135,7 +135,7 @@
             foreach (var pair in heroes.Where(x => x.Key.IsValid).ToList())
             {
                 var hero = pair.Key;
-                if (hero.IsVisible)
+                if (hero.IsVisible || !hero.IsAlive)
                 {
                     heroes[hero] = gameTime;
                     continue;
