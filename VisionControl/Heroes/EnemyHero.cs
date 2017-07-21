@@ -49,7 +49,7 @@
 
         public uint CountWards(AbilityId id)
         {
-            var items = hero.Inventory.Items.Concat(hero.Inventory.Backpack).ToList();
+            var items = hero.Inventory.Items.Concat(hero.Inventory.Backpack).Where(x => x.IsValid).ToList();
             return (uint)(items.Where(x => x.Id == id).Sum(x => x.CurrentCharges) + items
                               .Where(x => x.Id == DispenserId)
                               .Sum(x => id == AbilityId.item_ward_observer ? x.CurrentCharges : x.SecondaryCharges));
