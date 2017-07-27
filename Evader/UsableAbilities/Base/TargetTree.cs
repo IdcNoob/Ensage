@@ -21,7 +21,7 @@
         public override bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
             return !Sleeper.Sleeping && Ability.CanBeCasted() && Hero.CanCast()
-                   && ((AOE)ability).StartPosition.Distance2D(Hero) <= Ability.GetCastRange();
+                   && ((AOE)ability).StartPosition.Distance2D(Hero) <= GetCastRange();
         }
 
         public override float GetRequiredTime(EvadableAbility ability, Unit unit, float remainingTime)
@@ -32,7 +32,7 @@
         public override void Use(EvadableAbility ability, Unit target)
         {
             var frontTree = ObjectManager.GetEntitiesFast<Tree>()
-                .Where(x => x.IsValid && x.IsAlive && x.Distance2D(Hero) < 350 && x.Name == "dota_temp_tree")
+                .Where(x => x.IsValid && x.IsAlive && x.Distance2D(Hero) < 300 && x.Name == "dota_temp_tree")
                 .OrderBy(x => target.FindRelativeAngle(x.Position))
                 .FirstOrDefault();
 
@@ -43,6 +43,16 @@
 
             Ability.UseAbility(frontTree);
             Sleep();
+        }
+
+        protected override bool CheckEnemy(Unit unit)
+        {
+            return true;
+        }
+
+        protected override float GetCastRange()
+        {
+            return 400;
         }
     }
 }

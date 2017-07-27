@@ -345,8 +345,8 @@
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!Menu.ArmletAutoToggle || !args.Entities.Contains(Hero)
-                || args.OrderId != OrderId.ToggleAbility || args.Ability?.ClassId != ClassId.CDOTA_Item_Armlet)
+            if (!Menu.ArmletAutoToggle || !args.Entities.Contains(Hero) || args.OrderId != OrderId.ToggleAbility
+                || args.Ability?.ClassId != ClassId.CDOTA_Item_Armlet)
             {
                 return;
             }
@@ -476,8 +476,7 @@
 
                 if (Hero.HasModifier("modifier_invoker_cold_snap"))
                 {
-                    var quas = ObjectManager.GetEntities<Ability>()
-                        .FirstOrDefault(x => x.Id == AbilityId.invoker_quas);
+                    var quas = ObjectManager.GetEntities<Ability>().FirstOrDefault(x => x.Id == AbilityId.invoker_quas);
                     if (quas != null)
                     {
                         damage += Hero.DamageTaken(quas.Level * 7, DamageType.Magical, unit);

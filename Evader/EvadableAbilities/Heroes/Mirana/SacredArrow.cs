@@ -102,8 +102,8 @@
                 Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), GetEndRadius(), Obstacle);
             }
             else if (StartCast > 0 && (Game.RawGameTime > EndCast
-                                       || (Game.RawGameTime > StartCast + (fowCast ? 0 : CastPoint) + 0.1f
-                                           && !IsAbilityUnitValid())))
+                                       || Game.RawGameTime > StartCast + (fowCast ? 0 : CastPoint) + 0.1f
+                                       && !IsAbilityUnitValid()))
             {
                 End();
             }
@@ -115,7 +115,7 @@
 
         public override void Draw()
         {
-            if (Obstacle == null || (!IsAbilityUnitValid() && fowCast))
+            if (Obstacle == null || !IsAbilityUnitValid() && fowCast)
             {
                 return;
             }

@@ -47,7 +47,7 @@
                 Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), GetEndRadius(), Obstacle);
             }
             else if (StartCast > 0 && (Game.RawGameTime > EndCast
-                                       || (Game.RawGameTime > StartCast + CastPoint + 0.2 && !IsAbilityUnitValid())))
+                                       || Game.RawGameTime > StartCast + CastPoint + 0.2 && !IsAbilityUnitValid()))
             {
                 End();
             }

@@ -385,7 +385,8 @@
             var allies = ObjectManager.GetEntities<Hero>()
                 .Where(
                     x => x.Equals(Hero) || Menu.AlliesSettings.HelpAllies && Menu.AlliesSettings.Enabled(x.StoredName())
-                         && x.IsValid && x.Team == HeroTeam && x.IsAlive && !x.IsIllusion && x.Distance2D(Hero) < 3000).ToList();
+                         && x.IsValid && x.Team == HeroTeam && x.IsAlive && !x.IsIllusion && x.Distance2D(Hero) < 3000)
+                .ToList();
 
             foreach (var ability in abilityUpdater.EvadableAbilities)
             {
@@ -1158,7 +1159,7 @@
                             return true;
                         }
                     }
-                  //  return false;
+                    //  return false;
                 }
             }
             return true;

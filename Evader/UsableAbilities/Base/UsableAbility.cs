@@ -97,8 +97,8 @@
         protected virtual bool CheckEnemy(Unit unit)
         {
             return !unit.IsInvul() && (CanBeUsedOnAlly || unit.Equals(Hero)
-                                       || ((PiercesMagicImmunity || !unit.IsMagicImmune())
-                                           && (IgnoresLinkensSphere || !unit.IsLinkensProtected())));
+                                       || (PiercesMagicImmunity || !unit.IsMagicImmune())
+                                       && (IgnoresLinkensSphere || !unit.IsLinkensProtected()));
         }
 
         protected virtual float GetCastRange()

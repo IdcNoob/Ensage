@@ -127,9 +127,9 @@
 
         public bool BlockAbilityUsage { get; private set; }
 
-        public bool BlockPlayerInput { get; private set; }
-
         public bool BlockAssemblyInput { get; private set; }
+
+        public bool BlockPlayerInput { get; private set; }
 
         public bool CancelAnimation { get; private set; }
 

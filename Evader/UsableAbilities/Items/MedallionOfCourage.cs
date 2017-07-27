@@ -1,13 +1,16 @@
 ﻿namespace Evader.UsableAbilities.Items
 {
+    using Base;
+
+    using Core;
+
+    using Data;
+
     using Ensage;
 
-    using Evader.Core;
-    using Evader.Data;
-    using Evader.EvadableAbilities.Base;
-    using Evader.UsableAbilities.Base;
+    using EvadableAbilities.Base;
 
-    using AbilityType = Evader.Data.AbilityType;
+    using AbilityType = Data.AbilityType;
 
     internal class MedallionOfCourage : Targetable
     {

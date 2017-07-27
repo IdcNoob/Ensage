@@ -24,6 +24,8 @@
             CounterAbilities.Add("item_quelling_blade");
             CounterAbilities.Add("item_iron_talon");
             CounterAbilities.Add("item_bfury");
+            CounterAbilities.Add("item_tango_single");
+            CounterAbilities.Add("item_tango");
 
             for (var i = 0u; i < duration.Length; i++)
             {

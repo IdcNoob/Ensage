@@ -433,7 +433,6 @@
     <Compile Include="Common\Debugger.cs" />
     <Compile Include="Common\AbilityDrawer.cs" />
     <Compile Include="Common\MapDrawer.cs" />
-    <Compile Include="Common\MouseEmulation.cs" />
     <Compile Include="Common\StatusDrawer.cs" />
     <Compile Include="Common\Utils.cs" />
   </ItemGroup>
