@@ -300,8 +300,8 @@
                          || menuManager.AbilityLockLevel(x.StoredName()) > x.Level)
                      && !menuManager.AbilityFullyLocked(x.StoredName()));
 
-            return abilityLevel >= lockLevel && (otherNotLockedAbility
-                                                 || menuManager.AbilityFullyLocked(ability.StoredName()));
+            return abilityLevel >= lockLevel
+                   && (otherNotLockedAbility || menuManager.AbilityFullyLocked(ability.StoredName()));
         }
 
         private bool IsTalentLearned(uint level)

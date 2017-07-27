@@ -5,19 +5,15 @@
     using System.IO;
     using System.Linq;
     using System.Net;
-    using System.Security.Permissions;
     using System.Text;
     using System.Text.RegularExpressions;
 
     using Ensage;
     using Ensage.Common.Extensions;
 
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
-
     internal class AbilityBuilder
     {
-        private readonly Dictionary<string, string> abilityNames = new Dictionary<string, string>();
+        private readonly AbilityNames abilityNames;
 
         private readonly Hero hero;
 
@@ -28,17 +24,10 @@
 
         private bool error;
 
-        [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
         public AbilityBuilder(Hero hero)
         {
             this.hero = hero;
-
-            JToken @object;
-            if (JObject.Parse(Encoding.Default.GetString(Resource.Names)).TryGetValue("AbilityNames", out @object))
-            {
-                abilityNames = JsonConvert.DeserializeObject<AbilityNames[]>(@object.ToString())
-                    .ToDictionary(x => x.Name, x => x.DotaName);
-            }
+            abilityNames = new AbilityNames();
 
             SaveAbilityBuild(GetDotabuffName(hero.ClassId));
         }
@@ -176,7 +165,7 @@
                                 name = "Shadow Shaman Hex";
                             }
 
-                            abilityNames.TryGetValue(name, out dotaAbilityName);
+                            abilityNames.Names.TryGetValue(name, out dotaAbilityName);
                         }
 
                         if (string.IsNullOrEmpty(dotaAbilityName))
