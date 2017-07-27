@@ -30,7 +30,7 @@
                 };
             menu.AddItem(new MenuItem("tpHome", "X home").SetValue(new KeyBind('G', KeyBindType.Press)))
                 .SetTooltip("X Mark on self => Teleport to base")
-                .ValueChanged += (sender, arg) => { TpHomeEanbled = arg.GetNewValue<KeyBind>().Active; };
+                .ValueChanged += (sender, arg) => { TpHomeEnabled = arg.GetNewValue<KeyBind>().Active; };
             menu.AddItem(new MenuItem("hitRun", "Hit & run").SetValue(new KeyBind('H', KeyBindType.Press)))
                 .SetTooltip("X Mark on self => Dagger => Hit => Return")
                 .ValueChanged += (sender, arg) => { HitAndRunEnabled = arg.GetNewValue<KeyBind>().Active; };
@@ -40,11 +40,16 @@
                 .SetTooltip("Will cast torrent on rune or aegis/wk reincarnation before spawn")
                 .ValueChanged +=
             (sender, arg) => { TorrentOnStaticObjectsEnabled = arg.GetNewValue<KeyBind>().Active; };
+            menu.AddItem(new MenuItem("stack", "Stack ancients").SetValue(new KeyBind('K', KeyBindType.Press)))
+                .SetTooltip("Stack ancients with torrent (radiant bot and dire bot)")
+                .ValueChanged += (sender, arg) => { AncientsStackEnabled = arg.GetNewValue<KeyBind>().Active; };
             menu.AddItem(hitAndRunDamage = new MenuItem("hitAndRunDamage", "Hit & run AD").SetValue(true))
                 .SetTooltip("Use additional damage when using hit & run (shadow blade etc.)");
 
             menu.AddToMainMenu();
         }
+
+        public bool AncientsStackEnabled { get; private set; }
 
         public bool AutoReturnEnabled => autoReturn.GetValue<bool>();
 
@@ -60,7 +65,7 @@
 
         public bool TorrentOnStaticObjectsEnabled { get; private set; }
 
-        public bool TpHomeEanbled { get; private set; }
+        public bool TpHomeEnabled { get; private set; }
 
         public void OnClose()
         {

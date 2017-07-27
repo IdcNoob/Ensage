@@ -34,7 +34,6 @@
             Entity.OnParticleEffectAdded -= Entity_OnParticleEffectAdded;
             Events.OnClose -= OnClose;
             Game.OnIngameUpdate -= Game_OnUpdate;
-            Player.OnExecuteOrder -= Player_OnExecuteAction;
             Drawing.OnDraw -= Drawing_OnDraw;
             Unit.OnModifierAdded -= UnitOnModifierAdded;
             Unit.OnModifierRemoved -= UnitOnModifierRemoved;
@@ -51,16 +50,10 @@
             kunkka.OnLoad();
             Events.OnClose += OnClose;
             Game.OnIngameUpdate += Game_OnUpdate;
-            Player.OnExecuteOrder += Player_OnExecuteAction;
             Drawing.OnDraw += Drawing_OnDraw;
             Entity.OnParticleEffectAdded += Entity_OnParticleEffectAdded;
             Unit.OnModifierAdded += UnitOnModifierAdded;
             Unit.OnModifierRemoved += UnitOnModifierRemoved;
-        }
-
-        private void Player_OnExecuteAction(Player sender, ExecuteOrderEventArgs args)
-        {
-            kunkka.OnExecuteAbilitiy(sender, args);
         }
 
         private void UnitOnModifierAdded(Unit sender, ModifierChangedEventArgs args)

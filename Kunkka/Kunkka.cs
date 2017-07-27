@@ -19,10 +19,20 @@
     {
         private readonly List<IAbility> allSpells = new List<IAbility>();
 
+        private readonly List<Vector3> ancientCamps = new List<Vector3>
+        {
+            new Vector3(121, -1917, 384), // radiant
+            new Vector3(3863, -612, 256) // dire
+        };
+
         private readonly List<Vector3> runePositions = new List<Vector3>
         {
             new Vector3(-2257, 1661, 128),
             new Vector3(2798, -2232, 128),
+            new Vector3(1296, -4119, 384),
+            new Vector3(-4347, 196, 256),
+            new Vector3(-2818, 4141, 384),
+            new Vector3(3556, 376, 384)
         };
 
         private bool arrowCasted;
@@ -81,25 +91,6 @@
             targetParticle.SetControlPoint(7, target.Position);
         }
 
-        public void OnExecuteAbilitiy(Player sender, ExecuteOrderEventArgs args)
-        {
-            if (!args.Entities.Contains(hero) || !menuManager.IsEnabled || !args.IsPlayerInput)
-            {
-                return;
-            }
-
-            var ability = args.Ability;
-            if (ability == null)
-            {
-                return;
-            }
-
-            if (ability.Equals(ghostShip.Ability) && args.OrderId == OrderId.AbilityLocation)
-            {
-                ghostShip.Position = hero.Position.Extend(args.TargetPosition, ghostShip.CastRange);
-            }
-        }
-
         public void OnLoad()
         {
             hero = ObjectManager.LocalHero;
@@ -149,7 +140,11 @@
         {
             if (args.Name.Contains("x_spot"))
             {
-                DelayAction.Add(10, () => xMark.Position = args.ParticleEffect.Position);
+                DelayAction.Add(10, () => xMark.Position = args.ParticleEffect.GetControlPoint(0));
+            }
+            else if (args.Name.Contains("ghostship"))
+            {
+                DelayAction.Add(10, () => ghostShip.Position = args.ParticleEffect.GetControlPoint(0));
             }
         }
 
@@ -181,18 +176,13 @@
                 return;
             }
 
-            if (!Utils.SleepCheck("Evader.Avoiding"))
-            {
-                return;
-            }
-
             if (ghostShip.IsInPhase)
             {
                 ghostShip.HitTime = Game.RawGameTime + ghostShip.CastRange
                                     / (hero.AghanimState() ? ghostShip.AghanimSpeed : ghostShip.Speed) + 0.12;
             }
 
-            if (menuManager.TpHomeEanbled)
+            if (menuManager.TpHomeEnabled)
             {
                 var teleport = hero.FindItem("item_travel_boots")
                                ?? hero.FindItem("item_travel_boots_2") ?? hero.FindItem("item_tpscroll");
@@ -321,20 +311,36 @@
                 }
 
                 var gameTime = Game.GameTime;
-
                 if (gameTime % 120 < (gameTime > 0 ? 119.5 : -0.5) - torrent.AdditionalDelay - Game.Ping / 1000)
                 {
                     return;
                 }
 
                 var rune = runePositions.OrderBy(x => x.Distance2D(hero)).First();
-
                 if (rune.Distance2D(hero) > torrent.CastRange)
                 {
                     return;
                 }
 
                 torrent.UseAbility(rune);
+                sleeper.Sleep(torrent.GetSleepTime);
+                return;
+            }
+
+            if (menuManager.AncientsStackEnabled)
+            {
+                if (!torrent.CanBeCasted || Game.GameTime % 60 <= 60 - torrent.AdditionalDelay - Game.Ping / 1000 - 1.2)
+                {
+                    return;
+                }
+
+                var camp = ancientCamps.OrderBy(x => x.Distance2D(hero)).First();
+                if (camp.Distance2D(hero) > torrent.CastRange)
+                {
+                    return;
+                }
+
+                torrent.UseAbility(camp);
                 sleeper.Sleep(torrent.GetSleepTime);
                 return;
             }
@@ -435,8 +441,8 @@
                     }
                 }
 
-                if (torrent.CanBeCasted
-                    && (!fullCombo || (ghostShip.CanBeCasted || !hero.AghanimState() && ghostShip.Cooldown > 2)))
+                if (torrent.CanBeCasted && (!fullCombo || ghostShip.CanBeCasted
+                                            || !hero.AghanimState() && ghostShip.Cooldown > 2))
                 {
                     torrent.UseAbility(xMark.Position);
                     sleeper.Sleep(torrent.GetSleepTime);
