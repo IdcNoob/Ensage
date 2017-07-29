@@ -2,7 +2,7 @@
 {
     using System.Linq;
 
-    using Abilities;
+    using Abilities.Base;
 
     using Attributes;
 
@@ -21,18 +21,20 @@
 
     [AbilityBasedModule(AbilityId.item_magic_stick)]
     [AbilityBasedModule(AbilityId.item_magic_wand)]
-    internal class AutoMagicStick : IAbilityBasedModule
+    [AbilityBasedModule(AbilityId.item_cheese)]
+    [AbilityBasedModule(AbilityId.item_faerie_fire)]
+    internal class InstantHealthRestoreItem : IAbilityBasedModule
     {
         private readonly Manager manager;
 
-        private readonly AutoMagicStickMenu menu;
+        private readonly InstantHealthRestoreItemMenu menu;
 
-        private MagicStick magicStick;
+        private UsableAbility usableAbility;
 
-        public AutoMagicStick(Manager manager, MenuManager menu, AbilityId abilityId)
+        public InstantHealthRestoreItem(Manager manager, MenuManager menu, AbilityId abilityId)
         {
             this.manager = manager;
-            this.menu = menu.AutoActionsMenu.AutoHealsMenu.AutoMagicStickMenu;
+            this.menu = menu.AutoActionsMenu.AutoHealsMenu.GetMenuFor(abilityId);
 
             AbilityId = abilityId;
             Refresh();
@@ -54,7 +56,7 @@
 
         public void Refresh()
         {
-            magicStick = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId) as MagicStick;
+            usableAbility = manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId);
         }
 
         private void MenuOnEnabledChange(object sender, BoolEventArgs boolEventArgs)
@@ -77,7 +79,7 @@
                 return;
             }
 
-            if (!manager.MyHero.CanUseItems() || !magicStick.CanBeCasted()
+            if (!manager.MyHero.CanUseItems() || !usableAbility.CanBeCasted()
                 || manager.MyHero.HasModifier(ModifierUtils.IceBlastDebuff))
             {
                 return;
@@ -95,7 +97,7 @@
 
             if (hp <= menu.HealthThreshold || hpPercentage <= menu.HealthThresholdPct)
             {
-                magicStick.Use();
+                usableAbility.Use();
             }
         }
     }

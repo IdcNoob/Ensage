@@ -84,14 +84,14 @@
                 .Where(x => x.IsValid && x.Team == manager.MyHero.Team && x.IsControllable && !x.IsIllusion)
                 .ToList();
 
-            var spiritBear = controllableUnits.FirstOrDefault(x => x.ClassId == ClassId.CDOTA_Unit_SpiritBear);
+            var spiritBear = controllableUnits.FirstOrDefault(x => x.Name.Contains("npc_dota_lone_druid_bear"));
             if (spiritBear != null)
             {
                 controllables.Add(new SpiritBear(spiritBear));
             }
 
             foreach (var meepo in controllableUnits.Where(
-                x => x.ClassId == ClassId.CDOTA_Unit_Hero_Meepo && x.Handle != manager.MyHero.Handle))
+                x => x.Name == "npc_dota_hero_meepo" && x.Handle != manager.MyHero.Handle))
             {
                 controllables.Add(new MeepoClone(meepo));
             }
@@ -187,19 +187,23 @@
         private void OnUnitAdd(object sender, UnitEventArgs unitEventArgs)
         {
             var unit = unitEventArgs.Unit;
-            if (unit.IsIllusion || !unit.IsControllable || controllables.Any(x => x.Handle == unit.Handle))
+            if (unit.IsIllusion || unit.Team != manager.MyHero.Team || !unit.IsControllable
+                || controllables.Any(x => x.Handle == unit.Handle))
             {
                 return;
             }
 
-            switch (unit.ClassId)
+            switch (unit.Name)
             {
-                case ClassId.CDOTA_Unit_SpiritBear:
+                case "npc_dota_lone_druid_bear1":
+                case "npc_dota_lone_druid_bear2":
+                case "npc_dota_lone_druid_bear3":
+                case "npc_dota_lone_druid_bear4":
                 {
                     controllables.Add(new SpiritBear(unit));
                     break;
                 }
-                case ClassId.CDOTA_Unit_Hero_Meepo:
+                case "npc_dota_hero_meepo":
                 {
                     controllables.Add(new MeepoClone(unit));
                     break;
@@ -229,7 +233,7 @@
                 || menu.HoldKey && menu.EnabledHoldItems.Contains(0))
             {
                 //var runes = EntityManager<Rune>.Entities
-                var runes = ObjectManager.GetEntities<Rune>().Where(x => !sleeper.Sleeping(x.Handle));
+                var runes = ObjectManager.GetEntitiesFast<Rune>().Where(x => !sleeper.Sleeping(x.Handle));
 
                 foreach (var rune in runes)
                 {

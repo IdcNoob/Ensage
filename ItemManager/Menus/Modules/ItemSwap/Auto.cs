@@ -28,10 +28,25 @@
             autoAegis.ValueChanged += (sender, args) => SwapCheeseAegis = args.GetNewValue<bool>();
             SwapCheeseAegis = autoAegis.IsActive();
 
+            var backpackItems = new MenuItem("autoBackpackItemsToInv", "Backpack items to inventory on death")
+                .SetValue(false)
+                .SetTooltip("Auto swap backpack items to inventory on death to reduce cooldown");
+            menu.AddItem(backpackItems);
+            backpackItems.ValueChanged += (sender, args) =>
+                {
+                    SwapBackpackItems = args.GetNewValue<bool>();
+                    OnSwapBackpackItemsChange?.Invoke(null, new BoolEventArgs(SwapBackpackItems));
+                };
+            SwapBackpackItems = backpackItems.IsActive();
+
             mainMenu.AddSubMenu(menu);
         }
 
         public event EventHandler<BoolEventArgs> OnAutoMoveTpScrollChange;
+
+        public event EventHandler<BoolEventArgs> OnSwapBackpackItemsChange;
+
+        public bool SwapBackpackItems { get; private set; }
 
         public bool SwapCheeseAegis { get; private set; }
 

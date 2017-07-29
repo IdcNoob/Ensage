@@ -13,6 +13,8 @@
     [Ability(AbilityId.item_phase_boots)]
     [Ability(AbilityId.treant_living_armor)]
     [Ability(AbilityId.item_hand_of_midas)]
+    [Ability(AbilityId.item_cheese)]
+    [Ability(AbilityId.item_faerie_fire)]
     internal class UsableAbility
     {
         protected Ability Ability;

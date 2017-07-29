@@ -165,7 +165,7 @@ namespace ItemManager.Core
                         continue;
                     }
 
-                    var slot = GetSlot(item.Handle, ItemStoredPlace.Inventory);
+                    var slot = GetItemSlot(item.Handle, ItemStoredPlace.Inventory);
                     item.MoveItem(ItemSlot.BackPack_1);
                     disabledItems.Sleep(6000, item.Handle);
                     UsableAbilities.FirstOrDefault(x => x.Handle == item.Handle)?.SetSleep(6000);
@@ -233,24 +233,24 @@ namespace ItemManager.Core
             return list;
         }
 
-        public ItemSlot? GetSavedSlot(Item item)
+        public ItemSlot? GetItemSlot(AbilityId abilityId, ItemStoredPlace itemStoredPlace)
+        {
+            return GetItemSlot(null, abilityId, itemStoredPlace);
+        }
+
+        public ItemSlot? GetItemSlot(uint handle, ItemStoredPlace itemStoredPlace)
+        {
+            return GetItemSlot(handle, null, itemStoredPlace);
+        }
+
+        public ItemSlot? GetSavedItemSlot(Item item)
         {
             return itemSlots.FirstOrDefault(x => x.Key.Equals(item)).Value;
         }
 
-        public ItemSlot? GetSavedSlot(uint handle)
+        public ItemSlot? GetSavedItemSlot(uint handle)
         {
             return itemSlots.FirstOrDefault(x => x.Key.Handle == handle).Value;
-        }
-
-        public ItemSlot? GetSlot(AbilityId abilityId, ItemStoredPlace itemStoredPlace)
-        {
-            return GetSlot(null, abilityId, itemStoredPlace);
-        }
-
-        public ItemSlot? GetSlot(uint handle, ItemStoredPlace itemStoredPlace)
-        {
-            return GetSlot(handle, null, itemStoredPlace);
         }
 
         public bool HasModifier(string modifierName)
@@ -278,7 +278,7 @@ namespace ItemManager.Core
             var bottle = UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_bottle) as Bottle;
             if (bottle != null && bottle.TakenFromStash)
             {
-                var slot = GetSavedSlot(bottle.Handle);
+                var slot = GetSavedItemSlot(bottle.Handle);
                 if (slot != null)
                 {
                     bottle.MoveItem(slot.Value, false);
@@ -310,7 +310,7 @@ namespace ItemManager.Core
                 {
                     DroppedItems.Remove(physicalItem.Item);
 
-                    var slot = GetSavedSlot(physicalItem.Item);
+                    var slot = GetSavedItemSlot(physicalItem.Item);
                     var item = Items.FirstOrDefault(x => x.Handle == physicalItem.Item.Handle);
 
                     if (slot != null && item != null)
@@ -337,7 +337,7 @@ namespace ItemManager.Core
 
         public void SaveItemSlot(Item item, ItemStoredPlace itemStored = ItemStoredPlace.Any)
         {
-            var slot = GetSlot(item.Handle, itemStored);
+            var slot = GetItemSlot(item.Handle, itemStored);
             if (slot != null)
             {
                 itemSlots[item] = slot.Value;
@@ -349,7 +349,7 @@ namespace ItemManager.Core
             return Hero.IsAlive && !IsChanneling && (!IsInvisible() || CanUseAbilitiesInInvisibility());
         }
 
-        private ItemSlot? GetSlot(uint? handle, AbilityId? abilityId, ItemStoredPlace itemStoredPlace)
+        private ItemSlot? GetItemSlot(uint? handle, AbilityId? abilityId, ItemStoredPlace itemStoredPlace)
         {
             var start = ItemSlot.InventorySlot_1;
             var end = ItemSlot.StashSlot_6;

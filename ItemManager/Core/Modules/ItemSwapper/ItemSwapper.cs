@@ -28,6 +28,8 @@
 
         private readonly ItemSwapMenu menu;
 
+        private readonly List<Item> movedBackpackItems = new List<Item>();
+
         private readonly Sleeper sleeper;
 
         private readonly IUpdateHandler updateHandler;
@@ -52,9 +54,14 @@
             {
                 Unit.OnModifierAdded += OnModifierAdded;
             }
+            if (this.menu.Auto.SwapBackpackItems)
+            {
+                Entity.OnInt32PropertyChange += OnNetworkActivityChange;
+            }
             manager.OnItemAdd += OnItemAdd;
             manager.OnItemRemove += OnItemRemove;
             this.menu.Auto.OnAutoMoveTpScrollChange += AutoOnAutoMoveTpScrollChange;
+            this.menu.Auto.OnSwapBackpackItemsChange += AutoOnOnSwapBackpackItemsChange;
         }
 
         public void Dispose()
@@ -64,7 +71,8 @@
             menu.Stash.OnSwap -= StashOnSwap;
             menu.Courier.OnSwap -= CourierOnSwap;
             Unit.OnModifierAdded -= OnModifierAdded;
-            Entity.OnInt32PropertyChange -= OnInt32PropertyChange;
+            Entity.OnInt32PropertyChange -= OnCourierStateChange;
+            Entity.OnInt32PropertyChange -= OnNetworkActivityChange;
             manager.OnItemAdd -= OnItemAdd;
             manager.OnItemRemove -= OnItemRemove;
             UpdateManager.Unsubscribe(OnUpdate);
@@ -79,6 +87,18 @@
             else
             {
                 Unit.OnModifierAdded -= OnModifierAdded;
+            }
+        }
+
+        private void AutoOnOnSwapBackpackItemsChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (boolEventArgs.Enabled)
+            {
+                Entity.OnInt32PropertyChange += OnNetworkActivityChange;
+            }
+            else
+            {
+                Entity.OnInt32PropertyChange -= OnNetworkActivityChange;
             }
         }
 
@@ -106,7 +126,7 @@
             }
 
             updateHandler.IsEnabled = true;
-            Entity.OnInt32PropertyChange += OnInt32PropertyChange;
+            Entity.OnInt32PropertyChange += OnCourierStateChange;
         }
 
         private void DisableCourierItemSwap()
@@ -114,7 +134,7 @@
             courierFollowing = false;
             itemsMovedToCourier = false;
             updateHandler.IsEnabled = false;
-            Entity.OnInt32PropertyChange -= OnInt32PropertyChange;
+            Entity.OnInt32PropertyChange -= OnCourierStateChange;
         }
 
         private void MoveItem(
@@ -130,7 +150,7 @@
             }
             else
             {
-                var savedSlot = manager.MyHero.GetSavedSlot(item);
+                var savedSlot = manager.MyHero.GetSavedItemSlot(item);
                 if (savedSlot != null)
                 {
                     slot = savedSlot.Value;
@@ -200,7 +220,7 @@
 
                 if (swapItem != null)
                 {
-                    var slot = manager.MyHero.GetSlot(swapItem.Handle, direction);
+                    var slot = manager.MyHero.GetItemSlot(swapItem.Handle, direction);
                     if (slot != null)
                     {
                         item.MoveItem(slot.Value);
@@ -222,7 +242,7 @@
             }
         }
 
-        private void OnInt32PropertyChange(Entity sender, Int32PropertyChangeEventArgs args)
+        private void OnCourierStateChange(Entity sender, Int32PropertyChangeEventArgs args)
         {
             if (args.OldValue == args.NewValue || args.PropertyName != "m_nCourierState")
             {
@@ -288,10 +308,106 @@
                 return;
             }
 
-            var scrollSlot = manager.MyHero.GetSlot(AbilityId.item_tpscroll, ItemStoredPlace.Inventory);
+            var scrollSlot = manager.MyHero.GetItemSlot(AbilityId.item_tpscroll, ItemStoredPlace.Inventory);
             if (scrollSlot != null)
             {
                 backpackItem.MoveItem(scrollSlot.Value);
+            }
+        }
+
+        private void OnNetworkActivityChange(Entity sender, Int32PropertyChangeEventArgs args)
+        {
+            if (sender?.Handle != manager.MyHero.Handle || args.NewValue == args.OldValue
+                || args.PropertyName != "m_NetworkActivity")
+            {
+                return;
+            }
+
+            switch ((NetworkActivity)args.NewValue)
+            {
+                case NetworkActivity.Die:
+                {
+                    if (manager.MyHero.Hero.IsReincarnating)
+                    {
+                        return;
+                    }
+
+                    var items = manager.MyHero.GetItems(ItemStoredPlace.Backpack)
+                        .OrderByDescending(x => x.Cooldown)
+                        .Where(x => x.Cooldown > 0)
+                        .ToList();
+
+                    if (!items.Any())
+                    {
+                        return;
+                    }
+
+                    var respawnTime = Math.Max(manager.MyHero.Hero.RespawnTime - Game.RawGameTime, 0);
+                    var freeSlots = manager.MyHero.Inventory.FreeInventorySlots.ToList();
+                    var inventoryItems = manager.MyHero.GetItems(ItemStoredPlace.Inventory)
+                        .Where(x => x.Cooldown * 2 <= respawnTime)
+                        .ToList();
+
+                    foreach (var item in items.Where(x => x.Cooldown * 2 < respawnTime))
+                    {
+                        if (freeSlots.Any())
+                        {
+                            var slot = freeSlots.First();
+                            manager.MyHero.SaveItemSlot(item, ItemStoredPlace.Backpack);
+                            movedBackpackItems.Add(item);
+                            item.MoveItem(slot);
+                            freeSlots.Remove(slot);
+                        }
+                        else
+                        {
+                            if (!inventoryItems.Any())
+                            {
+                                break;
+                            }
+
+                            var inventoryItem = inventoryItems.First();
+                            var slot = manager.MyHero.GetItemSlot(inventoryItem.Handle, ItemStoredPlace.Inventory);
+                            if (slot == null)
+                            {
+                                continue;
+                            }
+
+                            manager.MyHero.SaveItemSlot(item, ItemStoredPlace.Backpack);
+                            movedBackpackItems.Add(item);
+                            item.MoveItem(slot.Value);
+                            inventoryItems.Remove(inventoryItem);
+                        }
+                    }
+
+                    break;
+                }
+                case NetworkActivity.Respawn:
+                {
+                    try
+                    {
+                        foreach (var item in movedBackpackItems.Where(x => x.IsValid))
+                        {
+                            if (item.Id == AbilityId.item_tpscroll && item.Cooldown <= 5)
+                            {
+                                continue;
+                            }
+
+                            var slot = manager.MyHero.GetSavedItemSlot(item);
+                            if (slot == null)
+                            {
+                                continue;
+                            }
+
+                            item.MoveItem(slot.Value);
+                        }
+                    }
+                    finally
+                    {
+                        movedBackpackItems.Clear();
+                    }
+
+                    break;
+                }
             }
         }
 

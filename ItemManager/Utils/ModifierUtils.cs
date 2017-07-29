@@ -4,6 +4,8 @@
 
     internal static class ModifierUtils
     {
+        public static string ArmletStrength { get; } = "modifier_item_armlet_unholy_strength";
+
         public static string BladeMailReflect { get; } = "modifier_item_blade_mail_reflect";
 
         public static string BottleRegeneration { get; } = "modifier_bottle_regeneration";
@@ -58,7 +60,8 @@
             "modifier_ghost_state",
             "modifier_necrolyte_sadist_active",
             "modifier_omninight_guardian_angel",
-            "modifier_item_glimmer_cape_fade"
+            "modifier_item_glimmer_cape_fade",
+            "modifier_windrunner_windrun"
         };
 
         public static string FountainRegeneration { get; } = "modifier_fountain_aura_buff";

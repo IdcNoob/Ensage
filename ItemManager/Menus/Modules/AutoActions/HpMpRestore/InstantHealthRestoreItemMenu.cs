@@ -6,14 +6,15 @@
 
     using EventArgs;
 
-    internal class AutoMagicStickMenu
+    internal class InstantHealthRestoreItemMenu
     {
-        public AutoMagicStickMenu(Menu mainMenu)
+        public InstantHealthRestoreItemMenu(Menu mainMenu, string name, bool defaultEnabled = true)
         {
-            var menu = new Menu("Magic stick", "magicStickMenu");
+            var simpleName = name.ToLower().Replace(" ", string.Empty);
+            var menu = new Menu(name, simpleName + "Menu");
 
-            var enabled = new MenuItem("magicStickEnabled", "Enabled").SetValue(true);
-            enabled.SetTooltip("Auto use magic stick/wand on low health");
+            var enabled = new MenuItem(simpleName + "Enabled", "Enabled").SetValue(defaultEnabled);
+            enabled.SetTooltip("Auto use item on low health");
             menu.AddItem(enabled);
             enabled.ValueChanged += (sender, args) =>
                 {
@@ -22,22 +23,22 @@
                 };
             IsEnabled = enabled.IsActive();
 
-            var hpThreshold = new MenuItem("magicStickHp", "HP threshold").SetValue(new Slider(150, 50, 500));
-            hpThreshold.SetTooltip("Use magic stick/wand if you have less HP");
+            var hpThreshold = new MenuItem(simpleName + "Hp", "HP threshold").SetValue(new Slider(150, 50, 500));
+            hpThreshold.SetTooltip("Use item if you have less HP");
             menu.AddItem(hpThreshold);
             hpThreshold.ValueChanged += (sender, args) => HealthThreshold = args.GetNewValue<Slider>().Value;
             HealthThreshold = hpThreshold.GetValue<Slider>().Value;
 
-            var hpThresholdPct = new MenuItem("magicStickHpPct", "HP% threshold").SetValue(new Slider(20, 1, 50));
-            hpThresholdPct.SetTooltip("Use magic stick/wand if you have less HP%");
+            var hpThresholdPct = new MenuItem(simpleName + "HpPct", "HP% threshold").SetValue(new Slider(20, 1, 50));
+            hpThresholdPct.SetTooltip("Use item if you have less HP%");
             menu.AddItem(hpThresholdPct);
             hpThresholdPct.ValueChanged += (sender, args) => HealthThresholdPct = args.GetNewValue<Slider>().Value;
             HealthThresholdPct = hpThresholdPct.GetValue<Slider>().Value;
 
             var enemyCheckRange =
-                new MenuItem("magicStickEnemyRange", "Enemy search range").SetValue(new Slider(800, 0, 2000));
+                new MenuItem(simpleName + "EnemyRange", "Enemy search range").SetValue(new Slider(800, 0, 2000));
             enemyCheckRange.SetTooltip(
-                "Use stick only if there is enemy hero in range (if set to 0 range won't be checked)");
+                "Use item only if there is enemy hero in range (if set to 0 range won't be checked)");
             menu.AddItem(enemyCheckRange);
             enemyCheckRange.ValueChanged += (sender, args) => EnemySearchRange = args.GetNewValue<Slider>().Value;
             EnemySearchRange = enemyCheckRange.GetValue<Slider>().Value;

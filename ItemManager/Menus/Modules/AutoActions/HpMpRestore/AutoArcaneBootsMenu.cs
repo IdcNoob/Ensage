@@ -30,7 +30,7 @@
 
             var fountainRange =
                 new MenuItem("autoBootsFountainRange", "Fountain range").SetValue(new Slider(4000, 2000, 8000));
-            fountainRange.SetTooltip("Don't use if fountain is closer (2k - fountain; 4k - base; 8k - t2");
+            fountainRange.SetTooltip("Don't use if fountain is closer (2k - fountain; 4k - base; 8k - t2)");
             menu.AddItem(fountainRange);
             fountainRange.ValueChanged += (sender, args) => FountainRange = args.GetNewValue<Slider>().Value;
             FountainRange = fountainRange.GetValue<Slider>().Value;

@@ -60,6 +60,7 @@
     <Compile Include="Attributes\AbilityAttribute.cs" />
     <Compile Include="Attributes\AbilityBasedModuleAttribute.cs" />
     <Compile Include="Attributes\ModuleAttribute.cs" />
+    <Compile Include="Core\Abilities\Armlet.cs" />
     <Compile Include="Core\Abilities\Base\DefensiveAbility.cs" />
     <Compile Include="Core\Abilities\Base\OffensiveAbility.cs" />
     <Compile Include="Core\Abilities\Base\Shrine.cs" />
@@ -87,12 +88,12 @@
     <Compile Include="Core\Modules\AutoActions\AutoIronTalon.cs" />
     <Compile Include="Core\Modules\AutoActions\AutoMidas.cs" />
     <Compile Include="Core\Modules\AutoActions\AutoPhaseBoots.cs" />
-    <Compile Include="Core\Modules\AutoActions\HpMpRestore\AutoMagicStick.cs" />
     <Compile Include="Core\Modules\AutoActions\HpMpRestore\AutoTango.cs" />
     <Compile Include="Core\Modules\AutoActions\HpMpRestore\AutoArcaneBoots.cs" />
     <Compile Include="Core\Modules\AutoActions\HpMpRestore\AutoBottle.cs" />
     <Compile Include="Core\Modules\AutoActions\AutoDewarding.cs" />
     <Compile Include="Core\Modules\AutoActions\HpMpRestore\AutoLivingArmor.cs" />
+    <Compile Include="Core\Modules\AutoActions\HpMpRestore\InstantHealthRestoreItem.cs" />
     <Compile Include="Core\Modules\AutoActions\PowerTreadsSwitcher.cs" />
     <Compile Include="Core\Modules\AutoActions\AutoSoulRing.cs" />
     <Compile Include="Core\Modules\AutoActions\TechiesMinesDestroyer.cs" />
@@ -129,8 +130,8 @@
     <Compile Include="Menus\Modules\AutoActions\Actions\DewardingMenu.cs" />
     <Compile Include="Menus\Modules\AutoActions\Actions\TechiesMinesDestroyerMenu.cs" />
     <Compile Include="Menus\Modules\AutoActions\AutoHealsMenu.cs" />
-    <Compile Include="Menus\Modules\AutoActions\HpMpRestore\AutoMagicStickMenu.cs" />
     <Compile Include="Menus\Modules\AutoActions\HpMpRestore\AutoTangoMenu.cs" />
+    <Compile Include="Menus\Modules\AutoActions\HpMpRestore\InstantHealthRestoreItemMenu.cs" />
     <Compile Include="Menus\Modules\AutoActions\HpMpRestore\LivingArmorMenu.cs" />
     <Compile Include="Menus\Modules\CourierHelper\CourierHelperMenu.cs" />
     <Compile Include="Menus\Modules\DefensiveAbilities\AbilitySettings\DefensiveAbilitySettings.cs" />
