@@ -69,8 +69,8 @@
                         wave.PredictedPosition.WorldToMinimap() - new Vector2(1, 15),
                         text,
                         Color.DarkOrange,
-                        "Arial",
-                        16);
+                        16,
+                        "Arial");
                 }
 
                 if (settings.ShowOnMap)
@@ -81,7 +81,7 @@
                         continue;
                     }
 
-                    renderer.DrawText(position, text, Color.DarkOrange, "Arial", 25);
+                    renderer.DrawText(position, text, Color.DarkOrange, 25, "Arial");
                 }
             }
         }

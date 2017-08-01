@@ -41,9 +41,9 @@
         private Settings settings;
 
         [ImportingConstructor]
-        public VisionControl([Import] IServiceContext context, [Import] IRendererManager renderer)
+        public VisionControl([Import] IServiceContext context)
         {
-            render = renderer;
+            render = context.Renderer;
             myTeam = context.Owner.Team;
 
             unitTypes = Assembly.GetExecutingAssembly()
@@ -218,8 +218,8 @@
                         ward.Position.WorldToMinimap() - new Vector2(8, 15),
                         "*",
                         ward is SentryWard ? System.Drawing.Color.Blue : System.Drawing.Color.Yellow,
-                        "Arial",
-                        30);
+                        30,
+                        "Arial");
                 }
             }
         }
