@@ -791,60 +791,88 @@
                                         }
                                     }
 
-                                    path = Pathfinder.CalculateLongPath(movePathfinderPosition, out success).ToList();
+                                    //path = Pathfinder.CalculateLongPath(movePathfinderPosition, out success).ToList();
 
-                                    if (success)
+                                    //if (success)
+                                    //{
+                                    //    var time = 0.15f;
+                                    //    for (var i = 0; i < path.Count; i++)
+                                    //    {
+                                    //        Hero.Move(path[i], i != 0);
+                                    //        time += Hero.NetworkPosition.Distance2D(path[i]) / Hero.MovementSpeed;
+                                    //    }
+
+                                    //    var tempPath = Pathfinder.CalculateLongPath(
+                                    //        path.LastOrDefault(),
+                                    //        movePosition,
+                                    //        out success);
+
+                                    //    if (success)
+                                    //    {
+                                    //        var last = tempPath.LastOrDefault();
+                                    //        if (!last.IsZero)
+                                    //        {
+                                    //            Hero.Move(last, true);
+                                    //        }
+                                    //        else
+                                    //        {
+                                    //            return false;
+                                    //        }
+                                    //    }
+
+                                    //    //  sleeper.Sleep(ability.ObstacleRemainingTime() * 1000, "avoiding");
+                                    //    sleeper.Sleep(200, "block");
+                                    //    Utils.Sleep(Math.Min(time, 1) * 1000, "Evader.Avoiding");
+                                    //    sleeper.Sleep(Math.Min(time, 1) * 1000, ability);
+                                    //    sleeper.Sleep(Math.Min(time, 1) * 1000, "avoiding");
+
+                                    //    if (Menu.Settings.PathfinderEffect)
+                                    //    {
+                                    //        heroPathfinderEffect = new ParticleEffect(
+                                    //            @"particles/units/heroes/hero_oracle/oracle_fortune_purge.vpcf",
+                                    //            Hero);
+                                    //    }
+
+                                    //    Debugger.WriteLine(
+                                    //        TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss")
+                                    //        + " >>>>>>>>>>>>>>>",
+                                    //        Debugger.Type.AbilityUsage);
+                                    //    Debugger.WriteLine(
+                                    //        "avoid while moving: " + ability.Name,
+                                    //        Debugger.Type.AbilityUsage);
+                                    //    Debugger.WriteLine(
+                                    //        "remaining time: " + remainingWalkTime,
+                                    //        Debugger.Type.AbilityUsage);
+                                    //    return true;
+                                    //}
+
+                                    Hero.Move(movePathfinderPosition);
+                                    var time = 0.05f + Hero.NetworkPosition.Distance2D(movePathfinderPosition)
+                                               / Hero.MovementSpeed;
+
+                                    //  sleeper.Sleep(ability.ObstacleRemainingTime() * 1000, "avoiding");
+                                    sleeper.Sleep(200, "block");
+                                    Utils.Sleep(Math.Min(time, 1) * 1000, "Evader.Avoiding");
+                                    sleeper.Sleep(Math.Min(time, 1) * 1000, ability);
+                                    sleeper.Sleep(Math.Min(time, 1) * 1000, "avoiding");
+
+                                    if (Menu.Settings.PathfinderEffect)
                                     {
-                                        var time = 0.15f;
-                                        for (var i = 0; i < path.Count; i++)
-                                        {
-                                            Hero.Move(path[i], i != 0);
-                                            time += Hero.NetworkPosition.Distance2D(path[i]) / Hero.MovementSpeed;
-                                        }
-
-                                        var tempPath = Pathfinder.CalculateLongPath(
-                                            path.LastOrDefault(),
-                                            movePosition,
-                                            out success);
-
-                                        if (success)
-                                        {
-                                            var last = tempPath.LastOrDefault();
-                                            if (!last.IsZero)
-                                            {
-                                                Hero.Move(last, true);
-                                            }
-                                            else
-                                            {
-                                                return false;
-                                            }
-                                        }
-
-                                        //  sleeper.Sleep(ability.ObstacleRemainingTime() * 1000, "avoiding");
-                                        sleeper.Sleep(200, "block");
-                                        Utils.Sleep(Math.Min(time, 1) * 1000, "Evader.Avoiding");
-                                        sleeper.Sleep(Math.Min(time, 1) * 1000, ability);
-                                        sleeper.Sleep(Math.Min(time, 1) * 1000, "avoiding");
-
-                                        if (Menu.Settings.PathfinderEffect)
-                                        {
-                                            heroPathfinderEffect = new ParticleEffect(
-                                                @"particles/units/heroes/hero_oracle/oracle_fortune_purge.vpcf",
-                                                Hero);
-                                        }
-
-                                        Debugger.WriteLine(
-                                            TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss")
-                                            + " >>>>>>>>>>>>>>>",
-                                            Debugger.Type.AbilityUsage);
-                                        Debugger.WriteLine(
-                                            "avoid while moving: " + ability.Name,
-                                            Debugger.Type.AbilityUsage);
-                                        Debugger.WriteLine(
-                                            "remaining time: " + remainingWalkTime,
-                                            Debugger.Type.AbilityUsage);
-                                        return true;
+                                        heroPathfinderEffect = new ParticleEffect(
+                                            @"particles/units/heroes/hero_oracle/oracle_fortune_purge.vpcf",
+                                            Hero);
                                     }
+
+                                    Debugger.WriteLine(
+                                        TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss") + " >>>>>>>>>>>>>>>",
+                                        Debugger.Type.AbilityUsage);
+                                    Debugger.WriteLine(
+                                        "avoid while moving: " + ability.Name,
+                                        Debugger.Type.AbilityUsage);
+                                    Debugger.WriteLine(
+                                        "remaining time: " + remainingWalkTime,
+                                        Debugger.Type.AbilityUsage);
+                                    return true;
                                 }
                                 else
                                 {
