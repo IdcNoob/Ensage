@@ -14,7 +14,7 @@
             factory = MenuFactory.Create("Creeps Blocker");
             Key = factory.Item("Hotkey", new KeyBind('M'));
             BlockRangedCreep = factory.Item("Block ranged creep", true);
-            BlockSensitivity = factory.Item("Block sensitivity", new Slider(500, 450, 800));
+            BlockSensitivity = factory.Item("Block sensitivity", new Slider(550, 500, 700));
             BlockSensitivity.Item.Tooltip = "Bigger value will result in smaller block, but with higher success rate";
             CenterCamera = factory.Item("Center camera", true);
         }
