@@ -27,7 +27,6 @@
         {
             CounterAbilities.Add(PhaseShift);
             CounterAbilities.Add(Eul);
-            CounterAbilities.Add(Manta);
             CounterAbilities.AddRange(StrongDefUltimates);
             CounterAbilities.Add(HurricanePike);
             CounterAbilities.AddRange(VsDisable);
@@ -35,6 +34,7 @@
             CounterAbilities.AddRange(VsPhys);
             CounterAbilities.Add(SnowBall);
             CounterAbilities.Add(Armlet);
+            CounterAbilities.Add(Manta);
             CounterAbilities.Add(Bloodstone);
 
             CounterAbilities.Remove("slark_dark_pact");

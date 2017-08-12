@@ -540,12 +540,7 @@
                     blinkDagger.UseInFront();
                 }
             }
-
-            if (!Menu.Settings.CancelAnimation && Hero.IsChanneling())
-            {
-                return;
-            }
-
+            
             foreach (var projectile in ObjectManager.TrackingProjectiles.Where(x => x?.Target is Hero))
             {
                 var source = projectile.Source;
@@ -719,6 +714,11 @@
                     continue;
                 }
 
+                if (Hero.IsChanneling() && (!Menu.Settings.CancelAnimation || !ability.IsDisable))
+                {
+                    continue;
+                }
+
                 Debugger.WriteLine(
                     ally.GetName() + " intersecting: " + ability.Name + " // " + Game.RawGameTime,
                     Debugger.Type.Intersectons);
@@ -847,6 +847,8 @@
                                     //}
 
                                     Hero.Move(movePathfinderPosition);
+                                    Hero.Move(movePosition, true);
+
                                     var time = 0.05f + Hero.NetworkPosition.Distance2D(movePathfinderPosition)
                                                / Hero.MovementSpeed;
 

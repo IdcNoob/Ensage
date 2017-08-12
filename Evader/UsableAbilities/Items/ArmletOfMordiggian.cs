@@ -179,7 +179,15 @@
             //    return health <= totalDamage;
             //}
 
-            var damage = Math.Round(AbilityDamage.CalculateDamage(ability.Ability, damageSource, unit));
+            var damage = 0d;
+            try
+            {
+                damage = Math.Round(AbilityDamage.CalculateDamage(ability.Ability, damageSource, unit));
+            }
+            catch
+            {
+                Console.WriteLine("[Evader] Failed to calculate damage for: "+ ability.Name);
+            }
 
             if (HpRestored(ability.GetRemainingTime(Hero)) + health < damage)
             {
