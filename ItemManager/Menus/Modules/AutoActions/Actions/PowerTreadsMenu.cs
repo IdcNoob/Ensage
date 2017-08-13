@@ -29,8 +29,8 @@
             universal.SetTooltip(
                 "If enabled power treads will work with all other assemblies otherwise only when player used ability");
             menu.AddItem(universal);
-            universal.ValueChanged += (sender, args) => UniversalUseEnabled = args.GetNewValue<bool>();
-            UniversalUseEnabled = universal.IsActive();
+            //universal.ValueChanged += (sender, args) => UniversalUseEnabled = args.GetNewValue<bool>();
+            //UniversalUseEnabled = universal.IsActive();
 
             var switchOnMove = new MenuItem("ptSwitchOnMove", "Switch on move").SetValue(
                 new StringList("None", "Hero attribute", "Strength", "Agility", "Intelligence"));
