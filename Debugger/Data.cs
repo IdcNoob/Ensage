@@ -26,6 +26,7 @@
             "m_bDroppable",
             "m_bCombinable",
             "m_bStackable",
+            "m_bValid",
         };
 
         public static List<string> IgnoredFireEvents { get; } = new List<string>
