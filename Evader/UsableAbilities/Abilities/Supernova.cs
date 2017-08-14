@@ -27,11 +27,11 @@
         {
             if (Hero.AghanimState())
             {
-                Ability.UseAbility(Hero);
+                Ability.UseAbility(Hero, false, true);
             }
             else
             {
-                Ability.UseAbility();
+                Ability.UseAbility(false, true);
             }
             Sleep();
         }

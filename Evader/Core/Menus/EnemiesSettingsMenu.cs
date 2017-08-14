@@ -225,17 +225,17 @@
                     menuItemName + "levelIgnore",
                     "Ignore if ability level is equal or lower than").SetValue(new Slider(0, 0, 3));
                 abilityMenu.AddItem(abilityLevelIgnore);
-                abilityLevelIgnore.ValueChanged +=
-                    (sender, args) => ability.AbilityLevelIgnore = args.GetNewValue<Slider>().Value;
+                abilityLevelIgnore.ValueChanged += (sender, args) =>
+                    ability.AbilityLevelIgnore = args.GetNewValue<Slider>().Value;
                 ability.AbilityLevelIgnore = abilityLevelIgnore.GetValue<Slider>().Value;
                 await Task.Delay(100);
 
-                var abilityTimeIgnore = new MenuItem(
-                    menuItemName + "timeIgnore",
-                    "Ignore if game time is passed (minutes)").SetValue(new Slider(0, 0, 60));
+                var abilityTimeIgnore =
+                    new MenuItem(menuItemName + "timeIgnore", "Ignore if game time is passed (minutes)").SetValue(
+                        new Slider(0, 0, 60));
                 abilityMenu.AddItem(abilityTimeIgnore);
-                abilityTimeIgnore.ValueChanged +=
-                    (sender, args) => ability.AbilityTimeIgnore = args.GetNewValue<Slider>().Value;
+                abilityTimeIgnore.ValueChanged += (sender, args) =>
+                    ability.AbilityTimeIgnore = args.GetNewValue<Slider>().Value;
                 ability.AbilityTimeIgnore = abilityTimeIgnore.GetValue<Slider>().Value;
                 await Task.Delay(100);
 

@@ -62,9 +62,8 @@
                     ability.AbilityOwner.Position,
                     linearProjectile.GetProjectileRadius(Hero.Position) + 50 * Ability.Level);
 
-                var turnToPathfinder = success
-                                           ? CastPoint + (float)Hero.GetTurnTime(pathfinderPoint) * 1.35f
-                                           : float.MaxValue;
+                var turnToPathfinder =
+                    success ? CastPoint + (float)Hero.GetTurnTime(pathfinderPoint) * 1.35f : float.MaxValue;
                 var turnToExtend = CastPoint + (float)Hero.GetTurnTime(extendPoint) * 1.35f;
 
                 if (Math.Abs(turnToPathfinder - turnToExtend) < 0.075)
@@ -118,13 +117,13 @@
 
                 Debugger.DrawRedCircle(pos);
 
-                Ability.UseAbility(pos);
+                Ability.UseAbility(pos, false, true);
             }
             else if (!pointForLinearProjectile.IsZero && pointForLinearProjectile.Distance2D(Hero) < 500)
             {
                 Debugger.DrawRedCircle(pointForLinearProjectile);
 
-                Ability.UseAbility(pointForLinearProjectile);
+                Ability.UseAbility(pointForLinearProjectile, false, true);
                 pointForLinearProjectile = new Vector3();
             }
             else
@@ -133,7 +132,7 @@
 
                 Debugger.DrawRedCircle(pos);
 
-                Ability.UseAbility(pos);
+                Ability.UseAbility(pos, false, true);
             }
 
             Sleep(CastPoint);

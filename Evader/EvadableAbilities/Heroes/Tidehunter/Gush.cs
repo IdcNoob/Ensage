@@ -156,7 +156,8 @@
 
             if (AbilityOwner.AghanimState())
             {
-                return StartCast + CastPoint + (position.Distance2D(StartPosition) - GetProjectileRadius(position) - 60)
+                return StartCast + CastPoint
+                       + (position.Distance2D(StartPosition) - GetProjectileRadius(position) - 60)
                        / GetProjectileSpeed() - Game.RawGameTime;
             }
 

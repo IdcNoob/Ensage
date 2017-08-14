@@ -24,8 +24,8 @@
             var interval = omnislash.AbilitySpecialData.First(x => x.Name == "omni_slash_bounce_tick").Value;
             for (var i = 0u; i < 3; i++)
             {
-                modifierDuration[i] = interval * (omnislash.AbilitySpecialData.First(x => x.Name == "omni_slash_jumps")
-                                                      .GetValue(i) - 1);
+                modifierDuration[i] =
+                    interval * (omnislash.AbilitySpecialData.First(x => x.Name == "omni_slash_jumps").GetValue(i) - 1);
             }
         }
 

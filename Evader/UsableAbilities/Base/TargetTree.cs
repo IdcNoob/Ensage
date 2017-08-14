@@ -41,7 +41,7 @@
                 return;
             }
 
-            Ability.UseAbility(frontTree);
+            Ability.UseAbility(frontTree, false, true);
             Sleep();
         }
 

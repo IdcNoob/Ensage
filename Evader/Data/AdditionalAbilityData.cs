@@ -49,7 +49,8 @@ namespace Evader.Data
             { "spring_channel", "monkey_king_primal_spring" },
             { "jump_treelaunch_ring", "monkey_king_primal_spring" },
             { "_cloud.vpcf", "zuus_cloud" },
-            { "furion_sprout", "furion_sprout" }
+            { "furion_sprout", "furion_sprout" },
+            { "dreamcoil", "puck_dream_coil" }
         };
 
         public static Dictionary<string, uint> Vision { get; } = new Dictionary<string, uint>

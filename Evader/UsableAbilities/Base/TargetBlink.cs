@@ -54,7 +54,7 @@
                 return;
             }
 
-            Ability.UseAbility(blinkUnit);
+            Ability.UseAbility(blinkUnit, false, true);
             Sleep();
         }
     }

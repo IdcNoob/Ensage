@@ -102,8 +102,8 @@
         private void OnUpdate()
         {
             if (Game.IsPaused || !manager.MyHero.CanUseItems() || !arcaneBoots.CanBeCasted()
-                || manager.MyHero.MissingMana < arcaneBoots.ManaRestore || Fountain != null
-                && manager.MyHero.Distance2D(Fountain) < menu.FountainRange)
+                || manager.MyHero.MissingMana < arcaneBoots.ManaRestore
+                || Fountain != null && manager.MyHero.Distance2D(Fountain) < menu.FountainRange)
             {
                 return;
             }

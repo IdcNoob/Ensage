@@ -103,7 +103,7 @@
 
         public override void Use(EvadableAbility ability, Unit target)
         {
-            Ability.UseAbility(Hero.InFront(100));
+            Ability.UseAbility(Hero.InFront(100), false, true);
             Sleep();
         }
 

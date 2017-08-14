@@ -98,8 +98,8 @@
                     lastProjectilePosition = projectilePosition;
 
                     AbilityDrawer.Dispose(AbilityDrawer.Type.Rectangle);
-                    EndCast = Game.RawGameTime + (ProjectileTarget.Distance2D(projectilePosition) - 20)
-                              / GetProjectileSpeed();
+                    EndCast = Game.RawGameTime
+                              + (ProjectileTarget.Distance2D(projectilePosition) - 20) / GetProjectileSpeed();
 
                     if (!obstacleToAOE)
                     {

@@ -31,7 +31,7 @@
 
         public override void Use(EvadableAbility ability, Unit target)
         {
-            Ability.UseAbility();
+            Ability.UseAbility(false, true);
             Sleep();
         }
     }

@@ -130,8 +130,7 @@
                 return;
             }
 
-            var techiesMines = EntityManager<Unit>.Entities
-                .Where(
+            var techiesMines = EntityManager<Unit>.Entities.Where(
                     x => x.IsValid && x.IsVisible && x.IsTechiesMine() && !x.IsInvul() && x.IsAlive
                          && x.Team != manager.MyHero.Team && x.Distance2D(manager.MyHero.Position) <= 1000)
                 .ToList();

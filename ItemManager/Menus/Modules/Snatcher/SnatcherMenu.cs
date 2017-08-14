@@ -82,9 +82,8 @@
             holdKey.ValueChanged += (sender, args) => HoldKey = args.GetNewValue<KeyBind>().Active;
             HoldKey = holdKey.IsActive();
 
-            var holdItems =
-                new MenuItem("enabledStealHold", "Hold steal:").SetValue(
-                    new AbilityToggler(items.ToDictionary(x => x.Key, x => true)));
+            var holdItems = new MenuItem("enabledStealHold", "Hold steal:").SetValue(
+                new AbilityToggler(items.ToDictionary(x => x.Key, x => true)));
             menu.AddItem(holdItems);
             holdItems.ValueChanged += (sender, args) =>
                 {

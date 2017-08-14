@@ -23,12 +23,12 @@
         {
             if (Hero.GetTurnTime(target) > 0)
             {
-                Hero.Move(Hero.Position.Extend(target.Position, 40));
-                Ability.UseAbility(Hero, true);
+                Hero.Move(Hero.Position.Extend(target.Position, 40), false, true);
+                Ability.UseAbility(Hero, true, true);
             }
             else
             {
-                Ability.UseAbility(Hero);
+                Ability.UseAbility(Hero, false, true);
             }
 
             Sleep();

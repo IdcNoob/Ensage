@@ -20,7 +20,7 @@
 
         public override void Use(EvadableAbility ability, Unit target)
         {
-            Ability.UseAbility(target);
+            Ability.UseAbility(target, false, true);
             DelayAction.Add(250 + Game.Ping, () => { Hero.Stop(); });
             Sleep();
         }

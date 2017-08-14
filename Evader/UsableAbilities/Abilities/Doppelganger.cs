@@ -20,7 +20,7 @@
 
         public override void Use(EvadableAbility ability, Unit target)
         {
-            Ability.UseAbility(target.BasePredict(target.MovementSpeed));
+            Ability.UseAbility(target.BasePredict(target.MovementSpeed), false, true);
             Sleep();
         }
     }

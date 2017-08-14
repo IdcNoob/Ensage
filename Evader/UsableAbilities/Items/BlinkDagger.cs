@@ -18,7 +18,7 @@
 
         public void UseInFront()
         {
-            Ability.UseAbility(Hero.InFront(1150));
+            Ability.UseAbility(Hero.InFront(1150), false, true);
             Sleep();
         }
     }

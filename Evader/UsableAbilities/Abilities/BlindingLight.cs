@@ -25,7 +25,7 @@
 
         public override void Use(EvadableAbility ability, Unit target)
         {
-            Ability.UseAbility(target.InFront(300));
+            Ability.UseAbility(target.InFront(300), false, true);
             Sleep();
         }
     }

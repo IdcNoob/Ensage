@@ -80,8 +80,8 @@
                 EndPosition = AbilityOwner.InFront(GetCastRange() + GetRadius() * 0.8f);
                 Obstacle = Pathfinder.AddObstacle(StartPosition, EndPosition, GetRadius(), Obstacle);
             }
-            else if (StartCast > 0 && (Game.RawGameTime > EndCast
-                                       || !fowCast && !CanBeStopped() && !Ability.IsChanneling))
+            else if (StartCast > 0
+                     && (Game.RawGameTime > EndCast || !fowCast && !CanBeStopped() && !Ability.IsChanneling))
             {
                 End();
             }

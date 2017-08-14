@@ -100,8 +100,8 @@
                 return;
             }
 
-            var abilities = abilityUpdater.EvadableAbilities
-                .Where(x => abilityNames.Contains(x.Name) && (!x.AbilityOwner.IsVisible || x.TimeSinceCast() < 1))
+            var abilities = abilityUpdater.EvadableAbilities.Where(
+                    x => abilityNames.Contains(x.Name) && (!x.AbilityOwner.IsVisible || x.TimeSinceCast() < 1))
                 .ToList();
 
             if (abilities.Count != 1)
@@ -239,6 +239,11 @@
                 return;
             }
 
+            if (sender.Handle == Hero.Handle && modifier.IsStunDebuff)
+            {
+                Hero.Stop();
+            }
+
             DelayAction.Add(
                 1,
                 () =>
@@ -320,8 +325,8 @@
                         x => x.IsValid && !x.IsIllusion && x.ClassId == ClassId.CDOTA_Unit_Hero_Rubick
                              && x.Team == HeroTeam);
 
-                if (rubick == null || rubick.Spellbook.Spells.FirstOrDefault(x => x.Name == abilityName)
-                        .TimeSinceCasted() >= 0.5)
+                if (rubick == null
+                    || rubick.Spellbook.Spells.FirstOrDefault(x => x.Name == abilityName).TimeSinceCasted() >= 0.5)
                 {
                     ability.AddParticle(args);
                 }
@@ -425,7 +430,7 @@
 
                     var modifierEnemyCounterAbilities = from abilityName in enemyCounterList
                                                         join usableAbility in abilityUpdater.UsableAbilities on
-                                                        abilityName equals usableAbility.Name
+                                                            abilityName equals usableAbility.Name
                                                         where usableAbility.CanBeUsedOnEnemy
                                                               && Menu.UsableAbilities.Enabled(
                                                                   abilityName,
@@ -479,7 +484,7 @@
 
                     var modifierAllyCounterAbilities = from abilityName in allyCounterList
                                                        join usableAbility in abilityUpdater.UsableAbilities on
-                                                       abilityName equals usableAbility.Name
+                                                           abilityName equals usableAbility.Name
                                                        where Menu.UsableAbilities.Enabled(
                                                            abilityName,
                                                            usableAbility.Type)
@@ -540,7 +545,7 @@
                     blinkDagger.UseInFront();
                 }
             }
-            
+
             foreach (var projectile in ObjectManager.TrackingProjectiles.Where(x => x?.Target is Hero))
             {
                 var source = projectile.Source;
@@ -625,7 +630,7 @@
                     var abilityOwner = ability.AbilityOwner;
                     var disableAbilities = from abilityName in ability.DisableAbilities
                                            join usableAbility in abilityUpdater.UsableAbilities on abilityName equals
-                                           usableAbility.Name
+                                               usableAbility.Name
                                            where usableAbility.Type == AbilityType.Disable
                                                  && Menu.UsableAbilities.Enabled(abilityName, AbilityType.Disable)
                                            select usableAbility;
@@ -692,8 +697,7 @@
             var allyHp = ally.Health;
             var heroMp = Hero.Mana;
 
-            foreach (var ability in intersection
-                .Select(
+            foreach (var ability in intersection.Select(
                     x => abilityUpdater.EvadableAbilities.FirstOrDefault(
                         z => z.Obstacle == x && (z.AllyHpIgnore <= 0 || allyHp < z.AllyHpIgnore)
                              && (z.HeroMpIgnore <= 0 || heroMp > z.HeroMpIgnore)
@@ -702,8 +706,8 @@
                 .Where(x => x != null)
                 .OrderByDescending(x => x.IsDisable))
             {
-                if (ability == null || sleeper.Sleeping(ability) || ability.AbilityOwner.Distance2D(ally)
-                    > ability.Ability.GetCastRange() + 300)
+                if (ability == null || sleeper.Sleeping(ability)
+                    || ability.AbilityOwner.Distance2D(ally) > ability.Ability.GetCastRange() + 300)
                 {
                     continue;
                 }
@@ -720,7 +724,7 @@
                 }
 
                 Debugger.WriteLine(
-                    ally.GetName() + " intersecting: " + ability.Name + " // " + Game.RawGameTime,
+                    ally.GetName() + " intersecting: " + ability.Name + " // " + ability.GetRemainingTime(ally),
                     Debugger.Type.Intersectons);
 
                 var abilityOwner = ability.AbilityOwner;
@@ -733,8 +737,8 @@
                         case EvadePriority.Walk:
                             if (allyIsMe && !ability.DisablePathfinder
                                 && (Menu.Hotkeys.PathfinderMode == Pathfinder.EvadeMode.All
-                                    || Menu.Hotkeys.PathfinderMode == Pathfinder.EvadeMode.Disables
-                                    && ability.IsDisable) && Hero.CanMove())
+                                    || Menu.Hotkeys.PathfinderMode == Pathfinder.EvadeMode.Disables && ability.IsDisable
+                                   ) && Hero.CanMove())
                             {
                                 var remainingWalkTime = remainingTime - 0.1f;
 
@@ -846,8 +850,8 @@
                                     //    return true;
                                     //}
 
-                                    Hero.Move(movePathfinderPosition);
-                                    Hero.Move(movePosition, true);
+                                    Hero.Move(movePathfinderPosition, false, true);
+                                    Hero.Move(movePosition, true, true);
 
                                     var time = 0.05f + Hero.NetworkPosition.Distance2D(movePathfinderPosition)
                                                / Hero.MovementSpeed;
@@ -901,7 +905,7 @@
 
                                         for (var i = 0; i < path.Count; i++)
                                         {
-                                            Hero.Move(path[i], i != 0);
+                                            Hero.Move(path[i], i != 0, true);
                                             time += Hero.NetworkPosition.Distance2D(path[i]) / Hero.MovementSpeed;
                                         }
 
@@ -942,7 +946,7 @@
 
                             var blinkAbilities = from abilityName in ability.BlinkAbilities
                                                  join usableAbility in abilityUpdater.UsableAbilities on abilityName
-                                                 equals usableAbility.Name
+                                                     equals usableAbility.Name
                                                  where usableAbility.Type == AbilityType.Blink
                                                        && Menu.UsableAbilities.Enabled(abilityName, AbilityType.Blink)
                                                        && (usableAbility.IsItem && heroCanUseItems
@@ -956,8 +960,8 @@
                                     continue;
                                 }
 
-                                var requiredTime = blinkAbility.GetRequiredTime(ability, fountain, remainingTime)
-                                                   + 0.02f;
+                                var requiredTime =
+                                    blinkAbility.GetRequiredTime(ability, fountain, remainingTime) + 0.02f;
                                 var time = remainingTime - requiredTime;
                                 var ignoreRemainingTime = ability.IgnoreRemainingTime(blinkAbility, time);
 
@@ -1005,7 +1009,7 @@
                         case EvadePriority.Counter:
                             var counterAbilities = from abilityName in ability.CounterAbilities
                                                    join usableAbility in abilityUpdater.UsableAbilities on abilityName
-                                                   equals usableAbility.Name
+                                                       equals usableAbility.Name
                                                    where usableAbility.Type == AbilityType.Counter
                                                          && Menu.UsableAbilities.Enabled(
                                                              abilityName,
@@ -1024,17 +1028,16 @@
                                 var targetEnemy = !counterAbility.CanBeUsedOnAlly && counterAbility.CanBeUsedOnEnemy;
 
                                 if (!counterAbility.CanBeUsedOnAlly && !allyIsMe && !targetEnemy
-                                    || !targetEnemy && !counterAbility.CanBeCasted(ability, ally) || targetEnemy
-                                    && !counterAbility.CanBeCasted(ability, abilityOwner))
+                                    || !targetEnemy && !counterAbility.CanBeCasted(ability, ally)
+                                    || targetEnemy && !counterAbility.CanBeCasted(ability, abilityOwner))
                                 {
                                     continue;
                                 }
 
-                                var requiredTime =
-                                    counterAbility.GetRequiredTime(
-                                        ability,
-                                        targetEnemy ? abilityOwner : ally,
-                                        remainingTime) + Game.Ping / 1000 + 0.1f;
+                                var requiredTime = counterAbility.GetRequiredTime(
+                                                       ability,
+                                                       targetEnemy ? abilityOwner : ally,
+                                                       remainingTime) + Game.Ping / 1000 + 0.1f;
 
                                 var ignoreRemainingTime = false;
 
@@ -1109,7 +1112,7 @@
 
                             var disableAbilities = from abilityName in ability.DisableAbilities
                                                    join usableAbility in abilityUpdater.UsableAbilities on abilityName
-                                                   equals usableAbility.Name
+                                                       equals usableAbility.Name
                                                    where usableAbility.Type == AbilityType.Disable
                                                          && Menu.UsableAbilities.Enabled(
                                                              abilityName,
@@ -1130,8 +1133,9 @@
                                     disableAbility.GetRequiredTime(ability, abilityOwner, remainingDisableTime)
                                     + Game.Ping / 1000 + 0.02f;
 
-                                var ignoreRemainingTime =
-                                    ability.IgnoreRemainingTime(disableAbility, remainingDisableTime);
+                                var ignoreRemainingTime = ability.IgnoreRemainingTime(
+                                    disableAbility,
+                                    remainingDisableTime);
 
                                 if (requiredTime > remainingDisableTime && !ignoreRemainingTime)
                                 {

@@ -65,8 +65,8 @@
 
                 lastProjectilePosition = projectilePosition;
 
-                EndCast = Game.RawGameTime + (ProjectileTarget.Distance2D(projectilePosition) - 20)
-                          / GetProjectileSpeed();
+                EndCast = Game.RawGameTime
+                          + (ProjectileTarget.Distance2D(projectilePosition) - 20) / GetProjectileSpeed();
                 EndPosition = StartPosition.Extend(
                     ProjectileTarget.Position,
                     ProjectileTarget.Distance2D(StartPosition) + GetRadius());

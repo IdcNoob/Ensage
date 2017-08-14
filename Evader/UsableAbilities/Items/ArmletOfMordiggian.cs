@@ -27,7 +27,7 @@
     {
         private const float ArmletFullEnableTime = 0.8f;
 
-        private const int ArmletHpGain = 475;
+        private const int ArmletHpGain = 470;
 
         private const string ArmletModifierName = "modifier_item_armlet_unholy_strength";
 
@@ -179,14 +179,14 @@
             //    return health <= totalDamage;
             //}
 
-            var damage = 0d;
+            var damage = 150d;
             try
             {
                 damage = Math.Round(AbilityDamage.CalculateDamage(ability.Ability, damageSource, unit));
             }
             catch
             {
-                Console.WriteLine("[Evader] Failed to calculate damage for: "+ ability.Name);
+                Console.WriteLine("[Evader] Failed to calculate damage for: " + ability.Name);
             }
 
             if (HpRestored(ability.GetRemainingTime(Hero)) + health < damage)
@@ -217,10 +217,10 @@
         {
             if (armletEnabled)
             {
-                Ability.ToggleAbility();
+                Ability.ToggleAbility(false, true);
             }
 
-            Ability.ToggleAbility();
+            Ability.ToggleAbility(false, true);
 
             manualDisable = false;
             Sleep(ArmletFullEnableTime * 1000);
@@ -304,14 +304,14 @@
 
         private void OnAnimationChanged(Entity sender, EventArgs args)
         {
-            if (sender.Team == HeroTeam || !sender.Animation.Name.Contains("attack")
-                && sender.Animation.Name != "radiant_tower002")
+            if (sender.Team == HeroTeam
+                || !sender.Animation.Name.Contains("attack") && sender.Animation.Name != "radiant_tower002")
             {
                 return;
             }
 
             var unit = sender as Unit;
-            if (unit == null || !unit.IsAttacking())
+            if (unit == null)
             {
                 return;
             }
@@ -398,7 +398,7 @@
             else if (name == "modifier_fountain_aura_buff" && armletEnabled && canToggle && Menu.AutoDisableAtFountain
                      && !Sleeper.Sleeping)
             {
-                Ability.ToggleAbility();
+                Ability.ToggleAbility(false, true);
             }
             else if (selfDot.ContainsKey(name))
             {

@@ -29,8 +29,8 @@
             universal.SetTooltip(
                 "If enabled soul ring will work with all other assemblies otherwise only when player used ability");
             menu.AddItem(universal);
-            //universal.ValueChanged += (sender, args) => UniversalUseEnabled = args.GetNewValue<bool>();
-            //UniversalUseEnabled = universal.IsActive();
+            universal.ValueChanged += (sender, args) => UniversalUseEnabled = args.GetNewValue<bool>();
+            UniversalUseEnabled = universal.IsActive();
 
             var hpThreshold = new MenuItem("soulRingHpThreshold", "HP% threshold").SetValue(new Slider(70));
             hpThreshold.SetTooltip("Use soul ring if you have more hp%");

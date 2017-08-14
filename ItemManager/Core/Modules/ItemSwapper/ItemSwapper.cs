@@ -272,8 +272,8 @@
         {
             var item = itemEventArgs.Item;
 
-            if (!itemEventArgs.IsMine || item.IsRecipe || manager.MyHero.GetItems(ItemStoredPlace.Any)
-                    .Any(x => x.Id == item.Id))
+            if (!itemEventArgs.IsMine || item.IsRecipe
+                || manager.MyHero.GetItems(ItemStoredPlace.Any).Any(x => x.Id == item.Id))
             {
                 return;
             }
@@ -432,8 +432,8 @@
                 .Where(x => menu.Courier.ItemEnabled(x.Name) && x.CanBeMovedToBackpack())
                 .ToList();
 
-            var courierItems = courier.Inventory.Items
-                .Where(x => x.Purchaser?.Hero?.Handle == manager.MyHero.Handle && menu.Courier.ItemEnabled(x.Name))
+            var courierItems = courier.Inventory.Items.Where(
+                    x => x.Purchaser?.Hero?.Handle == manager.MyHero.Handle && menu.Courier.ItemEnabled(x.Name))
                 .ToList();
 
             if (!inventoryItems.Any() && !courierItems.Any())

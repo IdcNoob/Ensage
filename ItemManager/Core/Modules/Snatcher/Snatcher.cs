@@ -80,8 +80,8 @@
 
         private void AddOtherUnits()
         {
-            var controllableUnits = EntityManager<Unit>.Entities
-                .Where(x => x.IsValid && x.Team == manager.MyHero.Team && x.IsControllable && !x.IsIllusion)
+            var controllableUnits = EntityManager<Unit>.Entities.Where(
+                    x => x.IsValid && x.Team == manager.MyHero.Team && x.IsControllable && !x.IsIllusion)
                 .ToList();
 
             var spiritBear = controllableUnits.FirstOrDefault(x => x.Name.Contains("npc_dota_lone_druid_bear"));
@@ -249,8 +249,7 @@
                 }
             }
 
-            var items = EntityManager<PhysicalItem>.Entities
-                .Where(
+            var items = EntityManager<PhysicalItem>.Entities.Where(
                     x => x.IsValid && x.IsVisible && !ignoredItems.Contains(x.Item.Handle)
                          && !sleeper.Sleeping(x.Handle)
                          && (menu.ToggleKey && menu.EnabledToggleItems.Contains(x.Item.Id)

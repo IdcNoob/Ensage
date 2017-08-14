@@ -25,11 +25,11 @@
         {
             if (Ability.IsAbilityBehavior(AbilityBehavior.UnitTarget))
             {
-                Ability.UseAbility(target);
+                Ability.UseAbility(target, false, true);
             }
             else
             {
-                Ability.UseAbility(target.Position);
+                Ability.UseAbility(target.Position, false, true);
             }
 
             Sleep();

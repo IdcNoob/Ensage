@@ -31,7 +31,7 @@
 
         public override void Use(EvadableAbility ability, Unit target)
         {
-            Ability.UseAbility(ability.AbilityOwner);
+            Ability.UseAbility(ability.AbilityOwner, false, true);
             if (!target.Equals(Hero))
             {
                 Hero.Attack(target);

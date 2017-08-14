@@ -177,8 +177,8 @@
                         new MenuItem("phaseShiftBlockTime", "Block for (ms)").SetValue(new Slider(500, 100, 3000));
                     phaseShiftBlockTime.SetTooltip("Action won't be blocked longer than phase shift duration");
                     phaseShiftMenu.AddItem(phaseShiftBlockTime);
-                    phaseShiftBlockTime.ValueChanged +=
-                        (sender, args) => PhaseShiftBlockTime = args.GetNewValue<Slider>().Value;
+                    phaseShiftBlockTime.ValueChanged += (sender, args) =>
+                        PhaseShiftBlockTime = args.GetNewValue<Slider>().Value;
                     PhaseShiftBlockTime = phaseShiftBlockTime.GetValue<Slider>().Value;
 
                     specials.AddSubMenu(phaseShiftMenu);

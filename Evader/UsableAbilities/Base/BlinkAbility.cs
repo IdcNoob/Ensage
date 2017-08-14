@@ -81,7 +81,7 @@
                 }
             }
 
-            Ability.UseAbility(BlinkPosition);
+            Ability.UseAbility(BlinkPosition, false, true);
             Sleep();
         }
     }

@@ -26,7 +26,7 @@
 
         public override void Use(EvadableAbility ability, Unit target)
         {
-            Ability.UseAbility(target.NetworkPosition);
+            Ability.UseAbility(target.NetworkPosition, false, true);
             Sleep();
         }
     }

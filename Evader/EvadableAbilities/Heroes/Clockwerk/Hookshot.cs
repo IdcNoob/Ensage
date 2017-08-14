@@ -112,8 +112,8 @@
                 return StartCast + CastPoint - Game.RawGameTime;
             }
 
-            return StartCast + CastPoint + (position.Distance2D(StartPosition) - GetRadius() - 60)
-                   / GetProjectileSpeed() - Game.RawGameTime;
+            return StartCast + CastPoint
+                   + (position.Distance2D(StartPosition) - GetRadius() - 60) / GetProjectileSpeed() - Game.RawGameTime;
         }
 
         public override bool IsStopped()
