@@ -31,7 +31,7 @@
             : base(ability, type, target)
         {
             //todo improve
-            CastPoint += 0.1f;
+            CastPoint += 0.06f;
         }
 
         private static Pathfinder Pathfinder => Variables.Pathfinder;
