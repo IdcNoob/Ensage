@@ -217,10 +217,10 @@
         {
             if (armletEnabled)
             {
-                Ability.ToggleAbility();
+                Ability.ToggleAbility(false, true);
             }
 
-            Ability.ToggleAbility();
+            Ability.ToggleAbility(false, true);
 
             manualDisable = false;
             Sleep(ArmletFullEnableTime * 1000);
@@ -398,7 +398,7 @@
             else if (name == "modifier_fountain_aura_buff" && armletEnabled && canToggle && Menu.AutoDisableAtFountain
                      && !Sleeper.Sleeping)
             {
-                Ability.ToggleAbility();
+                Ability.ToggleAbility(false, true);
             }
             else if (selfDot.ContainsKey(name))
             {
