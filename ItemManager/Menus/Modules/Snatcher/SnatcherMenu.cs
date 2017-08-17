@@ -132,6 +132,10 @@
                 };
             UpdateRate = updateRate.GetValue<Slider>().Value;
 
+            var debug = new MenuItem("snatcherDebug", "Debug info").SetValue(false);
+            menu.AddItem(debug);
+            debug.ValueChanged += (sender, args) => OnDebug?.Invoke(null, EventArgs.Empty);
+
             SetEnabledItems(holdItems.GetValue<AbilityToggler>().Dictionary, EnabledHoldItems);
             SetEnabledItems(toggleItems.GetValue<AbilityToggler>().Dictionary, EnabledToggleItems);
 
@@ -146,6 +150,7 @@
         public event EventHandler<IntEventArgs> OnUpdateRateChange;
 
         public event EventHandler<BoolEventArgs> OnUseOtherUnitsChange;
+        public event EventHandler OnDebug;
 
         public List<AbilityId> EnabledHoldItems { get; } = new List<AbilityId>();
 

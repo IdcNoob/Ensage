@@ -60,14 +60,49 @@
             this.menu.OnUpdateRateChange += MenuOnUpdateRateChange;
             this.menu.OnEnabledChange += MenuOnEnabledChange;
             this.menu.OnNotificationEnabledChange += MenuOnNotificationEnabledChange;
+            this.menu.OnDebug += MenuOnDebug;
             if (this.menu.IsNotificationEnabled && this.menu.IsEnabled)
             {
                 Drawing.OnDraw += OnDraw;
             }
         }
 
+        private void MenuOnDebug(object sender, EventArgs eventArgs)
+        {
+            Console.WriteLine();
+            Console.WriteLine("[Snatcher info] >>>>>>>>>>>>>>>>>>>>>>>>>>");
+            Console.WriteLine();
+            Console.WriteLine("controlables: ");
+            foreach (var controllable in controllables)
+            {
+                var handle = controllable.Handle;
+                var unit = EntityManager<Unit>.Entities.FirstOrDefault(x => x.Handle == handle);
+                Console.WriteLine(" > " + unit?.Name + " // is valid: " + controllable.IsValid());
+            }
+            Console.WriteLine();
+            Console.WriteLine("runes: ");
+            foreach (var rune in EntityManager<Rune>.Entities.Where(x=> x.IsVisible))
+            {
+                Console.WriteLine(" > " + rune.RuneType);
+                foreach (var controllable in controllables.Where(x=> x.IsValid()))
+                {
+                    if (controllable.CanPick(rune))
+                    {
+                        var handle = controllable.Handle;
+                        var unit = EntityManager<Unit>.Entities.FirstOrDefault(x => x.Handle == handle);
+                        Console.WriteLine(" >> " + unit?.Name);
+                    }
+                }
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+            Console.WriteLine();
+        }
+
         public void Dispose()
         {
+            menu.OnDebug -= MenuOnDebug;
             menu.OnEnabledChange -= MenuOnEnabledChange;
             menu.OnUseOtherUnitsChange -= MenuOnUseOtherUnitsChange;
             menu.OnUpdateRateChange -= MenuOnUpdateRateChange;
@@ -232,9 +267,7 @@
             if (menu.ToggleKey && menu.EnabledToggleItems.Contains(0)
                 || menu.HoldKey && menu.EnabledHoldItems.Contains(0))
             {
-                //var runes = EntityManager<Rune>.Entities
-                //var runes = ObjectManager.GetEntitiesFast<Rune>()
-                var runes = ObjectManager.GetEntities<Rune>().Where(x => !sleeper.Sleeping(x.Handle));
+                var runes = EntityManager<Rune>.Entities.Where(x => x.IsVisible && !sleeper.Sleeping(x.Handle));
 
                 foreach (var rune in runes)
                 {
