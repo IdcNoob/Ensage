@@ -1,6 +1,7 @@
 ﻿namespace Evader.Common
 {
     using System;
+    using System.Collections.Generic;
 
     using Core;
     using Core.Menus;
@@ -20,11 +21,51 @@
             Intersectons
         }
 
+        private static readonly List<ParticleEffect> Particles = new List<ParticleEffect>();
+
         private static ParticleEffect greenCirclePartcile;
 
         private static ParticleEffect redCirclePartcile;
 
         private static DebugMenu Menu => Variables.Menu.Debug;
+
+        public static void AddGreenCircle(Vector3 position, bool force = false)
+        {
+            if (!Menu.DrawMap && !force)
+            {
+                return;
+            }
+
+            var green = new ParticleEffect(@"materials\ensage_ui\particles\drag_selected_ring_mod.vpcf", position);
+            green.SetControlPoint(1, new Vector3(0, 255, 0));
+            green.SetControlPoint(2, new Vector3(50, 255, 0));
+
+            Particles.Add(green);
+        }
+
+        public static void AddRedCircle(Vector3 position, bool force = false)
+        {
+            if (!Menu.DrawMap && !force)
+            {
+                return;
+            }
+
+            var red = new ParticleEffect(@"materials\ensage_ui\particles\drag_selected_ring_mod.vpcf", position);
+            red.SetControlPoint(1, new Vector3(255, 0, 0));
+            red.SetControlPoint(2, new Vector3(70, 255, 0));
+
+            Particles.Add(red);
+        }
+
+        public static void ClearCircles()
+        {
+            foreach (var particleEffect in Particles)
+            {
+                particleEffect?.Dispose();
+            }
+
+            Particles.Clear();
+        }
 
         public static void DeleteGreenCircle()
         {

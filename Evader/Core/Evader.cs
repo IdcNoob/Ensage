@@ -769,116 +769,66 @@
                                         Debugger.WriteLine("moving into obstacle", Debugger.Type.Intersectons);
 
                                         var tempPath = Pathfinder.CalculatePathFromObstacle(
-                                                Hero.NetworkPosition,
-                                                movePosition,
+                                                Hero.Position,
+                                                Hero.Position,
                                                 remainingWalkTime,
                                                 out success)
                                             .ToList();
 
                                         if (success)
                                         {
-                                            movePathfinderPosition = tempPath.Last();
-                                        }
-                                        else
-                                        {
-                                            continue;
+                                            if (!ability.ObstacleStays)
+                                            {
+                                                Pathfinder.CalculatePathFromObstacle(
+                                                    remainingWalkTime - 0.3f,
+                                                    out success);
+
+                                                if (success)
+                                                {
+                                                    return false;
+                                                }
+                                            }
+
+                                            //if (Menu.Settings.CancelAnimation && ability.IsDisable
+                                            //    && Hero.Spellbook.Spells.Any(x => x.IsInAbilityPhase))
+                                            //{
+                                            //    Debugger.WriteLine("canceling animation", Debugger.Type.AbilityUsage);
+                                            //    Hero.Stop(false, true);
+                                            //}
+
+                                            for (var i = 0; i < tempPath.Count; i++)
+                                            {
+                                                Hero.Move(tempPath[i], i != 0, true);
+                                            }
+
+                                            var time = Hero.Position.Distance2D(tempPath[tempPath.Count - 1])
+                                                       / Hero.MovementSpeed + 0.15f;
+
+                                            sleeper.Sleep(200, "block");
+                                            Utils.Sleep(Math.Min(time, 1) * 1000, "Evader.Avoiding");
+                                            sleeper.Sleep(Math.Min(time, 1) * 1000, ability);
+                                            sleeper.Sleep(Math.Min(time, 1) * 1000, "avoiding");
+
+                                            if (Menu.Settings.PathfinderEffect)
+                                            {
+                                                heroPathfinderEffect = new ParticleEffect(
+                                                    @"particles/units/heroes/hero_oracle/oracle_fortune_purge.vpcf",
+                                                    Hero);
+                                            }
+
+                                            Debugger.WriteLine(
+                                                TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss")
+                                                + " >>>>>>>>>>>>>>>",
+                                                Debugger.Type.AbilityUsage);
+                                            Debugger.WriteLine(
+                                                "avoid while moving: " + ability.Name,
+                                                Debugger.Type.AbilityUsage);
+                                            Debugger.WriteLine(
+                                                "remaining time: " + remainingWalkTime,
+                                                Debugger.Type.AbilityUsage);
+                                            return true;
                                         }
                                     }
-
-                                    if (!ability.ObstacleStays)
-                                    {
-                                        Pathfinder.CalculatePathFromObstacle(remainingWalkTime - 0.3f, out success);
-
-                                        if (success)
-                                        {
-                                            return false;
-                                        }
-                                    }
-
-                                    //path = Pathfinder.CalculateLongPath(movePathfinderPosition, out success).ToList();
-
-                                    //if (success)
-                                    //{
-                                    //    var time = 0.15f;
-                                    //    for (var i = 0; i < path.Count; i++)
-                                    //    {
-                                    //        Hero.Move(path[i], i != 0);
-                                    //        time += Hero.NetworkPosition.Distance2D(path[i]) / Hero.MovementSpeed;
-                                    //    }
-
-                                    //    var tempPath = Pathfinder.CalculateLongPath(
-                                    //        path.LastOrDefault(),
-                                    //        movePosition,
-                                    //        out success);
-
-                                    //    if (success)
-                                    //    {
-                                    //        var last = tempPath.LastOrDefault();
-                                    //        if (!last.IsZero)
-                                    //        {
-                                    //            Hero.Move(last, true);
-                                    //        }
-                                    //        else
-                                    //        {
-                                    //            return false;
-                                    //        }
-                                    //    }
-
-                                    //    //  sleeper.Sleep(ability.ObstacleRemainingTime() * 1000, "avoiding");
-                                    //    sleeper.Sleep(200, "block");
-                                    //    Utils.Sleep(Math.Min(time, 1) * 1000, "Evader.Avoiding");
-                                    //    sleeper.Sleep(Math.Min(time, 1) * 1000, ability);
-                                    //    sleeper.Sleep(Math.Min(time, 1) * 1000, "avoiding");
-
-                                    //    if (Menu.Settings.PathfinderEffect)
-                                    //    {
-                                    //        heroPathfinderEffect = new ParticleEffect(
-                                    //            @"particles/units/heroes/hero_oracle/oracle_fortune_purge.vpcf",
-                                    //            Hero);
-                                    //    }
-
-                                    //    Debugger.WriteLine(
-                                    //        TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss")
-                                    //        + " >>>>>>>>>>>>>>>",
-                                    //        Debugger.Type.AbilityUsage);
-                                    //    Debugger.WriteLine(
-                                    //        "avoid while moving: " + ability.Name,
-                                    //        Debugger.Type.AbilityUsage);
-                                    //    Debugger.WriteLine(
-                                    //        "remaining time: " + remainingWalkTime,
-                                    //        Debugger.Type.AbilityUsage);
-                                    //    return true;
-                                    //}
-
-                                    Hero.Move(movePathfinderPosition, false, true);
-                                    Hero.Move(movePosition, true, true);
-
-                                    var time = 0.05f + Hero.NetworkPosition.Distance2D(movePathfinderPosition)
-                                               / Hero.MovementSpeed;
-
-                                    //  sleeper.Sleep(ability.ObstacleRemainingTime() * 1000, "avoiding");
-                                    sleeper.Sleep(200, "block");
-                                    Utils.Sleep(Math.Min(time, 1) * 1000, "Evader.Avoiding");
-                                    sleeper.Sleep(Math.Min(time, 1) * 1000, ability);
-                                    sleeper.Sleep(Math.Min(time, 1) * 1000, "avoiding");
-
-                                    if (Menu.Settings.PathfinderEffect)
-                                    {
-                                        heroPathfinderEffect = new ParticleEffect(
-                                            @"particles/units/heroes/hero_oracle/oracle_fortune_purge.vpcf",
-                                            Hero);
-                                    }
-
-                                    Debugger.WriteLine(
-                                        TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss") + " >>>>>>>>>>>>>>>",
-                                        Debugger.Type.AbilityUsage);
-                                    Debugger.WriteLine(
-                                        "avoid while moving: " + ability.Name,
-                                        Debugger.Type.AbilityUsage);
-                                    Debugger.WriteLine(
-                                        "remaining time: " + remainingWalkTime,
-                                        Debugger.Type.AbilityUsage);
-                                    return true;
                                 }
                                 else
                                 {
@@ -898,10 +848,12 @@
                                     {
                                         var time = 0.15f;
 
-                                        if (Menu.Settings.CancelAnimation && ability.IsDisable)
-                                        {
-                                            Hero.Stop();
-                                        }
+                                        //if (Menu.Settings.CancelAnimation && ability.IsDisable
+                                        //    && Hero.Spellbook.Spells.Any(x => x.IsInAbilityPhase))
+                                        //{
+                                        //    Debugger.WriteLine("canceling animation", Debugger.Type.AbilityUsage);
+                                        //    Hero.Stop(false, true);
+                                        //}
 
                                         for (var i = 0; i < path.Count; i++)
                                         {
@@ -979,10 +931,11 @@
                                     if (!Menu.Randomiser.Enabled || Menu.Randomiser.NukesOnly && ability.IsDisable
                                         || randomiser.Next(99) > Menu.Randomiser.FailChance)
                                     {
-                                        if (Menu.Settings.CancelAnimation && ability.IsDisable && allyIsMe)
-                                        {
-                                            Hero.Stop();
-                                        }
+                                        //if (Menu.Settings.CancelAnimation && ability.IsDisable && allyIsMe)
+                                        //{
+                                        //    Debugger.WriteLine("canceling animation", Debugger.Type.AbilityUsage);
+                                        //    Hero.Stop(false, true);
+                                        //}
 
                                         blinkAbility.Use(ability, fountain);
                                     }
@@ -1070,10 +1023,11 @@
                                     if (!Menu.Randomiser.Enabled || Menu.Randomiser.NukesOnly && ability.IsDisable
                                         || randomiser.Next(99) > Menu.Randomiser.FailChance)
                                     {
-                                        if (Menu.Settings.CancelAnimation && ability.IsDisable && allyIsMe)
-                                        {
-                                            Hero.Stop();
-                                        }
+                                        //if (Menu.Settings.CancelAnimation && ability.IsDisable && allyIsMe)
+                                        //{
+                                        //    Debugger.WriteLine("canceling animation", Debugger.Type.AbilityUsage);
+                                        //    Hero.Stop(false, true);
+                                        //}
 
                                         counterAbility.Use(ability, targetEnemy ? abilityOwner : ally);
                                     }
@@ -1151,10 +1105,11 @@
                                     if (!Menu.Randomiser.Enabled || Menu.Randomiser.NukesOnly && ability.IsDisable
                                         || randomiser.Next(99) > Menu.Randomiser.FailChance)
                                     {
-                                        if (Menu.Settings.CancelAnimation && ability.IsDisable && allyIsMe)
-                                        {
-                                            Hero.Stop();
-                                        }
+                                        //if (Menu.Settings.CancelAnimation && ability.IsDisable && allyIsMe)
+                                        //{
+                                        //    Debugger.WriteLine("canceling animation", Debugger.Type.AbilityUsage)
+                                        //    Hero.Stop(false, true);
+                                        //}
 
                                         disableAbility.Use(ability, abilityOwner);
                                     }
