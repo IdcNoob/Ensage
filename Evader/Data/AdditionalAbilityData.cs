@@ -73,7 +73,7 @@ namespace Evader.Data
             { "vengefulspirit_wave_of_terror", 500 },
             { "mirana_arrow", 500 },
             { "ancient_apparition_ice_blast", 550 },
-            { "puck_illusory_orb", 550 },
+            { "puck_illusory_orb", 450 },
             { "rattletrap_rocket_flare", 600 },
             { "lich_chain_frost", 800 },
             { "razor_plasma_field", 800 }, // unit has name

@@ -110,7 +110,8 @@
 
                         if (unit.HasInventory)
                         {
-                            abilities.AddRange(unit.Inventory.Items);
+                            abilities.AddRange(
+                                unit.Inventory.Items.Where(x => x.Purchaser.Hero?.Handle == unit.Handle));
                         }
                     }
                     catch
