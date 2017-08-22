@@ -25,7 +25,7 @@
 
     internal class ArmletOfMordiggian : UsableAbility, IDisposable
     {
-        private const float ArmletFullEnableTime = 0.8f;
+        private const float ArmletFullEnableTime = 0.6f;
 
         private const int ArmletHpGain = 470;
 
@@ -141,6 +141,14 @@
 
         private static UsableAbilitiesMenu Menu => Variables.Menu.UsableAbilities;
 
+        private float TogglePing
+        {
+            get
+            {
+                return Game.Ping / 2 + 50;
+            }
+        }
+
         public override bool CanBeCasted(EvadableAbility ability, Unit unit)
         {
             if (Sleeper.Sleeping || !Hero.CanUseItems())
@@ -189,7 +197,7 @@
                 Console.WriteLine("[Evader] Failed to calculate damage for: " + ability.Name);
             }
 
-            if (HpRestored(ability.GetRemainingTime(Hero)) + health < damage)
+            if (HpRestored(ability.GetRemainingTime(Hero) - TogglePing / 1000) + health < damage)
             {
                 return false;
             }
@@ -215,15 +223,15 @@
 
         public override void Use(EvadableAbility ability, Unit target)
         {
+            Sleep(ArmletFullEnableTime * 1000 + TogglePing);
+            manualDisable = false;
+
             if (armletEnabled)
             {
                 Ability.ToggleAbility(false, true);
             }
 
-            Ability.ToggleAbility(false, true);
-
-            manualDisable = false;
-            Sleep(ArmletFullEnableTime * 1000);
+            DelayAction.Add(1, () => Ability.ToggleAbility(false, true));
         }
 
         public override bool UseCustomSleep(out float sleepTime)
@@ -234,8 +242,6 @@
 
         private static float HpRestored(float time)
         {
-            time -= Game.Ping / 1000;
-
             if (time <= 0)
             {
                 return 0;
@@ -246,6 +252,8 @@
 
         private bool AffectedByDot()
         {
+            var ping = Game.Ping / 1000;
+
             foreach (var modifier in Hero.Modifiers.Where(x => !x.IsHidden && x.IsDebuff))
             {
                 float tick;
@@ -261,9 +269,8 @@
                 }
 
                 var elapsedTime = (Game.RawGameTime - initialTime) % tick;
-                var ping = Game.Ping / 1000;
 
-                if (elapsedTime + 0.20 + ping > tick || elapsedTime + ping < 0.1)
+                if (elapsedTime + 0.2 + ping > tick || elapsedTime + ping < 0.05)
                 {
                     return true;
                 }
@@ -290,9 +297,8 @@
 
                     var tick = tuple.Item2;
                     var elapsedTime = modifier.ElapsedTime % tick;
-                    var ping = Game.Ping / 1000;
 
-                    if (elapsedTime + 0.20 + ping > tick || elapsedTime + ping < 0.1)
+                    if (elapsedTime + 0.2 + ping > tick || elapsedTime + ping < 0.05)
                     {
                         return true;
                     }
@@ -316,7 +322,7 @@
                 return;
             }
 
-            attacks[unit] = Game.RawGameTime;
+            attacks[unit] = Game.RawGameTime - Game.Ping / 2000;
         }
 
         private void OnDraw(EventArgs args)
@@ -373,11 +379,12 @@
             if (armletEnabled)
             {
                 manualDisable = true;
-                Sleep(100 + Game.Ping);
+                armletEnabled = false;
             }
             else
             {
                 manualDisable = false;
+                armletEnabled = true;
                 Sleep(ArmletFullEnableTime * 1000);
             }
         }
@@ -402,7 +409,7 @@
             }
             else if (selfDot.ContainsKey(name))
             {
-                initialDotTimings[name] = Game.RawGameTime;
+                initialDotTimings[name] = Game.RawGameTime - Game.Ping / 1000;
             }
         }
 
@@ -445,7 +452,7 @@
             }
 
             var position = Hero.IsMoving && Math.Abs(Hero.RotationDifference) < 60
-                               ? Hero.InFront(100)
+                               ? Hero.InFront(55)
                                : Hero.NetworkPosition;
 
             var noProjectiles = true;
@@ -457,10 +464,14 @@
                     continue;
                 }
 
-                var hpRestored = HpRestored(
-                    Math.Max(projectile.Position.Distance2D(position) - Hero.RingRadius, 0) / projectile.Speed - 0.20f);
+                var time = Math.Max(projectile.Position.Distance2D(position) - Hero.HullRadius, 0) / projectile.Speed;
+                if (time < Game.Ping / 2000)
+                {
+                    continue;
+                }
 
-                var damage = Hero.DamageTaken(unit.MaximumDamage + unit.BonusDamage, DamageType.Physical, unit);
+                var hpRestored = HpRestored(time - TogglePing / 1000 - 0.12f);
+                var damage = Hero.DamageTaken(unit.MaximumDamage + unit.BonusDamage, DamageType.Physical, unit) * 1.1f;
 
                 switch (unit.ClassId)
                 {
@@ -479,6 +490,9 @@
                         break;
                     case ClassId.CDOTA_Unit_Hero_Clinkz:
                         damage += Hero.DamageTaken(20 + unit.Spellbook.SpellW.Level * 10, DamageType.Physical, unit);
+                        break;
+                    case ClassId.CDOTA_Unit_Hero_Viper:
+                        damage *= 2.5f;
                         break;
                 }
 
@@ -505,35 +519,35 @@
                      && (x.Key.IsMelee || x.Key.Distance2D(Hero) < 400 /*|| x.Key.AttackPoint() < 0.15*/)))
             {
                 var unit = attack.Key;
-                var attackStart = attack.Value - Game.Ping / 1000;
+                var attackStart = attack.Value - TogglePing / 1000;
                 var attackPoint = unit.AttackPoint();
                 var secondsPerAttack = unit.SecondsPerAttack;
                 var time = Game.RawGameTime;
 
-                var damageTime = attackStart + attackPoint;
+                var damageTime = attackStart + attackPoint + 0.12;
                 if (unit.IsRanged)
                 {
-                    damageTime += Math.Max(unit.Distance2D(Hero) - Hero.RingRadius, 0) / unit.ProjectileSpeed();
+                    damageTime += Math.Max(unit.Distance2D(Hero) - Hero.HullRadius, 0) / unit.ProjectileSpeed();
                 }
 
                 var echoSabre = unit.FindItem("item_echo_sabre", true);
 
-                if (time <= damageTime + 0.075 && (attackPoint < 0.35 || time + attackPoint * 0.6 > damageTime)
-                    || attackPoint < 0.25 && time > damageTime + unit.AttackBackswing() * 0.8
-                    && time <= attackStart + secondsPerAttack + 0.075 || echoSabre != null && unit.IsMelee
-                    && echoSabre.CooldownLength - echoSabre.Cooldown <= attackPoint * 2)
+                // fuck calcus
+                if ((time <= damageTime // no switch before damage
+                     && (attackPoint < 0.35 // no switch if low attackpoint before attack start
+                         || time + (attackPoint * 0.6) > damageTime)) // or allow switch if big attack point
+                    || (attackPoint < 0.25 // dont allow switch if very low attack point 
+                        && time > damageTime + (unit.AttackBackswing() * 0.6) // after attack end
+                        && time <= attackStart + secondsPerAttack + 0.12) // allow if attack time passed secperatk time
+                    || (echoSabre != null && unit.IsMelee // echo sabre check
+                        && echoSabre.CooldownLength - echoSabre.Cooldown <= attackPoint * 2))
                 {
                     noAutoAttacks = false;
                     break;
                 }
             }
 
-            canToggle = noProjectiles && noAutoAttacks || !armletEnabled;
-
-            if (Sleeper.Sleeping)
-            {
-                return;
-            }
+            canToggle = (noProjectiles && noAutoAttacks || !armletEnabled) && !Sleeper.Sleeping;
 
             var nearEnemies = ObjectManager.GetEntities<Unit>()
                 .Any(
