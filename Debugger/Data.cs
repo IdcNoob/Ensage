@@ -76,15 +76,15 @@
             "m_cellX",
             "m_cellZ",
             "m_NetworkSequenceIndex",
-            "m_nNewSequenceParity"
+            "m_nNewSequenceParity",
+            "m_anglediff",
+            "m_iHealth",
+            "m_iTaggedAsVisibleByTeam"
         };
 
         public static List<string> SemiIgnoredInt32 { get; } = new List<string>
         {
-            "m_anglediff",
             "m_NetworkActivity",
-            "m_iHealth",
-            "m_iTaggedAsVisibleByTeam",
             "m_iHeroDamage",
             "m_iRecentDamage",
             "m_iDamageBonus",
