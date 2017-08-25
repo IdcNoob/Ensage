@@ -189,7 +189,13 @@
             }
         }
 
-        public bool WasVisible => Creeps.Any(x => x.IsValid && x.IsSpawned);
+        public bool WasVisible
+        {
+            get
+            {
+                return Creeps.Any(x => x.IsValid && x.IsSpawned);
+            }
+        }
 
         public void Spawn()
         {

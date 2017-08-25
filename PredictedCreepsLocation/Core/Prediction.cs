@@ -59,7 +59,7 @@
                 return;
             }
 
-            foreach (var wave in waveManager.CreepWaves.Where(x => x.IsSpawned && !x.IsVisible).ToList())
+            foreach (var wave in waveManager.CreepWaves.Where(x => x.IsSpawned && !x.IsVisible))
             {
                 var text = settings.ShowCreepsCount ? wave.Creeps.Count.ToString() : "C";
 
@@ -118,8 +118,10 @@
             {
                 if (!wave.WasVisible)
                 {
-                    wave.PredictedPosition =
-                        wave.Path.PositionAfter(Game.RawGameTime - wave.SpawnTime, wave.Speed, wave.Delay);
+                    wave.PredictedPosition = wave.Path.PositionAfter(
+                        Game.RawGameTime - wave.SpawnTime,
+                        wave.Speed,
+                        wave.Delay);
                 }
                 else if (wave.IsVisible)
                 {

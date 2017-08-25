@@ -86,25 +86,30 @@
                 return;
             }
 
-            var wave = CreepWaves.FirstOrDefault(x => !x.IsSpawned && x.Creeps.Any(z => z.Distance2D(creep) < 300));
+            UpdateManager.BeginInvoke(
+                () =>
+                    {
+                        var wave = CreepWaves.FirstOrDefault(
+                            x => !x.IsSpawned && x.Creeps.Any(z => z.Distance2D(creep) < 300));
 
-            if (wave != null)
-            {
-                wave.Creeps.Add(creep);
-            }
-            else
-            {
-                var laneData = lanePaths.GetLaneData(creep.Position);
-                if (laneData == null)
-                {
-                    return;
-                }
+                        if (wave != null)
+                        {
+                            wave.Creeps.Add(creep);
+                        }
+                        else
+                        {
+                            var laneData = lanePaths.GetLaneData(creep.Position);
+                            if (laneData == null)
+                            {
+                                return;
+                            }
 
-                var newWave = new CreepWave(laneData.Value, creep.Team);
-                newWave.Creeps.Add(creep);
+                            var newWave = new CreepWave(laneData.Value, creep.Team);
+                            newWave.Creeps.Add(creep);
 
-                CreepWaves.Add(newWave);
-            }
+                            CreepWaves.Add(newWave);
+                        }
+                    });
         }
 
         private void OnEntityRemoved(object sender, Creep creep)
