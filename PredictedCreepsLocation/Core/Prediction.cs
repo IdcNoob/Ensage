@@ -59,7 +59,7 @@
                 return;
             }
 
-            foreach (var wave in waveManager.CreepWaves.Where(x => x.IsSpawned && !x.IsVisible))
+            foreach (var wave in waveManager.CreepWaves.Where(x => x.IsSpawned && !x.IsVisible).ToList())
             {
                 var text = settings.ShowCreepsCount ? wave.Creeps.Count.ToString() : "C";
 
