@@ -248,6 +248,11 @@
                 1,
                 () =>
                     {
+                        if (!modifier.IsValid)
+                        {
+                            return;
+                        }
+
                         if (sender.Team != HeroTeam || modifier.Name == "modifier_faceless_void_chronosphere")
                         {
                             string name;
@@ -375,10 +380,27 @@
 
                 if (ability.Obstacle != null && Math.Abs(ability.GetRemainingTime()) > 60)
                 {
+                    var ex = new BrokenAbilityException(ability.GetType().Name);
+
+                    try
+                    {
+                        ex.Data["Ability"] = new
+                        {
+                            Abiltity = ability.Name,
+                            Owner = ability.AbilityOwner.Name,
+                            OwnerIsVisible = ability.AbilityOwner.IsVisible,
+                            Distance = Hero.Distance2D(ability.AbilityOwner),
+                            RemainingTime = ability.GetRemainingTime(),
+                            ObstacleTime = Game.RawGameTime - ability.StartCast
+                        };
+                    }
+                    catch
+                    {
+                        ex.Data["Ability"] = "Failed to get data";
+                    }
+
                     ability.End();
-                    throw new Exception(
-                        "Broken ability => " + ability.GetType().Name + " (" + ability.AbilityOwner.Name + " // "
-                        + ability.Name + " // " + ability.GetRemainingTime() + ")");
+                    throw ex;
                 }
             }
 
