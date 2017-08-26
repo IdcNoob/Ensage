@@ -378,7 +378,8 @@
                     }
                 }
 
-                if (ability.Obstacle != null && Math.Abs(ability.GetRemainingTime()) > 60)
+                var time = ability.GetRemainingTime();
+                if (ability.Obstacle != null && (time > 60 || time < -20))
                 {
                     var ex = new BrokenAbilityException(ability.GetType().Name);
 
@@ -386,12 +387,12 @@
                     {
                         ex.Data["Ability"] = new
                         {
-                            Abiltity = ability.Name,
+                            Ability = ability.Name,
                             Owner = ability.AbilityOwner.Name,
-                            OwnerIsVisible = ability.AbilityOwner.IsVisible,
-                            Distance = Hero.Distance2D(ability.AbilityOwner),
-                            RemainingTime = ability.GetRemainingTime(),
-                            ObstacleTime = Game.RawGameTime - ability.StartCast
+                            RemainingTime = time,
+                            ObstacleTime = Game.RawGameTime - ability.StartCast,
+                            StartCast = ability.StartCast,
+                            EndCast = ability.EndCast
                         };
                     }
                     catch

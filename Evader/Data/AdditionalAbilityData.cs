@@ -47,6 +47,7 @@ namespace Evader.Data
             { "fire_spirit_launch", "phoenix_launch_fire_spirit" },
             { "supernova_start", "phoenix_supernova" },
             { "spring_channel", "monkey_king_primal_spring" },
+            { "arcana_death_channel", "monkey_king_primal_spring" },
             { "jump_treelaunch_ring", "monkey_king_primal_spring" },
             { "_cloud.vpcf", "zuus_cloud" },
             { "furion_sprout", "furion_sprout" },
