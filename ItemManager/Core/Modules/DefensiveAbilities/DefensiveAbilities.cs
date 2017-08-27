@@ -9,6 +9,7 @@
     using Attributes;
 
     using Ensage;
+    using Ensage.Common.Objects;
     using Ensage.Common.Objects.UtilityObjects;
     using Ensage.SDK.Extensions;
     using Ensage.SDK.Handlers;
@@ -124,8 +125,16 @@
                     x => menu.IsAbilityEnabled(x.Name) && x.CanBeCasted() && (x.IsItem ? canUseItems : canUseAbilities))
                 .OrderByDescending(x => menu.GetPriority(x.Name)))
             {
-                if (enemies.Count(x => x.Distance2D(manager.MyHero.Position) <= defensiveAbility.Menu.Range)
-                    >= defensiveAbility.Menu.EnemyCount)
+                var defaultUse =
+                    enemies.Count(x => x.Distance2D(manager.MyHero.Position) <= defensiveAbility.Menu.Range)
+                    >= defensiveAbility.Menu.EnemyCount;
+
+                var alwaysUse = defensiveAbility.Menu.AlwaysUse && enemies.Any(
+                                    x => defensiveAbility.Menu.IsEnabled(x.StoredName())
+                                         && x.Distance2D(manager.MyHero.Position)
+                                         <= defensiveAbility.Menu.AlwaysUseRange);
+
+                if (defaultUse || alwaysUse)
                 {
                     UpdateManager.BeginInvoke(
                         () =>

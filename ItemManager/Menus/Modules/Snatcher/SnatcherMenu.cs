@@ -143,6 +143,8 @@
             mainMenu.AddSubMenu(menu);
         }
 
+        public event EventHandler OnDebug;
+
         public event EventHandler<BoolEventArgs> OnEnabledChange;
 
         public event EventHandler<BoolEventArgs> OnNotificationEnabledChange;
@@ -150,7 +152,6 @@
         public event EventHandler<IntEventArgs> OnUpdateRateChange;
 
         public event EventHandler<BoolEventArgs> OnUseOtherUnitsChange;
-        public event EventHandler OnDebug;
 
         public List<AbilityId> EnabledHoldItems { get; } = new List<AbilityId>();
 

@@ -67,39 +67,6 @@
             }
         }
 
-        private void MenuOnDebug(object sender, EventArgs eventArgs)
-        {
-            Console.WriteLine();
-            Console.WriteLine("[Snatcher info] >>>>>>>>>>>>>>>>>>>>>>>>>>");
-            Console.WriteLine();
-            Console.WriteLine("controlables: ");
-            foreach (var controllable in controllables)
-            {
-                var handle = controllable.Handle;
-                var unit = EntityManager<Unit>.Entities.FirstOrDefault(x => x.Handle == handle);
-                Console.WriteLine(" > " + unit?.Name + " // is valid: " + controllable.IsValid());
-            }
-            Console.WriteLine();
-            Console.WriteLine("runes: ");
-            foreach (var rune in EntityManager<Rune>.Entities.Where(x=> x.IsVisible))
-            {
-                Console.WriteLine(" > " + rune.RuneType);
-                foreach (var controllable in controllables.Where(x=> x.IsValid()))
-                {
-                    if (controllable.CanPick(rune))
-                    {
-                        var handle = controllable.Handle;
-                        var unit = EntityManager<Unit>.Entities.FirstOrDefault(x => x.Handle == handle);
-                        Console.WriteLine(" >> " + unit?.Name);
-                    }
-                }
-            }
-
-            Console.WriteLine();
-            Console.WriteLine("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-            Console.WriteLine();
-        }
-
         public void Dispose()
         {
             menu.OnDebug -= MenuOnDebug;
@@ -130,6 +97,39 @@
             {
                 controllables.Add(new MeepoClone(meepo));
             }
+        }
+
+        private void MenuOnDebug(object sender, EventArgs eventArgs)
+        {
+            Console.WriteLine();
+            Console.WriteLine("[Snatcher info] >>>>>>>>>>>>>>>>>>>>>>>>>>");
+            Console.WriteLine();
+            Console.WriteLine("controlables: ");
+            foreach (var controllable in controllables)
+            {
+                var handle = controllable.Handle;
+                var unit = EntityManager<Unit>.Entities.FirstOrDefault(x => x.Handle == handle);
+                Console.WriteLine(" > " + unit?.Name + " // is valid: " + controllable.IsValid());
+            }
+            Console.WriteLine();
+            Console.WriteLine("runes: ");
+            foreach (var rune in EntityManager<Rune>.Entities.Where(x => x.IsVisible))
+            {
+                Console.WriteLine(" > " + rune.RuneType);
+                foreach (var controllable in controllables.Where(x => x.IsValid()))
+                {
+                    if (controllable.CanPick(rune))
+                    {
+                        var handle = controllable.Handle;
+                        var unit = EntityManager<Unit>.Entities.FirstOrDefault(x => x.Handle == handle);
+                        Console.WriteLine(" >> " + unit?.Name);
+                    }
+                }
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+            Console.WriteLine();
         }
 
         private void MenuOnEnabledChange(object sender, BoolEventArgs boolEventArgs)

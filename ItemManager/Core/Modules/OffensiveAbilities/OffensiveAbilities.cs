@@ -52,7 +52,8 @@
             { AbilityId.item_sheepstick, "Scythe of vyse" },
             { AbilityId.item_urn_of_shadows, "Urn of shadows" },
             { AbilityId.item_veil_of_discord, "Veil of discord" },
-            { AbilityId.item_armlet, "Armlet" }
+            { AbilityId.item_armlet, "Armlet" },
+            { AbilityId.item_satanic, "Satanic" }
         };
 
         private readonly MultiSleeper sleeper = new MultiSleeper();

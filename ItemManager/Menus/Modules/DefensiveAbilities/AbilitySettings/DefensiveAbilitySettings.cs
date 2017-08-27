@@ -1,9 +1,14 @@
 ﻿namespace ItemManager.Menus.Modules.DefensiveAbilities.AbilitySettings
 {
+    using System.Collections.Generic;
+
     using Ensage.Common.Menu;
+    using Ensage.Common.Menu.MenuItems;
 
     internal class DefensiveAbilitySettings
     {
+        private readonly Dictionary<string, bool> heroToggler = new Dictionary<string, bool>();
+
         public DefensiveAbilitySettings(Menu mainMenu, string name, string texture = null)
         {
             var simpleName = name.ToLower().Replace(" ", string.Empty);
@@ -40,8 +45,26 @@
             lotusStack.ValueChanged += (sender, args) => LotusOrbStack = args.GetNewValue<bool>();
             LotusOrbStack = lotusStack.IsActive();
 
+            var alwaysUse = new MenuItem(simpleName + "DefAlwaysUse", "Always use").SetValue(false);
+            alwaysUse.SetTooltip("Will use item when selected enemy is range");
+            menu.AddItem(alwaysUse);
+            alwaysUse.ValueChanged += (sender, args) => AlwaysUse = args.GetNewValue<bool>();
+            AlwaysUse = alwaysUse.IsActive();
+
+            menu.AddItem(new EnemyHeroesToggler(simpleName + "defAlwaysOn", "When:", heroToggler, false));
+
+            var alwayseUseRange =
+                new MenuItem(simpleName + "defAlwaysUseRange", "Is in range").SetValue(new Slider(600, 100, 1500));
+            menu.AddItem(alwayseUseRange);
+            alwayseUseRange.ValueChanged += (sender, args) => AlwaysUseRange = args.GetNewValue<Slider>().Value;
+            AlwaysUseRange = alwayseUseRange.GetValue<Slider>().Value;
+
             mainMenu.AddSubMenu(menu);
         }
+
+        public bool AlwaysUse { get; private set; }
+
+        public int AlwaysUseRange { get; protected set; }
 
         public bool BladeMailStack { get; private set; }
 
@@ -54,5 +77,12 @@
         public bool MagicImmunityStack { get; private set; }
 
         public int Range { get; protected set; }
+
+        public bool IsEnabled(string heroName)
+        {
+            bool enabled;
+            heroToggler.TryGetValue(heroName, out enabled);
+            return enabled;
+        }
     }
 }

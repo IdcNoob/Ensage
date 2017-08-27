@@ -20,7 +20,7 @@
             var menu = new Menu("Dewarding", "dewardMenu");
 
             var enabled = new MenuItem("dewardEnabled", "Enabled").SetValue(true);
-            enabled.SetTooltip("Auto use quelling blade, tangos, iron talon etc. enemy on wards");
+            enabled.SetTooltip("Auto use quelling blade, tangos, iron talon etc. on wards");
             menu.AddItem(enabled);
             enabled.ValueChanged += (sender, args) =>
                 {

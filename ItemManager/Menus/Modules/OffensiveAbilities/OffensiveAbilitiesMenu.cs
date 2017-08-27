@@ -48,9 +48,20 @@
             {
                 abilityToggler.Add(ability.Name, false);
                 priorityChanger.Add(ability.Name);
-                abilitySettingsMenu = ability.Name == "item_diffusal_blade"
-                                          ? new DiffusalBladeSettings(settingsMenu, displayName, ability.Name)
-                                          : new OffensiveAbilitySettings(settingsMenu, displayName, ability.Name);
+
+                switch (ability.Name)
+                {
+                    case "item_diffusal_blade":
+                        abilitySettingsMenu = new DiffusalBladeSettings(settingsMenu, displayName, ability.Name);
+                        break;
+                    case "item_satanic":
+                        abilitySettingsMenu = new SatanicSettings(settingsMenu, displayName, ability.Name);
+                        break;
+                    default:
+                        abilitySettingsMenu = new OffensiveAbilitySettings(settingsMenu, displayName, ability.Name);
+                        break;
+                }
+
                 abilityMenus.Add(displayName, abilitySettingsMenu);
             }
 

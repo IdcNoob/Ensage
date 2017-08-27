@@ -73,6 +73,7 @@
     <Compile Include="Core\Abilities\IronTalon.cs" />
     <Compile Include="Core\Abilities\MagicStick.cs" />
     <Compile Include="Core\Abilities\Mekansm.cs" />
+    <Compile Include="Core\Abilities\Satanic.cs" />
     <Compile Include="Core\Abilities\UrnOfShadows.cs" />
     <Compile Include="Bootstrap.cs" />
     <Compile Include="Core\Abilities\ArcaneBoots.cs" />
@@ -146,6 +147,7 @@
     <Compile Include="Menus\Modules\AutoActions\Actions\PowerTreadsMenu.cs" />
     <Compile Include="Menus\Modules\OffensiveAbilities\AbilitySettings\DiffusalBladeSettings.cs" />
     <Compile Include="Menus\Modules\OffensiveAbilities\AbilitySettings\OffensiveAbilitySettings.cs" />
+    <Compile Include="Menus\Modules\OffensiveAbilities\AbilitySettings\SatanicSettings.cs" />
     <Compile Include="Menus\Modules\OffensiveAbilities\OffensiveAbilitiesMenu.cs" />
     <Compile Include="Menus\Modules\Recovery\ItemSettings\BottleSettings.cs" />
     <Compile Include="Menus\Modules\Recovery\ItemSettings\PowerTreadsSettings.cs" />

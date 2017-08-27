@@ -27,31 +27,37 @@
             Delay = delay.GetValue<Slider>().Value;
 
             var hexStack = new MenuItem(simpleName + "OffHex", "Stack with hex").SetValue(false);
+            hexStack.SetTooltip("Use ability when target is hexed");
             Menu.AddItem(hexStack);
             hexStack.ValueChanged += (sender, args) => HexStack = args.GetNewValue<bool>();
             HexStack = hexStack.IsActive();
 
             var rootStack = new MenuItem(simpleName + "OffRoot", "Stack with root").SetValue(false);
+            rootStack.SetTooltip("Use ability when target is rooted");
             Menu.AddItem(rootStack);
             rootStack.ValueChanged += (sender, args) => RootStack = args.GetNewValue<bool>();
             RootStack = rootStack.IsActive();
 
             var silenceStack = new MenuItem(simpleName + "OffSilence", "Stack with silence").SetValue(false);
+            silenceStack.SetTooltip("Use ability when target is silenced");
             Menu.AddItem(silenceStack);
             silenceStack.ValueChanged += (sender, args) => SilenceStack = args.GetNewValue<bool>();
             SilenceStack = silenceStack.IsActive();
 
             var stunStack = new MenuItem(simpleName + "OffStun", "Stack with stun").SetValue(false);
+            stunStack.SetTooltip("Use ability when target is stunned");
             Menu.AddItem(stunStack);
             stunStack.ValueChanged += (sender, args) => StunStack = args.GetNewValue<bool>();
             StunStack = stunStack.IsActive();
 
             var disarmStack = new MenuItem(simpleName + "OffDisarm", "Stack with disarm").SetValue(false);
+            disarmStack.SetTooltip("Use ability when target is disarmed");
             Menu.AddItem(disarmStack);
             disarmStack.ValueChanged += (sender, args) => DisarmStack = args.GetNewValue<bool>();
             DisarmStack = disarmStack.IsActive();
 
             var breakLinkens = new MenuItem(simpleName + "OffLinkens", "Break linkens sphere").SetValue(false);
+            disarmStack.SetTooltip("Use ability when target is linkens protected");
             Menu.AddItem(breakLinkens);
             breakLinkens.ValueChanged += (sender, args) => BreakLinkens = args.GetNewValue<bool>();
             BreakLinkens = breakLinkens.IsActive();
