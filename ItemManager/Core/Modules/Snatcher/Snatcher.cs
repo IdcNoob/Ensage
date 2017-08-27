@@ -267,7 +267,8 @@
             if (menu.ToggleKey && menu.EnabledToggleItems.Contains(0)
                 || menu.HoldKey && menu.EnabledHoldItems.Contains(0))
             {
-                var runes = EntityManager<Rune>.Entities.Where(x => x.IsVisible && !sleeper.Sleeping(x.Handle));
+           //     var runes = EntityManager<Rune>.Entities.Where(x => x.IsVisible && !sleeper.Sleeping(x.Handle));
+                var runes = ObjectManager.GetEntities<Rune>().Where(x => !sleeper.Sleeping(x.Handle));
 
                 foreach (var rune in runes)
                 {
