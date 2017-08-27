@@ -210,16 +210,11 @@
 
         private void OnMinimapDraw(object sender, EventArgs e)
         {
-            foreach (var ward in units.OfType<IWard>())
+            foreach (var ward in units.OfType<IWard>().ToList())
             {
                 if (ward.ShowTexture)
                 {
-                    render.DrawText(
-                        ward.Position.WorldToMinimap() - new Vector2(8, 15),
-                        "*",
-                        ward is SentryWard ? System.Drawing.Color.Blue : System.Drawing.Color.Yellow,
-                        30,
-                        "Arial");
+                    render.DrawText(ward.Position.WorldToMinimap() - new Vector2(8, 15), "*", ward.Color, 30, "Arial");
                 }
             }
         }

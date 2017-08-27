@@ -13,6 +13,8 @@
 
     using SharpDX;
 
+    using Color = System.Drawing.Color;
+
     [Unit("item_ward_sentry", "npc_dota_sentry_wards")]
     internal class SentryWard : BaseUnit, IWard
     {
@@ -30,6 +32,8 @@
             RequiresUpdate = true;
             SetData(settings);
         }
+
+        public Color Color => Color.Blue;
 
         public bool RequiresUpdate { get; private set; }
 

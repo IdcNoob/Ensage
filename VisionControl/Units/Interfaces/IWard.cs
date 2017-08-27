@@ -5,6 +5,8 @@
     internal interface IWard : IUpdatable
 
     {
+        System.Drawing.Color Color { get; }
+
         float CreateTime { get; }
 
         Vector3 Position { get; }

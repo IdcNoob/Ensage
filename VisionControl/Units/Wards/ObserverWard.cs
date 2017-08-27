@@ -13,6 +13,8 @@
 
     using SharpDX;
 
+    using Color = System.Drawing.Color;
+
     [Unit("item_ward_observer", "npc_dota_observer_wards")]
     internal class ObserverWard : BaseUnit, IWard
     {
@@ -30,6 +32,8 @@
             RequiresUpdate = true;
             SetData(settings);
         }
+
+        public Color Color => Color.Yellow;
 
         public bool RequiresUpdate { get; private set; }
 
