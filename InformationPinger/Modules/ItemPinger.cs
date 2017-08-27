@@ -40,6 +40,8 @@
 
         private MenuItem<Slider> itemCostThreshold;
 
+        private HashSet<uint> pingedItems;
+
         private bool processing;
 
         private Queue<Item> queue;
@@ -63,6 +65,7 @@
             CreateMenu();
 
             queue = new Queue<Item>();
+            pingedItems = new HashSet<uint>();
 
             if (enabled)
             {
@@ -187,7 +190,8 @@
 
         private void OnEntityAdded(object sender, Item item)
         {
-            if (!item.IsValid || item.Cost < itemCostThreshold && !forcePingItems.Value.IsEnabled(item.Name))
+            if (!item.IsValid || pingedItems.Contains(item.Handle)
+                || item.Cost < itemCostThreshold && !forcePingItems.Value.IsEnabled(item.Name))
             {
                 return;
             }
@@ -198,6 +202,7 @@
                 return;
             }
 
+            pingedItems.Add(item.Handle);
             AddPingItem(item);
         }
 
