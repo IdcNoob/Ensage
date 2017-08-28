@@ -351,14 +351,22 @@
                 heroPathfinderEffect = null;
             }
 
-            foreach (var ability in abilityUpdater.EvadableAbilities)
+            foreach (var ability in abilityUpdater.EvadableAbilities.ToList())
             {
                 if (!ability.Enabled)
                 {
                     continue;
                 }
 
-                ability.Check();
+                try
+                {
+                    ability.Check();
+                }
+                catch
+                {
+                    abilityUpdater.EvadableAbilities.Remove(ability);
+                    throw;
+                }
 
                 if (ability.IsStopped())
                 {

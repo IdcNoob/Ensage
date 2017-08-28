@@ -47,6 +47,7 @@
             UpdateManager.BeginInvoke(OnUpdate);
             ObjectManager.OnRemoveEntity += OnRemoveEntity;
             Entity.OnInt64PropertyChange += EntityOnOnInt64PropertyChange;
+            Entity.OnInt32PropertyChange += EntityOnOnInt32PropertyChange;
         }
 
         public List<EvadableAbility> EvadableAbilities { get; } = new List<EvadableAbility>();
@@ -66,6 +67,7 @@
             processing = false;
             ObjectManager.OnRemoveEntity -= OnRemoveEntity;
             Entity.OnInt64PropertyChange -= EntityOnOnInt64PropertyChange;
+            Entity.OnInt32PropertyChange -= EntityOnOnInt32PropertyChange;
 
             foreach (var disposable in UsableAbilities.OfType<IDisposable>())
             {
@@ -168,6 +170,22 @@
                     }
                 }
             }
+        }
+
+        private void EntityOnOnInt32PropertyChange(Entity sender, Int32PropertyChangeEventArgs args)
+        {
+            if (args.NewValue == args.OldValue || args.NewValue > 0 || args.PropertyName != "m_iHealth")
+            {
+                return;
+            }
+
+            var creep = sender as Creep;
+            if (creep == null || !creep.IsValid)
+            {
+                return;
+            }
+
+            EvadableAbilities.RemoveAll(x => x.OwnerHandle == creep.Handle);
         }
 
         private void EntityOnOnInt64PropertyChange(Entity sender, Int64PropertyChangeEventArgs args)
