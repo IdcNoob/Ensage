@@ -73,11 +73,18 @@
                 return;
             }
 
-            if (Modifier != null && Modifier.IsValid)
+            try
             {
-                return;
+                if (Modifier != null && Modifier.IsValid)
+                {
+                    return;
+                }
             }
-
+            catch (EntityNotFoundException)
+            {
+                throw new Exception("ModifierNotValid");
+            }
+       
             Handle = modifier.Handle;
             Modifier = modifier;
             Source = hero;
