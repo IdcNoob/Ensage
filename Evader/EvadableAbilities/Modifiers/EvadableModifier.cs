@@ -1,6 +1,5 @@
 ﻿namespace Evader.EvadableAbilities.Modifiers
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -68,23 +67,11 @@
 
         public virtual void Add(Modifier modifier, Hero hero)
         {
-            if (hero.Team != Team)
+            if (hero.Team != Team || IsValid())
             {
                 return;
             }
 
-            try
-            {
-                if (Modifier != null && Modifier.IsValid)
-                {
-                    return;
-                }
-            }
-            catch (EntityNotFoundException)
-            {
-                throw new Exception("ModifierNotValid");
-            }
-       
             Handle = modifier.Handle;
             Modifier = modifier;
             Source = hero;
@@ -93,14 +80,7 @@
 
         public virtual bool CanBeCountered()
         {
-            try
-            {
-                if (!IsValid())
-                {
-                    return false;
-                }
-            }
-            catch (Exception)
+            if (!IsValid())
             {
                 return false;
             }
@@ -166,7 +146,7 @@
 
         public bool IsValid()
         {
-            return Modifier != null && Modifier.IsValid;
+            return Modifier?.IsValid == true;
         }
 
         public void Remove()
