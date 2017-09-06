@@ -196,7 +196,7 @@
                                                      || z.CurrentStatus == Controllable.Status.WaitingOnStackPosition
                                                      || z.CurrentStatus == Controllable.Status.TryingToCheckStacks))))
             {
-                var campCreeps = ObjectManager.GetEntitiesParallel<Creep>()
+                var campCreeps = ObjectManager.GetEntitiesFast<Creep>()
                     .Where(x => x.IsValid && x.Distance2D(camp.CampPosition) < 600 && x.IsNeutral)
                     .ToList();
 
