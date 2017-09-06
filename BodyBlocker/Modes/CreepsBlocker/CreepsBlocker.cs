@@ -1,6 +1,7 @@
 ﻿namespace BodyBlocker.Modes.CreepsBlocker
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.Composition;
     using System.Linq;
 
@@ -17,14 +18,17 @@
     {
         private readonly Unit hero;
 
+        private readonly Map map;
+
         private CreepsBlockerSettings settings;
 
         private IUpdateHandler updateHandler;
 
         [ImportingConstructor]
-        public CreepsBlocker(IServiceContext context)
+        public CreepsBlocker(IServiceContext context, Map map)
         {
             hero = context.Owner;
+            this.map = map;
         }
 
         public void Activate()
@@ -38,6 +42,33 @@
         {
             settings.Key.Item.ValueChanged -= KeyPressed;
             UpdateManager.Unsubscribe(OnUpdate);
+        }
+
+        private Vector3 GetMovePosition(IReadOnlyCollection<Creep> creeps)
+        {
+            if (!creeps.Any())
+            {
+                return new Vector3();
+            }
+
+            var route = map.GetCreepRoute(creeps.First());
+            if (!route.Any())
+            {
+                return new Vector3();
+            }
+
+            //hack wrong route points
+            if (creeps.First().Team == Team.Dire && map.GetLane(creeps.First()) == MapArea.Middle)
+            {
+                route = route.Skip(1).ToList();
+            }
+
+            var creepsMoveDirection =
+                creeps.Aggregate(new Vector3(), (sum, creep) => sum + creep.InFront(300)) / creeps.Count;
+
+            var point = route.IndexOf(route.OrderBy(x => x.Distance(creepsMoveDirection)).First());
+
+            return route[Math.Min(point + 1, route.Count - 1)];
         }
 
         private void KeyPressed(object sender, OnValueChangeEventArgs onValueChangeEventArgs)
@@ -61,38 +92,40 @@
             }
 
             var creeps = EntityManager<Creep>.Entities.Where(
-                    x => x.IsValid && x.IsSpawned && x.IsAlive && x.Team == hero.Team && x.Distance2D(hero) < 500)
+                    x => x.IsValid && x.IsSpawned && x.IsAlive && x.Team == hero.Team && x.Distance2D(hero) < 600)
                 .ToList();
 
-            if (!creeps.Any())
+            var creepsMovePosition = GetMovePosition(creeps);
+            if (creepsMovePosition.IsZero)
             {
                 return;
             }
-
-            var creepsMoveDirection = creeps.Aggregate(new Vector3(), (sum, creep) => sum + creep.InFront(1000))
-                                      / creeps.Count;
 
             var tower = EntityManager<Tower>.Entities.FirstOrDefault(
-                x => x.IsValid && x.IsAlive && x.Distance2D(hero) < 500 && x.Name == "npc_dota_badguys_tower2_mid");
+                x => x.IsValid && x.IsAlive && x.Distance2D(hero) < 200 && x.Name == "npc_dota_badguys_tower2_mid");
 
-            if (tower?.Distance2D(hero) < 120)
+            if (tower != null)
             {
                 // dont block near retarded dire mid t2 tower
-                hero.Move(creepsMoveDirection);
+                hero.Move(creepsMovePosition);
                 return;
             }
 
-            foreach (var creep in creeps.OrderByDescending(x => x.IsMoving)
-                .ThenBy(x => x.Distance2D(creepsMoveDirection)))
+            foreach (var creep in creeps.OrderBy(x => x.Distance2D(creepsMovePosition)))
             {
                 if (!settings.BlockRangedCreep && creep.IsRanged)
                 {
                     continue;
                 }
 
-                var creepDistance = creep.Distance2D(creepsMoveDirection) + 50;
-                var heroDistance = hero.Distance2D(creepsMoveDirection);
-                var creepAngle = creep.FindRotationAngle(hero.Position);
+                if (!creep.IsMoving && creep.Distance2D(hero) > 50)
+                {
+                    continue;
+                }
+
+                var creepDistance = creep.Distance2D(creepsMovePosition) + 50;
+                var heroDistance = hero.Distance2D(creepsMovePosition);
+                var creepAngle = creep.FindRotationAngle(hero.NetworkPosition);
 
                 if (creepDistance < heroDistance && creepAngle > 2 || creepAngle > 2.5)
                 {
@@ -102,15 +135,15 @@
                 var moveDistance = (float)settings.BlockSensitivity / hero.MovementSpeed * 100;
                 var movePosition = creep.InFront(Math.Max(moveDistance, moveDistance * creepAngle));
 
-                if (movePosition.Distance(creepsMoveDirection) > heroDistance)
+                if (movePosition.Distance(creepsMovePosition) - 50 > heroDistance)
                 {
                     continue;
                 }
 
-                if (creepAngle < 0.3)
+                if (creepAngle < 0.2)
                 {
                     if (hero.MovementSpeed - creep.MovementSpeed > 50
-                        && creeps.Select(x => x.FindRotationAngle(hero.Position)).Average() < 0.4)
+                        && creeps.Select(x => x.FindRotationAngle(hero.NetworkPosition)).Average() < 0.4)
                     {
                         hero.Stop();
                         return;
@@ -123,7 +156,14 @@
                 return;
             }
 
-            hero.Stop();
+            if (hero.IsMoving)
+            {
+                hero.Stop();
+            }
+            else if (hero.FindRotationAngle(creepsMovePosition) > 1.5)
+            {
+                hero.Move(hero.Position.Extend(creepsMovePosition, 10));
+            }
         }
     }
 }
