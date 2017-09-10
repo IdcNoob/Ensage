@@ -178,7 +178,8 @@
 
             if (ghostShip.IsInPhase)
             {
-                ghostShip.HitTime = Game.RawGameTime + ghostShip.CastRange
+                ghostShip.HitTime = Game.RawGameTime
+                                    + ghostShip.CastRange
                                     / (hero.AghanimState() ? ghostShip.AghanimSpeed : ghostShip.Speed) + 0.12;
             }
 
@@ -444,7 +445,7 @@
                 if (torrent.CanBeCasted && (!fullCombo || ghostShip.CanBeCasted
                                             || !hero.AghanimState() && ghostShip.Cooldown > 2))
                 {
-                    torrent.UseAbility(xMark.Position);
+                    torrent.UseAbility(xMark.Position, menuManager.AdjustedTime);
                     sleeper.Sleep(torrent.GetSleepTime);
                     return;
                 }

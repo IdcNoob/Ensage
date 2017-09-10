@@ -35,8 +35,8 @@
                 .SetTooltip("X Mark on self => Dagger => Hit => Return")
                 .ValueChanged += (sender, arg) => { HitAndRunEnabled = arg.GetNewValue<KeyBind>().Active; };
             menu.AddItem(
-                    new MenuItem("torrentStatic", "Torrent on static objects")
-                        .SetValue(new KeyBind('J', KeyBindType.Press)))
+                    new MenuItem("torrentStatic", "Torrent on static objects").SetValue(
+                        new KeyBind('J', KeyBindType.Press)))
                 .SetTooltip("Will cast torrent on rune or aegis/wk reincarnation before spawn")
                 .ValueChanged +=
             (sender, arg) => { TorrentOnStaticObjectsEnabled = arg.GetNewValue<KeyBind>().Active; };
@@ -45,9 +45,16 @@
                 .ValueChanged += (sender, arg) => { AncientsStackEnabled = arg.GetNewValue<KeyBind>().Active; };
             menu.AddItem(hitAndRunDamage = new MenuItem("hitAndRunDamage", "Hit & run AD").SetValue(true))
                 .SetTooltip("Use additional damage when using hit & run (shadow blade etc.)");
+            var time = new MenuItem("time", "Timing adjustment").SetValue(new Slider(0, -500, 500));
+            time.SetTooltip("Manually adjust x return timings");
+            menu.AddItem(time);
+            time.ValueChanged += (sender, args) => AdjustedTime = args.GetNewValue<Slider>().Value;
+            AdjustedTime = time.GetValue<Slider>().Value;
 
             menu.AddToMainMenu();
         }
+
+        public float AdjustedTime { get; private set; }
 
         public bool AncientsStackEnabled { get; private set; }
 

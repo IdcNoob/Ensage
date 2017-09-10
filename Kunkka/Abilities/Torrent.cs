@@ -41,19 +41,19 @@
 
         public float Radius { get; }
 
-        public void CalculateHitTime()
+        public void CalculateHitTime(float adjustedTime)
         {
             var gameTime = Game.RawGameTime;
 
             if (HitTime <= gameTime)
             {
-                HitTime = gameTime + AdditionalDelay + CastPoint + Game.Ping / 1000 - 0.085;
+                HitTime = gameTime + AdditionalDelay + CastPoint + Game.Ping / 1000 - 0.085 + adjustedTime / 1000;
             }
         }
 
-        public void UseAbility(Vector3 targetPosition)
+        public void UseAbility(Vector3 targetPosition, float adjustedTime = 0)
         {
-            CalculateHitTime();
+            CalculateHitTime(adjustedTime);
             Ability.UseAbility(targetPosition);
             sleeper.Sleep(GetSleepTime + 300);
         }
