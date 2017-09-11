@@ -500,8 +500,8 @@
             var menu = mainMenu.OnChangeMenu.Floats;
 
             if (!menu.Enabled || menu.HeroesOnly && !(sender is Hero)
-                || menu.IgnoreUseless && Data.IgnoredFloats.Contains(args.PropertyName) || menu.IgnoreSemiUseless
-                && Data.SemiIgnoredFloats.Contains(args.PropertyName))
+                || menu.IgnoreUseless && Data.IgnoredFloats.Contains(args.PropertyName)
+                || menu.IgnoreSemiUseless && Data.SemiIgnoredFloats.Contains(args.PropertyName))
             {
                 return;
             }
@@ -574,8 +574,8 @@
             var menu = mainMenu.OnChangeMenu.Int32;
 
             if (!menu.Enabled || menu.HeroesOnly && !(sender is Hero)
-                || menu.IgnoreUseless && Data.IgnoredInt32.Contains(args.PropertyName) || menu.IgnoreSemiUseless
-                && Data.SemiIgnoredInt32.Contains(args.PropertyName))
+                || menu.IgnoreUseless && Data.IgnoredInt32.Contains(args.PropertyName)
+                || menu.IgnoreSemiUseless && Data.SemiIgnoredInt32.Contains(args.PropertyName))
             {
                 return;
             }
@@ -689,8 +689,8 @@
 
             var modifier = args.Modifier;
 
-            if (modifier == null || !modifier.IsValid || menu.IgnoreUseless
-                && Data.IgnoredModifiers.Contains(modifier.Name))
+            if (modifier == null || !modifier.IsValid
+                || menu.IgnoreUseless && Data.IgnoredModifiers.Contains(modifier.Name))
             {
                 return;
             }

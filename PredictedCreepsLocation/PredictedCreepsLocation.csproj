@@ -24,7 +24,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -38,21 +38,27 @@
   <ItemGroup>
     <Reference Include="Ensage">
       <HintPath>C:\BanIsComing\References\Ensage.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Ensage.Common">
       <HintPath>C:\BanIsComing\References\Ensage.Common.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Ensage.SDK">
       <HintPath>C:\BanIsComing\References\Ensage.SDK.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="PlaySharp.Toolkit">
       <HintPath>C:\BanIsComing\References\PlaySharp.Toolkit.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SharpDX">
       <HintPath>C:\BanIsComing\References\SharpDX.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SharpDX.Mathematics">
       <HintPath>C:\BanIsComing\References\SharpDX.Mathematics.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />

@@ -38,22 +38,23 @@
   <ItemGroup>
     <Reference Include="Ensage">
       <HintPath>C:\BanIsComing\References\Ensage.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Ensage.Common">
       <HintPath>C:\BanIsComing\References\Ensage.Common.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Ensage.SDK">
       <HintPath>C:\BanIsComing\References\Ensage.SDK.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SharpDX.Mathematics">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\BanIsComing\References\SharpDX.Mathematics.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config.cs" />

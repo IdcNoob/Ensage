@@ -3,6 +3,7 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Runtime.Serialization;
 
     [Serializable]
     internal class BrokenAbilityException : Exception
@@ -22,9 +23,7 @@
         {
         }
 
-        protected BrokenAbilityException(
-            System.Runtime.Serialization.SerializationInfo info,
-            System.Runtime.Serialization.StreamingContext context)
+        protected BrokenAbilityException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }

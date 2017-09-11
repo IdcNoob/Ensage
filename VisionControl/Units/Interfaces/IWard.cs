@@ -2,10 +2,12 @@
 {
     using SharpDX;
 
+    using Color = System.Drawing.Color;
+
     internal interface IWard : IUpdatable
 
     {
-        System.Drawing.Color Color { get; }
+        Color Color { get; }
 
         float CreateTime { get; }
 

@@ -102,7 +102,7 @@
                 return;
             }
 
-            if (playerList == null || (playerList.Count < 10 && Utils.SleepCheck("TimberPrediction.SpeedTrack")))
+            if (playerList == null || playerList.Count < 10 && Utils.SleepCheck("TimberPrediction.SpeedTrack"))
             {
                 playerList = Heroes.All;
                 Utils.Sleep(1000, "TimberPrediction.SpeedTrack");
@@ -141,7 +141,7 @@
                     continue;
                 }
 
-                if (data == null || (data.LastPosition != new Vector3(0, 0, 0) && !(tick - data.Lasttick > 0)))
+                if (data == null || data.LastPosition != new Vector3(0, 0, 0) && !(tick - data.Lasttick > 0))
                 {
                     continue;
                 }

@@ -58,9 +58,8 @@
 
                 foreach (var hero in heroesInExpRange)
                 {
-                    var totalExp =
-                        hero.CalculateGainedExperience(
-                            deadCreeps.Where(x => hero.IsInExperienceRange(x.Key)).Sum(x => x.Value));
+                    var totalExp = hero.CalculateGainedExperience(
+                        deadCreeps.Where(x => hero.IsInExperienceRange(x.Key)).Sum(x => x.Value));
 
                     if (hero.OldExperience + totalExp / heroesInExpRange.Count != hero.NewExperience)
                     {
@@ -160,8 +159,8 @@
                 () =>
                     {
                         var creep = deadCreeps.FirstOrDefault(
-                            x => x.Key.IsValid && x.Key.Position.Distance2D(args.ParticleEffect.GetControlPoint(0))
-                                 < 10);
+                            x => x.Key.IsValid
+                                 && x.Key.Position.Distance2D(args.ParticleEffect.GetControlPoint(0)) < 10);
 
                         if (creep.Key != null)
                         {

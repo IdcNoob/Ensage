@@ -217,9 +217,8 @@
             enable.ValueChanged += (sender, arg) =>
                 {
                     var enabled = arg.GetNewValue<bool>();
-                    abilityMenu.DisplayName = enabled
-                                                  ? abilityMenu.DisplayName + "*"
-                                                  : abilityMenu.DisplayName.Replace("*", "");
+                    abilityMenu.DisplayName =
+                        enabled ? abilityMenu.DisplayName + "*" : abilityMenu.DisplayName.Replace("*", "");
                     OnChange?.Invoke(
                         this,
                         new AbilityEventArgs
@@ -322,9 +321,8 @@
                     Redraw = true
                 });
 
-            abilityMenu.DisplayName = enable.IsActive()
-                                          ? abilityMenu.DisplayName + "  *"
-                                          : abilityMenu.DisplayName + "  ";
+            abilityMenu.DisplayName =
+                enable.IsActive() ? abilityMenu.DisplayName + "  *" : abilityMenu.DisplayName + "  ";
         }
 
         public bool IsItemsMenuEnabled(Hero hero)

@@ -308,8 +308,9 @@
                     }
                     else
                     {
-                        var maxDistancePosition = (targetPosition - heroPosition) * castRange
-                                                  / targetPosition.Distance2D(hero) + heroPosition;
+                        var maxDistancePosition =
+                            (targetPosition - heroPosition) * castRange / targetPosition.Distance2D(hero)
+                            + heroPosition;
 
                         sleep += (float)hero.GetTurnTime(maxDistancePosition);
                         blink.UseAbility(maxDistancePosition);
@@ -335,7 +336,7 @@
                 }
 
                 if (whirlingDeath.CanBeCasted() && (distanceToEnemy <= whirlingDeath.Radius
-                                                    || (whirlingDeath.Combo && whirlingDeath.ComboDelayPassed)))
+                                                    || whirlingDeath.Combo && whirlingDeath.ComboDelayPassed))
                 {
                     whirlingDeath.UseAbility();
                     whirlingDeath.Combo = false;
@@ -353,8 +354,8 @@
                             hero,
                             target,
                             usableChakram.GetSleepTime + ping
-                            + target.GetDistance(heroPosition) / usableChakram.Speed * 1000 + usableChakram.Radius / 2
-                            / target.Hero.MovementSpeed * 1000);
+                            + target.GetDistance(heroPosition) / usableChakram.Speed * 1000
+                            + usableChakram.Radius / 2 / target.Hero.MovementSpeed * 1000);
 
                         usableChakram.UseAbility(predictedPosition, target.Hero, hero);
                         treeFactory.SetUnavailableTrees(hero.Position, predictedPosition, usableChakram);
@@ -433,8 +434,8 @@
                         hero,
                         target,
                         usableChakram.GetSleepTime + ping
-                        + target.GetDistance(heroPosition) / usableChakram.Speed * 1000 + usableChakram.Radius / 2
-                        / target.Hero.MovementSpeed * 1000);
+                        + target.GetDistance(heroPosition) / usableChakram.Speed * 1000
+                        + usableChakram.Radius / 2 / target.Hero.MovementSpeed * 1000);
 
                     usableChakram.UseAbility(predictedPosition, target.Hero, hero);
                     timberChain.ChakramCombo = false;

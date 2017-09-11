@@ -50,17 +50,6 @@
             "m_vecMaxs"
         };
 
-        public static List<string> SemiIgnoredFloats { get; } = new List<string>
-        {
-            "m_fCooldown",
-            "m_flCooldownLength",
-            "m_flPurchaseTime",
-            "m_flAssembledTime",
-            "m_flRadarCooldowns",
-            "m_flElasticity",
-            "m_flScale"
-        };
-
         public static List<string> IgnoredInt32 { get; } = new List<string>
         {
             "m_iFoWFrameNumber",
@@ -80,15 +69,6 @@
             "m_anglediff",
             "m_iHealth",
             "m_iTaggedAsVisibleByTeam"
-        };
-
-        public static List<string> SemiIgnoredInt32 { get; } = new List<string>
-        {
-            "m_NetworkActivity",
-            "m_iHeroDamage",
-            "m_iRecentDamage",
-            "m_iDamageBonus",
-            "m_iPauseTeam"
         };
 
         public static List<string> IgnoredModifiers { get; } = new List<string>
@@ -113,6 +93,26 @@
         public static List<string> IgnoredUnits { get; } = new List<string>
         {
             "portrait_world_unit"
+        };
+
+        public static List<string> SemiIgnoredFloats { get; } = new List<string>
+        {
+            "m_fCooldown",
+            "m_flCooldownLength",
+            "m_flPurchaseTime",
+            "m_flAssembledTime",
+            "m_flRadarCooldowns",
+            "m_flElasticity",
+            "m_flScale"
+        };
+
+        public static List<string> SemiIgnoredInt32 { get; } = new List<string>
+        {
+            "m_NetworkActivity",
+            "m_iHeroDamage",
+            "m_iRecentDamage",
+            "m_iDamageBonus",
+            "m_iPauseTeam"
         };
     }
 }

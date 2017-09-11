@@ -41,9 +41,8 @@
             {
                 tossBonusDamage[i] = grow.AbilitySpecialData.First(x => x.Name == "grow_bonus_damage_pct").GetValue(i)
                                      / 100 + 1;
-                tossBonusDamageScepter[i] = grow.AbilitySpecialData
-                                                .First(x => x.Name == "grow_bonus_damage_pct_scepter")
-                                                .GetValue(i) / 100 + 1;
+                tossBonusDamageScepter[i] =
+                    grow.AbilitySpecialData.First(x => x.Name == "grow_bonus_damage_pct_scepter").GetValue(i) / 100 + 1;
             }
         }
 

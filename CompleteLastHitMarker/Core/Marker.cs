@@ -274,8 +274,8 @@
 
                     var abilitiesCount = abilities.Count;
                     var startPositionShift = new Vector2(
-                        menu.AbilitiesMenu.Texture.X + (hpBarSize.X - menu.AbilitiesMenu.Texture.Size * abilitiesCount)
-                        / 2,
+                        menu.AbilitiesMenu.Texture.X
+                        + (hpBarSize.X - menu.AbilitiesMenu.Texture.Size * abilitiesCount) / 2,
                         unit.DefaultTextureY + menu.AbilitiesMenu.Texture.Y);
 
                     if (menu.AbilitiesMenu.ShowBorder && damage >= health

@@ -26,15 +26,15 @@
             pt[3].Y = y + iSmooth;
 
             // Draw cross 
-            Drawing.DrawRect(new Vector2(x, y + iSmooth), new Vector2(w, h - (iSmooth * 2)), color);
+            Drawing.DrawRect(new Vector2(x, y + iSmooth), new Vector2(w, h - iSmooth * 2), color);
 
-            Drawing.DrawRect(new Vector2(x + iSmooth, y), new Vector2(w - (iSmooth * 2), h), color);
+            Drawing.DrawRect(new Vector2(x + iSmooth, y), new Vector2(w - iSmooth * 2, h), color);
 
             float fDegree = 0;
 
             for (var i = 0; i < 4; i++)
             {
-                for (var k = fDegree; k < fDegree + ((Math.PI * 2) / 4f); k += (float)(1 * (Math.PI / 180.0f)))
+                for (var k = fDegree; k < fDegree + Math.PI * 2 / 4f; k += (float)(1 * (Math.PI / 180.0f)))
                 {
                     // Draw quarter circles on every corner
                     Drawing.DrawLine(

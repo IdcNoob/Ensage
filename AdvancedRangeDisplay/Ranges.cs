@@ -165,13 +165,10 @@
                         drawnAbility.ParticleEffect.Dispose();
                         drawnAbility.ParticleEffect = null;
                     }
-                    else if ((newAbility || (drawnAbility.ParticleEffect != null
-                                             && (Math.Abs(
-                                                     drawnAbility.RealCastRange
-                                                     - drawnAbility.Ability.GetRealCastRange()) > 5
-                                                 || drawnAbility.RadiusOnly
-                                                 && Math.Abs(
-                                                     drawnAbility.Radius - drawnAbility.Ability.GetRadius() - 35) > 5)))
+                    else if ((newAbility || drawnAbility.ParticleEffect != null
+                              && (Math.Abs(drawnAbility.RealCastRange - drawnAbility.Ability.GetRealCastRange()) > 5
+                                  || drawnAbility.RadiusOnly && Math.Abs(
+                                      drawnAbility.Radius - drawnAbility.Ability.GetRadius() - 35) > 5))
                              && !drawnAbility.Disabled)
                     {
                         Redraw(drawnAbility);

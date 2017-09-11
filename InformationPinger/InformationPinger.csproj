@@ -39,18 +39,23 @@
   <ItemGroup>
     <Reference Include="Ensage">
       <HintPath>C:\BanIsComing\References\Ensage.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Ensage.Common">
       <HintPath>C:\BanIsComing\References\Ensage.Common.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Ensage.SDK">
       <HintPath>C:\BanIsComing\References\Ensage.SDK.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="PlaySharp.Toolkit">
       <HintPath>C:\BanIsComing\References\PlaySharp.Toolkit.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SharpDX.Mathematics">
       <HintPath>C:\BanIsComing\References\SharpDX.Mathematics.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />

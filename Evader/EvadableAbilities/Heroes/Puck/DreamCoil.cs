@@ -15,7 +15,7 @@
 
     internal class DreamCoil : AOE, IModifier, IParticle
     {
-        private float coilBreakRadius;
+        private readonly float coilBreakRadius;
 
         public DreamCoil(Ability ability)
             : base(ability)

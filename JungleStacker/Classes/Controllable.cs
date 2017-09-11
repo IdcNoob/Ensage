@@ -216,8 +216,9 @@
                 return;
             }
 
-            campNameTextPosition = HUDInfo.GetHPbarPosition(Unit)
-                                   + new Vector2((GetHpBarSizeX - MeasureCampNameTextSize.X) / 2, IsHero ? 25 : 0);
+            campNameTextPosition = HUDInfo.GetHPbarPosition(Unit) + new Vector2(
+                                       (GetHpBarSizeX - MeasureCampNameTextSize.X) / 2,
+                                       IsHero ? 25 : 0);
 
             if (campNameTextPosition.IsZero)
             {
@@ -257,12 +258,12 @@
 
             var gameTime = Game.GameTime;
 
-            if (Game.IsPaused || Pause > gameTime || (!EnableHeroStacking && IsHero) || !IsStacking)
+            if (Game.IsPaused || Pause > gameTime || !EnableHeroStacking && IsHero || !IsStacking)
             {
                 return;
             }
 
-            if (!IsValid || (CurrentCamp.CurrentStacksCount >= CurrentCamp.RequiredStacksCount && !IsHero))
+            if (!IsValid || CurrentCamp.CurrentStacksCount >= CurrentCamp.RequiredStacksCount && !IsHero)
             {
                 if (campAvailable)
                 {
@@ -420,8 +421,7 @@
                 case Status.TryingToCheckStacks:
                     if (Unit.Distance2D(CurrentCamp.WaitPosition) < 50)
                     {
-                        CurrentCamp.CurrentStacksCount = Creeps.All
-                            .Where(
+                        CurrentCamp.CurrentStacksCount = Creeps.All.Where(
                                 x => x.Distance2D(CurrentCamp.CampPosition) < 800 && x.IsSpawned && x.IsNeutral
                                      && !x.Equals(Unit))
                             .ToList()

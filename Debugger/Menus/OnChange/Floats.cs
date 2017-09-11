@@ -47,11 +47,11 @@
             mainMenu.AddSubMenu(menu);
         }
 
-        public bool IgnoreSemiUseless { get; private set; }
-
         public bool Enabled { get; private set; }
 
         public bool HeroesOnly { get; private set; }
+
+        public bool IgnoreSemiUseless { get; private set; }
 
         public bool IgnoreUseless { get; private set; }
     }

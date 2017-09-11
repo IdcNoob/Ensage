@@ -63,8 +63,8 @@
                 return;
             }
 
-            var creeps = EntityManager<Creep>.Entities
-                .Where(x => x.IsValid && x.IsSpawned && x.IsAlive && x.Team == hero.Team && x.Distance2D(hero) < 500)
+            var creeps = EntityManager<Creep>.Entities.Where(
+                    x => x.IsValid && x.IsSpawned && x.IsAlive && x.Team == hero.Team && x.Distance2D(hero) < 500)
                 .ToList();
 
             if (!creeps.Any())

@@ -38,9 +38,8 @@
                 var abilityMenu = new Menu(string.Empty, spell, textureName: spell);
 
                 var key = spell + "levelLock";
-                var abilityLocked =
-                    new MenuItem(key, "Lock ability at level").SetValue(
-                        new StringList(new[] { "0", "1", "2", "3", "4", "5", "6" }));
+                var abilityLocked = new MenuItem(key, "Lock ability at level").SetValue(
+                    new StringList(new[] { "0", "1", "2", "3", "4", "5", "6" }));
                 abilityMenu.AddItem(abilityLocked);
                 abilityItems.Add(key, abilityLocked);
 
@@ -93,9 +92,8 @@
                     .SetTooltip("Will start leveling abilities only when your hero will reach selected level"));
 
             menu.AddItem(
-                abilityToggler =
-                    new MenuItem(name + "togglerFix", "Enabled", true).SetValue(
-                        new AbilityToggler(abilties.ToDictionary(x => x, x => true))));
+                abilityToggler = new MenuItem(name + "togglerFix", "Enabled", true).SetValue(
+                    new AbilityToggler(abilties.ToDictionary(x => x, x => true))));
 
             menu.AddItem(
                 abilityPriority =

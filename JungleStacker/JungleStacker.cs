@@ -48,7 +48,7 @@
             var unit = args.Entity as Unit;
 
             if (unit == null || !unit.IsValid || !unit.IsControllable || unit.Team != heroTeam
-                || (unit.IsIllusion && unit.ClassId != hero.ClassId) || unit.AttackCapability == AttackCapability.None
+                || unit.IsIllusion && unit.ClassId != hero.ClassId || unit.AttackCapability == AttackCapability.None
                 || ignoredUnits.Contains(unit.ClassId) || unit.Equals(hero))
             {
                 return;

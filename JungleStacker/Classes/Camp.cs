@@ -14,8 +14,7 @@
     {
         private const uint WmMousewheel = 0x020A;
 
-        private static readonly DotaTexture DecreaseArrow =
-            Textures.GetTexture("materials/ensage_ui/other/arrow_usual");
+        private static readonly DotaTexture DecreaseArrow = Textures.GetTexture("materials/ensage_ui/other/arrow_usual");
 
         private static readonly DotaTexture IncreaseArrow =
             Textures.GetTexture("materials/ensage_ui/other/arrow_usual_left");
@@ -40,8 +39,8 @@
 
         public Camp()
         {
-            requiredStacksTextSize = Drawing.MeasureText("Required stacks:", "Arial", new Vector2(15), FontFlags.None)
-                                     - 18;
+            requiredStacksTextSize =
+                Drawing.MeasureText("Required stacks:", "Arial", new Vector2(15), FontFlags.None) - 18;
             stacksTextSize = Drawing.MeasureText("Stacks:", "Arial", new Vector2(15), FontFlags.None) - 5;
             pullTimeTextSize = Drawing.MeasureText("Pull time:", "Arial", new Vector2(15), FontFlags.None) + 10;
             stackTimeTextSize = Drawing.MeasureText("Stack time:", "Arial", new Vector2(15), FontFlags.None) + 45;
@@ -92,9 +91,12 @@
             {
                 if (campNameTextPosition <= 0)
                 {
-                    campNameTextPosition = (OverlaySize.X
-                                            - Drawing.MeasureText(Name, "Arial", new Vector2(15), FontFlags.None).X)
-                                           / 2;
+                    campNameTextPosition = (OverlaySize.X - Drawing.MeasureText(
+                                                    Name,
+                                                    "Arial",
+                                                    new Vector2(15),
+                                                    FontFlags.None)
+                                                .X) / 2;
                 }
 
                 return campNameTextPosition;

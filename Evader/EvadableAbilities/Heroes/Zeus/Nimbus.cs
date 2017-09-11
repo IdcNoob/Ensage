@@ -62,7 +62,8 @@
             if (cloud == null)
             {
                 cloud = ObjectManager.GetEntitiesFast<Unit>()
-                    .FirstOrDefault(x => x.IsValid && x.ClassId == ClassId.CDOTA_Unit_ZeusCloud && x.Team == AbilityOwner.Team);
+                    .FirstOrDefault(
+                        x => x.IsValid && x.ClassId == ClassId.CDOTA_Unit_ZeusCloud && x.Team == AbilityOwner.Team);
             }
 
             if (Obstacle != null && (Game.RawGameTime > EndCast || cloud != null && cloud.IsValid && !cloud.IsAlive))

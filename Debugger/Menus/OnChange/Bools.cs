@@ -44,8 +44,8 @@
 
         public bool Enabled { get; private set; }
 
-        public bool IgnoreUseless { get; private set; }
-
         public bool HeroesOnly { get; private set; }
+
+        public bool IgnoreUseless { get; private set; }
     }
 }

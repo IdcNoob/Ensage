@@ -51,8 +51,8 @@
 
         public bool HeroesOnly { get; private set; }
 
-        public bool IgnoreUseless { get; private set; }
-
         public bool IgnoreSemiUseless { get; private set; }
+
+        public bool IgnoreUseless { get; private set; }
     }
 }

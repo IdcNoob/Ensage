@@ -93,13 +93,16 @@
                                   target,
                                   timberChain.CastPoint + x.Distance2D(targetPosition) / timberChain.Speed))
                           <= maxDistanceToEnemy
-                          || (target.Hero.GetTurnTime(x.Position) <= 0 && x.Distance2D(targetPosition) < 600))
+                          || target.Hero.GetTurnTime(x.Position) <= 0 && x.Distance2D(targetPosition) < 600)
                          && x.Distance2D(hero) >= minDistanceToHero)
                 .FirstOrDefault(
                     z => trees.Where(x => !x.Equals(z))
                         .All(
-                            x => x.Distance2D(hero) > 150
-                                 && !IsPointOnLine(x.Position, hero.Position, z.Position, 25)));
+                            x => x.Distance2D(hero) > 150 && !IsPointOnLine(
+                                     x.Position,
+                                     hero.Position,
+                                     z.Position,
+                                     25)));
         }
 
         public Tree GetDamageTree(Hero hero, Vector3 target, TimberChain timberChain, bool dagger = false)
@@ -111,10 +114,16 @@
                 .FirstOrDefault(
                     x => trees.Where(z => !z.Equals(x))
                              .All(
-                                 z => z.Distance2D(hero) > 150
-                                      && !IsPointOnLine(z.Position, hero.Position, x.Position, 25))
-                         && (IsPointOnLine(target, hero.Position, x.Position, timberChain.Radius, false)
-                             || x.Distance2D(target) < timberChain.Radius - 50)
+                                 z => z.Distance2D(hero) > 150 && !IsPointOnLine(
+                                          z.Position,
+                                          hero.Position,
+                                          x.Position,
+                                          25)) && (IsPointOnLine(
+                                                       target,
+                                                       hero.Position,
+                                                       x.Position,
+                                                       timberChain.Radius,
+                                                       false) || x.Distance2D(target) < timberChain.Radius - 50)
                          && (dagger || x.Distance2D(target) < 600));
         }
 
@@ -128,8 +137,11 @@
                      && x.Distance2D(mouse) + x.Distance2D(hero) < hero.Distance2D(mouse) + 100 && trees
                          .Where(z => !z.Equals(x))
                          .All(
-                             z => z.Distance2D(hero) > 150
-                                  && !IsPointOnLine(z.Position, hero.Position, x.Position, 25)));
+                             z => z.Distance2D(hero) > 150 && !IsPointOnLine(
+                                      z.Position,
+                                      hero.Position,
+                                      x.Position,
+                                      25)));
         }
 
         public void SetUnavailableTrees(Vector3 start, Vector3 end, Chakram chakram)
