@@ -3,7 +3,7 @@
     using System.Linq;
 
     using Ensage;
-    using Ensage.Common.Extensions;
+    using Ensage.SDK.Extensions;
 
     using Utils;
 
@@ -16,7 +16,7 @@
 
         public override bool CanPick(PhysicalItem physicalItem, int costThreshold)
         {
-            if (Sleeper.Sleeping || Unit.Distance2D(physicalItem) > 400)
+            if (!CanPick() || Unit.Distance2D(physicalItem) > 400)
             {
                 return false;
             }
@@ -59,7 +59,13 @@
 
         public override bool CanPick(Rune rune)
         {
-            return !Sleeper.Sleeping && Unit.Distance2D(rune) < 400;
+            return CanPick() && Unit.Distance2D(rune) < 400;
+        }
+
+        private bool CanPick()
+        {
+            return !Sleeper.Sleeping && !Unit.HasModifier("modifier_spirit_breaker_charge_of_darkness")
+                   && !Unit.IsChanneling();
         }
     }
 }
