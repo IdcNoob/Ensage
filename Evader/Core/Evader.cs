@@ -1021,7 +1021,7 @@
                                 var requiredTime = counterAbility.GetRequiredTime(
                                                        ability,
                                                        targetEnemy ? abilityOwner : ally,
-                                                       remainingTime) + Game.Ping / 1000 + 0.1f;
+                                                       remainingTime) + Game.Ping / 1000 + 0.05f;
 
                                 var ignoreRemainingTime = false;
 
