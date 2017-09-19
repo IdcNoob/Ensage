@@ -201,7 +201,7 @@
             drawnAbility.ParticleEffect.SetControlPoint(
                 2,
                 new Vector3((drawnAbility.RadiusOnly ? drawnAbility.Radius : drawnAbility.RealCastRange) * -1, 255, 0));
-            drawnAbility.ParticleEffect.Restart();
+            drawnAbility.ParticleEffect.FullRestart();
         }
 
         private void OnAddEntity(EntityEventArgs args)
