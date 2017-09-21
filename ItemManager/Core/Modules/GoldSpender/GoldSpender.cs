@@ -61,6 +61,11 @@ namespace ItemManager.Core.Modules.GoldSpender
 
         public void BuyItems()
         {
+            if (manager.MyHero.Hero.CanReincarnate())
+            {
+                return;
+            }
+
             var enabledItems = menu.ItemsToBuy.OrderByDescending(x => menu.GetAbilityPriority(x.Key))
                 .Where(x => menu.IsAbilityEnabled(x.Key))
                 .Select(x => x.Value)
