@@ -405,6 +405,7 @@
     <Compile Include="UsableAbilities\Abilities\ElectricVortex.cs" />
     <Compile Include="UsableAbilities\Abilities\Enrage.cs" />
     <Compile Include="UsableAbilities\Abilities\TimeWalk.cs" />
+    <Compile Include="UsableAbilities\Abilities\TreeDance.cs" />
     <Compile Include="UsableAbilities\Items\MedallionOfCourage.cs" />
     <Compile Include="UsableAbilities\Abilities\Meld.cs" />
     <Compile Include="UsableAbilities\Abilities\PhaseShift.cs" />

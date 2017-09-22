@@ -30,7 +30,8 @@ namespace Evader.Data
                 { "slark_pounce", ability => new Leap(ability, AbilityType.Blink) },
                 { "mirana_leap", ability => new Leap(ability, AbilityType.Blink) },
                 { "item_hurricane_pike", ability => new ForceStaff(ability, AbilityType.Blink) },
-                { "item_force_staff", ability => new ForceStaff(ability, AbilityType.Blink) }
+                { "item_force_staff", ability => new ForceStaff(ability, AbilityType.Blink) },
+                { "monkey_king_tree_dance", ability => new TreeDance(ability, AbilityType.Blink) }
             };
 
         public Dictionary<string, Func<Ability, UsableAbility>> CounterAbilities { get; } =

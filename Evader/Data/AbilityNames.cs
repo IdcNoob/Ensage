@@ -47,7 +47,8 @@
             "phantom_assassin_phantom_strike",
             "ember_spirit_activate_fire_remnant",
             "item_force_staff",
-            "item_hurricane_pike"
+            "item_hurricane_pike",
+            "monkey_king_tree_dance"
         };
 
         public static string Bloodstone { get; } = "item_bloodstone";
