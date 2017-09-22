@@ -6,6 +6,8 @@
 
     using Ensage;
 
+    using Utils;
+
     [Ability(AbilityId.item_power_treads)]
     internal class PowerTreads : UsableAbility
     {
@@ -21,6 +23,11 @@
         public Attribute ActiveAttribute => powerTreads.ActiveAttribute;
 
         public Attribute DefaultAttribute { get; private set; }
+
+        public override bool CanBeCasted()
+        {
+            return base.CanBeCasted() && !Manager.MyHero.HasModifier(ModifierUtils.IceBlastDebuff);
+        }
 
         public void ChangeDefaultAttribute(Attribute? attribute = null)
         {
