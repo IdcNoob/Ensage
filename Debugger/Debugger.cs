@@ -131,6 +131,7 @@
 
             logger.Write("Item dump", Type, Color, true);
             logger.Write("Unit name: " + unit.Name, Type, Color);
+            logger.Write("Unit network name: " + unit.NetworkName, Type, Color);
             logger.Write("Unit classID: " + unit.ClassId, Type, Color);
             logger.EmptyLine();
 
@@ -157,6 +158,7 @@
             foreach (var item in items)
             {
                 logger.Write("Name: " + item.Name, Type, Color);
+                logger.Write("Network Name: " + item.NetworkName, Type, Color);
                 logger.Write("ClassID: " + item.ClassId, Type, Color);
 
                 if (menu.ShowManaCost)
@@ -207,6 +209,7 @@
 
             logger.Write("Modifier dump", Type, Color, true);
             logger.Write("Unit name: " + unit.Name, Type, Color);
+            logger.Write("Unit network name: " + unit.NetworkName, Type, Color);
             logger.Write("Unit classID: " + unit.ClassId, Type, Color);
             logger.EmptyLine();
 
@@ -252,10 +255,12 @@
 
             logger.Write("Animation changed", Type, Color, true);
             logger.Write("Sender name: " + sender.Name, Type, Color);
+            logger.Write("Sender network name: " + sender.NetworkName, Type, Color);
             logger.Write("Sender classID: " + sender.ClassId, Type, Color);
             if (sender.Owner != null)
             {
                 logger.Write("Owner Name: " + sender.Owner.Name, Type, Color);
+                logger.Write("Owner Network Name: " + sender.Owner.NetworkName, Type, Color);
                 logger.Write("Owner classID: " + sender.Owner.ClassId, Type, Color);
             }
             logger.Write("Name: " + sender.Animation.Name, Type, Color);
@@ -282,10 +287,12 @@
 
             logger.Write("Bool property changed", Type, Color, true);
             logger.Write("Sender name: " + sender.Name, Type, Color);
+            logger.Write("Sender network name: " + sender.NetworkName, Type, Color);
             logger.Write("Sender classID: " + sender.ClassId, Type, Color);
             if (sender.Owner != null)
             {
                 logger.Write("Owner Name: " + sender.Owner.Name, Type, Color);
+                logger.Write("Owner Network Name: " + sender.Owner.NetworkName, Type, Color);
                 logger.Write("Owner classID: " + sender.Owner.ClassId, Type, Color);
             }
             logger.Write("Property name: " + args.PropertyName, Type, Color);
@@ -326,6 +333,7 @@
 
                 logger.Write("Unit added", Type, Color, true);
                 logger.Write("Name: " + unit.Name, Type, Color);
+                logger.Write("Network Name: " + unit.NetworkName, Type, Color);
                 logger.Write("ClassID: " + unit.ClassId, Type, Color);
                 logger.Write("Position: " + unit.Position, Type, Color);
                 logger.Write("Attack capability: " + unit.AttackCapability, Type, Color);
@@ -353,10 +361,12 @@
 
                 logger.Write("Ability added", Type, Color, true);
                 logger.Write("Name: " + ability.Name, Type, Color);
+                logger.Write("Network Name: " + ability.NetworkName, Type, Color);
                 logger.Write("ClassID: " + ability.ClassId, Type, Color);
                 logger.Write("Is item: " + (ability is Item), Type, Color);
                 logger.Write("Level: " + ability.Level, Type, Color);
                 logger.Write("Owner name: " + ability.Owner?.Name, Type, Color);
+                logger.Write("Owner network name: " + ability.Owner?.NetworkName, Type, Color);
                 logger.Write("Owner classID: " + ability.Owner?.ClassId, Type, Color);
                 logger.EmptyLine();
             }
@@ -380,6 +390,7 @@
 
                 logger.Write("Unit removed", Type, Color, true);
                 logger.Write("Name: " + unit.Name, Type, Color);
+                logger.Write("Network Name: " + unit.NetworkName, Type, Color);
                 logger.Write("ClassID: " + unit.ClassId, Type, Color);
                 logger.Write("Position: " + unit.Position, Type, Color);
                 logger.EmptyLine();
@@ -404,10 +415,12 @@
 
                 logger.Write("Ability removed", Type, Color, true);
                 logger.Write("Name: " + ability.Name, Type, Color);
+                logger.Write("Network Name: " + ability.NetworkName, Type, Color);
                 logger.Write("ClassID: " + ability.ClassId, Type, Color);
                 logger.Write("Is item: " + (ability is Item), Type, Color);
                 logger.Write("Level: " + ability.Level, Type, Color);
                 logger.Write("Owner name: " + ability.Owner?.Name, Type, Color);
+                logger.Write("Owner network name: " + ability.Owner?.NetworkName, Type, Color);
                 logger.Write("Owner classID: " + ability.Owner?.ClassId, Type, Color);
                 logger.EmptyLine();
             }
@@ -454,11 +467,13 @@
 
             logger.Write("Executed order", Type, Color, true);
             logger.Write("Sender name: " + args.Entities.FirstOrDefault()?.Name, Type, Color);
+            logger.Write("Sender network name: " + args.Entities.FirstOrDefault()?.NetworkName, Type, Color);
             logger.Write("Sender classID: " + args.Entities.FirstOrDefault()?.ClassId, Type, Color);
             logger.Write("Order: " + args.OrderId, Type, Color);
             if (args.Ability != null)
             {
                 logger.Write("Ability name: " + args.Ability?.Name, Type, Color);
+                logger.Write("Ability network name: " + args.Ability?.NetworkName, Type, Color);
                 logger.Write("Ability classID: " + args.Ability?.ClassId, Type, Color);
             }
             if (!args.TargetPosition.IsZero)
@@ -468,6 +483,7 @@
             if (args.Target != null)
             {
                 logger.Write("Target name: " + args.Target.Name, Type, Color);
+                logger.Write("Target network name: " + args.Target.NetworkName, Type, Color);
                 logger.Write("Target classID: " + args.Target.ClassId, Type, Color);
             }
             logger.EmptyLine();
@@ -511,10 +527,12 @@
 
             logger.Write("Float property changed", Type, Color, true);
             logger.Write("Sender name: " + sender.Name, Type, Color);
+            logger.Write("Sender network name: " + sender.NetworkName, Type, Color);
             logger.Write("Sender classID: " + sender.ClassId, Type, Color);
             if (sender.Owner != null)
             {
                 logger.Write("Owner Name: " + sender.Owner.Name, Type, Color);
+                logger.Write("Owner Network Name: " + sender.Owner.NetworkName, Type, Color);
                 logger.Write("Owner classID: " + sender.Owner.ClassId, Type, Color);
             }
             logger.Write("Property name: " + args.PropertyName, Type, Color);
@@ -553,10 +571,12 @@
 
             logger.Write("Handle property changed", Type, Color, true);
             logger.Write("Sender name: " + sender.Name, Type, Color);
+            logger.Write("Sender network name: " + sender.NetworkName, Type, Color);
             logger.Write("Sender classID: " + sender.ClassId, Type, Color);
             if (sender.Owner != null)
             {
                 logger.Write("Owner Name: " + sender.Owner.Name, Type, Color);
+                logger.Write("Owner Network Name: " + sender.Owner.NetworkName, Type, Color);
                 logger.Write("Owner classID: " + sender.Owner.ClassId, Type, Color);
             }
             logger.Write("Property name: " + args.PropertyName, Type, Color);
@@ -585,10 +605,12 @@
 
             logger.Write("Int32 property changed", Type, Color, true);
             logger.Write("Sender name: " + sender.Name, Type, Color);
+            logger.Write("Sender network name: " + sender.NetworkName, Type, Color);
             logger.Write("Sender classID: " + sender.ClassId, Type, Color);
             if (sender.Owner != null)
             {
                 logger.Write("Owner Name: " + sender.Owner.Name, Type, Color);
+                logger.Write("Owner Network Name: " + sender.Owner.NetworkName, Type, Color);
                 logger.Write("Owner classID: " + sender.Owner.ClassId, Type, Color);
             }
             logger.Write("Property name: " + args.PropertyName, Type, Color);
@@ -615,10 +637,12 @@
 
             logger.Write("Int64 property changed", Type, Color, true);
             logger.Write("Sender name: " + sender.Name, Type, Color);
+            logger.Write("Sender network name: " + sender.NetworkName, Type, Color);
             logger.Write("Sender classID: " + sender.ClassId, Type, Color);
             if (sender.Owner != null)
             {
                 logger.Write("Owner Name: " + sender.Owner.Name, Type, Color);
+                logger.Write("Owner Network Name: " + sender.Owner.NetworkName, Type, Color);
                 logger.Write("Owner classID: " + sender.Owner.ClassId, Type, Color);
             }
             logger.Write("Property name: " + args.PropertyName, Type, Color);
@@ -669,6 +693,7 @@
 
                         logger.Write("Modifier added", Type, Color, true);
                         logger.Write("Sender name: " + sender?.Name, Type, Color);
+                        logger.Write("Sender network name: " + sender?.NetworkName, Type, Color);
                         logger.Write("Sender classID: " + sender?.ClassId, Type, Color);
                         logger.Write("Name: " + modifier.Name, Type, Color);
                         logger.Write("Texture name: " + modifier.TextureName, Type, Color);
@@ -700,6 +725,7 @@
 
             logger.Write("Modifier removed", Type, Color, true);
             logger.Write("Sender name: " + sender?.Name, Type, Color);
+            logger.Write("Sender network name: " + sender?.NetworkName, Type, Color);
             logger.Write("Sender classID: " + sender?.ClassId, Type, Color);
             logger.Write("Name: " + modifier.Name, Type, Color);
             logger.Write("Texture name: " + modifier.TextureName, Type, Color);
@@ -771,10 +797,12 @@
 
             logger.Write("String property changed", Type, Color, true);
             logger.Write("Sender name: " + sender.Name, Type, Color);
+            logger.Write("Sender network name: " + sender.NetworkName, Type, Color);
             logger.Write("Sender classID: " + sender.ClassId, Type, Color);
             if (sender.Owner != null)
             {
                 logger.Write("Owner Name: " + sender.Owner.Name, Type, Color);
+                logger.Write("Owner Network Name: " + sender.Owner.NetworkName, Type, Color);
                 logger.Write("Owner classID: " + sender.Owner.ClassId, Type, Color);
             }
             logger.Write("Property name: " + args.PropertyName, Type, Color);
@@ -803,10 +831,12 @@
 
             logger.Write("Projectile added", Type, Color, true);
             logger.Write("Source name: " + projectile.Source.Name, Type, Color);
+            logger.Write("Source network name: " + projectile.Source.NetworkName, Type, Color);
             logger.Write("Source classID: " + projectile.Source.ClassId, Type, Color);
             logger.Write("Speed: " + projectile.Speed, Type, Color);
             logger.Write("Position: " + projectile.Position, Type, Color);
             logger.Write("Target name: " + projectile.Target?.Name, Type, Color);
+            logger.Write("Target network name: " + projectile.Target?.NetworkName, Type, Color);
             logger.Write("Target classID: " + projectile.Target?.ClassId, Type, Color);
             logger.Write("Target position: " + projectile.TargetPosition, Type, Color);
             logger.EmptyLine();
@@ -833,10 +863,12 @@
 
             logger.Write("Projectile removed", Type, Color, true);
             logger.Write("Source name: " + projectile.Source.Name, Type, Color);
+            logger.Write("Source network name: " + projectile.Source.NetworkName, Type, Color);
             logger.Write("Source classID: " + projectile.Source.ClassId, Type, Color);
             logger.Write("Speed: " + projectile.Speed, Type, Color);
             logger.Write("Position: " + projectile.Position, Type, Color);
             logger.Write("Target name: " + projectile.Target?.Name, Type, Color);
+            logger.Write("Target network name: " + projectile.Target?.NetworkName, Type, Color);
             logger.Write("Target classID: " + projectile.Target?.ClassId, Type, Color);
             logger.Write("Target position: " + projectile.TargetPosition, Type, Color);
             logger.EmptyLine();
@@ -875,6 +907,7 @@
 
             logger.Write("Spell dump", Type, Color, true);
             logger.Write("Unit name: " + unit.Name, Type, Color);
+            logger.Write("Unit network name: " + unit.NetworkName, Type, Color);
             logger.Write("Unit classID: " + unit.ClassId, Type, Color);
             logger.EmptyLine();
 
@@ -891,6 +924,7 @@
                 }
 
                 logger.Write("Name: " + spell.Name, Type, Color);
+                logger.Write("Network Name: " + unit.NetworkName, Type, Color);
                 logger.Write("ClassID: " + spell.ClassId, Type, Color);
 
                 if (menu.ShowLevels)
@@ -943,6 +977,7 @@
 
             logger.Write("Unit dump", Type, Color, true);
             logger.Write("Name: " + unit.Name, Type, Color);
+            logger.Write("Network Name: " + unit.NetworkName, Type, Color);
             logger.Write("ClassID: " + unit.ClassId, Type, Color);
             logger.Write("Level: " + unit.Level, Type, Color);
             logger.Write("Position: " + unit.Position, Type, Color);
