@@ -119,6 +119,9 @@
         {
             try
             {
+                ServicePointManager.Expect100Continue = true;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
                 string html;
                 var webRequest = WebRequest.CreateHttp("http://www.dotabuff.com/heroes/" + heroName + "/builds");
                 webRequest.UserAgent = "Nokia 3310";
