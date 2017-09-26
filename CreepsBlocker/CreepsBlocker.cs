@@ -34,6 +34,8 @@
             config = new Config();
             config.Key.Item.ValueChanged += KeyPressed;
             updateHandler = UpdateManager.Subscribe(OnUpdate, 50, false);
+
+            Game.PrintMessage("<font color='#ff7700'>Creeps Blocker is obsolete, use Body Blocker instead</font>");
         }
 
         protected override void OnDeactivate()
