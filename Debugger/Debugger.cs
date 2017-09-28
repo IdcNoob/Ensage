@@ -924,7 +924,7 @@
                 }
 
                 logger.Write("Name: " + spell.Name, Type, Color);
-                logger.Write("Network Name: " + unit.NetworkName, Type, Color);
+                logger.Write("Network Name: " + spell.NetworkName, Type, Color);
                 logger.Write("ClassID: " + spell.ClassId, Type, Color);
 
                 if (menu.ShowLevels)
