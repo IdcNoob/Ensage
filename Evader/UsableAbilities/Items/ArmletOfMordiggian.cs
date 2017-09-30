@@ -551,8 +551,8 @@
 
             var nearEnemies = ObjectManager.GetEntities<Unit>()
                 .Any(
-                    x => x.IsValid && x.Team == Variables.EnemyTeam && x.IsAlive && x.IsSpawned
-                         && x.Distance2D(Hero) < 1000);
+                    x => x.IsValid && (x.Team == Variables.EnemyTeam || x.Team == Team.Neutral) && x.IsAlive && x.IsSpawned
+                         && x.Distance2D(Hero) < 800);
 
             if (Hero.Health < Menu.ArmletHpThreshold && canToggle
                 && (nearEnemies || !Menu.ArmletEnemiesCheck && !manualDisable))
