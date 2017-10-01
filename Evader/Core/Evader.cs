@@ -630,84 +630,84 @@
 
             var allyIntersections = allies.ToDictionary(x => x, x => Pathfinder.GetIntersectingObstacles(x));
 
-            if (Menu.AlliesSettings.HelpAllies && Menu.AlliesSettings.MultiIntersectionEnemyDisable)
-            {
-                var multiIntersection = allyIntersections.SelectMany(x => x.Value)
-                    .GroupBy(x => x)
-                    .SelectMany(x => x.Skip(1));
+            //if (Menu.AlliesSettings.HelpAllies && Menu.AlliesSettings.MultiIntersectionEnemyDisable)
+            //{
+            //    var multiIntersection = allyIntersections.SelectMany(x => x.Value)
+            //        .GroupBy(x => x)
+            //        .SelectMany(x => x.Skip(1));
 
-                foreach (var obstacle in multiIntersection)
-                {
-                    var ability =
-                        abilityUpdater.EvadableAbilities.FirstOrDefault(x => x.Obstacle == obstacle && x.IsDisable) as
-                            AOE;
+            //    foreach (var obstacle in multiIntersection)
+            //    {
+            //        var ability =
+            //            abilityUpdater.EvadableAbilities.FirstOrDefault(x => x.Obstacle == obstacle && x.IsDisable) as
+            //                AOE;
 
-                    if (ability == null || sleeper.Sleeping(ability))
-                    {
-                        continue;
-                    }
+            //        if (ability == null || sleeper.Sleeping(ability))
+            //        {
+            //            continue;
+            //        }
 
-                    if (Menu.Debug.LogIntersection)
-                    {
-                        Debugger.WriteLine("", Debugger.Type.Intersectons, false);
-                        foreach (var hero in allyIntersections.Where(x => x.Value.Contains(obstacle))
-                            .Select(x => x.Key))
-                        {
-                            Debugger.Write(hero.GetName() + " ", Debugger.Type.Intersectons, false);
-                        }
-                        Debugger.WriteLine("intersecting: " + ability.Name, Debugger.Type.Intersectons, true, false);
-                    }
+            //        if (Menu.Debug.LogIntersection)
+            //        {
+            //            Debugger.WriteLine("", Debugger.Type.Intersectons, false);
+            //            foreach (var hero in allyIntersections.Where(x => x.Value.Contains(obstacle))
+            //                .Select(x => x.Key))
+            //            {
+            //                Debugger.Write(hero.GetName() + " ", Debugger.Type.Intersectons, false);
+            //            }
+            //            Debugger.WriteLine("intersecting: " + ability.Name, Debugger.Type.Intersectons, true, false);
+            //        }
 
-                    var abilityOwner = ability.AbilityOwner;
-                    var disableAbilities = from abilityName in ability.DisableAbilities
-                                           join usableAbility in abilityUpdater.UsableAbilities on abilityName equals
-                                               usableAbility.Name
-                                           where usableAbility.Type == AbilityType.Disable
-                                                 && Menu.UsableAbilities.Enabled(abilityName, AbilityType.Disable)
-                                           select usableAbility;
+            //        var abilityOwner = ability.AbilityOwner;
+            //        var disableAbilities = from abilityName in ability.DisableAbilities
+            //                               join usableAbility in abilityUpdater.UsableAbilities on abilityName equals
+            //                                   usableAbility.Name
+            //                               where usableAbility.Type == AbilityType.Disable
+            //                                     && Menu.UsableAbilities.Enabled(abilityName, AbilityType.Disable)
+            //                               select usableAbility;
 
-                    foreach (var disableAbility in disableAbilities)
-                    {
-                        if (!disableAbility.CanBeCasted(ability, abilityOwner))
-                        {
-                            continue;
-                        }
+            //        foreach (var disableAbility in disableAbilities)
+            //        {
+            //            if (!disableAbility.CanBeCasted(ability, abilityOwner))
+            //            {
+            //                continue;
+            //            }
 
-                        var remainingDisableTime = ability.GetRemainingDisableTime();
-                        var requiredTime = disableAbility.GetRequiredTime(ability, abilityOwner, remainingDisableTime)
-                                           + Game.Ping / 1000;
-                        var ignoreRemainingTime = ability.IgnoreRemainingTime(disableAbility, remainingDisableTime);
+            //            var remainingDisableTime = ability.GetRemainingDisableTime();
+            //            var requiredTime = disableAbility.GetRequiredTime(ability, abilityOwner, remainingDisableTime)
+            //                               + Game.Ping / 1000;
+            //            var ignoreRemainingTime = ability.IgnoreRemainingTime(disableAbility, remainingDisableTime);
 
-                        if (requiredTime > remainingDisableTime && !ignoreRemainingTime)
-                        {
-                            continue;
-                        }
+            //            if (requiredTime > remainingDisableTime && !ignoreRemainingTime)
+            //            {
+            //                continue;
+            //            }
 
-                        if (remainingDisableTime - requiredTime <= 0.10 || ignoreRemainingTime)
-                        {
-                            disableAbility.Use(ability, abilityOwner);
-                            sleeper.Sleep(ability.GetSleepTime(), ability);
+            //            if (remainingDisableTime - requiredTime <= 0.10 || ignoreRemainingTime)
+            //            {
+            //                disableAbility.Use(ability, abilityOwner);
+            //                sleeper.Sleep(ability.GetSleepTime(), ability);
 
-                            Debugger.WriteLine(
-                                TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss") + " >>>>>>>>>>>>>>>",
-                                Debugger.Type.AbilityUsage);
-                            Debugger.WriteLine(
-                                "multi intersection disable: " + disableAbility.Name + " => " + ability.Name,
-                                Debugger.Type.AbilityUsage);
-                            Debugger.Write("allies: ", Debugger.Type.AbilityUsage);
-                            foreach (var hero in allyIntersections.Where(x => x.Value.Contains(obstacle))
-                                .Select(x => x.Key))
-                            {
-                                Debugger.Write(hero.GetName() + " ", Debugger.Type.AbilityUsage, false);
-                            }
-                            Debugger.WriteLine("", Debugger.Type.AbilityUsage, showType: false);
-                            Debugger.WriteLine("remaining time: " + remainingDisableTime, Debugger.Type.AbilityUsage);
-                            Debugger.WriteLine("required time: " + requiredTime, Debugger.Type.AbilityUsage);
-                        }
-                        return;
-                    }
-                }
-            }
+            //                Debugger.WriteLine(
+            //                    TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss") + " >>>>>>>>>>>>>>>",
+            //                    Debugger.Type.AbilityUsage);
+            //                Debugger.WriteLine(
+            //                    "multi intersection disable: " + disableAbility.Name + " => " + ability.Name,
+            //                    Debugger.Type.AbilityUsage);
+            //                Debugger.Write("allies: ", Debugger.Type.AbilityUsage);
+            //                foreach (var hero in allyIntersections.Where(x => x.Value.Contains(obstacle))
+            //                    .Select(x => x.Key))
+            //                {
+            //                    Debugger.Write(hero.GetName() + " ", Debugger.Type.AbilityUsage, false);
+            //                }
+            //                Debugger.WriteLine("", Debugger.Type.AbilityUsage, showType: false);
+            //                Debugger.WriteLine("remaining time: " + remainingDisableTime, Debugger.Type.AbilityUsage);
+            //                Debugger.WriteLine("required time: " + requiredTime, Debugger.Type.AbilityUsage);
+            //            }
+            //            return;
+            //        }
+            //    }
+            //}
 
             foreach (var intersection in allyIntersections.OrderByDescending(x => x.Key.Equals(Hero)))
             {
@@ -720,6 +720,11 @@
 
         private bool Evade(Hero ally, IEnumerable<uint> intersection)
         {
+            if (ally.IsInvul())
+            {
+                return true;
+            }
+
             var heroCanCast = Hero.CanCast();
             var heroCanUseItems = Hero.CanUseItems();
             var allyLinkens = ally.IsLinkensProtected();
