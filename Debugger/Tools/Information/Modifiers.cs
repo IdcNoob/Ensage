@@ -118,12 +118,11 @@
 
             this.lastUnitInfo = unit.Handle;
 
-            var item = new LogItem(LogType.Modifier, "Modifiers information", Color.PaleGreen);
+            var item = new LogItem(LogType.Modifier, Color.PaleGreen, "Modifiers information");
 
             item.AddLine("Unit name: " + unit.Name, unit.Name);
             item.AddLine("Unit network name: " + unit.NetworkName, unit.NetworkName);
             item.AddLine("Unit classID: " + unit.ClassId, unit.ClassId);
-            item.AddLine(string.Empty);
 
             foreach (var modifier in unit.Modifiers)
             {
@@ -132,29 +131,31 @@
                     continue;
                 }
 
-                item.AddLine("Name: " + modifier.Name, modifier.Name);
+                var modifierItem = new LogItem(LogType.Modifier, Color.PaleGreen);
+
+                modifierItem.AddLine("Name: " + modifier.Name, modifier.Name);
 
                 if (this.showTextureName)
                 {
-                    item.AddLine("Texture name: " + modifier.TextureName, modifier.TextureName);
+                    modifierItem.AddLine("Texture name: " + modifier.TextureName, modifier.TextureName);
                 }
 
                 if (this.showHidden)
                 {
-                    item.AddLine("Is hidden: " + modifier.IsHidden, modifier.IsHidden);
+                    modifierItem.AddLine("Is hidden: " + modifier.IsHidden, modifier.IsHidden);
                 }
 
                 if (this.showElapsedTime)
                 {
-                    item.AddLine("Elapsed time: " + modifier.ElapsedTime, modifier.ElapsedTime);
+                    modifierItem.AddLine("Elapsed time: " + modifier.ElapsedTime, modifier.ElapsedTime);
                 }
 
                 if (this.showRemainingTime)
                 {
-                    item.AddLine("Remaining time: " + modifier.RemainingTime, modifier.RemainingTime);
+                    modifierItem.AddLine("Remaining time: " + modifier.RemainingTime, modifier.RemainingTime);
                 }
 
-                item.AddLine(string.Empty);
+                this.log.Display(modifierItem);
             }
 
             this.log.Display(item);

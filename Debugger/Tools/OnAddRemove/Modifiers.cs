@@ -142,7 +142,7 @@
                 return;
             }
 
-            var item = new LogItem(LogType.Modifier, "Modifier added", Color.LightGreen);
+            var item = new LogItem(LogType.Modifier, Color.LightGreen, "Modifier added");
 
             item.AddLine("Name: " + modifier.Name, modifier.Name);
             item.AddLine("Texture name: " + modifier.TextureName, modifier.TextureName);
@@ -164,7 +164,7 @@
                 return;
             }
 
-            var item = new LogItem(LogType.Modifier, "Modifier removed", Color.LightPink);
+            var item = new LogItem(LogType.Modifier, Color.LightPink, "Modifier removed");
 
             item.AddLine("Name: " + modifier.Name, modifier.Name);
             item.AddLine("Texture name: " + modifier.TextureName, modifier.TextureName);

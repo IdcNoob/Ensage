@@ -110,7 +110,7 @@ namespace Debugger.Tools.OnChange
                 return;
             }
 
-            var item = new LogItem(LogType.Bool, "Bool changed", Color.Cyan);
+            var item = new LogItem(LogType.Bool, Color.Cyan, "Bool changed");
 
             item.AddLine("Property name: " + args.PropertyName, args.PropertyName);
             item.AddLine("Property values: " + args.OldValue + " => " + args.NewValue, args.NewValue);

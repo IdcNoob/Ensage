@@ -74,7 +74,7 @@
                 return;
             }
 
-            var item = new LogItem(LogType.GameEvent, "Fire event", Color.Yellow);
+            var item = new LogItem(LogType.GameEvent, Color.Yellow, "Fire event");
 
             item.AddLine("Name: " + args.GameEvent.Name, args.GameEvent.Name);
 

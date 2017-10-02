@@ -93,7 +93,7 @@
                 return;
             }
 
-            var item = new LogItem(LogType.ExecuteOrder, "Execute order", Color.Magenta);
+            var item = new LogItem(LogType.ExecuteOrder, Color.Magenta, "Execute order");
 
             item.AddLine("Order: " + args.OrderId, args.OrderId);
             if (args.Ability != null)

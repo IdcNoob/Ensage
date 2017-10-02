@@ -130,7 +130,7 @@
 
             this.lastUnitInfo = unit.Handle;
 
-            var item = new LogItem(LogType.Unit, "Unit information", Color.PaleGreen);
+            var item = new LogItem(LogType.Unit, Color.PaleGreen, "Unit information");
 
             item.AddLine("Unit name: " + unit.Name, unit.Name);
             item.AddLine("Unit network name: " + unit.NetworkName, unit.NetworkName);

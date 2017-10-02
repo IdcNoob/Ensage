@@ -93,7 +93,7 @@
                 return;
             }
 
-            var item = new LogItem(LogType.Projectile, "Projectile removed", Color.LightPink);
+            var item = new LogItem(LogType.Projectile, Color.LightPink, "Projectile removed");
 
             item.AddLine("Source name: " + projectile.Source?.Name, projectile.Source?.Name);
             item.AddLine("Source network name: " + projectile.Source?.NetworkName, projectile.Source?.NetworkName);
@@ -117,7 +117,7 @@
                 return;
             }
 
-            var item = new LogItem(LogType.Projectile, "Projectile added", Color.LightGreen);
+            var item = new LogItem(LogType.Projectile, Color.LightGreen, "Projectile added");
 
             item.AddLine("Source name: " + projectile.Source?.Name, projectile.Source?.Name);
             item.AddLine("Source network name: " + projectile.Source?.NetworkName, projectile.Source?.NetworkName);

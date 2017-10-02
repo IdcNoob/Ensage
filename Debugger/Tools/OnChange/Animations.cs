@@ -69,7 +69,7 @@ namespace Debugger.Tools.OnChange
                 return;
             }
 
-            var item = new LogItem(LogType.Animation, "Animation changed", Color.Cyan);
+            var item = new LogItem(LogType.Animation, Color.Cyan, "Animation changed");
 
             item.AddLine("Name: " + sender.Animation.Name, sender.Animation.Name);
             item.AddLine("Sender name: " + sender.Name, sender.Name);

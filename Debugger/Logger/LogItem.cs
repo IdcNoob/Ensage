@@ -9,10 +9,15 @@
 
     internal class LogItem
     {
-        public LogItem(LogType type, string firstLine, Color color)
+        public LogItem(LogType type, Color color, string firstLine = null)
         {
+            if (firstLine != null)
+            {
+                this.FirstLine = firstLine + " // " + Game.RawGameTime + " (" + TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss")
+                                 + ")";
+            }
+
             this.Type = type;
-            this.FirstLine = firstLine + " // " + Game.RawGameTime + " (" + TimeSpan.FromSeconds(Game.GameTime).ToString(@"mm\:ss") + ")";
             this.Color = color;
             this.Time = Game.RawGameTime;
         }

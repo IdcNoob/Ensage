@@ -83,7 +83,7 @@
                 return;
             }
 
-            var item = new LogItem(LogType.String, "String changed", Color.Cyan);
+            var item = new LogItem(LogType.String, Color.Cyan, "String changed");
 
             item.AddLine("Property name: " + args.PropertyName, args.PropertyName);
             item.AddLine("Property values: " + args.OldValue + " => " + args.NewValue, args.NewValue);

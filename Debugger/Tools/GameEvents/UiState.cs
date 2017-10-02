@@ -59,7 +59,7 @@
 
         private void OnUIStateChanged(UIStateChangedEventArgs args)
         {
-            var item = new LogItem(LogType.GameEvent, "UI state changed", Color.Yellow);
+            var item = new LogItem(LogType.GameEvent, Color.Yellow, "UI state changed");
 
             item.AddLine("Name: " + args.UIState, args.UIState);
 

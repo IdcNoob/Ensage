@@ -59,7 +59,7 @@
 
         private void OnGCMessageReceive(GCMessageEventArgs args)
         {
-            var item = new LogItem(LogType.GameEvent, "GC message received", Color.Yellow);
+            var item = new LogItem(LogType.GameEvent, Color.Yellow, "GC message received");
 
             item.AddLine("Name: " + args.MessageID, args.MessageID);
 

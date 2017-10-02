@@ -93,7 +93,7 @@
                 return;
             }
 
-            var item = new LogItem(LogType.Ability, "Ability added", Color.LightGreen);
+            var item = new LogItem(LogType.Ability, Color.LightGreen, "Ability added");
 
             item.AddLine("Name: " + ability.Name, ability.Name);
             item.AddLine("Network name: " + ability.NetworkName, ability.NetworkName);
@@ -112,7 +112,7 @@
                 return;
             }
 
-            var item = new LogItem(LogType.Ability, "Ability removed", Color.LightPink);
+            var item = new LogItem(LogType.Ability, Color.LightPink, "Ability removed");
 
             item.AddLine("Name: " + ability.Name, ability.Name);
             item.AddLine("Network name: " + ability.NetworkName, ability.NetworkName);

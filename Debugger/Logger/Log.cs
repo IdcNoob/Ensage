@@ -172,13 +172,16 @@
 
             foreach (var item in this.displayList)
             {
-                Drawing.DrawText(
-                    item.FirstLine,
-                    "Arial",
-                    new Vector2(this.positionX, this.positionY + (offset * this.textSize)),
-                    new Vector2(this.textSize),
-                    item.Color,
-                    FontFlags.DropShadow);
+                if (!string.IsNullOrEmpty(item.FirstLine))
+                {
+                    Drawing.DrawText(
+                        item.FirstLine,
+                        "Arial",
+                        new Vector2(this.positionX, this.positionY + (offset * this.textSize)),
+                        new Vector2(this.textSize),
+                        item.Color,
+                        FontFlags.DropShadow);
+                }
 
                 var startColor = item.Color;
                 var endColor = Color.White;

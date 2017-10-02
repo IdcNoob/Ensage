@@ -59,7 +59,7 @@
 
         private void OnMessage(MessageEventArgs args)
         {
-            var item = new LogItem(LogType.GameEvent, "Message", Color.Yellow);
+            var item = new LogItem(LogType.GameEvent, Color.Yellow, "Message");
 
             item.AddLine("Name: " + args.Message, args.Message);
 

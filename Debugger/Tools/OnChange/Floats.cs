@@ -127,7 +127,7 @@
                 return;
             }
 
-            var item = new LogItem(LogType.Float, "Float changed", Color.Cyan);
+            var item = new LogItem(LogType.Float, Color.Cyan, "Float changed");
 
             item.AddLine("Property name: " + args.PropertyName, args.PropertyName);
             item.AddLine("Property values: " + args.OldValue + " => " + args.NewValue, args.NewValue);

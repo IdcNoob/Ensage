@@ -131,12 +131,11 @@
 
             this.lastUnitInfo = unit.Handle;
 
-            var item = new LogItem(LogType.Spell, "Spells information", Color.PaleGreen);
+            var item = new LogItem(LogType.Spell, Color.PaleGreen, "Spells information");
 
             item.AddLine("Unit name: " + unit.Name, unit.Name);
             item.AddLine("Unit network name: " + unit.NetworkName, unit.NetworkName);
             item.AddLine("Unit classID: " + unit.ClassId, unit.ClassId);
-            item.AddLine(string.Empty);
 
             foreach (var ability in unit.Spellbook.Spells)
             {
@@ -150,46 +149,48 @@
                     continue;
                 }
 
-                item.AddLine("Name: " + ability.Name, ability.Name);
-                item.AddLine("Network name: " + ability.NetworkName, ability.NetworkName);
-                item.AddLine("ClassID: " + ability.ClassId, ability.ClassId);
+                var abilityItem = new LogItem(LogType.Spell, Color.PaleGreen);
+
+                abilityItem.AddLine("Name: " + ability.Name, ability.Name);
+                abilityItem.AddLine("Network name: " + ability.NetworkName, ability.NetworkName);
+                abilityItem.AddLine("ClassID: " + ability.ClassId, ability.ClassId);
 
                 if (this.showLevel)
                 {
-                    item.AddLine("Level: " + ability.Level, ability.Level);
+                    abilityItem.AddLine("Level: " + ability.Level, ability.Level);
                 }
 
                 if (this.showManaCost)
                 {
-                    item.AddLine("Mana cost: " + ability.ManaCost, ability.ManaCost);
+                    abilityItem.AddLine("Mana cost: " + ability.ManaCost, ability.ManaCost);
                 }
 
                 if (this.showCastRange)
                 {
-                    item.AddLine("Cast range: " + ability.GetCastRange(), ability.GetCastRange());
+                    abilityItem.AddLine("Cast range: " + ability.GetCastRange(), ability.GetCastRange());
                 }
 
                 if (this.showBehavior)
                 {
-                    item.AddLine("Behavior: " + ability.AbilityBehavior, ability.AbilityBehavior);
+                    abilityItem.AddLine("Behavior: " + ability.AbilityBehavior, ability.AbilityBehavior);
                 }
 
                 if (this.showTargetType)
                 {
-                    item.AddLine("Target type: " + ability.TargetType, ability.TargetType);
-                    item.AddLine("Target team type: " + ability.TargetTeamType, ability.TargetTeamType);
+                    abilityItem.AddLine("Target type: " + ability.TargetType, ability.TargetType);
+                    abilityItem.AddLine("Target team type: " + ability.TargetTeamType, ability.TargetTeamType);
                 }
 
                 if (this.showSpecialData)
                 {
-                    item.AddLine("Special data =>");
+                    abilityItem.AddLine("Special data =>");
                     foreach (var abilitySpecialData in ability.AbilitySpecialData)
                     {
-                        item.AddLine("  " + abilitySpecialData.Name + ": " + abilitySpecialData.Value, abilitySpecialData.Name);
+                        abilityItem.AddLine("  " + abilitySpecialData.Name + ": " + abilitySpecialData.Value, abilitySpecialData.Name);
                     }
                 }
 
-                item.AddLine(string.Empty);
+                this.log.Display(abilityItem);
             }
 
             this.log.Display(item);

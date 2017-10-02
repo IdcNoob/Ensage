@@ -89,7 +89,7 @@
                 return;
             }
 
-            var item = new LogItem(LogType.Particle, "Particle added", Color.LightGreen);
+            var item = new LogItem(LogType.Particle, Color.LightGreen, "Particle added");
 
             item.AddLine("Name: " + args.Name, args.Name);
             item.AddLine("Highest control point: " + particle.HighestControlPoint, particle.HighestControlPoint);

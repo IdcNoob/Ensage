@@ -87,7 +87,7 @@
                 return;
             }
 
-            var item = new LogItem(LogType.ExecuteOrder, "Execute attack/move order", Color.Magenta);
+            var item = new LogItem(LogType.ExecuteOrder, Color.Magenta, "Execute attack/move order");
 
             item.AddLine("Order: " + args.OrderId, args.OrderId);
             if (args.Target != null)

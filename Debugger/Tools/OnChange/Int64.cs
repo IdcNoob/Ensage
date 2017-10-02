@@ -83,7 +83,7 @@
                 return;
             }
 
-            var item = new LogItem(LogType.Int64, "Int64 changed", Color.Cyan);
+            var item = new LogItem(LogType.Int64, Color.Cyan, "Int64 changed");
 
             item.AddLine("Property name: " + args.PropertyName, args.PropertyName);
             item.AddLine("Property values: " + args.OldValue + " => " + args.NewValue, args.NewValue);

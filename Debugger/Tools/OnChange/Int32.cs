@@ -130,7 +130,7 @@
                 return;
             }
 
-            var item = new LogItem(LogType.Int32, "Int32 changed", Color.Cyan);
+            var item = new LogItem(LogType.Int32, Color.Cyan, "Int32 changed");
 
             item.AddLine("Property name: " + args.PropertyName, args.PropertyName);
             item.AddLine("Property values: " + args.OldValue + " => " + args.NewValue, args.NewValue);

@@ -85,7 +85,7 @@
                 return;
             }
 
-            var item = new LogItem(LogType.ExecuteOrder, "Execute ability order", Color.Magenta);
+            var item = new LogItem(LogType.ExecuteOrder, Color.Magenta, "Execute ability order");
 
             if (args.Ability != null)
             {

@@ -91,7 +91,7 @@
                 return;
             }
 
-            var item = new LogItem(LogType.Unit, "Unit added", Color.LightGreen);
+            var item = new LogItem(LogType.Unit, Color.LightGreen, "Unit added");
 
             item.AddLine("Name: " + unit.Name, unit.Name);
             item.AddLine("Network name: " + unit.NetworkName, unit.NetworkName);
@@ -112,7 +112,7 @@
                 return;
             }
 
-            var item = new LogItem(LogType.Unit, "Unit removed", Color.LightPink);
+            var item = new LogItem(LogType.Unit, Color.LightPink, "Unit removed");
 
             item.AddLine("Name: " + unit.Name, unit.Name);
             item.AddLine("Network name: " + unit.NetworkName, unit.NetworkName);
