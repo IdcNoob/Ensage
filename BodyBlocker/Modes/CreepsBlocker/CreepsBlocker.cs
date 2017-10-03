@@ -133,6 +133,10 @@
                 }
 
                 var moveDistance = (float)settings.BlockSensitivity / hero.MovementSpeed * 100;
+                if (hero.MovementSpeed - creep.MovementSpeed > 50)
+                {
+                    moveDistance -= (hero.MovementSpeed - creep.MovementSpeed) / 2;
+                }
                 var movePosition = creep.InFront(Math.Max(moveDistance, moveDistance * creepAngle));
 
                 if (movePosition.Distance(creepsMovePosition) - 50 > heroDistance)
@@ -140,15 +144,8 @@
                     continue;
                 }
 
-                if (creepAngle < 0.2)
+                if (creepAngle < 0.2 && hero.IsMoving)
                 {
-                    if (hero.MovementSpeed - creep.MovementSpeed > 50
-                        && creeps.Select(x => x.FindRotationAngle(hero.NetworkPosition)).Average() < 0.4)
-                    {
-                        hero.Stop();
-                        return;
-                    }
-
                     continue;
                 }
 
