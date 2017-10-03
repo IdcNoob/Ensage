@@ -71,6 +71,7 @@
     <Compile Include="Tools\GameEvents\GcMessage.cs" />
     <Compile Include="Tools\GameEvents\Message.cs" />
     <Compile Include="Tools\GameEvents\UiState.cs" />
+    <Compile Include="Tools\Information\Exceptions.cs" />
     <Compile Include="Tools\Information\Items.cs" />
     <Compile Include="Tools\Information\Modifiers.cs" />
     <Compile Include="Tools\Information\Mouse.cs" />

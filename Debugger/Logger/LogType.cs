@@ -34,6 +34,8 @@ namespace Debugger.Logger
 
         GameEvent,
 
-        Information
+        Information,
+
+        Exception
     }
 }
