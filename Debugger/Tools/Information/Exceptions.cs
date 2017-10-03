@@ -83,6 +83,7 @@
                 Console.SetOut(this.defaultOutput);
                 Console.WriteLine(text);
                 Console.ResetColor();
+                this.output.Dispose();
                 Console.SetOut(this.output = new StringWriter());
             }
         }
@@ -93,6 +94,7 @@
             {
                 this.menu.AddAsterisk();
                 this.updateHandler.IsEnabled = true;
+                this.output?.Dispose();
                 Console.SetOut(this.output = new StringWriter());
             }
             else
