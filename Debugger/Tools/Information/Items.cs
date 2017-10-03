@@ -4,6 +4,7 @@
     using System.ComponentModel;
     using System.ComponentModel.Composition;
     using System.Linq;
+    using System.Text;
 
     using Ensage;
     using Ensage.SDK.Extensions;
@@ -155,7 +156,7 @@
                 items.AddRange(unit.Inventory.Stash);
             }
 
-            foreach (var ability in items)
+            foreach (var ability in items.Reverse<Item>())
             {
                 var abilityItem = new LogItem(LogType.Spell, Color.PaleGreen);
 
@@ -187,9 +188,21 @@
                 if (this.showSpecialData)
                 {
                     abilityItem.AddLine("Special data =>");
-                    foreach (var abilitySpecialData in ability.AbilitySpecialData)
+                    foreach (var abilitySpecialData in ability.AbilitySpecialData.Where(x => !x.Name.StartsWith("#")))
                     {
-                        abilityItem.AddLine("  " + abilitySpecialData.Name + ": " + abilitySpecialData.Value, abilitySpecialData.Name);
+                        var values = new StringBuilder();
+                        var count = abilitySpecialData.Count;
+
+                        for (uint i = 0; i < count; i++)
+                        {
+                            values.Append(abilitySpecialData.GetValue(i));
+                            if (i < count - 1)
+                            {
+                                values.Append(", ");
+                            }
+                        }
+
+                        abilityItem.AddLine("  " + abilitySpecialData.Name + ": " + values, abilitySpecialData.Name);
                     }
                 }
 
