@@ -188,12 +188,14 @@
             EvadableAbilities.RemoveAll(x => x.OwnerHandle == creep.Handle);
         }
 
-        private void EntityOnOnInt64PropertyChange(Entity sender, Int64PropertyChangeEventArgs args)
+        private async void EntityOnOnInt64PropertyChange(Entity sender, Int64PropertyChangeEventArgs args)
         {
             if (args.OldValue != 0 || args.NewValue != 1 || args.PropertyName != "m_iIsControllableByPlayer64")
             {
                 return;
             }
+
+            await Task.Delay(100);
 
             if (sender.Team == HeroTeam && sender is Creep)
             {
