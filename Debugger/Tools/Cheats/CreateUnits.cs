@@ -37,7 +37,7 @@
         {
             this.menu = this.mainMenu.CheatsMenu.Menu("Create unit");
 
-            this.randomAlly = this.menu.Item("Random ally", new KeyBind(103));
+            this.randomAlly = this.menu.Item("Random ally hero", new KeyBind(103));
             this.randomAlly.PropertyChanged += this.RandomAllyOnPropertyChanged;
 
             this.meleeAllyCreep = this.menu.Item("Melee ally creep", new KeyBind(104));
@@ -46,7 +46,7 @@
             this.rangedAllyCreep = this.menu.Item("Ranged ally creep", new KeyBind(105));
             this.rangedAllyCreep.PropertyChanged += this.RangedAllyCreepOnPropertyChanged;
 
-            this.randomEnemy = this.menu.Item("Random enemy", new KeyBind(100));
+            this.randomEnemy = this.menu.Item("Random enemy hero", new KeyBind(100));
             this.randomEnemy.PropertyChanged += this.RandomEnemyOnPropertyChanged;
 
             this.meleeEnemyCreep = this.menu.Item("Melee enemy creep", new KeyBind(101));

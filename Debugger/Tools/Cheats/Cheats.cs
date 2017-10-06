@@ -41,7 +41,7 @@
             this.refresh = this.menu.Item("Refresh", new KeyBind(99));
             this.refresh.PropertyChanged += this.RefreshOnPropertyChanged;
 
-            this.wtf = this.menu.Item("Change wtf", new KeyBind(107));
+            this.wtf = this.menu.Item("Change wtf", new KeyBind(111));
             this.wtf.PropertyChanged += this.WtfOnPropertyChanged;
 
             this.vision = this.menu.Item("Change vision", new KeyBind(106));
