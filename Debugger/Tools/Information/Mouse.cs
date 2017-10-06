@@ -56,7 +56,7 @@
 
         private void CopyPositionOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
-            if (this.copyPosition)
+            if (this.copyPosition && this.showMousePosition)
             {
                 Game.OnWndProc += this.GameOnWndProc;
             }
@@ -97,6 +97,8 @@
             {
                 Drawing.OnDraw -= this.DrawingOnDraw;
             }
+
+            this.CopyPositionOnPropertyChanged(null, null);
         }
     }
 }
