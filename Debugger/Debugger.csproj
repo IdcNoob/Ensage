@@ -67,6 +67,8 @@
     <Compile Include="Logger\LogItem.cs" />
     <Compile Include="Logger\Controls\Button.cs" />
     <Compile Include="Logger\Controls\ToggleButton.cs" />
+    <Compile Include="Tools\Cheats\Cheats.cs" />
+    <Compile Include="Tools\Cheats\CreateUnits.cs" />
     <Compile Include="Tools\GameEvents\FireEvent.cs" />
     <Compile Include="Tools\GameEvents\GcMessage.cs" />
     <Compile Include="Tools\GameEvents\Message.cs" />

@@ -13,6 +13,8 @@
     {
         private MenuFactory factory;
 
+        public MenuFactory CheatsMenu { get; private set; }
+
         public MenuFactory GameEventsMenu { get; private set; }
 
         public MenuFactory InformationMenu { get; private set; }
@@ -35,6 +37,7 @@
             this.OnAddRemoveMenu = this.factory.Menu("On add/remove");
             this.OnChangeMenu = this.factory.Menu("On change");
             this.InformationMenu = this.factory.Menu("Information");
+            this.CheatsMenu = this.factory.Menu("Cheats");
             this.OnExecuteOrderMenu = this.factory.Menu("On execute order");
             this.GameEventsMenu = this.factory.Menu("Game events");
             this.OverlaySettingsMenu = this.factory.Menu("Overlay settings");

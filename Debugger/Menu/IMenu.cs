@@ -4,6 +4,8 @@
 
     internal interface IMenu
     {
+        MenuFactory CheatsMenu { get; }
+
         MenuFactory GameEventsMenu { get; }
 
         MenuFactory InformationMenu { get; }
