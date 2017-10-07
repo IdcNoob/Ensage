@@ -120,7 +120,7 @@
 
                     if (!soulRing.CanBeCasted() || manager.MyHero.HealthPercentage < menu.HpThreshold
                         || manager.MyHero.ManaPercentage > menu.MpThreshold || manager.MyHero.IsInvisible()
-                        && !manager.MyHero.CanUseAbilitiesInInvisibility())
+                        && !manager.MyHero.CanUseAbilitiesInInvisibility() && !menu.UseWhenInvisible)
                     {
                         return;
                     }

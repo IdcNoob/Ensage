@@ -32,6 +32,13 @@
             universal.ValueChanged += (sender, args) => UniversalUseEnabled = args.GetNewValue<bool>();
             UniversalUseEnabled = universal.IsActive();
 
+            var invis = new MenuItem("srUseWhenInvis", "Use when invisible").SetValue(false);
+            invis.SetTooltip(
+                "Use soul ring if your hero is invisible");
+            menu.AddItem(invis);
+            invis.ValueChanged += (sender, args) => UseWhenInvisible = args.GetNewValue<bool>();
+            UseWhenInvisible = invis.IsActive();
+
             var hpThreshold = new MenuItem("soulRingHpThreshold", "HP% threshold").SetValue(new Slider(70));
             hpThreshold.SetTooltip("Use soul ring if you have more hp%");
             menu.AddItem(hpThreshold);
@@ -69,6 +76,8 @@
         public int MpThreshold { get; private set; }
 
         public bool UniversalUseEnabled { get; private set; }
+
+        public bool UseWhenInvisible { get; private set; }
 
         public void AddAbility(string abilityName, bool enabled)
         {
