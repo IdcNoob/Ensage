@@ -13,6 +13,8 @@
     using Ensage.SDK.Helpers;
     using Ensage.SDK.Service;
 
+    using CreepWave = Creeps.CreepWave;
+
     [Export(typeof(IWaveManager))]
     internal class WaveManager : IWaveManager
     {
