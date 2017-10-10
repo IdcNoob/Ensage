@@ -53,6 +53,8 @@
             Unit = unit;
             Handle = unit.Handle;
             Position = unit.Position;
+            ParticleEffect.SetControlPoint(0, Position);
+            ParticleEffect.FullRestart();
             RequiresUpdate = false;
         }
 
@@ -66,7 +68,7 @@
             EndTime = CreateTime + Duration;
             Radius = Ability.GetAbilityDataByName(AbilityName)
                          .AbilitySpecialData.First(x => x.Name == "true_sight_range")
-                         .Value + 25;
+                         .Value + 50;
             Texture = Drawing.GetTexture("materials/ensage_ui/other/item_ward_sentry");
             TextureSize = new Vector2(50, 35);
             timerEnabled = settings.TimerEnabled(AbilityName);

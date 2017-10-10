@@ -48,6 +48,8 @@
             Unit = unit;
             Handle = unit.Handle;
             Position = unit.Position;
+            ParticleEffect.SetControlPoint(0, Position);
+            ParticleEffect.FullRestart();
             RequiresUpdate = false;
         }
 
@@ -61,7 +63,7 @@
             EndTime = Game.RawGameTime + Duration;
             Radius = Ability.GetAbilityDataByName(AbilityName)
                          .AbilitySpecialData.First(x => x.Name == "vision_range")
-                         .Value + 25;
+                         .Value + 175;
             Texture = Drawing.GetTexture("materials/ensage_ui/other/item_ward_observer");
             TextureSize = new Vector2(50, 35);
             timerEnabled = settings.TimerEnabled(AbilityName);
