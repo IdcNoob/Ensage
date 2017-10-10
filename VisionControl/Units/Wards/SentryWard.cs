@@ -53,8 +53,8 @@
             Unit = unit;
             Handle = unit.Handle;
             Position = unit.Position;
-            ParticleEffect.SetControlPoint(0, Position);
-            ParticleEffect.FullRestart();
+            ParticleEffect?.SetControlPoint(0, Position);
+            ParticleEffect?.FullRestart();
             RequiresUpdate = false;
         }
 
