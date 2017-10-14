@@ -58,27 +58,68 @@
             {
                 Entity.OnInt32PropertyChange += OnNetworkActivityChange;
             }
+            if (this.menu.Auto.SwapRaindrop)
+            {
+                Entity.OnInt32PropertyChange += OnChargeCountChange;
+            }
             manager.OnItemAdd += OnItemAdd;
             manager.OnItemRemove += OnItemRemove;
-            this.menu.Auto.OnAutoMoveTpScrollChange += AutoOnAutoMoveTpScrollChange;
-            this.menu.Auto.OnSwapBackpackItemsChange += AutoOnOnSwapBackpackItemsChange;
+            this.menu.Auto.AutoMoveTpScrollChange += this.OnAutoMoveTpScrollChange;
+            this.menu.Auto.SwapBackpackItemsChange += this.OnSwapBackpackItemsChange;
+            this.menu.Auto.AutoMoveRaindropChange += this.OnAutoMoveRaindropChange;
+        }
+
+        private void OnAutoMoveRaindropChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (boolEventArgs.Enabled)
+            {
+                Entity.OnInt32PropertyChange += OnChargeCountChange;
+            }
+            else
+            {
+                Entity.OnInt32PropertyChange -= OnChargeCountChange;
+            }
+        }
+
+        private void OnChargeCountChange(Entity sender, Int32PropertyChangeEventArgs args)
+        {
+            if (args.NewValue != 1 || args.OldValue == args.NewValue || args.PropertyName != "m_iCurrentCharges")
+            {
+                return;
+            }
+
+            var raindrop = sender as Item;
+            if (raindrop?.Id != AbilityId.item_infused_raindrop || raindrop.Owner?.Handle != this.manager.MyHero.Handle)
+            {
+                return;
+            }
+
+            if (!this.manager.MyHero.Inventory.FreeBackpackSlots.Any())
+            {
+                return;
+            }
+
+            raindrop.MoveItem(manager.MyHero.Inventory.FreeBackpackSlots.First());
         }
 
         public void Dispose()
         {
-            menu.Auto.OnAutoMoveTpScrollChange -= AutoOnAutoMoveTpScrollChange;
+            menu.Auto.AutoMoveTpScrollChange -= this.OnAutoMoveTpScrollChange;
+            this.menu.Auto.AutoMoveRaindropChange -= this.OnAutoMoveRaindropChange;
+            this.menu.Auto.SwapBackpackItemsChange -= this.OnSwapBackpackItemsChange;
             menu.Backpack.OnSwap -= BackpackOnSwap;
             menu.Stash.OnSwap -= StashOnSwap;
             menu.Courier.OnSwap -= CourierOnSwap;
             Unit.OnModifierAdded -= OnModifierAdded;
             Entity.OnInt32PropertyChange -= OnCourierStateChange;
             Entity.OnInt32PropertyChange -= OnNetworkActivityChange;
+            Entity.OnInt32PropertyChange -= OnChargeCountChange;
             manager.OnItemAdd -= OnItemAdd;
             manager.OnItemRemove -= OnItemRemove;
             UpdateManager.Unsubscribe(OnUpdate);
         }
 
-        private void AutoOnAutoMoveTpScrollChange(object sender, BoolEventArgs boolEventArgs)
+        private void OnAutoMoveTpScrollChange(object sender, BoolEventArgs boolEventArgs)
         {
             if (boolEventArgs.Enabled)
             {
@@ -90,7 +131,7 @@
             }
         }
 
-        private void AutoOnOnSwapBackpackItemsChange(object sender, BoolEventArgs boolEventArgs)
+        private void OnSwapBackpackItemsChange(object sender, BoolEventArgs boolEventArgs)
         {
             if (boolEventArgs.Enabled)
             {

@@ -18,7 +18,7 @@
             autoScrollMove.ValueChanged += (sender, args) =>
                 {
                     SwapTpScroll = args.GetNewValue<bool>();
-                    OnAutoMoveTpScrollChange?.Invoke(null, new BoolEventArgs(SwapTpScroll));
+                    this.AutoMoveTpScrollChange?.Invoke(null, new BoolEventArgs(SwapTpScroll));
                 };
             SwapTpScroll = autoScrollMove.IsActive();
 
@@ -28,6 +28,16 @@
             autoAegis.ValueChanged += (sender, args) => SwapCheeseAegis = args.GetNewValue<bool>();
             SwapCheeseAegis = autoAegis.IsActive();
 
+            var autoRaindrop = new MenuItem("autoRaindropMoveBackpack", "Raindrop on low charge").SetValue(false)
+                .SetTooltip("Auto move raindrop to backpack when only 1 charge left");
+            menu.AddItem(autoRaindrop);
+            autoRaindrop.ValueChanged += (sender, args) =>
+                {
+                    this.SwapRaindrop = args.GetNewValue<bool>();
+                    this.AutoMoveRaindropChange?.Invoke(null, new BoolEventArgs(SwapRaindrop));
+                };
+            SwapRaindrop = autoRaindrop.IsActive();
+
             var backpackItems = new MenuItem("autoBackpackItemsToInv", "Backpack items to inventory on death")
                 .SetValue(false)
                 .SetTooltip("Auto swap backpack items to inventory on death to reduce cooldown");
@@ -35,20 +45,24 @@
             backpackItems.ValueChanged += (sender, args) =>
                 {
                     SwapBackpackItems = args.GetNewValue<bool>();
-                    OnSwapBackpackItemsChange?.Invoke(null, new BoolEventArgs(SwapBackpackItems));
+                    this.SwapBackpackItemsChange?.Invoke(null, new BoolEventArgs(SwapBackpackItems));
                 };
             SwapBackpackItems = backpackItems.IsActive();
 
             mainMenu.AddSubMenu(menu);
         }
 
-        public event EventHandler<BoolEventArgs> OnAutoMoveTpScrollChange;
+        public event EventHandler<BoolEventArgs> AutoMoveTpScrollChange;
+        public event EventHandler<BoolEventArgs> AutoMoveRaindropChange;
 
-        public event EventHandler<BoolEventArgs> OnSwapBackpackItemsChange;
+        public event EventHandler<BoolEventArgs> SwapBackpackItemsChange;
+
 
         public bool SwapBackpackItems { get; private set; }
 
         public bool SwapCheeseAegis { get; private set; }
+    
+        public bool SwapRaindrop { get; private set; }
 
         public bool SwapTpScroll { get; private set; }
     }
