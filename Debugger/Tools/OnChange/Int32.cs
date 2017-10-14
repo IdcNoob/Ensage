@@ -29,15 +29,22 @@
             "m_cellY",
             "m_cellX",
             "m_cellZ",
+            "m_nGridY",
+            "m_nGridX",
+            "m_nGridZ",
+            "m_nameStringableIndex",
+            "m_nIdealMotionType",
             "m_NetworkSequenceIndex",
             "m_nNewSequenceParity",
+            "m_iMusicOperatorVals",
             "m_anglediff",
-            "m_iHealth",
-            "m_iTaggedAsVisibleByTeam"
+            "m_iTaggedAsVisibleByTeam",
+            "iStockCount"
         };
 
         private readonly HashSet<string> semiIgnored = new HashSet<string>
         {
+            "m_iHealth",
             "m_NetworkActivity",
             "m_iHeroDamage",
             "m_iRecentDamage",
