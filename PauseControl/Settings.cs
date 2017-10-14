@@ -10,13 +10,13 @@
 
         public Settings()
         {
-            factory = MenuFactory.Create("Pause Control");
+            this.factory = MenuFactory.Create("Pause Control");
 
-            Pause = factory.Item("Auto pause", true);
-            Pause.Item.SetTooltip("Auto pause when ally is disconnected");
+            this.Pause = this.factory.Item("Auto pause", true);
+            this.Pause.Item.SetTooltip("Auto pause when ally is disconnected");
 
-            Unpause = factory.Item("Force unpause", true);
-            Unpause.Item.SetTooltip("Force unpause if pause is set by enemies");
+            this.Unpause = this.factory.Item("Force unpause", true);
+            this.Unpause.Item.SetTooltip("Force unpause if pause is set by enemies");
         }
 
         public MenuItem<bool> Pause { get; }
@@ -25,7 +25,7 @@
 
         public void Dispose()
         {
-            factory?.Dispose();
+            this.factory?.Dispose();
         }
     }
 }
