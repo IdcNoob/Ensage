@@ -25,7 +25,8 @@
             AbilityId.tusk_walrus_punch,
             AbilityId.axe_culling_blade,
             AbilityId.queenofpain_sonic_wave,
-            AbilityId.lina_laguna_blade
+            AbilityId.lina_laguna_blade,
+            AbilityId.bristleback_quill_spray
         };
 
         private readonly Vector2 hpBarPositionFix;
