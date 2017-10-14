@@ -9,7 +9,7 @@
 
     using Interfaces;
 
-    [ExportPlugin("Information Pinger", StartupMode.Auto, "IdcNoob")]
+    //[ExportPlugin("Information Pinger", StartupMode.Auto, "IdcNoob")]
     internal class Bootstrap : Plugin
     {
         private readonly IMenuManager menu;
