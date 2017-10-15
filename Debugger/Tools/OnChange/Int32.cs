@@ -24,6 +24,7 @@
             "m_iTotalEarnedGold",
             "m_iUnreliableGold",
             "m_iReliableGold",
+            "m_nHealthBarOffsetOverride",
             "m_nServerOrderSequenceNumber",
             "m_nResetEventsParity",
             "m_cellY",
@@ -47,11 +48,16 @@
         private readonly HashSet<string> semiIgnored = new HashSet<string>
         {
             "m_iHealth",
+            "m_iMaxHealth",
             "m_NetworkActivity",
             "m_iHeroDamage",
             "m_iRecentDamage",
             "m_iDamageBonus",
-            "m_iPauseTeam"
+            "m_iMoveSpeed",
+            "m_iDayTimeVisionRange",
+            "m_iNightTimeVisionRange",
+            "m_iPauseTeam",
+            "m_iAttackCapabilities"
         };
 
         private MenuItem<bool> enabled;

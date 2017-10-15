@@ -46,7 +46,7 @@
 
             this.defaultOutput = Console.Out;
 
-            this.updateHandler = UpdateManager.Subscribe(this.Check, 500, false);
+            this.updateHandler = UpdateManager.Subscribe(this.Check, 200, false);
             this.EnabledOnPropertyChanged(null, null);
         }
 
@@ -81,7 +81,7 @@
             finally
             {
                 Console.SetOut(this.defaultOutput);
-                Console.WriteLine(text);
+                Console.Write(text);
                 Console.ResetColor();
                 this.output.Dispose();
                 Console.SetOut(this.output = new StringWriter());

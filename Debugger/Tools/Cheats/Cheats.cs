@@ -15,6 +15,10 @@
 
         private MenuItem<KeyBind> bot25Lvl;
 
+        private MenuItem<KeyBind> creeps;
+
+        private bool creepsEnabled;
+
         private MenuItem<KeyBind> hero25Lvl;
 
         private MenuItem<KeyBind> heroGold;
@@ -48,6 +52,9 @@
             this.vision.PropertyChanged += this.VisionOnPropertyChanged;
             this.allVisionEnabled = Game.GetConsoleVar("dota_all_vision").GetInt() == 1;
 
+            this.creeps = this.menu.Item("Change creeps spawn", new KeyBind(96));
+            this.creeps.PropertyChanged += this.CreepsOnPropertyChanged;
+
             this.hero25Lvl = this.menu.Item("Hero 25lvl", new KeyBind(97));
             this.hero25Lvl.PropertyChanged += this.Hero25LvlOnPropertyChanged;
 
@@ -63,6 +70,7 @@
             this.refresh.PropertyChanged -= this.RefreshOnPropertyChanged;
             this.wtf.PropertyChanged -= this.WtfOnPropertyChanged;
             this.vision.PropertyChanged -= this.VisionOnPropertyChanged;
+            this.creeps.PropertyChanged -= this.CreepsOnPropertyChanged;
             this.hero25Lvl.PropertyChanged -= this.Hero25LvlOnPropertyChanged;
             this.heroGold.PropertyChanged -= this.HeroGoldOnPropertyChanged;
             this.bot25Lvl.PropertyChanged -= this.Bot25LvlOnPropertyChanged;
@@ -73,6 +81,23 @@
             if (this.bot25Lvl)
             {
                 Game.ExecuteCommand("dota_bot_give_level 25");
+            }
+        }
+
+        private void CreepsOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            if (this.creeps)
+            {
+                if (this.creepsEnabled)
+                {
+                    Game.ExecuteCommand("dota_creeps_no_spawning_disable");
+                    this.creepsEnabled = false;
+                }
+                else
+                {
+                    Game.ExecuteCommand("dota_creeps_no_spawning_enable");
+                    this.creepsEnabled = true;
+                }
             }
         }
 
