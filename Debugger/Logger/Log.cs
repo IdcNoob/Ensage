@@ -35,6 +35,8 @@
 
         private readonly List<LogItem> items = new List<LogItem>();
 
+        private Button clearButton;
+
         private MenuItem<Slider> itemsToSave;
 
         private Button jumpTopButton;
@@ -45,6 +47,8 @@
         private IMenu mainMenu;
 
         private ToggleButton overlayButton;
+
+        private ToggleButton pauseButton;
 
         private MenuItem<Slider> positionX;
 
@@ -101,7 +105,13 @@
                 "Show",
                 new Vector2(this.screenSizeX - 100, this.positionY - 50),
                 new Vector2(100, 30));
-            this.jumpTopButton = new Button("^", new Vector2(this.screenSizeX - 200, this.positionY - 50), new Vector2(100, 30));
+            this.pauseButton = new ToggleButton(
+                "Pause",
+                "Continue",
+                new Vector2(this.screenSizeX - 200, this.positionY - 50),
+                new Vector2(100, 30));
+            this.clearButton = new Button("Clear", new Vector2(this.screenSizeX - 300, this.positionY - 50), new Vector2(100, 30));
+            this.jumpTopButton = new Button("^", new Vector2(this.screenSizeX - 400, this.positionY - 50), new Vector2(100, 30));
 
             this.TextSizeOnPropertyChanged(null, null);
 
@@ -111,6 +121,11 @@
 
         public void Display(LogItem newItem)
         {
+            if (!this.pauseButton.Enabled)
+            {
+                return;
+            }
+
             if (this.items.Count > this.itemsToSave)
             {
                 this.items.RemoveAt(0);
@@ -151,6 +166,9 @@
             {
                 return;
             }
+
+            this.pauseButton.Draw();
+            this.clearButton.Draw();
 
             if (this.scrollPosition > 0)
             {
@@ -244,6 +262,22 @@
                     return;
                 }
 
+                if (this.clearButton.IsMouseUnderButton())
+                {
+                    this.scrollPosition = 0;
+                    this.items.Clear();
+                    this.UpdateOverlay();
+                    args.Process = false;
+                    return;
+                }
+
+                if (this.pauseButton.IsMouseUnderButton())
+                {
+                    this.pauseButton.Enabled = !this.pauseButton.Enabled;
+                    args.Process = false;
+                    return;
+                }
+
                 if (this.IsMouseUnderLog())
                 {
                     var line = (int)((Game.MouseScreenPosition.Y - this.positionY) / this.textSize);
@@ -280,12 +314,16 @@
         {
             this.overlayButton.UpdateYPosition(this.positionY - 50);
             this.jumpTopButton.UpdateYPosition(this.positionY - 50);
+            this.clearButton.UpdateYPosition(this.positionY - 50);
+            this.pauseButton.UpdateYPosition(this.positionY - 50);
         }
 
         private void TextSizeOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
             this.overlayButton.UpdateSize(this.textSize);
             this.jumpTopButton.UpdateSize(this.textSize);
+            this.clearButton.UpdateSize(this.textSize);
+            this.pauseButton.UpdateSize(this.textSize);
         }
 
         private void UpdateOverlay()
