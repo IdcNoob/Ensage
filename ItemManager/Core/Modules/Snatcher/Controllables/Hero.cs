@@ -64,8 +64,7 @@
 
         private bool CanPick()
         {
-            return !Sleeper.Sleeping && !Unit.HasModifier("modifier_spirit_breaker_charge_of_darkness")
-                   && !Unit.IsChanneling();
+            return !Sleeper.Sleeping && !Unit.HasModifier(ModifierUtils.SpiritBreakerCharge) && !Unit.IsChanneling();
         }
     }
 }

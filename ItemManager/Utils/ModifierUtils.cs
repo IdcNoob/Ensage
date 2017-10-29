@@ -79,6 +79,8 @@
 
         public static string ShrineRegeneration { get; } = "modifier_filler_heal";
 
+        public static string SpiritBreakerCharge { get; } = "modifier_spirit_breaker_charge_of_darkness";
+
         public static string TangoRegeneration { get; } = "modifier_tango_heal";
 
         public static string UrnDebuff { get; } = "modifier_item_urn_damage";

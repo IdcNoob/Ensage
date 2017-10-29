@@ -68,6 +68,11 @@
                 return;
             }
 
+            if (manager.MyHero.HasModifier(ModifierUtils.SpiritBreakerCharge))
+            {
+                return;
+            }
+
             var creeps = EntityManager<Creep>.Entities.Where(
                 x => x.IsValid && x.IsVisible && x.IsAlive && x.IsSpawned && !x.IsAncient
                      && x.Distance2D(manager.MyHero.Position) <= handOfMidas.GetCastRange()
