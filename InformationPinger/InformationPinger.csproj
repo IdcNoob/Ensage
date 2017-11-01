@@ -69,7 +69,6 @@
     <Compile Include="Interfaces\IMenuManager.cs" />
     <Compile Include="Interfaces\IPing.cs" />
     <Compile Include="Modules\AbilityPinger.cs" />
-    <Compile Include="Modules\CourierPinger.cs" />
     <Compile Include="Interfaces\IModule.cs" />
     <Compile Include="Modules\DroppedItemPinger.cs" />
     <Compile Include="Modules\HeroPinger.cs" />
