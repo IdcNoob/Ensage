@@ -103,8 +103,8 @@
                     Range = attackRange;
                     return;
                 case Ranges.CustomRange.Experience:
-                    RealCastRange = 1450;
-                    Range = 1450;
+                    RealCastRange = 1650;
+                    Range = 1650;
                     return;
                 case Ranges.CustomRange.Aggro:
                     RealCastRange = 525;
