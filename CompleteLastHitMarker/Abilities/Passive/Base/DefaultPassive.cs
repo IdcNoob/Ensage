@@ -1,7 +1,6 @@
 ﻿namespace CompleteLastHitMarker.Abilities.Passive.Base
 {
     using System.Collections.Generic;
-    using System.Linq;
 
     using Ensage;
 
@@ -13,8 +12,6 @@
 
     internal abstract class DefaultPassive : DefaultAbility, IPassiveAbility
     {
-        protected List<AbilityId> DoesNotStackWith = new List<AbilityId>();
-
         protected DefaultPassive(Ability ability)
             : base(ability)
         {
@@ -36,7 +33,7 @@
                 return false;
             }
 
-            return !abilities.Any(x => DoesNotStackWith.Contains(x.AbilityId));
+            return true;
         }
     }
 }

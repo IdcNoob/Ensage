@@ -46,8 +46,7 @@
         {
             ActiveAbilities.Clear();
 
-            foreach (var ability in hero.GetValidAbilities(this)
-                .Where(x => courierDamageAbilities.Contains(x.AbilityId)))
+            foreach (var ability in hero.GetValidAbilities(this).Where(x => courierDamageAbilities.Contains(x.AbilityId)))
             {
                 ActiveAbilities[ability] = ability.CalculateDamage(hero.Hero, Unit);
             }

@@ -22,8 +22,7 @@
         {
             for (var i = 0u; i < Damage.Length; i++)
             {
-                autoAttackDamageReduction[i] =
-                    ability.AbilitySpecialData.First(x => x.Name == "attack_factor").GetValue(i) / 100 + 1;
+                autoAttackDamageReduction[i] = (ability.AbilitySpecialData.First(x => x.Name == "attack_factor").GetValue(i) / 100) + 1;
             }
 
             baseDamage = ability.AbilitySpecialData.First(x => x.Name == "base_damage").Value;
@@ -33,7 +32,7 @@
         {
             return (float)Math.Round(
                 target.DamageTaken(
-                    baseDamage + (source.MinimumDamage + source.BonusDamage) * autoAttackDamageReduction[Level - 1],
+                    baseDamage + ((source.MinimumDamage + source.BonusDamage) * autoAttackDamageReduction[Level - 1]),
                     DamageType,
                     source));
         }

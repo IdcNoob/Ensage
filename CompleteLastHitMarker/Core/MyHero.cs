@@ -37,8 +37,7 @@
 
             foreach (var ability in hero.Spellbook.Spells)
             {
-                var type = abilityTypes.FirstOrDefault(
-                    x => x.GetCustomAttribute<AbilityAttribute>()?.AbilityId == ability.Id);
+                var type = abilityTypes.FirstOrDefault(x => x.GetCustomAttribute<AbilityAttribute>()?.AbilityId == ability.Id);
 
                 if (type != null)
                 {
@@ -54,8 +53,7 @@
             foreach (var ability in EntityManager<Item>.Entities.Where(
                 x => x.IsValid && x.Purchaser?.Hero?.Handle == Handle && x.Id != AbilityId.ability_base))
             {
-                var type = abilityTypes.FirstOrDefault(
-                    x => x.GetCustomAttribute<AbilityAttribute>()?.AbilityId == ability.Id);
+                var type = abilityTypes.FirstOrDefault(x => x.GetCustomAttribute<AbilityAttribute>()?.AbilityId == ability.Id);
 
                 if (type != null)
                 {

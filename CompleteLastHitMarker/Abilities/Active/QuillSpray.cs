@@ -31,8 +31,8 @@
         {
             return (float)Math.Round(
                 target.DamageTaken(
-                    (target.Modifiers.FirstOrDefault(x => x.Name == QuillSprayModifier)?.StackCount
-                     * stackDamage[Level - 1] ?? 0) + Damage[Level - 1],
+                    (target.Modifiers.FirstOrDefault(x => x.Name == QuillSprayModifier)?.StackCount * stackDamage[Level - 1] ?? 0)
+                    + Damage[Level - 1],
                     DamageType,
                     source));
         }

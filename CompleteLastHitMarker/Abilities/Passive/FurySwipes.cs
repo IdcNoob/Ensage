@@ -34,8 +34,7 @@
                 return 0;
             }
 
-            return (unit.Modifiers.FirstOrDefault(x => x.Name == FurySwipesModifier)?.StackCount ?? 0)
-                   * Damage[Level - 1];
+            return (unit.Modifiers.FirstOrDefault(x => x.Name == FurySwipesModifier)?.StackCount ?? 0) * Damage[Level - 1];
         }
     }
 }

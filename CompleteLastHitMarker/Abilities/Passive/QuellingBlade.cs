@@ -27,9 +27,6 @@
 
             meleeBonus = ability.AbilitySpecialData.First(x => x.Name == "damage_bonus").Value;
             rangedBonus = ability.AbilitySpecialData.First(x => x.Name == "damage_bonus_ranged").Value;
-
-            DoesNotStackWith.Add(AbilityId.kunkka_tidebringer);
-            DoesNotStackWith.Add(AbilityId.item_iron_talon);
         }
 
         public override float GetBonusDamage(Hero hero, KillableUnit unit, IEnumerable<IPassiveAbility> abilities)

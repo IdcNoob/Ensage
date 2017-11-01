@@ -10,8 +10,7 @@
 
             IsEnabled = subFactory.Item("Enabled", true);
             ShowDamageFromRight = subFactory.Item("My damage on the right", false);
-            ShowDamageFromRight.Item.SetTooltip(
-                "Damage will be shown on the right side of hp bar otherwise on the left");
+            ShowDamageFromRight.Item.SetTooltip("Damage will be shown on the right side of hp bar otherwise on the left");
             FillHpBar = subFactory.Item("Fill hp bar", false);
             FillHpBar.Item.SetTooltip("When unit can be killed hp bar will be fully filled");
 

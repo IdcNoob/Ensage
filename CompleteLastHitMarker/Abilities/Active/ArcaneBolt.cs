@@ -28,11 +28,7 @@
         public override float CalculateDamage(Hero source, Unit target)
         {
             return (float)Math.Round(
-                target.SpellDamageTaken(
-                    Damage[Level - 1] + source.TotalIntelligence * damageIncrease,
-                    DamageType,
-                    source,
-                    Name));
+                target.SpellDamageTaken(Damage[Level - 1] + (source.TotalIntelligence * damageIncrease), DamageType, source, Name));
         }
     }
 }

@@ -77,7 +77,6 @@
     <Compile Include="Abilities\Passive\BattleFury.cs" />
     <Compile Include="Abilities\Passive\Feast.cs" />
     <Compile Include="Abilities\Passive\FurySwipes.cs" />
-    <Compile Include="Abilities\Passive\IronTalon.cs" />
     <Compile Include="Abilities\Passive\Jinada.cs" />
     <Compile Include="Abilities\Passive\JinguMastery.cs" />
     <Compile Include="Abilities\Passive\ManaBreak.cs" />

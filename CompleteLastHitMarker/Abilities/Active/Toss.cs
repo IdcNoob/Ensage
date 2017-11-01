@@ -39,10 +39,9 @@
 
             for (var i = 0u; i < tossBonusDamage.Length; i++)
             {
-                tossBonusDamage[i] = grow.AbilitySpecialData.First(x => x.Name == "grow_bonus_damage_pct").GetValue(i)
-                                     / 100 + 1;
+                tossBonusDamage[i] = (grow.AbilitySpecialData.First(x => x.Name == "grow_bonus_damage_pct").GetValue(i) / 100) + 1;
                 tossBonusDamageScepter[i] =
-                    grow.AbilitySpecialData.First(x => x.Name == "grow_bonus_damage_pct_scepter").GetValue(i) / 100 + 1;
+                    (grow.AbilitySpecialData.First(x => x.Name == "grow_bonus_damage_pct_scepter").GetValue(i) / 100) + 1;
             }
         }
 
@@ -56,9 +55,7 @@
             }
             else if (grow?.Level >= 1)
             {
-                damage *= owner.AghanimState()
-                              ? tossBonusDamageScepter[grow.Level - 1]
-                              : tossBonusDamage[grow.Level - 1];
+                damage *= owner.AghanimState() ? tossBonusDamageScepter[grow.Level - 1] : tossBonusDamage[grow.Level - 1];
             }
 
             return (float)Math.Round(damage);

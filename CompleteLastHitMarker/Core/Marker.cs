@@ -85,8 +85,7 @@
 
         private void AddCouriers()
         {
-            foreach (var courier in ObjectManager.GetEntities<Courier>()
-                .Where(x => x.IsValid && x.IsVisible && x.Team != myHero.Team))
+            foreach (var courier in ObjectManager.GetEntities<Courier>().Where(x => x.IsValid && x.IsVisible && x.Team != myHero.Team))
             {
                 killableUnits.Add(new KillableCourier(courier));
             }
@@ -133,8 +132,7 @@
         private void OnAddEntity(EntityEventArgs args)
         {
             var courier = args.Entity as Courier;
-            if (courier != null && courier.IsValid && courier.Team != myHero.Team
-                && killableUnits.All(x => x.Handle != args.Entity.Handle))
+            if (courier != null && courier.IsValid && courier.Team != myHero.Team && killableUnits.All(x => x.Handle != args.Entity.Handle))
             {
                 killableUnits.Add(new KillableCourier(courier));
                 return;
@@ -150,8 +148,7 @@
             var item = args.Entity as Item;
             if (item != null && item.IsValid && item.Purchaser?.Hero?.Handle == myHero.Handle)
             {
-                var type = abilityTypes.FirstOrDefault(
-                    x => x.GetCustomAttribute<AbilityAttribute>()?.AbilityId == item.Id);
+                var type = abilityTypes.FirstOrDefault(x => x.GetCustomAttribute<AbilityAttribute>()?.AbilityId == item.Id);
 
                 if (type != null)
                 {
@@ -213,11 +210,7 @@
                         false);
 
                     // damage
-                    Drawing.DrawRect(
-                        hpBarPosition + new Vector2(startPositionShift, 0),
-                        new Vector2(size, hpBarSize.Y),
-                        color,
-                        false);
+                    Drawing.DrawRect(hpBarPosition + new Vector2(startPositionShift, 0), new Vector2(size, hpBarSize.Y), color, false);
 
                     if (menu.AutoAttackMenu.SplitHpBar && myAutoAttackDamageDone > 30)
                     {
@@ -225,7 +218,7 @@
                         for (var i = 1; i <= health / myAutoAttackDamageDone; i++)
                         {
                             Drawing.DrawRect(
-                                hpBarPosition + new Vector2(size * i - 1, 0),
+                                hpBarPosition + new Vector2((size * i) - 1, 0),
                                 new Vector2(2, hpBarSize.Y),
                                 Color.Black,
                                 true);
@@ -266,20 +259,17 @@
                         }
                     }
 
-                    if (damage <= 0 || !menu.AbilitiesMenu.ShowWarningBorder && damage < health
-                        || damage + myAutoAttackDamageDone < health)
+                    if (damage <= 0 || !menu.AbilitiesMenu.ShowWarningBorder && damage < health || damage + myAutoAttackDamageDone < health)
                     {
                         continue;
                     }
 
                     var abilitiesCount = abilities.Count;
                     var startPositionShift = new Vector2(
-                        menu.AbilitiesMenu.Texture.X
-                        + (hpBarSize.X - menu.AbilitiesMenu.Texture.Size * abilitiesCount) / 2,
+                        menu.AbilitiesMenu.Texture.X + ((hpBarSize.X - (menu.AbilitiesMenu.Texture.Size * abilitiesCount)) / 2),
                         unit.DefaultTextureY + menu.AbilitiesMenu.Texture.Y);
 
-                    if (menu.AbilitiesMenu.ShowBorder && damage >= health
-                        || menu.AbilitiesMenu.ShowWarningBorder && damage < health)
+                    if (menu.AbilitiesMenu.ShowBorder && damage >= health || menu.AbilitiesMenu.ShowWarningBorder && damage < health)
                     {
                         var color = damage < health
                                         ? menu.AbilitiesMenu.AbilitiesColor.CanNotBeKilledColor
@@ -291,8 +281,8 @@
                         Drawing.DrawRect(
                             startBorderPosition + new Vector2(-borderWidth),
                             new Vector2(
-                                menu.AbilitiesMenu.Texture.Size * abilitiesCount + borderWidth * 2,
-                                menu.AbilitiesMenu.Texture.Size + borderWidth * 2),
+                                (menu.AbilitiesMenu.Texture.Size * abilitiesCount) + (borderWidth * 2),
+                                menu.AbilitiesMenu.Texture.Size + (borderWidth * 2)),
                             color);
                     }
 
@@ -347,10 +337,10 @@
             }
 
             var hits = Math.Floor(towerTarget.Health / towerDamage);
-            var hpLeft = towerTarget.Health - towerDamage * hits;
+            var hpLeft = towerTarget.Health - (towerDamage * hits);
             if (hpLeft < 5 && hits > 1)
             {
-                hpLeft = towerTarget.Health - towerDamage * (hits - 1);
+                hpLeft = towerTarget.Health - (towerDamage * (hits - 1));
             }
 
             towerTarget.TowerHelperHits = (int)Math.Floor(hpLeft / towerTarget.MyAutoAttackDamageDone);

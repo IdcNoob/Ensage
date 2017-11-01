@@ -28,8 +28,7 @@
         {
             var sourceDamage = source.MinimumDamage + source.BonusDamage;
 
-            return (float)Math.Round(
-                target.DamageTaken(Damage[Level - 1] * sourceDamage - sourceDamage, DamageType, source));
+            return (float)Math.Round(target.DamageTaken((Damage[Level - 1] * sourceDamage) - sourceDamage, DamageType, source));
         }
     }
 }

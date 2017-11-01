@@ -35,7 +35,7 @@
                 return 0;
             }
 
-            return hero.MinimumDamage * Damage[Level - 1] - hero.MinimumDamage;
+            return (hero.MinimumDamage * Damage[Level - 1]) - hero.MinimumDamage;
         }
 
         public override bool IsValid(Hero hero, KillableUnit unit)

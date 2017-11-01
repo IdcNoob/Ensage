@@ -19,8 +19,7 @@
 
         public override float CalculateDamage(Hero source, Unit target)
         {
-            return (float)Math.Round(
-                target.DamageTaken(((float)source.MinimumDamage + source.BonusDamage) / 2, DamageType, source));
+            return (float)Math.Round(target.DamageTaken(((float)source.MinimumDamage + source.BonusDamage) / 2, DamageType, source));
         }
     }
 }
