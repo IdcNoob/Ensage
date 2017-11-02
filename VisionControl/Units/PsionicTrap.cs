@@ -17,9 +17,7 @@
             : base(unit)
         {
             AbilityName = "templar_assassin_trap";
-            Radius = Ability.GetAbilityDataByName(AbilityName)
-                         .AbilitySpecialData.First(x => x.Name == "trap_radius")
-                         .Value + 25;
+            Radius = Ability.GetAbilityDataByName(AbilityName).AbilitySpecialData.First(x => x.Name == "trap_radius").Value + 25;
             Texture = Drawing.GetTexture("materials/ensage_ui/other/trap");
             ShowTimer = false;
 

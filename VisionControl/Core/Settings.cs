@@ -70,7 +70,12 @@
                             { "item_ward_sentry", true },
                             { "item_ward_observer", true }
                         }));
+
+            PingWards = factory.Item("Ping enemy wards", true);
+            PingWards.Item.Tooltip = "Ping is visible to your allies";
         }
+
+        public MenuItem<bool> PingWards { get; }
 
         public void Dispose()
         {

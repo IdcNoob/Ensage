@@ -23,9 +23,7 @@
         {
             AbilityName = "pugna_nether_ward";
             Radius = Ability.GetAbilityDataByName(AbilityName).AbilitySpecialData.First(x => x.Name == "radius").Value;
-            Duration = Ability.GetAbilityDataByName(AbilityName)
-                .AbilitySpecialData.First(x => x.Name == "ward_duration_tooltip")
-                .Value;
+            Duration = Ability.GetAbilityDataByName(AbilityName).AbilitySpecialData.First(x => x.Name == "ward_duration_tooltip").Value;
             Texture = Drawing.GetTexture("materials/ensage_ui/other/nether_ward");
             EndTime = Game.RawGameTime + Duration;
             ShowTimer = settings.RangeEnabled(AbilityName);

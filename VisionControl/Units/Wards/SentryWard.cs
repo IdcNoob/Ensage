@@ -61,14 +61,11 @@
         private void SetData(Settings settings)
         {
             AbilityName = "item_ward_sentry";
-            Duration = Unit?.FindModifier("modifier_item_buff_ward")?.RemainingTime ?? Ability
-                           .GetAbilityDataByName(AbilityName)
+            Duration = Unit?.FindModifier("modifier_item_buff_ward")?.RemainingTime ?? Ability.GetAbilityDataByName(AbilityName)
                            .AbilitySpecialData.First(x => x.Name == "lifetime")
                            .Value;
             EndTime = CreateTime + Duration;
-            Radius = Ability.GetAbilityDataByName(AbilityName)
-                         .AbilitySpecialData.First(x => x.Name == "true_sight_range")
-                         .Value + 50;
+            Radius = Ability.GetAbilityDataByName(AbilityName).AbilitySpecialData.First(x => x.Name == "true_sight_range").Value + 50;
             Texture = Drawing.GetTexture("materials/ensage_ui/other/item_ward_sentry");
             TextureSize = new Vector2(50, 35);
             timerEnabled = settings.TimerEnabled(AbilityName);

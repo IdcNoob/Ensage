@@ -21,14 +21,9 @@
         public Tombstone(Unit unit, Settings settings)
             : base(unit)
         {
-            var level = (uint)char.GetNumericValue(unit.Name.Last()) - 1;
             AbilityName = "undying_tombstone";
-            Radius = Ability.GetAbilityDataByName(AbilityName)
-                .AbilitySpecialData.First(x => x.Name == "radius")
-                .GetValue(level);
-            Duration = Ability.GetAbilityDataByName(AbilityName)
-                .AbilitySpecialData.First(x => x.Name == "duration")
-                .GetValue(level);
+            Radius = Ability.GetAbilityDataByName(AbilityName).AbilitySpecialData.First(x => x.Name == "radius").Value;
+            Duration = Ability.GetAbilityDataByName(AbilityName).AbilitySpecialData.First(x => x.Name == "duration").Value;
             Texture = Drawing.GetTexture("materials/ensage_ui/other/tombstone");
             EndTime = Game.RawGameTime + Duration;
             ShowTimer = settings.RangeEnabled(AbilityName);

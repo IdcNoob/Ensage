@@ -17,9 +17,7 @@
             : base(unit)
         {
             AbilityName = "treant_eyes_in_the_forest";
-            Radius = Ability.GetAbilityDataByName(AbilityName)
-                .AbilitySpecialData.First(x => x.Name == "vision_aoe")
-                .Value;
+            Radius = Ability.GetAbilityDataByName(AbilityName).AbilitySpecialData.First(x => x.Name == "vision_aoe").Value;
             Texture = Drawing.GetTexture("materials/ensage_ui/other/eyes_in_the_forest");
             ShowTimer = false;
 

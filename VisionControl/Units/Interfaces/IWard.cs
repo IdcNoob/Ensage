@@ -1,18 +1,12 @@
 ﻿namespace VisionControl.Units.Interfaces
 {
-    using SharpDX;
+    using System.Drawing;
 
-    using Color = System.Drawing.Color;
-
-    internal interface IWard : IUpdatable
+    internal interface IWard : IUnit, IUpdatable
 
     {
         Color Color { get; }
 
         float CreateTime { get; }
-
-        Vector3 Position { get; }
-
-        bool ShowTexture { get; }
     }
 }

@@ -17,9 +17,7 @@
             : base(unit)
         {
             AbilityName = "techies_stasis_trap";
-            Radius = Ability.GetAbilityDataByName(AbilityName)
-                .AbilitySpecialData.First(x => x.Name == "activation_radius")
-                .Value;
+            Radius = Ability.GetAbilityDataByName(AbilityName).AbilitySpecialData.First(x => x.Name == "activation_radius").Value;
             Texture = Drawing.GetTexture("materials/ensage_ui/other/npc_dota_techies_stasis_trap");
             ShowTimer = false;
 

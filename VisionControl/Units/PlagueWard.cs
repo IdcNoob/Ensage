@@ -23,9 +23,7 @@
         {
             AbilityName = "venomancer_plague_ward";
             Radius = Game.FindKeyValues(unit.Name + "/AttackRange", KeyValueSource.Unit).IntValue + 50;
-            Duration = Ability.GetAbilityDataByName(AbilityName)
-                .AbilitySpecialData.First(x => x.Name == "duration")
-                .Value;
+            Duration = Ability.GetAbilityDataByName(AbilityName).AbilitySpecialData.First(x => x.Name == "duration").Value;
             Texture = Drawing.GetTexture("materials/ensage_ui/other/plague_ward");
             EndTime = Game.RawGameTime + Duration;
             ShowTimer = settings.RangeEnabled(AbilityName);

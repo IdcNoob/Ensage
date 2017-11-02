@@ -56,14 +56,11 @@
         private void SetData(Settings settings)
         {
             AbilityName = "item_ward_observer";
-            Duration = Unit?.FindModifier("modifier_item_buff_ward")?.RemainingTime ?? Ability
-                           .GetAbilityDataByName(AbilityName)
+            Duration = Unit?.FindModifier("modifier_item_buff_ward")?.RemainingTime ?? Ability.GetAbilityDataByName(AbilityName)
                            .AbilitySpecialData.First(x => x.Name == "lifetime")
                            .Value;
             EndTime = Game.RawGameTime + Duration;
-            Radius = Ability.GetAbilityDataByName(AbilityName)
-                         .AbilitySpecialData.First(x => x.Name == "vision_range")
-                         .Value + 175;
+            Radius = Ability.GetAbilityDataByName(AbilityName).AbilitySpecialData.First(x => x.Name == "vision_range").Value + 175;
             Texture = Drawing.GetTexture("materials/ensage_ui/other/item_ward_observer");
             TextureSize = new Vector2(50, 35);
             timerEnabled = settings.TimerEnabled(AbilityName);

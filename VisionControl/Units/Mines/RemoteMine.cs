@@ -59,13 +59,11 @@
         private void SetData(Settings settings)
         {
             AbilityName = "techies_remote_mines";
-            Duration = Unit?.FindModifier("modifier_techies_remote_mine")?.RemainingTime ?? Ability
-                           .GetAbilityDataByName(AbilityName)
+            Duration = Unit?.FindModifier("modifier_techies_remote_mine")?.RemainingTime ?? Ability.GetAbilityDataByName(AbilityName)
                            .AbilitySpecialData.First(x => x.Name == "duration")
                            .Value;
             EndTime = Game.RawGameTime + Duration;
-            Radius = Ability.GetAbilityDataByName(AbilityName).AbilitySpecialData.First(x => x.Name == "radius").Value
-                     + 25;
+            Radius = Ability.GetAbilityDataByName(AbilityName).AbilitySpecialData.First(x => x.Name == "radius").Value + 25;
             Texture = Drawing.GetTexture("materials/ensage_ui/other/npc_dota_techies_remote_mine");
             timerEnabled = settings.TimerEnabled(AbilityName);
 

@@ -30,6 +30,8 @@
     {
         private readonly List<EnemyHero> enemyHeroes = new List<EnemyHero>();
 
+        private readonly Unit hero;
+
         private readonly Team myTeam;
 
         private readonly IRendererManager render;
@@ -38,11 +40,16 @@
 
         private readonly Dictionary<Type, UnitAttribute> unitTypes;
 
+        private float lastPingTime;
+
+        private ParticleEffect mapPingParticleEffect;
+
         private Settings settings;
 
         [ImportingConstructor]
         public VisionControl([Import] IServiceContext context)
         {
+            hero = context.Owner;
             render = context.Renderer;
             myTeam = context.Owner.Team;
 
@@ -65,6 +72,7 @@
             Entity.OnParticleEffectAdded += OnParticleEffectAdded;
             UpdateManager.Subscribe(TimedRemove, 1000);
             UpdateManager.Subscribe(OnUpdate, 100);
+            lastPingTime = 0;
 
             foreach (var hero in EntityManager<Hero>.Entities)
             {
@@ -96,8 +104,8 @@
 
             if (units.OfType<T>()
                 .Any(
-                    x => !x.RequiresUpdate && Game.RawGameTime - x.CreateTime < 1
-                         && x.Distance(wardPosition) <= x.UpdatableDistance && enemy.Angle(x) < 0.5))
+                    x => !x.RequiresUpdate && Game.RawGameTime - x.CreateTime < 1 && x.Distance(wardPosition) <= x.UpdatableDistance
+                         && enemy.Angle(x) < 0.5))
             {
                 return;
             }
@@ -108,15 +116,19 @@
                 wardPosition += new Vector3(60, 0, 0);
             }
 
-            units.Add((IUnit)Activator.CreateInstance(typeof(T), wardPosition, settings));
+            var ward = (IWard)Activator.CreateInstance(typeof(T), wardPosition, settings);
+            units.Add(ward);
+
+            if (settings.PingWards)
+            {
+                UpdateManager.BeginInvoke(() => PingWard(ward), 1000);
+            }
         }
 
         private bool DataUpdated(Unit unit, string abilityName)
         {
             var updatable = units.OfType<IUpdatable>()
-                .FirstOrDefault(
-                    x => x.RequiresUpdate && x.AbilityName == abilityName
-                         && x.Distance(unit.Position) < x.UpdatableDistance);
+                .FirstOrDefault(x => x.RequiresUpdate && x.AbilityName == abilityName && x.Distance(unit.Position) < x.UpdatableDistance);
 
             if (updatable == null)
             {
@@ -131,14 +143,13 @@
         {
             return enemyHeroes.Any(
                 x => x.IsValid && !x.Equals(enemy) && x.IsVisible && x.IsAlive && x.Distance(enemy) <= 600
-                     && x.ObserversCount + x.SentryCount < x.CountWards(AbilityId.item_ward_observer)
-                     + x.CountWards(AbilityId.item_ward_sentry));
+                     && x.ObserversCount + x.SentryCount
+                     < x.CountWards(AbilityId.item_ward_observer) + x.CountWards(AbilityId.item_ward_sentry));
         }
 
         private void OnHeroAdded(object sender, Hero hero)
         {
-            if (!hero.IsValid || hero.IsIllusion || hero.Team == myTeam
-                || enemyHeroes.Any(x => x.Handle == hero.Handle))
+            if (!hero.IsValid || hero.IsIllusion || hero.Team == myTeam || enemyHeroes.Any(x => x.Handle == hero.Handle))
             {
                 return;
             }
@@ -160,9 +171,7 @@
         {
             var remotes = units.OfType<RemoteMine>().ToList();
             foreach (var stack in remotes
-                .GroupBy(
-                    x => remotes.Where(z => z.Distance(x) < 50)
-                        .Aggregate(new Vector3(), (sum, mine) => sum + mine.Position))
+                .GroupBy(x => remotes.Where(z => z.Distance(x) < 50).Aggregate(new Vector3(), (sum, mine) => sum + mine.Position))
                 .Where(x => x.Count() > 1))
             {
                 var screenPosition = Drawing.WorldToScreen(stack.Key / stack.Count());
@@ -234,9 +243,7 @@
 
                             var position = args.ParticleEffect.GetControlPoint(1);
                             if (position.IsZero || units.OfType<RemoteMine>()
-                                    .Any(
-                                        x => Game.RawGameTime - x.CreateTime <= 1.5
-                                             && x.Position.Distance2D(position) < 10))
+                                    .Any(x => Game.RawGameTime - x.CreateTime <= 1.5 && x.Position.Distance2D(position) < 10))
                             {
                                 return;
                             }
@@ -246,8 +253,7 @@
                         else if (args.Name.Contains("techies_remote_mines_detonate"))
                         {
                             var remote = units.OfType<RemoteMine>()
-                                .FirstOrDefault(
-                                    x => x.Position.Distance2D(args.ParticleEffect.GetControlPoint(0)) < 10);
+                                .FirstOrDefault(x => x.Position.Distance2D(args.ParticleEffect.GetControlPoint(0)) < 10);
 
                             if (remote != null)
                             {
@@ -330,6 +336,24 @@
             }
         }
 
+        private void PingWard(IWard ward)
+        {
+            if (!ward.RequiresUpdate || lastPingTime + 10 > Game.RawGameTime)
+            {
+                return;
+            }
+
+            lastPingTime = Game.RawGameTime;
+
+            Network.MapPing(ward.Position.ToVector2(), (PingType)5);
+
+            // client ping
+            mapPingParticleEffect = new ParticleEffect("particles/ui_mouseactions/ping_enemyward.vpcf", ward.Position);
+            mapPingParticleEffect.SetControlPoint(1, new Vector3(1));
+            mapPingParticleEffect.SetControlPoint(5, new Vector3(10, 0, 0));
+            hero.PlaySound("General.Ping");
+        }
+
         private bool PlacedWard(EnemyHero enemy, AbilityId id)
         {
             var count = enemy.CountWards(id);
@@ -363,9 +387,8 @@
         private bool TookWard(EnemyHero enemy)
         {
             return enemyHeroes.Any(
-                x => x.IsValid && !x.Equals(enemy) && x.IsAlive && x.Distance(enemy) <= 600
-                     && x.ObserversCount + x.SentryCount > x.CountWards(AbilityId.item_ward_observer)
-                     + x.CountWards(AbilityId.item_ward_sentry));
+                x => x.IsValid && !x.Equals(enemy) && x.IsAlive && x.Distance(enemy) <= 600 && x.ObserversCount + x.SentryCount
+                     > x.CountWards(AbilityId.item_ward_observer) + x.CountWards(AbilityId.item_ward_sentry));
         }
     }
 }

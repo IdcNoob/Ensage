@@ -50,8 +50,7 @@
         public uint CountWards(AbilityId id)
         {
             var items = hero.Inventory.Items.Concat(hero.Inventory.Backpack).Where(x => x.IsValid).ToList();
-            return (uint)(items.Where(x => x.Id == id).Sum(x => x.CurrentCharges) + items
-                              .Where(x => x.Id == DispenserId)
+            return (uint)(items.Where(x => x.Id == id).Sum(x => x.CurrentCharges) + items.Where(x => x.Id == DispenserId)
                               .Sum(x => id == AbilityId.item_ward_observer ? x.CurrentCharges : x.SecondaryCharges));
         }
 
@@ -62,8 +61,7 @@
 
         public bool DroppedWard(AbilityId id)
         {
-            return EntityManager<PhysicalItem>.Entities.Any(
-                x => (x.Item.Id == id || x.Item.Id == DispenserId) && x.Distance2D(hero) < 300);
+            return EntityManager<PhysicalItem>.Entities.Any(x => (x.Item.Id == id || x.Item.Id == DispenserId) && x.Distance2D(hero) < 300);
         }
 
         public uint GetWardsCount(AbilityId id)
