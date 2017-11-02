@@ -22,15 +22,13 @@
                 };
             BlockShrineUsage = enabled.IsActive();
 
-            var hpUseThreshold =
-                new MenuItem("shrineHpThreshold", "HP% threshold (use)").SetValue(new Slider(85, 50, 99));
+            var hpUseThreshold = new MenuItem("shrineHpThreshold", "HP% threshold (use)").SetValue(new Slider(85, 50, 99));
             hpUseThreshold.SetTooltip("Block shrine usage if you have more hp%");
             menu.AddItem(hpUseThreshold);
             hpUseThreshold.ValueChanged += (sender, args) => HpUseThreshold = args.GetNewValue<Slider>().Value;
             HpUseThreshold = hpUseThreshold.GetValue<Slider>().Value;
 
-            var mpUseThreshold =
-                new MenuItem("shrineMpThreshold", "MP% threshold (use)").SetValue(new Slider(85, 50, 99));
+            var mpUseThreshold = new MenuItem("shrineMpThreshold", "MP% threshold (use)").SetValue(new Slider(85, 50, 99));
             mpUseThreshold.SetTooltip("Block shrine usage if you have more mp%");
             menu.AddItem(mpUseThreshold);
             mpUseThreshold.ValueChanged += (sender, args) => MpUseThreshold = args.GetNewValue<Slider>().Value;
@@ -46,15 +44,13 @@
                 };
             AutoDisableItems = autoDisable.IsActive();
 
-            var hpDisableThreshold =
-                new MenuItem("shrineHpThresholdDisable", "HP% threshold (items)").SetValue(new Slider(80, 50, 99));
+            var hpDisableThreshold = new MenuItem("shrineHpThresholdDisable", "HP% threshold (items)").SetValue(new Slider(80, 50, 99));
             hpDisableThreshold.SetTooltip("Disable items only if you have less hp%");
             menu.AddItem(hpDisableThreshold);
             hpDisableThreshold.ValueChanged += (sender, args) => HpDisableThreshold = args.GetNewValue<Slider>().Value;
             HpDisableThreshold = hpDisableThreshold.GetValue<Slider>().Value;
 
-            var mpDisableThreshold =
-                new MenuItem("shrineMpThresholdDisable", "MP% threshold (items)").SetValue(new Slider(80, 50, 99));
+            var mpDisableThreshold = new MenuItem("shrineMpThresholdDisable", "MP% threshold (items)").SetValue(new Slider(80, 50, 99));
             mpDisableThreshold.SetTooltip("Disable items only if you have less mp%");
             menu.AddItem(mpDisableThreshold);
             mpDisableThreshold.ValueChanged += (sender, args) => MpDisableThreshold = args.GetNewValue<Slider>().Value;

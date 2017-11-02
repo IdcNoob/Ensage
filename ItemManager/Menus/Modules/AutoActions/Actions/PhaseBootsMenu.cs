@@ -22,8 +22,7 @@
                 };
             IsEnabled = enabled.IsActive();
 
-            var damageThreshold =
-                new MenuItem("phaseBootsDistance", "Distance check").SetValue(new Slider(700, 0, 2000));
+            var damageThreshold = new MenuItem("phaseBootsDistance", "Distance check").SetValue(new Slider(700, 0, 2000));
             damageThreshold.SetTooltip("Use phase boots only when move distance is bigger");
             menu.AddItem(damageThreshold);
             damageThreshold.ValueChanged += (sender, args) => Distance = args.GetNewValue<Slider>().Value;

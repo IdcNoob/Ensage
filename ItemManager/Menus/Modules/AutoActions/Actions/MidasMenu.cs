@@ -28,12 +28,10 @@
             healthThresholdPct.ValueChanged += (sender, args) => HealthThresholdPct = args.GetNewValue<Slider>().Value;
             HealthThresholdPct = healthThresholdPct.GetValue<Slider>().Value;
 
-            var experienceThreshold =
-                new MenuItem("midasExpPct", "Experience threshold").SetValue(new Slider(90, 0, 150));
+            var experienceThreshold = new MenuItem("midasExpPct", "Experience threshold").SetValue(new Slider(90, 0, 150));
             experienceThreshold.SetTooltip("Use hand of midas only when creep will grant more exp (base)");
             menu.AddItem(experienceThreshold);
-            experienceThreshold.ValueChanged +=
-                (sender, args) => ExperienceThreshold = args.GetNewValue<Slider>().Value;
+            experienceThreshold.ValueChanged += (sender, args) => ExperienceThreshold = args.GetNewValue<Slider>().Value;
             ExperienceThreshold = experienceThreshold.GetValue<Slider>().Value;
 
             mainMenu.AddSubMenu(menu);

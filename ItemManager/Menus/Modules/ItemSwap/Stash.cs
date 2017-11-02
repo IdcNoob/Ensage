@@ -14,8 +14,7 @@
             var menu = new Menu("Stash", "stashSwapper");
 
             menu.AddItem(
-                new MenuItem("stashSwapItems", "Items:").SetValue(
-                    abilityToggler = new AbilityToggler(new Dictionary<string, bool>())));
+                new MenuItem("stashSwapItems", "Items:").SetValue(abilityToggler = new AbilityToggler(new Dictionary<string, bool>())));
 
             var key = new MenuItem("stashKey", "Hotkey").SetValue(new KeyBind('-', KeyBindType.Press));
             menu.AddItem(key);

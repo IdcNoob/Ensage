@@ -53,8 +53,7 @@
 
             menu.AddItem(new EnemyHeroesToggler(simpleName + "defAlwaysOn", "When:", heroToggler, false));
 
-            var alwayseUseRange =
-                new MenuItem(simpleName + "defAlwaysUseRange", "Is in range").SetValue(new Slider(600, 100, 1500));
+            var alwayseUseRange = new MenuItem(simpleName + "defAlwaysUseRange", "Is in range").SetValue(new Slider(600, 100, 1500));
             menu.AddItem(alwayseUseRange);
             alwayseUseRange.ValueChanged += (sender, args) => AlwaysUseRange = args.GetNewValue<Slider>().Value;
             AlwaysUseRange = alwayseUseRange.GetValue<Slider>().Value;

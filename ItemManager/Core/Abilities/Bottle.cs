@@ -44,8 +44,8 @@
 
         public bool CanBeAutoCasted()
         {
-            return !IsSleeping && Ability.IsValid && Ability.CanBeCasted() && IsInInventory()
-                   && bottle.CurrentCharges > 0 && bottle.StoredRune == RuneType.None;
+            return !IsSleeping && Ability.IsValid && Ability.CanBeCasted() && IsInInventory() && bottle.CurrentCharges > 0
+                   && bottle.StoredRune == RuneType.None;
         }
 
         public override bool CanBeCasted()
@@ -92,7 +92,7 @@
         {
             var regeneration = target?.FindModifier(ModifierUtils.BottleRegeneration)
                                ?? Manager.MyHero.Hero.FindModifier(ModifierUtils.BottleRegeneration);
-            if (IsInInventory() && !Manager.MyHero.IsAtBase() && regeneration?.RemainingTime > 0.15 + Game.Ping / 1000)
+            if (IsInInventory() && !Manager.MyHero.IsAtBase() && regeneration?.RemainingTime > 0.15 + (Game.Ping / 1000))
             {
                 return;
             }

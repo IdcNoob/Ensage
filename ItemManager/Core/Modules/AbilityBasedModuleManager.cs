@@ -7,6 +7,8 @@
 
     using Attributes;
 
+    using Ensage.SDK.Extensions;
+
     using EventArgs;
 
     using Interfaces;
@@ -22,7 +24,7 @@
 
         private readonly List<IAbilityBasedModule> modules = new List<IAbilityBasedModule>();
 
-        private readonly List<Type> types;
+        private readonly HashSet<Type> types;
 
         public AbilityBasedModuleManager(Manager manager, MenuManager menu)
         {
@@ -32,7 +34,7 @@
             types = Assembly.GetExecutingAssembly()
                 .GetTypes()
                 .Where(x => x.Namespace?.Contains("ItemManager.Core.Modules") == true)
-                .ToList();
+                .ToHashSet();
 
             manager.OnAbilityAdd += OnAbilityAdd;
             manager.OnAbilityRemove += OnAbilityRemove;
@@ -66,13 +68,11 @@
             }
 
             var type = types.FirstOrDefault(
-                x => x.GetCustomAttributes<AbilityBasedModuleAttribute>()
-                    .Any(z => z.AbilityId == abilityEventArgs.Ability.Id));
+                x => x.GetCustomAttributes<AbilityBasedModuleAttribute>().Any(z => z.AbilityId == abilityEventArgs.Ability.Id));
 
             if (type != null)
             {
-                modules.Add(
-                    (IAbilityBasedModule)Activator.CreateInstance(type, manager, menu, abilityEventArgs.Ability.Id));
+                modules.Add((IAbilityBasedModule)Activator.CreateInstance(type, manager, menu, abilityEventArgs.Ability.Id));
             }
         }
 

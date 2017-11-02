@@ -79,8 +79,7 @@
                 return;
             }
 
-            if (!manager.MyHero.CanUseItems() || !usableAbility.CanBeCasted()
-                || manager.MyHero.HasModifier(ModifierUtils.IceBlastDebuff))
+            if (!manager.MyHero.CanUseItems() || !usableAbility.CanBeCasted() || manager.MyHero.HasModifier(ModifierUtils.IceBlastDebuff))
             {
                 return;
             }
@@ -93,7 +92,7 @@
             }
 
             var hp = args.NewValue;
-            var hpPercentage = hp / manager.MyHero.MaximumHealth * 100;
+            var hpPercentage = (hp / manager.MyHero.MaximumHealth) * 100;
 
             if (hp <= menu.HealthThreshold || hpPercentage <= menu.HealthThresholdPct)
             {

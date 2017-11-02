@@ -50,14 +50,14 @@ namespace ItemManager.Core.Modules.GoldSpender
             this.menu.OnEnabledChange += MenuOnEnabledChange;
         }
 
-        private int BuybackCost => (int)(100 + Math.Pow(manager.MyHero.Level, 2) * 1.5 + Game.GameTime / 60 * 15);
+        private int BuybackCost => (int)(100 + (Math.Pow(manager.MyHero.Level, 2) * 1.5) + ((Game.GameTime / 60) * 15));
 
         private int GoldLossOnDeath => Math.Min(
             manager.MyHero.Player.UnreliableGold,
-            50 + (manager.MyHero.Player.ReliableGold + manager.MyHero.Player.UnreliableGold
-                  + manager.MyHero.Items.Sum(x => (int)x.Cost)) / 40);
+            50 + ((manager.MyHero.Player.ReliableGold + manager.MyHero.Player.UnreliableGold + manager.MyHero.Items.Sum(x => (int)x.Cost))
+                  / 40));
 
-        private float RespawnTime => (float)3.8 * manager.MyHero.Level + 5 + manager.MyHero.Hero.RespawnTimePenalty;
+        private float RespawnTime => ((float)3.8 * manager.MyHero.Level) + 5 + manager.MyHero.Hero.RespawnTimePenalty;
 
         public void BuyItems()
         {
@@ -75,9 +75,7 @@ namespace ItemManager.Core.Modules.GoldSpender
             if (quickBuy >= 0)
             {
                 enabledItems.RemoveAt(quickBuy);
-                enabledItems.InsertRange(
-                    quickBuy,
-                    Player.QuickBuyItems.OrderByDescending(x => Ability.GetAbilityDataById(x).Cost));
+                enabledItems.InsertRange(quickBuy, Player.QuickBuyItems.OrderByDescending(x => Ability.GetAbilityDataById(x).Cost));
             }
 
             var itemsToBuy = new List<Tuple<Unit, AbilityId>>();
@@ -85,9 +83,7 @@ namespace ItemManager.Core.Modules.GoldSpender
             int unreliableGold, reliableGold;
             GetAvailableGold(menu.SaveForBuyback, out reliableGold, out unreliableGold);
 
-            var courier =
-                EntityManager<Courier>.Entities.FirstOrDefault(
-                    x => x.IsValid && x.IsAlive && x.Team == manager.MyHero.Team);
+            var courier = EntityManager<Courier>.Entities.FirstOrDefault(x => x.IsValid && x.IsAlive && x.Team == manager.MyHero.Team);
 
             foreach (var item in enabledItems)
             {
@@ -259,7 +255,7 @@ namespace ItemManager.Core.Modules.GoldSpender
             }
 
             var hp = args.NewValue;
-            var hpPercentage = hp / manager.MyHero.MaximumHealth * 100;
+            var hpPercentage = (hp / manager.MyHero.MaximumHealth) * 100;
 
             if (hp > menu.HpThreshold && hpPercentage > menu.HpThresholdPct)
             {

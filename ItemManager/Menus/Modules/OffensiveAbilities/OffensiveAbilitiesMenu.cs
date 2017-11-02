@@ -11,8 +11,7 @@
 
     internal class OffensiveAbilitiesMenu
     {
-        private readonly Dictionary<string, OffensiveAbilitySettings> abilityMenus =
-            new Dictionary<string, OffensiveAbilitySettings>();
+        private readonly Dictionary<string, OffensiveAbilitySettings> abilityMenus = new Dictionary<string, OffensiveAbilitySettings>();
 
         private readonly Dictionary<string, bool> heroToggler = new Dictionary<string, bool>();
 
@@ -33,8 +32,7 @@
                 new MenuItem("enabledOffAbilities", "Enabled:").SetValue(
                     abilityToggler = new AbilityToggler(new Dictionary<string, bool>())));
             menu.AddItem(
-                new MenuItem("priorityOffAbilities", "Order:").SetValue(
-                    priorityChanger = new PriorityChanger(new List<string>())));
+                new MenuItem("priorityOffAbilities", "Order:").SetValue(priorityChanger = new PriorityChanger(new List<string>())));
 
             menu.AddItem(new EnemyHeroesToggler("OffItemsEnabledFor", "Use on:", heroToggler));
 
@@ -51,9 +49,6 @@
 
                 switch (ability.Name)
                 {
-                    case "item_diffusal_blade":
-                        abilitySettingsMenu = new DiffusalBladeSettings(settingsMenu, displayName, ability.Name);
-                        break;
                     case "item_satanic":
                         abilitySettingsMenu = new SatanicSettings(settingsMenu, displayName, ability.Name);
                         break;

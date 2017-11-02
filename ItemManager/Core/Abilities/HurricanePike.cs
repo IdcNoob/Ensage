@@ -25,8 +25,8 @@
         {
             var closestTarget = EntityManager<Hero>.Entities
                 .Where(
-                    x => x.IsValid && x.IsVisible && x.IsAlive && !x.IsMagicImmune() && !x.IsIllusion
-                         && x.Team != Manager.MyHero.Team && x.Distance2D(Manager.MyHero.Position) <= castRange)
+                    x => x.IsValid && x.IsVisible && x.IsAlive && !x.IsMagicImmune() && !x.IsIllusion && x.Team != Manager.MyHero.Team
+                         && x.Distance2D(Manager.MyHero.Position) <= castRange)
                 .OrderBy(x => x.Distance2D(Manager.MyHero.Position))
                 .FirstOrDefault();
 

@@ -10,8 +10,7 @@
 
     internal class DefensiveAbilitiesMenu
     {
-        private readonly Dictionary<string, DefensiveAbilitySettings> abilityMenus =
-            new Dictionary<string, DefensiveAbilitySettings>();
+        private readonly Dictionary<string, DefensiveAbilitySettings> abilityMenus = new Dictionary<string, DefensiveAbilitySettings>();
 
         private readonly Menu settingsMenu;
 
@@ -30,8 +29,7 @@
                 new MenuItem("enabledDefAbilities", "Enabled:").SetValue(
                     abilityToggler = new AbilityToggler(new Dictionary<string, bool>())));
             menu.AddItem(
-                new MenuItem("priorityDefAbilities", "Order:").SetValue(
-                    priorityChanger = new PriorityChanger(new List<string>())));
+                new MenuItem("priorityDefAbilities", "Order:").SetValue(priorityChanger = new PriorityChanger(new List<string>())));
 
             mainMenu.AddSubMenu(menu);
         }

@@ -82,9 +82,8 @@
             if (boolEventArgs.Enabled)
             {
                 manager.MyHero.DroppedItems.RemoveAll(
-                    x => x == null || !x.IsValid || manager.MyHero
-                             .GetItems(ItemStoredPlace.Inventory | ItemStoredPlace.Backpack)
-                             .Contains(x));
+                    x => x == null || !x.IsValid
+                         || manager.MyHero.GetItems(ItemStoredPlace.Inventory | ItemStoredPlace.Backpack).Contains(x));
             }
             else if (usingItems && !menu.ItemsToBackpack)
             {
@@ -144,8 +143,7 @@
                     var missingMana = manager.MyHero.MissingMana;
 
                     var powerTreads =
-                        manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_power_treads) as
-                            PowerTreads;
+                        manager.MyHero.UsableAbilities.FirstOrDefault(x => x.Id == AbilityId.item_power_treads) as PowerTreads;
 
                     var usedAbilities = new List<uint>();
 
@@ -164,8 +162,7 @@
                             continue;
                         }
 
-                        if (menu.ItemSettingsMenu.PowerTreads.IsEnabled && powerTreads != null
-                            && powerTreads.CanBeCasted())
+                        if (menu.ItemSettingsMenu.PowerTreads.IsEnabled && powerTreads != null && powerTreads.CanBeCasted())
                         {
                             powerTreads.SwitchTo(ability.PowerTreadsAttribute, true);
                         }
@@ -179,8 +176,7 @@
                                     manager.MyHero.DropItems(
                                         ItemStats.Mana,
                                         menu.ItemsToBackpack,
-                                        usableRecoveryAbilities.Where(x => usedAbilities.All(z => z != x.Handle))
-                                            .ToArray());
+                                        usableRecoveryAbilities.Where(x => usedAbilities.All(z => z != x.Handle)).ToArray());
                                 }
 
                                 missingMana -= ability.ManaRestore;
@@ -193,8 +189,7 @@
                                     manager.MyHero.DropItems(
                                         ItemStats.Health,
                                         menu.ItemsToBackpack,
-                                        usableRecoveryAbilities.Where(x => usedAbilities.All(z => z != x.Handle))
-                                            .ToArray());
+                                        usableRecoveryAbilities.Where(x => usedAbilities.All(z => z != x.Handle)).ToArray());
                                 }
 
                                 missingHealth -= ability.HealthRestore;
@@ -207,16 +202,14 @@
                                     manager.MyHero.DropItems(
                                         ItemStats.Mana,
                                         menu.ItemsToBackpack,
-                                        usableRecoveryAbilities.Where(x => usedAbilities.All(z => z != x.Handle))
-                                            .ToArray());
+                                        usableRecoveryAbilities.Where(x => usedAbilities.All(z => z != x.Handle)).ToArray());
                                 }
                                 if (totalHealthRestore < missingHealth)
                                 {
                                     manager.MyHero.DropItems(
                                         ItemStats.Health,
                                         menu.ItemsToBackpack,
-                                        usableRecoveryAbilities.Where(x => usedAbilities.All(z => z != x.Handle))
-                                            .ToArray());
+                                        usableRecoveryAbilities.Where(x => usedAbilities.All(z => z != x.Handle)).ToArray());
                                 }
 
                                 missingHealth -= ability.HealthRestore;
@@ -263,14 +256,12 @@
         private bool ShouldPickUpItems(IEnumerable<IRecoveryAbility> usableAbilities)
         {
             if (EntityManager<Hero>.Entities.Any(
-                x => x.IsValid && x.IsVisible && x.IsAlive && x.Team != manager.MyHero.Team
-                     && x.Distance2D(manager.MyHero.Position) < 800))
+                x => x.IsValid && x.IsVisible && x.IsAlive && x.Team != manager.MyHero.Team && x.Distance2D(manager.MyHero.Position) < 800))
             {
                 return true;
             }
 
-            return usableAbilities.All(x => !x.IsSleeping)
-                   && !manager.MyHero.HasModifier(ModifierUtils.BottleRegeneration);
+            return usableAbilities.All(x => !x.IsSleeping) && !manager.MyHero.HasModifier(ModifierUtils.BottleRegeneration);
         }
     }
 }

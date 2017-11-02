@@ -71,8 +71,7 @@
 
             var ability = abilityEventArgs.Ability;
 
-            var usableAbility = manager.MyHero.UsableAbilities.OfType<IDefensiveAbility>()
-                .FirstOrDefault(x => x.Handle == ability.Handle);
+            var usableAbility = manager.MyHero.UsableAbilities.OfType<IDefensiveAbility>().FirstOrDefault(x => x.Handle == ability.Handle);
 
             if (usableAbility == null)
             {
@@ -108,8 +107,8 @@
                 return;
             }
 
-            var enemies = EntityManager<Hero>.Entities.Where(
-                    x => x.IsValid && x.IsVisible && x.IsAlive && x.Team != manager.MyHero.Team && !x.IsIllusion)
+            var enemies = EntityManager<Hero>.Entities
+                .Where(x => x.IsValid && x.IsVisible && x.IsAlive && x.Team != manager.MyHero.Team && !x.IsIllusion)
                 .ToList();
 
             if (!enemies.Any())
@@ -121,17 +120,14 @@
             var canUseAbilities = manager.MyHero.CanUseAbilities();
 
             foreach (var defensiveAbility in defensiveAbilities
-                .Where(
-                    x => menu.IsAbilityEnabled(x.Name) && x.CanBeCasted() && (x.IsItem ? canUseItems : canUseAbilities))
+                .Where(x => menu.IsAbilityEnabled(x.Name) && x.CanBeCasted() && (x.IsItem ? canUseItems : canUseAbilities))
                 .OrderByDescending(x => menu.GetPriority(x.Name)))
             {
-                var defaultUse =
-                    enemies.Count(x => x.Distance2D(manager.MyHero.Position) <= defensiveAbility.Menu.Range)
-                    >= defensiveAbility.Menu.EnemyCount;
+                var defaultUse = enemies.Count(x => x.Distance2D(manager.MyHero.Position) <= defensiveAbility.Menu.Range)
+                                 >= defensiveAbility.Menu.EnemyCount;
 
                 var alwaysUse = defensiveAbility.Menu.AlwaysUse && enemies.Any(
-                                    x => defensiveAbility.Menu.IsEnabled(x.StoredName())
-                                         && x.Distance2D(manager.MyHero.Position)
+                                    x => defensiveAbility.Menu.IsEnabled(x.StoredName()) && x.Distance2D(manager.MyHero.Position)
                                          <= defensiveAbility.Menu.AlwaysUseRange);
 
                 if (defaultUse || alwaysUse)

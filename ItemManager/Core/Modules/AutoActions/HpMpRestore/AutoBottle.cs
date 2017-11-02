@@ -153,8 +153,7 @@
                          && x.Distance2D(manager.MyHero.Position) <= bottle.GetCastRange() && !x.IsInvul())
                 .OrderBy(x => x.FindModifier(ModifierUtils.BottleRegeneration)?.RemainingTime)
                 .FirstOrDefault(
-                    x => (useOnAllies && x.Handle != manager.MyHero.Handle
-                          || useOnSelf && x.Handle == manager.MyHero.Handle)
+                    x => (useOnAllies && x.Handle != manager.MyHero.Handle || useOnSelf && x.Handle == manager.MyHero.Handle)
                          && (x.Health < x.MaximumHealth || x.Mana < x.MaximumMana));
 
             if (bottleTarget != null)

@@ -32,9 +32,8 @@
 
         private readonly Sleeper sleeper = new Sleeper();
 
-        private readonly List<AbilityId> usableItems = new List<AbilityId>
+        private readonly HashSet<AbilityId> usableItems = new HashSet<AbilityId>
         {
-            AbilityId.item_iron_talon,
             AbilityId.item_quelling_blade,
             AbilityId.item_bfury
         };
@@ -103,8 +102,7 @@
             var hero = unitEventArgs.Unit as Hero;
             if (hero != null && (hero.HeroId == HeroId.npc_dota_hero_techies && hero.Team != manager.MyHero.Team
                                  || hero.HeroId == HeroId.npc_dota_hero_rubick && EntityManager<Hero>.Entities.Any(
-                                     x => x.IsValid && x.HeroId == HeroId.npc_dota_hero_techies
-                                          && x.Team == manager.MyHero.Team)))
+                                     x => x.IsValid && x.HeroId == HeroId.npc_dota_hero_techies && x.Team == manager.MyHero.Team)))
             {
                 manager.OnUnitAdd -= OnUnitAdd;
                 updateHandler = UpdateManager.Subscribe(OnUpdate, menu.UpdateRate, menu.IsEnabled);
@@ -131,8 +129,8 @@
             }
 
             var techiesMines = EntityManager<Unit>.Entities.Where(
-                    x => x.IsValid && x.IsVisible && x.IsTechiesMine() && !x.IsInvul() && x.IsAlive
-                         && x.Team != manager.MyHero.Team && x.Distance2D(manager.MyHero.Position) <= 1000)
+                    x => x.IsValid && x.IsVisible && x.IsTechiesMine() && !x.IsInvul() && x.IsAlive && x.Team != manager.MyHero.Team
+                         && x.Distance2D(manager.MyHero.Position) <= 1000)
                 .ToList();
 
             var attackRange = manager.MyHero.Hero.GetAttackRange();
@@ -167,9 +165,8 @@
                         if (manager.MyHero.Hero.Attack(mine))
                         {
                             block.Sleep(
-                                (float)(Math.Max(0, distance - attackRange) / manager.MyHero.Hero.MovementSpeed
-                                        + manager.MyHero.Hero.AttackPoint() + manager.MyHero.Hero.GetTurnTime(mine))
-                                * 1000 + Game.Ping);
+                                ((float)((Math.Max(0, distance - attackRange) / manager.MyHero.Hero.MovementSpeed)
+                                         + manager.MyHero.Hero.AttackPoint() + manager.MyHero.Hero.GetTurnTime(mine)) * 1000) + Game.Ping);
                             sleeper.Sleep(1000);
                             return;
                         }

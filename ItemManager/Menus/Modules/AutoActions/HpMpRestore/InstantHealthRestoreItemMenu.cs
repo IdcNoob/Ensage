@@ -35,10 +35,8 @@
             hpThresholdPct.ValueChanged += (sender, args) => HealthThresholdPct = args.GetNewValue<Slider>().Value;
             HealthThresholdPct = hpThresholdPct.GetValue<Slider>().Value;
 
-            var enemyCheckRange =
-                new MenuItem(simpleName + "EnemyRange", "Enemy search range").SetValue(new Slider(800, 0, 2000));
-            enemyCheckRange.SetTooltip(
-                "Use item only if there is enemy hero in range (if set to 0 range won't be checked)");
+            var enemyCheckRange = new MenuItem(simpleName + "EnemyRange", "Enemy search range").SetValue(new Slider(800, 0, 2000));
+            enemyCheckRange.SetTooltip("Use item only if there is enemy hero in range (if set to 0 range won't be checked)");
             menu.AddItem(enemyCheckRange);
             enemyCheckRange.ValueChanged += (sender, args) => EnemySearchRange = args.GetNewValue<Slider>().Value;
             EnemySearchRange = enemyCheckRange.GetValue<Slider>().Value;

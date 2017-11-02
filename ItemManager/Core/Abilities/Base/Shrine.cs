@@ -12,33 +12,21 @@
 
     internal class Shrine : UsableAbility, IRecoveryAbility
     {
-        private readonly float duration;
-
-        private readonly float hpGrow;
-
-        private readonly float hpHeal;
-
-        private readonly float mpGrow;
-
-        private readonly float mpHeal;
-
         public Shrine(Manager manager)
             : base(null, manager)
         {
             var specialData = Ability.GetAbilityDataById(AbilityId.filler_ability).AbilitySpecialData.ToList();
-            hpHeal = specialData.First(x => x.Name == "hp_heal").Value;
-            mpHeal = specialData.First(x => x.Name == "mp_heal").Value;
-            hpGrow = specialData.First(x => x.Name == "hp_heal_growth").Value;
-            mpGrow = specialData.First(x => x.Name == "mp_heal_growth").Value;
-            duration = specialData.First(x => x.Name == "duration").Value;
+            var duration = specialData.First(x => x.Name == "duration").Value;
+            HealthRestore = specialData.First(x => x.Name == "hp_heal").Value * duration;
+            ManaRestore = specialData.First(x => x.Name == "mp_heal").Value * duration;
 
             PowerTreadsAttribute = Attribute.Agility;
             RestoredStats = RestoredStats.All;
         }
 
-        public float HealthRestore => (hpHeal + hpGrow * (Game.RawGameTime / 60)) * duration;
+        public float HealthRestore { get; }
 
-        public float ManaRestore => (mpHeal + mpGrow * (Game.RawGameTime / 60)) * duration;
+        public float ManaRestore { get; }
 
         public Attribute PowerTreadsAttribute { get; }
 

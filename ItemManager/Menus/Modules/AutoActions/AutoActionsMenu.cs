@@ -13,7 +13,6 @@
             AutoHealsMenu = new AutoHealsMenu(menu);
             SoulRingMenu = new SoulRingMenu(menu);
             PowerTreadsMenu = new PowerTreadsMenu(menu);
-            IronTalonMenu = new IronTalonMenu(menu);
             PhaseBootsMenu = new PhaseBootsMenu(menu);
             MidasMenu = new MidasMenu(menu);
             DewardingMenu = new DewardingMenu(menu);
@@ -25,8 +24,6 @@
         public AutoHealsMenu AutoHealsMenu { get; }
 
         public DewardingMenu DewardingMenu { get; }
-
-        public IronTalonMenu IronTalonMenu { get; }
 
         public MidasMenu MidasMenu { get; }
 

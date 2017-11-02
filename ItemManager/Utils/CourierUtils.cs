@@ -7,19 +7,6 @@
 
     internal static class CourierUtils
     {
-        public static void Burst(this Courier courier, bool queue = false)
-        {
-            if (!courier.IsFlying)
-            {
-                return;
-            }
-
-            var burst = courier.Spellbook.Spells.FirstOrDefault(
-                x => x.Id == AbilityId.courier_burst && x.CanBeCasted());
-
-            burst?.UseAbility(queue);
-        }
-
         public static void DeliverItems(this Courier courier, bool queue = false)
         {
             var deliver = courier.Spellbook.Spells.FirstOrDefault(x => x.Id == AbilityId.courier_transfer_items);
@@ -43,16 +30,26 @@
 
         public static void Resend(this Courier courier, Hero hero, bool queue = false)
         {
-            var transfer =
-                courier.Spellbook.Spells.FirstOrDefault(x => x.Id == AbilityId.courier_transfer_items_to_other_player);
+            var transfer = courier.Spellbook.Spells.FirstOrDefault(x => x.Id == AbilityId.courier_transfer_items_to_other_player);
 
             transfer?.UseAbility(hero, queue);
         }
 
+        public static void Shield(this Courier courier, bool queue = false)
+        {
+            if (!courier.IsFlying)
+            {
+                return;
+            }
+
+            var shield = courier.Spellbook.Spells.FirstOrDefault(x => x.Id == AbilityId.courier_shield && x.CanBeCasted());
+
+            shield?.UseAbility(queue);
+        }
+
         public static void TakeAndDeliverItems(this Courier courier, bool queue = false)
         {
-            var takeAndDeliver =
-                courier.Spellbook.Spells.FirstOrDefault(x => x.Id == AbilityId.courier_take_stash_and_transfer_items);
+            var takeAndDeliver = courier.Spellbook.Spells.FirstOrDefault(x => x.Id == AbilityId.courier_take_stash_and_transfer_items);
 
             takeAndDeliver?.UseAbility(queue);
         }

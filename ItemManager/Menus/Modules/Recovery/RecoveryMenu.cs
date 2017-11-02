@@ -77,7 +77,7 @@
 
         public bool ItemsToBackpack { get; private set; }
 
-        private IEnumerable<AbilityId> ItemsToUse { get; } = new List<AbilityId>
+        private HashSet<AbilityId> ItemsToUse { get; } = new HashSet<AbilityId>
         {
             AbilityId.item_magic_wand,
             AbilityId.item_magic_stick,

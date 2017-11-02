@@ -35,15 +35,13 @@
             hpThreshold.ValueChanged += (sender, args) => HpThreshold = args.GetNewValue<Slider>().Value;
             HpThreshold = hpThreshold.GetValue<Slider>().Value;
 
-            var hpThresholdPct =
-                new MenuItem("goldSpenderHpThresholdPct", "HP% threshold").SetValue(new Slider(20, 1, 40));
+            var hpThresholdPct = new MenuItem("goldSpenderHpThresholdPct", "HP% threshold").SetValue(new Slider(20, 1, 40));
             hpThresholdPct.SetTooltip("Buy items if you have less HP%");
             menu.AddItem(hpThresholdPct);
             hpThresholdPct.ValueChanged += (sender, args) => HpThresholdPct = args.GetNewValue<Slider>().Value;
             HpThresholdPct = hpThresholdPct.GetValue<Slider>().Value;
 
-            var enemyDistance =
-                new MenuItem("goldSpenderEnemyDistance", "Enemy distance").SetValue(new Slider(600, 0, 2000));
+            var enemyDistance = new MenuItem("goldSpenderEnemyDistance", "Enemy distance").SetValue(new Slider(600, 0, 2000));
             enemyDistance.SetTooltip("Check enemy in range before buying");
             menu.AddItem(enemyDistance);
             enemyDistance.ValueChanged += (sender, args) => EnemyDistance = args.GetNewValue<Slider>().Value;
@@ -57,8 +55,7 @@
                 new MenuItem("goldSpenderItemsPriority", "Order:").SetValue(
                     priorityChanger = new PriorityChanger(ItemsToBuy.Select(x => x.Key).ToList())));
 
-            var buyback =
-                new MenuItem("goldSpenderBuyback", "Save for buyback after (mins)").SetValue(new Slider(30, 0, 60));
+            var buyback = new MenuItem("goldSpenderBuyback", "Save for buyback after (mins)").SetValue(new Slider(30, 0, 60));
             menu.AddItem(buyback);
             buyback.ValueChanged += (sender, args) => SaveForBuyback = args.GetNewValue<Slider>().Value;
             SaveForBuyback = buyback.GetValue<Slider>().Value;

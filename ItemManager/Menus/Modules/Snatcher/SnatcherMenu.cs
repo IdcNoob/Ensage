@@ -37,14 +37,12 @@
                 };
             IsNotificationEnabled = notificationEnabled.IsActive();
 
-            var notificationHoldKey =
-                new MenuItem("snatcherNotificationHoldKey", "Enabled for hold key").SetValue(false);
+            var notificationHoldKey = new MenuItem("snatcherNotificationHoldKey", "Enabled for hold key").SetValue(false);
             notificationMenu.AddItem(notificationHoldKey);
             notificationHoldKey.ValueChanged += (sender, args) => { NotificationHold = args.GetNewValue<bool>(); };
             NotificationHold = notificationHoldKey.IsActive();
 
-            var notificationToggleKey =
-                new MenuItem("snatcherNotificationToggleKey", "Enabled for toggle key").SetValue(true);
+            var notificationToggleKey = new MenuItem("snatcherNotificationToggleKey", "Enabled for toggle key").SetValue(true);
             notificationMenu.AddItem(notificationToggleKey);
             notificationToggleKey.ValueChanged += (sender, args) => { NotificationToggle = args.GetNewValue<bool>(); };
             NotificationToggle = notificationToggleKey.IsActive();
@@ -55,15 +53,13 @@
             NotificationSize = notificationSize.GetValue<Slider>().Value;
 
             var notificationX =
-                new MenuItem("snatcherNotificationX", "Coordinates X").SetValue(
-                    new Slider(15, 0, (int)HUDInfo.ScreenSizeX()));
+                new MenuItem("snatcherNotificationX", "Coordinates X").SetValue(new Slider(15, 0, (int)HUDInfo.ScreenSizeX()));
             notificationMenu.AddItem(notificationX);
             notificationX.ValueChanged += (sender, args) => { NotificationX = args.GetNewValue<Slider>().Value; };
             NotificationX = notificationX.GetValue<Slider>().Value;
 
             var notificationY =
-                new MenuItem("snatcherNotificationY", "Coordinates Y").SetValue(
-                    new Slider(50, 0, (int)HUDInfo.ScreenSizeY()));
+                new MenuItem("snatcherNotificationY", "Coordinates Y").SetValue(new Slider(50, 0, (int)HUDInfo.ScreenSizeY()));
             notificationMenu.AddItem(notificationY);
             notificationY.ValueChanged += (sender, args) => { NotificationY = args.GetNewValue<Slider>().Value; };
             NotificationY = notificationY.GetValue<Slider>().Value;
@@ -82,8 +78,8 @@
             holdKey.ValueChanged += (sender, args) => HoldKey = args.GetNewValue<KeyBind>().Active;
             HoldKey = holdKey.IsActive();
 
-            var holdItems = new MenuItem("enabledStealHold", "Hold steal:").SetValue(
-                new AbilityToggler(items.ToDictionary(x => x.Key, x => true)));
+            var holdItems =
+                new MenuItem("enabledStealHold", "Hold steal:").SetValue(new AbilityToggler(items.ToDictionary(x => x.Key, x => true)));
             menu.AddItem(holdItems);
             holdItems.ValueChanged += (sender, args) =>
                 {
@@ -96,8 +92,7 @@
             ToggleKey = toggleKey.IsActive();
 
             var toggleItems =
-                new MenuItem("enabledStealToggle", "Toggle steal:").SetValue(
-                    new AbilityToggler(items.ToDictionary(x => x.Key, x => true)));
+                new MenuItem("enabledStealToggle", "Toggle steal:").SetValue(new AbilityToggler(items.ToDictionary(x => x.Key, x => true)));
             menu.AddItem(toggleItems);
             toggleItems.ValueChanged += (sender, args) => SetEnabledItems(
                 args.GetNewValue<AbilityToggler>().Dictionary,
@@ -118,8 +113,7 @@
             itemMoveCostThreshold.SetTooltip(
                 "It will move item from inventory (when full) to backpack which costs less gold to pick up aegis/rapier/gem (disabled: 0)");
             menu.AddItem(itemMoveCostThreshold);
-            itemMoveCostThreshold.ValueChanged +=
-                (sender, args) => ItemMoveCostThreshold = args.GetNewValue<Slider>().Value;
+            itemMoveCostThreshold.ValueChanged += (sender, args) => ItemMoveCostThreshold = args.GetNewValue<Slider>().Value;
             ItemMoveCostThreshold = itemMoveCostThreshold.GetValue<Slider>().Value;
 
             var updateRate = new MenuItem("snatcherUpdateRate", "Update rate").SetValue(new Slider(1, 1, 500));

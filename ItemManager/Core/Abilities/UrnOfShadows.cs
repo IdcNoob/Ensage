@@ -42,14 +42,12 @@
 
         public override bool CanBeCasted()
         {
-            return base.CanBeCasted() && urnOfShadows.CurrentCharges > 0
-                   && !Manager.MyHero.HasModifier(ModifierUtils.UrnRegeneration);
+            return base.CanBeCasted() && urnOfShadows.CurrentCharges > 0 && !Manager.MyHero.HasModifier(ModifierUtils.UrnRegeneration);
         }
 
         public override bool CanBeCasted(Unit target)
         {
-            return base.CanBeCasted(target) && urnOfShadows.CurrentCharges > 0
-                   && !target.HasModifier(ModifierUtils.UrnDebuff);
+            return base.CanBeCasted(target) && urnOfShadows.CurrentCharges > 0 && !target.HasModifier(ModifierUtils.UrnDebuff);
         }
 
         public bool ShouldBeUsed(MyHero hero, RecoveryMenu menu, float missingHealth, float missingMana)

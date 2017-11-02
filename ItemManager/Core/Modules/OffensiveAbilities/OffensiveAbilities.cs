@@ -26,7 +26,6 @@
         private readonly Dictionary<AbilityId, string> forcedNames = new Dictionary<AbilityId, string>
         {
             { AbilityId.item_bloodthorn, "item_orchid" },
-            { AbilityId.item_diffusal_blade_2, "item_diffusal_blade" },
             { AbilityId.item_solar_crest, "item_medallion_of_courage" }
         };
 
@@ -40,7 +39,6 @@
         {
             { AbilityId.item_abyssal_blade, "Abyssal blade" },
             { AbilityId.item_diffusal_blade, "Diffusal blade" },
-            { AbilityId.item_diffusal_blade_2, "Diffusal blade" },
             { AbilityId.item_ethereal_blade, "Ethereal blade" },
             { AbilityId.item_cyclone, "Euls scepter of divinity" },
             { AbilityId.item_heavens_halberd, "Heavens halberd" },
@@ -88,8 +86,7 @@
 
             var ability = abilityEventArgs.Ability;
 
-            var usableAbility = manager.MyHero.UsableAbilities.OfType<IOffensiveAbility>()
-                .FirstOrDefault(x => x.Handle == ability.Handle);
+            var usableAbility = manager.MyHero.UsableAbilities.OfType<IOffensiveAbility>().FirstOrDefault(x => x.Handle == ability.Handle);
 
             if (usableAbility == null)
             {
@@ -135,14 +132,12 @@
             var canUseAbilities = manager.MyHero.CanUseAbilities();
 
             foreach (var offensiveAbility in offensiveAbilities
-                .Where(
-                    x => menu.IsAbilityEnabled(x.Name) && x.CanBeCasted() && (x.IsItem ? canUseItems : canUseAbilities))
+                .Where(x => menu.IsAbilityEnabled(x.Name) && x.CanBeCasted() && (x.IsItem ? canUseItems : canUseAbilities))
                 .OrderByDescending(x => menu.GetPriority(x.Name)))
             {
                 var target = manager.MyHero.Target;
 
-                if (!offensiveAbility.CanBeCasted(target) || sleeper.Sleeping(target)
-                    || !menu.IsHeroEnabled(target.StoredName()))
+                if (!offensiveAbility.CanBeCasted(target) || sleeper.Sleeping(target) || !menu.IsHeroEnabled(target.StoredName()))
                 {
                     target = null;
                 }

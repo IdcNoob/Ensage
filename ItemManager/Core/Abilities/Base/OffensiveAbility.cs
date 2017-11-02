@@ -22,6 +22,7 @@
     [Ability(AbilityId.item_rod_of_atos)]
     [Ability(AbilityId.item_ethereal_blade)]
     [Ability(AbilityId.item_abyssal_blade)]
+    [Ability(AbilityId.item_diffusal_blade)]
     internal class OffensiveAbility : UsableAbility, IOffensiveAbility
     {
         public OffensiveAbility(Ability ability, Manager manager)
@@ -39,8 +40,7 @@
             }
 
             if (!target.IsAlive || !target.IsVisible || target.IsMagicImmune()
-                || target.Distance2D(Manager.MyHero.Position) > GetCastRange() || target.IsInvulnerable()
-                || target.IsReflectingAbilities())
+                || target.Distance2D(Manager.MyHero.Position) > GetCastRange() || target.IsInvulnerable() || target.IsReflectingAbilities())
             {
                 return false;
             }

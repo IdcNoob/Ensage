@@ -75,8 +75,8 @@
 
             var creeps = EntityManager<Creep>.Entities.Where(
                 x => x.IsValid && x.IsVisible && x.IsAlive && x.IsSpawned && !x.IsAncient
-                     && x.Distance2D(manager.MyHero.Position) <= handOfMidas.GetCastRange()
-                     && x.Team != manager.MyHero.Team && x.HealthPercentage() >= menu.HealthThresholdPct
+                     && x.Distance2D(manager.MyHero.Position) <= handOfMidas.GetCastRange() && x.Team != manager.MyHero.Team
+                     && x.HealthPercentage() >= menu.HealthThresholdPct
                      && (x.GetGrantedExperience() >= menu.ExperienceThreshold || manager.MyHero.Level >= 25));
 
             var creep = manager.MyHero.Level >= 25

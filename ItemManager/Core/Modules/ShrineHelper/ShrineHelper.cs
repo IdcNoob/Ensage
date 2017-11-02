@@ -81,8 +81,7 @@
             }
 
             if (args.OrderId == OrderId.MoveTarget && args.Target?.ClassId == ClassId.CDOTA_BaseNPC_Healer
-                && manager.MyHero.HealthPercentage > menu.HpUseThreshold
-                && manager.MyHero.ManaPercentage > menu.MpUseThreshold)
+                && manager.MyHero.HealthPercentage > menu.HpUseThreshold && manager.MyHero.ManaPercentage > menu.MpUseThreshold)
             {
                 args.Process = false;
                 manager.MyHero.Hero.Move(args.Target.Position);
@@ -96,8 +95,7 @@
                 return;
             }
 
-            if (manager.MyHero.HealthPercentage > menu.HpDisableThreshold
-                && manager.MyHero.ManaPercentage > menu.MpDisableThreshold)
+            if (manager.MyHero.HealthPercentage > menu.HpDisableThreshold && manager.MyHero.ManaPercentage > menu.MpDisableThreshold)
             {
                 return;
             }

@@ -57,8 +57,7 @@
         {
             if (boolEventArgs.Enabled)
             {
-                var tranquils = manager.MyHero.GetItems(ItemStoredPlace.Inventory)
-                    .FirstOrDefault(x => x.Id == AbilityId);
+                var tranquils = manager.MyHero.GetItems(ItemStoredPlace.Inventory).FirstOrDefault(x => x.Id == AbilityId);
 
                 if (tranquils == null)
                 {
@@ -84,8 +83,7 @@
             }
 
             if (EntityManager<Hero>.Entities.Any(
-                x => x.IsValid && x.IsVisible && x.IsAlive && x.Team != manager.MyHero.Team
-                     && x.Distance2D(manager.MyHero.Position) < 800))
+                x => x.IsValid && x.IsVisible && x.IsAlive && x.Team != manager.MyHero.Team && x.Distance2D(manager.MyHero.Position) < 800))
             {
                 manager.MyHero.PickUpItems();
                 sleeper.Sleep(500);

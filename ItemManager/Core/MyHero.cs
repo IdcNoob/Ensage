@@ -24,7 +24,7 @@ namespace ItemManager.Core
 
         private readonly MultiSleeper disabledItems = new MultiSleeper();
 
-        private readonly List<OrderId> dropTargetOrders = new List<OrderId>
+        private readonly HashSet<OrderId> dropTargetOrders = new HashSet<OrderId>
         {
             OrderId.Hold,
             OrderId.Stop,
@@ -58,7 +58,7 @@ namespace ItemManager.Core
 
         public float Health => Hero.Health;
 
-        public float HealthPercentage => Health / MaximumHealth * 100;
+        public float HealthPercentage => (Health / MaximumHealth) * 100;
 
         public Hero Hero { get; }
 
@@ -74,7 +74,7 @@ namespace ItemManager.Core
 
         public float Mana => Hero.Mana;
 
-        public float ManaPercentage => Mana / MaximumMana * 100;
+        public float ManaPercentage => (Mana / MaximumMana) * 100;
 
         public float MaximumHealth => Hero.MaximumHealth;
 
@@ -154,9 +154,8 @@ namespace ItemManager.Core
         {
             foreach (var item in GetItems(ItemStoredPlace.Inventory)
                 .Where(
-                    x => ignoredItems.All(z => z.Handle != x.Handle) && !DroppedItems.Contains(x)
-                         && !disabledItems.Sleeping(x.Handle) && x.IsEnabled && x.IsDroppable
-                         && x.GetItemStats().HasFlag(dropItemStats)))
+                    x => ignoredItems.All(z => z.Handle != x.Handle) && !DroppedItems.Contains(x) && !disabledItems.Sleeping(x.Handle)
+                         && x.IsEnabled && x.IsDroppable && (x.GetItemStats() & dropItemStats) != 0))
             {
                 if (toBackpack && ItemsCanBeDisabled())
                 {
@@ -290,8 +289,8 @@ namespace ItemManager.Core
                 return 0;
             }
 
-            var physicalItems = EntityManager<PhysicalItem>.Entities.Where(
-                    x => x.IsValid && x.IsVisible && x.Distance2D(Hero) < 800 && DroppedItems.Contains(x.Item))
+            var physicalItems = EntityManager<PhysicalItem>.Entities
+                .Where(x => x.IsValid && x.IsVisible && x.Distance2D(Hero) < 800 && DroppedItems.Contains(x.Item))
                 .Reverse()
                 .ToList();
 
@@ -315,9 +314,7 @@ namespace ItemManager.Core
 
                     if (slot != null && item != null)
                     {
-                        DelayAction.Add(
-                            200 + Hero.Distance2D(physicalItem) / Hero.MovementSpeed,
-                            () => { item.MoveItem(slot.Value); });
+                        DelayAction.Add(200 + (Hero.Distance2D(physicalItem) / Hero.MovementSpeed), () => { item.MoveItem(slot.Value); });
                     }
                 }
             }

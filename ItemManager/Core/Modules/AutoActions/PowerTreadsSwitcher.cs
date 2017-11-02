@@ -165,8 +165,8 @@
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
             if (!args.Process || args.IsQueued || !args.Entities.Contains(manager.MyHero.Hero)
-                || !args.IsPlayerInput && !menu.UniversalUseEnabled || manager.MyHero.IsInvisible()
-                && !manager.MyHero.CanUseAbilitiesInInvisibility())
+                || !args.IsPlayerInput && !menu.UniversalUseEnabled
+                || manager.MyHero.IsInvisible() && !manager.MyHero.CanUseAbilitiesInInvisibility())
             {
                 return;
             }
@@ -198,8 +198,7 @@
                 return;
             }
 
-            if (ability != null && (ability.ManaCost <= menu.MpAbilityThreshold
-                                    || !menu.IsAbilityEnabled(ability.StoredName())))
+            if (ability != null && (ability.ManaCost <= menu.MpAbilityThreshold || !menu.IsAbilityEnabled(ability.StoredName())))
             {
                 return;
             }

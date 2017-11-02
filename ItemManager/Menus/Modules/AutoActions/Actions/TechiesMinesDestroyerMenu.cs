@@ -13,7 +13,7 @@
             var menu = new Menu("Mines destroyer", "minesDestroyer");
 
             var enabled = new MenuItem("destroyerMines", "Enabled").SetValue(true);
-            enabled.SetTooltip("Auto use quelling blade, iron talon and battle fury on remote/stasis mines");
+            enabled.SetTooltip("Auto use quelling blade and battle fury on remote/stasis mines");
             menu.AddItem(enabled);
             enabled.ValueChanged += (sender, args) =>
                 {
@@ -23,8 +23,7 @@
             IsEnabled = enabled.IsActive();
 
             var attackMines = new MenuItem("attackMines", "Attack techies mines").SetValue(true);
-            attackMines.SetTooltip(
-                "Auto attack techies mines when they can be killed with 1 hit and no other mines around");
+            attackMines.SetTooltip("Auto attack techies mines when they can be killed with 1 hit and no other mines around");
             menu.AddItem(attackMines);
             attackMines.ValueChanged += (sender, args) => AttackMines = args.GetNewValue<bool>();
             AttackMines = attackMines.IsActive();

@@ -70,12 +70,10 @@
     <Compile Include="Core\Abilities\Base\OffensiveAbility.cs" />
     <Compile Include="Core\Abilities\Base\Shrine.cs" />
     <Compile Include="Core\Abilities\BlinkDagger.cs" />
-    <Compile Include="Core\Abilities\DiffusalBlade.cs" />
     <Compile Include="Core\Abilities\GuardianGreaves.cs" />
     <Compile Include="Core\Abilities\HurricanePike.cs" />
     <Compile Include="Core\Abilities\Interfaces\IDefensiveAbility.cs" />
     <Compile Include="Core\Abilities\Interfaces\IOffensiveAbility.cs" />
-    <Compile Include="Core\Abilities\IronTalon.cs" />
     <Compile Include="Core\Abilities\MagicStick.cs" />
     <Compile Include="Core\Abilities\Mekansm.cs" />
     <Compile Include="Core\Abilities\Satanic.cs" />
@@ -91,7 +89,6 @@
     <Compile Include="Core\Modules\AbilityBasedModuleManager.cs" />
     <Compile Include="Core\Modules\AbilityHelper\BlinkAdjustment.cs" />
     <Compile Include="Core\Modules\AbilityHelper\TranquilDrop.cs" />
-    <Compile Include="Core\Modules\AutoActions\AutoIronTalon.cs" />
     <Compile Include="Core\Modules\AutoActions\AutoMidas.cs" />
     <Compile Include="Core\Modules\AutoActions\AutoPhaseBoots.cs" />
     <Compile Include="Core\Modules\AutoActions\HpMpRestore\AutoTango.cs" />
@@ -126,7 +123,6 @@
     <Compile Include="Menus\Modules\AbilityHelper\AbilityHelperMenu.cs" />
     <Compile Include="Menus\Modules\AbilityHelper\BlinkMenu.cs" />
     <Compile Include="Menus\Modules\AbilityHelper\TranquilMenu.cs" />
-    <Compile Include="Menus\Modules\AutoActions\Actions\IronTalonMenu.cs" />
     <Compile Include="Menus\Modules\AutoActions\Actions\MidasMenu.cs" />
     <Compile Include="Menus\Modules\AutoActions\Actions\PhaseBootsMenu.cs" />
     <Compile Include="Menus\Modules\AutoActions\HpMpRestore\AutoArcaneBootsMenu.cs" />
@@ -150,7 +146,6 @@
     <Compile Include="Menus\Modules\ItemSwap\ItemSwapMenu.cs" />
     <Compile Include="Menus\MenuManager.cs" />
     <Compile Include="Menus\Modules\AutoActions\Actions\PowerTreadsMenu.cs" />
-    <Compile Include="Menus\Modules\OffensiveAbilities\AbilitySettings\DiffusalBladeSettings.cs" />
     <Compile Include="Menus\Modules\OffensiveAbilities\AbilitySettings\OffensiveAbilitySettings.cs" />
     <Compile Include="Menus\Modules\OffensiveAbilities\AbilitySettings\SatanicSettings.cs" />
     <Compile Include="Menus\Modules\OffensiveAbilities\OffensiveAbilitiesMenu.cs" />

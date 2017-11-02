@@ -109,8 +109,8 @@
             }
 
             if (EntityManager<Hero>.Entities.Any(
-                x => x.IsValid && x.Handle != manager.MyHero.Handle && x.IsAlive && !x.IsIllusion
-                     && x.Team == manager.MyHero.Team && x.Distance2D(manager.MyHero.Position) <= menu.AllySearchRange
+                x => x.IsValid && x.Handle != manager.MyHero.Handle && x.IsAlive && !x.IsIllusion && x.Team == manager.MyHero.Team
+                     && x.Distance2D(manager.MyHero.Position) <= menu.AllySearchRange
                      && x.Distance2D(manager.MyHero.Position) > arcaneBoots.GetCastRange()
                      && x.MaximumMana - x.Mana > arcaneBoots.ManaRestore))
             {

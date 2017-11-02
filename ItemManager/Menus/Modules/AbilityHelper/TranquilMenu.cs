@@ -12,8 +12,7 @@
         {
             var menu = new Menu("Tranquil boots", "tranquilDrop");
 
-            var key = new MenuItem("tranquilDropKey", "Drop tranquil boots").SetValue(
-                new KeyBind('-', KeyBindType.Press));
+            var key = new MenuItem("tranquilDropKey", "Drop tranquil boots").SetValue(new KeyBind('-', KeyBindType.Press));
             menu.AddItem(key);
             key.ValueChanged += (sender, args) =>
                 {

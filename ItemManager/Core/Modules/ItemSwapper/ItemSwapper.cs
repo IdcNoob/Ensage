@@ -64,49 +64,16 @@
             }
             manager.OnItemAdd += OnItemAdd;
             manager.OnItemRemove += OnItemRemove;
-            this.menu.Auto.AutoMoveTpScrollChange += this.OnAutoMoveTpScrollChange;
-            this.menu.Auto.SwapBackpackItemsChange += this.OnSwapBackpackItemsChange;
-            this.menu.Auto.AutoMoveRaindropChange += this.OnAutoMoveRaindropChange;
-        }
-
-        private void OnAutoMoveRaindropChange(object sender, BoolEventArgs boolEventArgs)
-        {
-            if (boolEventArgs.Enabled)
-            {
-                Entity.OnInt32PropertyChange += OnChargeCountChange;
-            }
-            else
-            {
-                Entity.OnInt32PropertyChange -= OnChargeCountChange;
-            }
-        }
-
-        private void OnChargeCountChange(Entity sender, Int32PropertyChangeEventArgs args)
-        {
-            if (args.NewValue != 1 || args.OldValue == args.NewValue || args.PropertyName != "m_iCurrentCharges")
-            {
-                return;
-            }
-
-            var raindrop = sender as Item;
-            if (raindrop?.Id != AbilityId.item_infused_raindrop || raindrop.Owner?.Handle != this.manager.MyHero.Handle)
-            {
-                return;
-            }
-
-            if (!this.manager.MyHero.Inventory.FreeBackpackSlots.Any())
-            {
-                return;
-            }
-
-            raindrop.MoveItem(manager.MyHero.Inventory.FreeBackpackSlots.First());
+            this.menu.Auto.AutoMoveTpScrollChange += OnAutoMoveTpScrollChange;
+            this.menu.Auto.SwapBackpackItemsChange += OnSwapBackpackItemsChange;
+            this.menu.Auto.AutoMoveRaindropChange += OnAutoMoveRaindropChange;
         }
 
         public void Dispose()
         {
-            menu.Auto.AutoMoveTpScrollChange -= this.OnAutoMoveTpScrollChange;
-            this.menu.Auto.AutoMoveRaindropChange -= this.OnAutoMoveRaindropChange;
-            this.menu.Auto.SwapBackpackItemsChange -= this.OnSwapBackpackItemsChange;
+            menu.Auto.AutoMoveTpScrollChange -= OnAutoMoveTpScrollChange;
+            menu.Auto.AutoMoveRaindropChange -= OnAutoMoveRaindropChange;
+            menu.Auto.SwapBackpackItemsChange -= OnSwapBackpackItemsChange;
             menu.Backpack.OnSwap -= BackpackOnSwap;
             menu.Stash.OnSwap -= StashOnSwap;
             menu.Courier.OnSwap -= CourierOnSwap;
@@ -119,39 +86,13 @@
             UpdateManager.Unsubscribe(OnUpdate);
         }
 
-        private void OnAutoMoveTpScrollChange(object sender, BoolEventArgs boolEventArgs)
-        {
-            if (boolEventArgs.Enabled)
-            {
-                Unit.OnModifierAdded += OnModifierAdded;
-            }
-            else
-            {
-                Unit.OnModifierAdded -= OnModifierAdded;
-            }
-        }
-
-        private void OnSwapBackpackItemsChange(object sender, BoolEventArgs boolEventArgs)
-        {
-            if (boolEventArgs.Enabled)
-            {
-                Entity.OnInt32PropertyChange += OnNetworkActivityChange;
-            }
-            else
-            {
-                Entity.OnInt32PropertyChange -= OnNetworkActivityChange;
-            }
-        }
-
         private void BackpackOnSwap(object sender, EventArgs eventArgs)
         {
             var inventoryItems = manager.MyHero.GetItems(ItemStoredPlace.Inventory)
                 .Where(x => menu.Backpack.ItemEnabled(x.Name) && x.CanBeMovedToBackpack())
                 .ToList();
 
-            var backpackItems = manager.MyHero.GetItems(ItemStoredPlace.Backpack)
-                .Where(x => menu.Backpack.ItemEnabled(x.Name))
-                .ToList();
+            var backpackItems = manager.MyHero.GetItems(ItemStoredPlace.Backpack).Where(x => menu.Backpack.ItemEnabled(x.Name)).ToList();
 
             MoveItems(inventoryItems, backpackItems, ItemStoredPlace.Backpack);
             MoveItems(backpackItems, inventoryItems, ItemStoredPlace.Inventory);
@@ -283,6 +224,51 @@
             }
         }
 
+        private void OnAutoMoveRaindropChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (boolEventArgs.Enabled)
+            {
+                Entity.OnInt32PropertyChange += OnChargeCountChange;
+            }
+            else
+            {
+                Entity.OnInt32PropertyChange -= OnChargeCountChange;
+            }
+        }
+
+        private void OnAutoMoveTpScrollChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (boolEventArgs.Enabled)
+            {
+                Unit.OnModifierAdded += OnModifierAdded;
+            }
+            else
+            {
+                Unit.OnModifierAdded -= OnModifierAdded;
+            }
+        }
+
+        private void OnChargeCountChange(Entity sender, Int32PropertyChangeEventArgs args)
+        {
+            if (args.NewValue != 1 || args.OldValue == args.NewValue || args.PropertyName != "m_iCurrentCharges")
+            {
+                return;
+            }
+
+            var raindrop = sender as Item;
+            if (raindrop?.Id != AbilityId.item_infused_raindrop || raindrop.Owner?.Handle != manager.MyHero.Handle)
+            {
+                return;
+            }
+
+            if (!manager.MyHero.Inventory.FreeBackpackSlots.Any())
+            {
+                return;
+            }
+
+            raindrop.MoveItem(manager.MyHero.Inventory.FreeBackpackSlots.First());
+        }
+
         private void OnCourierStateChange(Entity sender, Int32PropertyChangeEventArgs args)
         {
             if (args.OldValue == args.NewValue || args.PropertyName != "m_nCourierState")
@@ -313,8 +299,7 @@
         {
             var item = itemEventArgs.Item;
 
-            if (!itemEventArgs.IsMine || item.IsRecipe
-                || manager.MyHero.GetItems(ItemStoredPlace.Any).Any(x => x.Id == item.Id))
+            if (!itemEventArgs.IsMine || item.IsRecipe || manager.MyHero.GetItems(ItemStoredPlace.Any).Any(x => x.Id == item.Id))
             {
                 return;
             }
@@ -358,8 +343,7 @@
 
         private void OnNetworkActivityChange(Entity sender, Int32PropertyChangeEventArgs args)
         {
-            if (sender?.Handle != manager.MyHero.Handle || args.NewValue == args.OldValue
-                || args.PropertyName != "m_NetworkActivity")
+            if (sender?.Handle != manager.MyHero.Handle || args.NewValue == args.OldValue || args.PropertyName != "m_NetworkActivity")
             {
                 return;
             }
@@ -452,6 +436,18 @@
             }
         }
 
+        private void OnSwapBackpackItemsChange(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (boolEventArgs.Enabled)
+            {
+                Entity.OnInt32PropertyChange += OnNetworkActivityChange;
+            }
+            else
+            {
+                Entity.OnInt32PropertyChange -= OnNetworkActivityChange;
+            }
+        }
+
         private void OnUpdate()
         {
             if (sleeper.Sleeping)
@@ -459,9 +455,7 @@
                 return;
             }
 
-            var courier =
-                EntityManager<Courier>.Entities.FirstOrDefault(
-                    x => x.IsValid && x.IsAlive && x.Team == manager.MyHero.Team);
+            var courier = EntityManager<Courier>.Entities.FirstOrDefault(x => x.IsValid && x.IsAlive && x.Team == manager.MyHero.Team);
 
             if (courier == null || !manager.MyHero.IsAlive)
             {
@@ -473,8 +467,8 @@
                 .Where(x => menu.Courier.ItemEnabled(x.Name) && x.CanBeMovedToBackpack())
                 .ToList();
 
-            var courierItems = courier.Inventory.Items.Where(
-                    x => x.Purchaser?.Hero?.Handle == manager.MyHero.Handle && menu.Courier.ItemEnabled(x.Name))
+            var courierItems = courier.Inventory.Items
+                .Where(x => x.Purchaser?.Hero?.Handle == manager.MyHero.Handle && menu.Courier.ItemEnabled(x.Name))
                 .ToList();
 
             if (!inventoryItems.Any() && !courierItems.Any())
@@ -523,9 +517,7 @@
                 .Where(x => menu.Stash.ItemEnabled(x.Name) && x.CanBeMovedToBackpack())
                 .ToList();
 
-            var stashItems = manager.MyHero.GetItems(ItemStoredPlace.Stash)
-                .Where(x => menu.Stash.ItemEnabled(x.Name))
-                .ToList();
+            var stashItems = manager.MyHero.GetItems(ItemStoredPlace.Stash).Where(x => menu.Stash.ItemEnabled(x.Name)).ToList();
 
             MoveItems(inventoryItems, stashItems, ItemStoredPlace.Stash);
             MoveItems(stashItems, inventoryItems, ItemStoredPlace.Inventory);

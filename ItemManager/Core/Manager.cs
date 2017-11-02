@@ -10,7 +10,7 @@
     using Attributes;
 
     using Ensage;
-    using Ensage.Common.Extensions;
+    using Ensage.SDK.Extensions;
     using Ensage.SDK.Helpers;
 
     using EventArgs;
@@ -19,7 +19,7 @@
 
     internal class Manager : IDisposable
     {
-        private readonly List<Type> abilityTypes;
+        private readonly HashSet<Type> abilityTypes;
 
         public Manager(Hero hero)
         {
@@ -29,7 +29,7 @@
             abilityTypes = Assembly.GetExecutingAssembly()
                 .GetTypes()
                 .Where(x => x.IsClass && x.Namespace?.Contains("ItemManager.Core.Abilities") == true)
-                .ToList();
+                .ToHashSet();
 
             UpdateManager.BeginInvoke(AddCurrentObjects, 3000);
         }
@@ -62,8 +62,7 @@
 
             entities.AddRange(EntityManager<Unit>.Entities.Where(x => x.IsValid && x.UnitType != 0));
             entities.AddRange(EntityManager<Ability>.Entities.Where(x => x.IsValid));
-            entities.AddRange(
-                EntityManager<PhysicalItem>.Entities.Where(x => x.IsValid && x.Item.IsValid).Select(x => x.Item));
+            entities.AddRange(EntityManager<PhysicalItem>.Entities.Where(x => x.IsValid && x.Item.IsValid).Select(x => x.Item));
 
             foreach (var entity in entities)
             {
@@ -156,7 +155,7 @@
             }
 
             var unit = args.Entity as Unit;
-            if (unit != null && unit.IsValid && unit.IsRealUnit())
+            if (unit != null && unit.IsValid && UnitExtensions.IsRealUnit(unit))
             {
                 OnUnitRemove?.Invoke(null, new UnitEventArgs(unit));
             }

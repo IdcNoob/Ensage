@@ -82,8 +82,7 @@
                 {
                     if (menu.HeroEnemySearchRange <= 0 || EntityManager<Hero>.Entities.Any(
                             x => x.IsAlive && !x.IsIllusion && x.IsVisible && x.Team != manager.MyHero.Team
-                                 && x.Distance2D(hero) <= menu.HeroEnemySearchRange
-                                 && !x.HasModifier(ModifierUtils.LivingArmorModifier)))
+                                 && x.Distance2D(hero) <= menu.HeroEnemySearchRange && !x.HasModifier(ModifierUtils.LivingArmorModifier)))
                     {
                         PrintMessage(hero);
                         livingArmor.Use(hero);
@@ -96,8 +95,7 @@
             {
                 var tower = EntityManager<Tower>.Entities
                     .Where(
-                        x => x.IsValid && x.IsAlive && x.Team == manager.MyHero.Team
-                             && !x.HasModifier(ModifierUtils.LivingArmorModifier))
+                        x => x.IsValid && x.IsAlive && x.Team == manager.MyHero.Team && !x.HasModifier(ModifierUtils.LivingArmorModifier))
                     .OrderBy(x => x.HealthPercentage())
                     .FirstOrDefault(x => x.HealthPercentage() < menu.TowerHpThreshold);
 
@@ -113,12 +111,10 @@
             {
                 if (menu.IsEnabledCreepUnderTower)
                 {
-                    var creep = EntityManager<Tower>.Entities
-                        .Where(x => x.IsValid && x.IsAlive && x.Team != manager.MyHero.Team)
+                    var creep = EntityManager<Tower>.Entities.Where(x => x.IsValid && x.IsAlive && x.Team != manager.MyHero.Team)
                         .Select(x => x.AttackTarget)
                         .Where(
-                            x => x is Creep && x.IsValid && x.IsAlive && x.IsSpawned
-                                 && !x.HasModifier(ModifierUtils.LivingArmorModifier))
+                            x => x is Creep && x.IsValid && x.IsAlive && x.IsSpawned && !x.HasModifier(ModifierUtils.LivingArmorModifier))
                         .OrderBy(x => x.HealthPercentage())
                         .FirstOrDefault();
 

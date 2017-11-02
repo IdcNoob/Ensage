@@ -95,8 +95,7 @@
                 return;
             }
 
-            var tango = manager.MyHero.GetItems(ItemStoredPlace.Inventory)
-                .FirstOrDefault(x => x.IsTango() && x.CanBeCasted());
+            var tango = manager.MyHero.GetItems(ItemStoredPlace.Inventory).FirstOrDefault(x => x.IsTango() && x.CanBeCasted());
 
             if (tango == null)
             {

@@ -72,7 +72,7 @@
 
             var item = manager.MyHero.GetItems(ItemStoredPlace.Inventory)
                 .Where(
-                    x => (!x.IsTango() || manager.MyHero.MissingHealth >= menu.TangoHpThreshold)
+                    x => menu.ItemsToUse.Contains(x.Id) && (!x.IsTango() || manager.MyHero.MissingHealth >= menu.TangoHpThreshold)
                          && menu.IsAbilityEnabled(x.StoredName()) && x.CanBeCasted())
                 .OrderByDescending(x => menu.GetAbilityPriority(x.StoredName()))
                 .FirstOrDefault();

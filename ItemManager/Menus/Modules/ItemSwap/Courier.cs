@@ -14,8 +14,7 @@
             var menu = new Menu("Courier", "courierSwapper");
 
             menu.AddItem(
-                new MenuItem("courierSwapItems", "Items:").SetValue(
-                    abilityToggler = new AbilityToggler(new Dictionary<string, bool>())));
+                new MenuItem("courierSwapItems", "Items:").SetValue(abilityToggler = new AbilityToggler(new Dictionary<string, bool>())));
 
             var key = new MenuItem("courierKey", "Hotkey").SetValue(new KeyBind('-', KeyBindType.Press));
             menu.AddItem(key);

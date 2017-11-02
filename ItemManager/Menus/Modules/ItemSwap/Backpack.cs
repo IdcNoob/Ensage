@@ -14,8 +14,7 @@
             var menu = new Menu("Backpack", "backpackSwapper");
 
             menu.AddItem(
-                new MenuItem("backpackSwapItems", "Items:").SetValue(
-                    abilityToggler = new AbilityToggler(new Dictionary<string, bool>())));
+                new MenuItem("backpackSwapItems", "Items:").SetValue(abilityToggler = new AbilityToggler(new Dictionary<string, bool>())));
 
             var key = new MenuItem("backpackKey", "Hotkey").SetValue(new KeyBind('-', KeyBindType.Press));
             menu.AddItem(key);

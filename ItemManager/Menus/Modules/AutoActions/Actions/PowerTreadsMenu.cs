@@ -26,8 +26,7 @@
             IsEnabled = enabled.IsActive();
 
             var universal = new MenuItem("ptUniversalUse", "Universal use").SetValue(true);
-            universal.SetTooltip(
-                "If enabled power treads will work with all other assemblies otherwise only when player used ability");
+            universal.SetTooltip("If enabled power treads will work with all other assemblies otherwise only when player used ability");
             menu.AddItem(universal);
             universal.ValueChanged += (sender, args) => UniversalUseEnabled = args.GetNewValue<bool>();
             UniversalUseEnabled = universal.IsActive();
@@ -35,15 +34,13 @@
             var switchOnMove = new MenuItem("ptSwitchOnMove", "Switch on move").SetValue(
                 new StringList("None", "Hero attribute", "Strength", "Agility", "Intelligence"));
             menu.AddItem(switchOnMove);
-            switchOnMove.ValueChanged += (sender, args) =>
-                SwitchOnMoveAttribute = args.GetNewValue<StringList>().SelectedIndex;
+            switchOnMove.ValueChanged += (sender, args) => SwitchOnMoveAttribute = args.GetNewValue<StringList>().SelectedIndex;
             SwitchOnMoveAttribute = switchOnMove.GetValue<StringList>().SelectedIndex;
 
             var switchOnAttack = new MenuItem("ptSwitchOnAttack", "Switch on attack").SetValue(
                 new StringList("None", "Hero attribute", "Strength", "Agility", "Intelligence"));
             menu.AddItem(switchOnAttack);
-            switchOnAttack.ValueChanged += (sender, args) =>
-                SwitchOnAttackAttribute = args.GetNewValue<StringList>().SelectedIndex;
+            switchOnAttack.ValueChanged += (sender, args) => SwitchOnAttackAttribute = args.GetNewValue<StringList>().SelectedIndex;
             SwitchOnAttackAttribute = switchOnAttack.GetValue<StringList>().SelectedIndex;
 
             var switchOnHeal = new MenuItem("ptSwitchOnHeal", "Switch when healing").SetValue(true);
@@ -52,16 +49,14 @@
             switchOnHeal.ValueChanged += (sender, args) => SwitchOnHeal = args.GetNewValue<bool>();
             SwitchOnHeal = switchOnHeal.IsActive();
 
-            var mpAbilityThreshold =
-                new MenuItem("ptMpAbilityThreshold", "MP ability threshold").SetValue(new Slider(25));
+            var mpAbilityThreshold = new MenuItem("ptMpAbilityThreshold", "MP ability threshold").SetValue(new Slider(25));
             mpAbilityThreshold.SetTooltip("Use soul ring when ability costs more mp");
             menu.AddItem(mpAbilityThreshold);
             mpAbilityThreshold.ValueChanged += (sender, args) => MpAbilityThreshold = args.GetNewValue<Slider>().Value;
             MpAbilityThreshold = mpAbilityThreshold.GetValue<Slider>().Value;
 
             menu.AddItem(
-                new MenuItem("ptAbilities", "Enabled:").SetValue(
-                    abilityToggler = new AbilityToggler(new Dictionary<string, bool>())));
+                new MenuItem("ptAbilities", "Enabled:").SetValue(abilityToggler = new AbilityToggler(new Dictionary<string, bool>())));
 
             mainMenu.AddSubMenu(menu);
         }

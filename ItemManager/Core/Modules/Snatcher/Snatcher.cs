@@ -82,8 +82,8 @@
 
         private void AddOtherUnits()
         {
-            var controllableUnits = EntityManager<Unit>.Entities.Where(
-                    x => x.IsValid && x.Team == manager.MyHero.Team && x.IsControllable && !x.IsIllusion)
+            var controllableUnits = EntityManager<Unit>.Entities
+                .Where(x => x.IsValid && x.Team == manager.MyHero.Team && x.IsControllable && !x.IsIllusion)
                 .ToList();
 
             var spiritBear = controllableUnits.FirstOrDefault(x => x.Name.Contains("npc_dota_lone_druid_bear"));
@@ -92,8 +92,7 @@
                 controllables.Add(new SpiritBear(spiritBear));
             }
 
-            foreach (var meepo in controllableUnits.Where(
-                x => x.Name == "npc_dota_hero_meepo" && x.Handle != manager.MyHero.Handle))
+            foreach (var meepo in controllableUnits.Where(x => x.Name == "npc_dota_hero_meepo" && x.Handle != manager.MyHero.Handle))
             {
                 controllables.Add(new MeepoClone(meepo));
             }
@@ -264,8 +263,7 @@
 
             var validControllables = controllables.Where(x => x.IsValid()).ToList();
 
-            if (menu.ToggleKey && menu.EnabledToggleItems.Contains(0)
-                || menu.HoldKey && menu.EnabledHoldItems.Contains(0))
+            if (menu.ToggleKey && menu.EnabledToggleItems.Contains(0) || menu.HoldKey && menu.EnabledHoldItems.Contains(0))
             {
                 //     var runes = EntityManager<Rune>.Entities.Where(x => x.IsVisible && !sleeper.Sleeping(x.Handle));
                 var runes = ObjectManager.GetEntities<Rune>().Where(x => !sleeper.Sleeping(x.Handle));
@@ -285,8 +283,7 @@
             }
 
             var items = EntityManager<PhysicalItem>.Entities.Where(
-                    x => x.IsValid && x.IsVisible && !ignoredItems.Contains(x.Item.Handle)
-                         && !sleeper.Sleeping(x.Handle)
+                    x => x.IsValid && x.IsVisible && !ignoredItems.Contains(x.Item.Handle) && !sleeper.Sleeping(x.Handle)
                          && (menu.ToggleKey && menu.EnabledToggleItems.Contains(x.Item.Id)
                              || menu.HoldKey && menu.EnabledHoldItems.Contains(x.Item.Id)))
                 .OrderByDescending(x => x.Item.Id == AbilityId.item_aegis);

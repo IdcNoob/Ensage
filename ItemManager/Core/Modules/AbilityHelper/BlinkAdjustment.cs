@@ -67,8 +67,8 @@
 
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
-            if (!args.Entities.Contains(manager.MyHero.Hero) || args.IsQueued || manager.MyHero.IsChanneling
-                || !args.Process || blinkDagger.IsSleeping)
+            if (!args.Entities.Contains(manager.MyHero.Hero) || args.IsQueued || manager.MyHero.IsChanneling || !args.Process
+                || blinkDagger.IsSleeping)
             {
                 return;
             }

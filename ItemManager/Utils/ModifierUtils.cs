@@ -10,14 +10,14 @@
 
         public static string BottleRegeneration { get; } = "modifier_bottle_regeneration";
 
-        public static List<string> CanUseAbilitiesInInvis { get; } = new List<string>
+        public static HashSet<string> CanUseAbilitiesInInvis { get; } = new HashSet<string>
         {
             "modifier_broodmother_spin_web_invisible_applier",
             "modifier_riki_permanent_invisibility",
             "modifier_treant_natures_guise_invis"
         };
 
-        public static List<string> DelayPowerTreadsSwitchModifiers { get; } = new List<string>
+        public static HashSet<string> DelayPowerTreadsSwitchModifiers { get; } = new HashSet<string>
         {
             // abilities
             "modifier_leshrac_pulse_nova",
@@ -54,19 +54,9 @@
 
         public static string DiffusalDebuff { get; } = "modifier_item_diffusal_blade_slow";
 
-        public static List<string> DiffusalRemovableModifiers { get; } = new List<string>
-        {
-            "modifier_eul_cyclone",
-            "modifier_ghost_state",
-            "modifier_necrolyte_sadist_active",
-            "modifier_omninight_guardian_angel",
-            "modifier_item_glimmer_cape_fade",
-            "modifier_windrunner_windrun"
-        };
-
         public static string FountainRegeneration { get; } = "modifier_fountain_aura_buff";
 
-        public static List<string> HexModifiers { get; } = new List<string>
+        public static HashSet<string> HexModifiers { get; } = new HashSet<string>
         {
             "modifier_sheepstick_debuff",
             "modifier_shadow_shaman_voodoo",

@@ -39,9 +39,7 @@
 
             foreach (var type in Assembly.GetExecutingAssembly()
                 .GetTypes()
-                .Where(
-                    x => x.Namespace?.Contains("ItemManager.Core.Modules") == true
-                         && x.GetCustomAttribute<ModuleAttribute>() != null))
+                .Where(x => x.Namespace?.Contains("ItemManager.Core.Modules") == true && x.GetCustomAttribute<ModuleAttribute>() != null))
             {
                 disposables.Add((IDisposable)Activator.CreateInstance(type, manager, menu));
             }

@@ -84,8 +84,7 @@
                 case OrderId.AttackTarget:
                 {
                     var location = args.Target?.Position ?? args.TargetPosition;
-                    if (Math.Max(manager.MyHero.Distance2D(location) - manager.MyHero.Hero.GetAttackRange(), 0)
-                        >= menu.Distance)
+                    if (Math.Max(manager.MyHero.Distance2D(location) - manager.MyHero.Hero.GetAttackRange(), 0) >= menu.Distance)
                     {
                         phaseBoots.Use();
                     }

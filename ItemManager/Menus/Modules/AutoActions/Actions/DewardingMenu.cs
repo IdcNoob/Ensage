@@ -20,7 +20,7 @@
             var menu = new Menu("Dewarding", "dewardMenu");
 
             var enabled = new MenuItem("dewardEnabled", "Enabled").SetValue(true);
-            enabled.SetTooltip("Auto use quelling blade, tangos, iron talon etc. on wards");
+            enabled.SetTooltip("Auto use quelling blade, tangos etc. on wards");
             menu.AddItem(enabled);
             enabled.ValueChanged += (sender, args) =>
                 {
@@ -29,8 +29,7 @@
                 };
             IsEnabled = enabled.IsActive();
 
-            var tangoHpThreshold =
-                new MenuItem("dewardTangoHp", "Tango HP threshold").SetValue(new Slider(150, 0, 250));
+            var tangoHpThreshold = new MenuItem("dewardTangoHp", "Tango HP threshold").SetValue(new Slider(150, 0, 250));
             tangoHpThreshold.SetTooltip("Use tango only if you are missing more hp");
             menu.AddItem(tangoHpThreshold);
             tangoHpThreshold.ValueChanged += (sender, args) => TangoHpThreshold = args.GetNewValue<Slider>().Value;
@@ -63,9 +62,8 @@
 
         public bool IsEnabled { get; private set; }
 
-        public List<AbilityId> ItemsToUse { get; } = new List<AbilityId>
+        public HashSet<AbilityId> ItemsToUse { get; } = new HashSet<AbilityId>
         {
-            AbilityId.item_iron_talon,
             AbilityId.item_quelling_blade,
             AbilityId.item_bfury,
             AbilityId.item_tango,

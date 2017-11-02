@@ -46,10 +46,8 @@
             heroHpThreshold.ValueChanged += (sender, args) => HeroHpThreshold = args.GetNewValue<Slider>().Value;
             HeroHpThreshold = heroHpThreshold.GetValue<Slider>().Value;
 
-            var enemyCheckRange =
-                new MenuItem("livingArmorHeroEnemyRange", "Enemy search range").SetValue(new Slider(700, 0, 2000));
-            enemyCheckRange.SetTooltip(
-                "Use living armor only if there is enemy hero in range (if set to 0 range won't be checked)");
+            var enemyCheckRange = new MenuItem("livingArmorHeroEnemyRange", "Enemy search range").SetValue(new Slider(700, 0, 2000));
+            enemyCheckRange.SetTooltip("Use living armor only if there is enemy hero in range (if set to 0 range won't be checked)");
             heroMenu.AddItem(enemyCheckRange);
             enemyCheckRange.ValueChanged += (sender, args) => HeroEnemySearchRange = args.GetNewValue<Slider>().Value;
             HeroEnemySearchRange = enemyCheckRange.GetValue<Slider>().Value;
@@ -74,8 +72,7 @@
             raxEnabled.ValueChanged += (sender, args) => IsEnabledBarracks = args.GetNewValue<bool>();
             IsEnabledBarracks = raxEnabled.IsActive();
 
-            var raxHpThreshold =
-                new MenuItem("livingArmorBarracksHp", "Barracks HP% threshold").SetValue(new Slider(80));
+            var raxHpThreshold = new MenuItem("livingArmorBarracksHp", "Barracks HP% threshold").SetValue(new Slider(80));
             raxHpThreshold.SetTooltip("Use living armor if ally barracks has less hp%");
             raxMenu.AddItem(raxHpThreshold);
             raxHpThreshold.ValueChanged += (sender, args) => BarracksHpThreshold = args.GetNewValue<Slider>().Value;
