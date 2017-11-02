@@ -58,7 +58,6 @@
     <Compile Include="AbilityLeveling.cs" />
     <Compile Include="AbilityNames.cs" />
     <Compile Include="Bootstrap.cs" />
-    <Compile Include="IgnoredAbilities.cs" />
     <Compile Include="MenuManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -51,21 +51,19 @@
             var text = "Auto build preview (Win rate: " + abilityBuilder.BestBuildWinRate + ")";
 
             Drawing.DrawRect(
-                new Vector2(xStart - 2, yStart - 35 * ratio),
-                new Vector2(
-                    Drawing.MeasureText(text, "Arial", new Vector2(35 * ratio), FontFlags.None).X + 2,
-                    35 * ratio),
+                new Vector2(xStart - 2, yStart - (35 * ratio)),
+                new Vector2(Drawing.MeasureText(text, "Arial", new Vector2(35 * ratio), FontFlags.None).X + 2, 35 * ratio),
                 new Color(75, 75, 75, 175),
                 false);
             Drawing.DrawRect(
                 new Vector2(xStart - 2, yStart),
-                new Vector2((build.Count + 1) * 48 * ratio + 2, uniqueAbilities.Count * 40 * ratio),
+                new Vector2(((build.Count + 1) * 48 * ratio) + 2, uniqueAbilities.Count * 40 * ratio),
                 new Color(75, 75, 75, 175),
                 false);
             Drawing.DrawText(
                 text,
                 "Arial",
-                new Vector2(xStart, yStart - 35 * ratio),
+                new Vector2(xStart, yStart - (35 * ratio)),
                 new Vector2(35 * ratio),
                 Color.Orange,
                 FontFlags.None);
@@ -77,19 +75,16 @@
                                   ? Drawing.GetTexture("materials/ensage_ui/other/chat_wheel/arrow_1")
                                   : Drawing.GetTexture("materials/ensage_ui/spellicons/" + uniqueAbilities[i]);
 
+                Drawing.DrawRect(new Vector2(xStart, yStart + (i * 40 * ratio)), new Vector2(45 * ratio, 40 * ratio), texture);
+                positions.Add(uniqueAbilities[i], yStart + (i * 40 * ratio));
                 Drawing.DrawRect(
-                    new Vector2(xStart, yStart + i * 40 * ratio),
-                    new Vector2(45 * ratio, 40 * ratio),
-                    texture);
-                positions.Add(uniqueAbilities[i], yStart + i * 40 * ratio);
-                Drawing.DrawRect(
-                    new Vector2(xStart - 2, yStart - 2 + i * 40 * ratio),
+                    new Vector2(xStart - 2, (yStart - 2) + (i * 40 * ratio)),
                     new Vector2((build.Count + 1) * 48 * ratio, 2),
                     Color.Silver);
             }
 
             Drawing.DrawRect(
-                new Vector2(xStart - 2, yStart - 2 + uniqueAbilities.Count * 40 * ratio),
+                new Vector2(xStart - 2, (yStart - 2) + (uniqueAbilities.Count * 40 * ratio)),
                 new Vector2((build.Count + 1) * 48 * ratio, 2),
                 Color.Silver);
 
@@ -117,25 +112,23 @@
                 Drawing.DrawText(
                     number.ToString(),
                     "Arial",
-                    new Vector2(
-                        xStart + 45 * ratio + i * 48 * ratio + (48 * ratio - size.X) / 2,
-                        positions[build[i].StoredName()]),
+                    new Vector2(xStart + (45 * ratio) + (i * 48 * ratio) + (((48 * ratio) - size.X) / 2), positions[build[i].StoredName()]),
                     new Vector2(35 * ratio),
                     Color.White,
                     FontFlags.None);
                 Drawing.DrawRect(
-                    new Vector2(xStart - 2 + i * 48 * ratio, yStart - 2),
+                    new Vector2((xStart - 2) + (i * 48 * ratio), yStart - 2),
                     new Vector2(2, uniqueAbilities.Count * 40 * ratio),
                     Color.Silver);
             }
 
             Drawing.DrawRect(
-                new Vector2(xStart - 2 + build.Count * 48 * ratio, yStart - 2),
+                new Vector2((xStart - 2) + (build.Count * 48 * ratio), yStart - 2),
                 new Vector2(2, uniqueAbilities.Count * 40 * ratio),
                 Color.Silver);
             Drawing.DrawRect(
-                new Vector2(xStart - 2 + (build.Count + 1) * 48 * ratio, yStart - 2),
-                new Vector2(2, uniqueAbilities.Count * 40 * ratio + 2),
+                new Vector2((xStart - 2) + ((build.Count + 1) * 48 * ratio), yStart - 2),
+                new Vector2(2, (uniqueAbilities.Count * 40 * ratio) + 2),
                 Color.Silver);
         }
 
@@ -143,8 +136,7 @@
         {
             hero = ObjectManager.LocalHero;
             abilities = hero.Spellbook.Spells.Where(
-                x => !x.IsHidden && !IgnoredAbilities.List.Contains(x.StoredName())
-                     && !x.Name.Contains("special_bonus"));
+                x => !x.IsHidden && !x.AbilityBehavior.HasFlag(AbilityBehavior.NotLearnable) && !x.Name.Contains("special_bonus"));
             menuManager = new MenuManager(abilities.Select(x => x.StoredName()).ToList(), hero.Name);
             sleeper = new Sleeper();
             abilityBuilder = new AbilityBuilder(hero);
@@ -185,8 +177,7 @@
             }
             else if (menuManager.IsEnabledManual && !menuManager.IsLevelIgnored(hero.Level))
             {
-                var learnableAbilities = abilities
-                    .OrderByDescending(x => menuManager.GetAbilityPriority(x.StoredName()))
+                var learnableAbilities = abilities.OrderByDescending(x => menuManager.GetAbilityPriority(x.StoredName()))
                     .Where(x => menuManager.AbilityActive(x.StoredName()) && IsLearnable(x))
                     .ToList();
 
@@ -296,12 +287,10 @@
 
             var otherNotLockedAbility = learnableAbilities.Any(
                 x => !x.Equals(ability) && x.AbilityType != AbilityType.Attribute
-                     && (menuManager.AbilityLockLevel(x.StoredName()) == 0
-                         || menuManager.AbilityLockLevel(x.StoredName()) > x.Level)
+                     && (menuManager.AbilityLockLevel(x.StoredName()) == 0 || menuManager.AbilityLockLevel(x.StoredName()) > x.Level)
                      && !menuManager.AbilityFullyLocked(x.StoredName()));
 
-            return abilityLevel >= lockLevel
-                   && (otherNotLockedAbility || menuManager.AbilityFullyLocked(ability.StoredName()));
+            return abilityLevel >= lockLevel && (otherNotLockedAbility || menuManager.AbilityFullyLocked(ability.StoredName()));
         }
 
         private bool IsTalentLearned(uint level)

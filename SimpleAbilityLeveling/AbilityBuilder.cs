@@ -17,8 +17,7 @@
 
         private readonly Hero hero;
 
-        private readonly List<Tuple<float, Dictionary<uint, string>>> rawBuilds =
-            new List<Tuple<float, Dictionary<uint, string>>>();
+        private readonly List<Tuple<float, Dictionary<uint, string>>> rawBuilds = new List<Tuple<float, Dictionary<uint, string>>>();
 
         private Dictionary<uint, Ability> bestBuild = new Dictionary<uint, Ability>();
 
@@ -44,7 +43,7 @@
             Ability ability;
 
             var abilityLevels = (uint)hero.Spellbook.Spells
-                                    .Where(x => !x.IsHidden && !IgnoredAbilities.List.Contains(x.Name))
+                                    .Where(x => !x.IsHidden && !x.AbilityBehavior.HasFlag(AbilityBehavior.NotLearnable))
                                     .Sum(x => x.Level) + 1;
 
             return bestBuild.TryGetValue(abilityLevels, out ability) ? ability : hero.Spellbook.Spells.FirstOrDefault();
@@ -124,7 +123,8 @@
 
                 string html;
                 var webRequest = WebRequest.CreateHttp("http://www.dotabuff.com/heroes/" + heroName + "/builds");
-                webRequest.UserAgent = "Nokia 3310";
+                webRequest.UserAgent =
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36";
 
                 using (var responseStream = webRequest.GetResponse().GetResponseStream())
                 {

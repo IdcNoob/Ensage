@@ -38,16 +38,15 @@
                 var abilityMenu = new Menu(string.Empty, spell, textureName: spell);
 
                 var key = spell + "levelLock";
-                var abilityLocked = new MenuItem(key, "Lock ability at level").SetValue(
-                    new StringList(new[] { "0", "1", "2", "3", "4", "5", "6" }));
+                var abilityLocked =
+                    new MenuItem(key, "Lock ability at level").SetValue(new StringList(new[] { "0", "1", "2", "3", "4", "5", "6" }));
                 abilityMenu.AddItem(abilityLocked);
                 abilityItems.Add(key, abilityLocked);
 
                 key = spell + "fullLock";
                 var abilityFullLocked = new MenuItem(key, "Full lock").SetValue(false);
                 abilityMenu.AddItem(abilityFullLocked)
-                    .SetTooltip(
-                        "If enabled, this ability will be leveled after attributes at level ~23, otherwise before, at level ~12");
+                    .SetTooltip("If enabled, this ability will be leveled after attributes at level ~23, otherwise before, at level ~12");
                 abilityItems.Add(key, abilityFullLocked);
 
                 key = spell + "forceLearn";
@@ -63,8 +62,7 @@
             menu = new Menu("Ability Leveling", "simpleAbilityLeveling", true, "attribute_bonus", true);
             menu.AddItem(
                     enabledAuto = new MenuItem("enabledAuto", "Enabled auto mode", true).SetValue(false)
-                        .SetTooltip(
-                            "Abilities will be leveled by biggest win rate build on dotabuff.com (all settings will be ignored)"))
+                        .SetTooltip("Abilities will be leveled by biggest win rate build on dotabuff.com (all settings will be ignored)"))
                 .ValueChanged += (sender, args) =>
                 {
                     if (args.GetNewValue<bool>())
@@ -87,17 +85,15 @@
             menu.AddItem(showAutoBuild = new MenuItem("showAutoBuild", "Show auto build preview", true).SetValue(true));
 
             menu.AddItem(
-                heroLevel = new MenuItem("heroLevel", "Required hero level", true)
-                    .SetValue(new StringList(levels.Skip(1).ToArray()))
+                heroLevel = new MenuItem("heroLevel", "Required hero level", true).SetValue(new StringList(levels.Skip(1).ToArray()))
                     .SetTooltip("Will start leveling abilities only when your hero will reach selected level"));
 
             menu.AddItem(
-                abilityToggler = new MenuItem(name + "togglerFix", "Enabled", true).SetValue(
-                    new AbilityToggler(abilties.ToDictionary(x => x, x => true))));
+                abilityToggler =
+                    new MenuItem(name + "togglerFix", "Enabled", true).SetValue(
+                        new AbilityToggler(abilties.ToDictionary(x => x, x => true))));
 
-            menu.AddItem(
-                abilityPriority =
-                    new MenuItem(name + "priorityFix", "Priority", true).SetValue(new PriorityChanger(abilties)));
+            menu.AddItem(abilityPriority = new MenuItem(name + "priorityFix", "Priority", true).SetValue(new PriorityChanger(abilties)));
 
             menu.AddSubMenu(advancedMenu);
             menu.AddToMainMenu();
@@ -125,17 +121,13 @@
         public int AbilityLockLevel(string abilityName)
         {
             MenuItem item;
-            return abilityItems.TryGetValue(abilityName + "levelLock", out item)
-                       ? item.GetValue<StringList>().SelectedIndex
-                       : 0;
+            return abilityItems.TryGetValue(abilityName + "levelLock", out item) ? item.GetValue<StringList>().SelectedIndex : 0;
         }
 
         public int ForceAbilityLearnHeroLevel(string abilityName)
         {
             MenuItem item;
-            return abilityItems.TryGetValue(abilityName + "forceLearn", out item)
-                       ? item.GetValue<StringList>().SelectedIndex
-                       : 0;
+            return abilityItems.TryGetValue(abilityName + "forceLearn", out item) ? item.GetValue<StringList>().SelectedIndex : 0;
         }
 
         public uint GetAbilityPriority(string abilityName)

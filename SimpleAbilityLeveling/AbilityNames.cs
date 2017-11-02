@@ -460,6 +460,14 @@
             { "Lightning Bolt", "zuus_lightning_bolt" },
             { "Static Field", "zuus_static_field" },
             { "Thundergod's Wrath", "zuus_thundergods_wrath" },
+            { "Bramble Maze", "dark_willow_bramble_maze" },
+            { "Shadow Realm", "dark_willow_shadow_realm" },
+            { "Cursed Crown", "dark_willow_cursed_crown" },
+            { "Terrorize", "dark_willow_terrorize" },
+            { "Swashbuckle", "pangolier_swashbuckle" },
+            { "Shield Crash", "pangolier_shield_crash" },
+            { "Heartpiercer", "pangolier_heartpiercer" },
+            { "Rolling Thunder", "pangolier_gyroshell" },
         };
     }
 }
