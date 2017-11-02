@@ -47,7 +47,7 @@
             }
             else if (creep.IsNeutral)
             {
-                exp = (int)(exp * (Math.Floor(Game.GameTime / 450) * 2 / 100 + 1));
+                exp = (int)(exp * (((Math.Floor(Game.GameTime / 450) * 2) / 100) + 1));
             }
 
             return exp;

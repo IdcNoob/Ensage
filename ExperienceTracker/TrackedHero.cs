@@ -4,7 +4,7 @@
     using System.Linq;
 
     using Ensage;
-    using Ensage.Common.Extensions;
+    using Ensage.SDK.Extensions;
     using Ensage.SDK.Helpers;
 
     internal class TrackedHero
@@ -26,7 +26,7 @@
             xpTalent = enemy.Spellbook.Spells.FirstOrDefault(x => x.Name.Contains("special_bonus_exp_boost"));
             if (xpTalent != null)
             {
-                bonusXp = xpTalent.AbilitySpecialData.First(x => x.Name == "value").Value / 100 + 1;
+                bonusXp = (xpTalent.AbilitySpecialData.First(x => x.Name == "value").Value / 100) + 1;
             }
         }
 
@@ -51,8 +51,7 @@
 
         public bool IsInExperienceRange(Creep creep)
         {
-            return creep.IsValid && Hero.IsValid && creep.Team != team && Hero.IsVisible && Hero.IsAlive
-                   && Hero.Distance2D(creep) <= 1300;
+            return creep.IsValid && Hero.IsValid && creep.Team != team && Hero.IsVisible && Hero.IsAlive && Hero.Distance2D(creep) <= 1600;
         }
 
         public void SetExperience(int oldExp, int newExp)
@@ -74,7 +73,7 @@
                 return;
             }
 
-            var count = Math.Round((totalExp - earnedExp * enemies) / (float)earnedExp);
+            var count = Math.Round((totalExp - (earnedExp * enemies)) / (float)earnedExp);
             if (count <= 0)
             {
                 return;
