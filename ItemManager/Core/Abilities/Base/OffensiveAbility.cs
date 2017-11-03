@@ -23,6 +23,7 @@
     [Ability(AbilityId.item_ethereal_blade)]
     [Ability(AbilityId.item_abyssal_blade)]
     [Ability(AbilityId.item_diffusal_blade)]
+    [Ability(AbilityId.item_nullifier)]
     internal class OffensiveAbility : UsableAbility, IOffensiveAbility
     {
         public OffensiveAbility(Ability ability, Manager manager)

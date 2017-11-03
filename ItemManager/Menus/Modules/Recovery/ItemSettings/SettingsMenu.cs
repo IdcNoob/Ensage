@@ -15,6 +15,7 @@
             GuardianGreaves = new ItemSettingsMenu(menu, "Guardian greaves", 150, 150);
             MagicStick = new ItemSettingsMenu(menu, "Magic stick", 100, 100);
             UrnOfShadows = new ItemSettingsMenu(menu, "Urn of shadows", 300);
+            SpiritVessel = new ItemSettingsMenu(menu, "Spirit vessel", 300);
             PowerTreads = new PowerTreadsSettings(menu);
 
             mainMenu.AddSubMenu(menu);
@@ -33,6 +34,8 @@
         public PowerTreadsSettings PowerTreads { get; }
 
         public SoulRingSettings SoulRing { get; }
+
+        public ItemSettingsMenu SpiritVessel { get; }
 
         public ItemSettingsMenu UrnOfShadows { get; }
     }

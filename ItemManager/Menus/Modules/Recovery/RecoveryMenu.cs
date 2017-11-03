@@ -82,6 +82,7 @@
             AbilityId.item_magic_wand,
             AbilityId.item_magic_stick,
             AbilityId.item_urn_of_shadows,
+            AbilityId.item_spirit_vessel,
             AbilityId.item_bottle,
             AbilityId.item_guardian_greaves,
             AbilityId.item_mekansm,

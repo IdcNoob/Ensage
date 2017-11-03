@@ -71,6 +71,10 @@
 
         public static string SpiritBreakerCharge { get; } = "modifier_spirit_breaker_charge_of_darkness";
 
+        public static string SpiritVesselDebuff { get; } = "modifier_item_spirit_vessel_damage";
+
+        public static string SpiritVesselRegeneration { get; } = "modifier_item_spirit_vessel_heal";
+
         public static string TangoRegeneration { get; } = "modifier_tango_heal";
 
         public static string UrnDebuff { get; } = "modifier_item_urn_damage";

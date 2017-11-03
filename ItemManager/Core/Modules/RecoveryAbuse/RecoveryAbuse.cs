@@ -10,8 +10,8 @@
     using Attributes;
 
     using Ensage;
-    using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Extensions;
     using Ensage.SDK.Handlers;
     using Ensage.SDK.Helpers;
 
@@ -261,7 +261,10 @@
                 return true;
             }
 
-            return usableAbilities.All(x => !x.IsSleeping) && !manager.MyHero.HasModifier(ModifierUtils.BottleRegeneration);
+            return usableAbilities.All(x => !x.IsSleeping) && !manager.MyHero.Hero.HasAnyModifiers(
+                       ModifierUtils.BottleRegeneration,
+                       ModifierUtils.UrnRegeneration,
+                       ModifierUtils.SpiritVesselRegeneration);
         }
     }
 }
