@@ -23,11 +23,11 @@
             switch (lane)
             {
                 case LanePosition.Easy:
-                    return team == Team.Radiant ? 0.3f : 0.5f;
+                    return team == Team.Radiant ? 0.25f : 0.3f;
                 case LanePosition.Middle:
                     return team == Team.Radiant ? 0.5f : 0.4f;
                 case LanePosition.Hard:
-                    return team == Team.Radiant ? 0.1f : 0.7f;
+                    return team == Team.Radiant ? 0.5f : 0.8f;
                 default:
                     return 0;
             }
@@ -44,7 +44,7 @@
                 var d = to.Distance(from);
                 if (d > distance)
                 {
-                    return from + distance * (to - from).Normalized();
+                    return from + (distance * (to - @from).Normalized());
                 }
 
                 distance -= d;

@@ -65,12 +65,7 @@
 
                 if (settings.ShowOnMinimap)
                 {
-                    renderer.DrawText(
-                        wave.PredictedPosition.WorldToMinimap() - new Vector2(1, 15),
-                        text,
-                        Color.DarkOrange,
-                        16,
-                        "Arial");
+                    renderer.DrawText(wave.PredictedPosition.WorldToMinimap() - new Vector2(1, 15), text, Color.DarkOrange, 16, "Arial");
                 }
 
                 if (settings.ShowOnMap)
@@ -90,15 +85,11 @@
         {
             waveManager.CreepWaves.RemoveAll(x => x.IsSpawned && x.Path.Last().Distance(x.PredictedPosition) < 300);
 
-            foreach (var group in waveManager.CreepWaves.Where(x => x.IsSpawned)
-                .GroupBy(x => x.Lane)
-                .Where(x => x.Count() > 1)
-                .ToList())
+            foreach (var group in waveManager.CreepWaves.Where(x => x.IsSpawned).GroupBy(x => x.Lane).Where(x => x.Count() > 1).ToList())
             {
                 foreach (var wave in group)
                 {
-                    var merge = group.FirstOrDefault(
-                        x => !x.Equals(wave) && x.PredictedPosition.Distance(wave.PredictedPosition) < 500);
+                    var merge = group.FirstOrDefault(x => !x.Equals(wave) && x.PredictedPosition.Distance(wave.PredictedPosition) < 500);
 
                     if (merge == null)
                     {
@@ -118,10 +109,7 @@
             {
                 if (!wave.WasVisible)
                 {
-                    wave.PredictedPosition = wave.Path.PositionAfter(
-                        Game.RawGameTime - wave.SpawnTime,
-                        wave.Speed,
-                        wave.Delay);
+                    wave.PredictedPosition = wave.Path.PositionAfter(Game.RawGameTime - wave.SpawnTime, wave.Speed, wave.Delay);
                 }
                 else if (wave.IsVisible)
                 {

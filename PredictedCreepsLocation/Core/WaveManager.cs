@@ -4,8 +4,6 @@
     using System.ComponentModel.Composition;
     using System.Linq;
 
-    using Creeps;
-
     using Data;
 
     using Ensage;
@@ -64,15 +62,13 @@
 
         private void OnBoolPropertyChange(Entity sender, BoolPropertyChangeEventArgs args)
         {
-            if (args.OldValue == args.NewValue || !args.OldValue && args.NewValue
-                || args.PropertyName != "m_bIsWaitingToSpawn")
+            if (args.OldValue == args.NewValue || !args.OldValue && args.NewValue || args.PropertyName != "m_bIsWaitingToSpawn")
             {
                 return;
             }
 
             var creep = sender as Creep;
-            if (creep == null || !creep.IsValid || creep.Team != myTeam
-                || creep.ClassId != ClassId.CDOTA_BaseNPC_Creep_Lane)
+            if (creep == null || !creep.IsValid || creep.Team != myTeam || creep.UnitType != 1152)
             {
                 return;
             }
@@ -82,8 +78,7 @@
 
         private void OnEntityAdded(object sender, Creep creep)
         {
-            if (!creep.IsValid || creep.Team == myTeam || creep.ClassId != ClassId.CDOTA_BaseNPC_Creep_Lane
-                && creep.ClassId != ClassId.CDOTA_BaseNPC_Creep_Siege)
+            if (!creep.IsValid || creep.Team == myTeam || creep.UnitType != 1152)
             {
                 return;
             }
@@ -111,8 +106,7 @@
 
         private void OnEntityRemoved(object sender, Creep creep)
         {
-            if (!creep.IsValid || creep.Team == myTeam || creep.ClassId != ClassId.CDOTA_BaseNPC_Creep_Lane
-                && creep.ClassId != ClassId.CDOTA_BaseNPC_Creep_Siege)
+            if (!creep.IsValid || creep.Team == myTeam || creep.UnitType != 1152)
             {
                 return;
             }

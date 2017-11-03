@@ -15,22 +15,20 @@
 
         private const float SpeedDefault = 325;
 
-        private const float SpeedMax = 325;
+        private const float SpeedMax = 422.5f;
 
-        private const float SpeedMin = 325;
+        private const float SpeedMin = 211.25f;
 
-        public List<Creep> Creeps = new List<Creep>();
-
-        private readonly Dictionary<Team, int> maxSpeedTime = new Dictionary<Team, int>
+        private readonly Dictionary<Team, float> maxSpeedTime = new Dictionary<Team, float>
         {
-            { Team.Radiant, 16 },
-            { Team.Dire, 8 },
+            { Team.Radiant, 3.8f },
+            { Team.Dire, 1.7f },
         };
 
-        private readonly Dictionary<Team, int> minSpeedTime = new Dictionary<Team, int>
+        private readonly Dictionary<Team, float> minSpeedTime = new Dictionary<Team, float>
         {
-            { Team.Radiant, 8 },
-            { Team.Dire, 22 },
+            { Team.Radiant, 1.5f },
+            { Team.Dire, 5.1f },
         };
 
         private readonly int pathLength;
@@ -55,6 +53,8 @@
             team = waveTeam;
         }
 
+        public List<Creep> Creeps { get; } = new List<Creep>();
+
         public float Delay
         {
             get
@@ -67,17 +67,17 @@
                         case LanePosition.Easy:
                             if (timeSinceSpawn >= maxSpeedTime[team])
                             {
-                                return (SpeedDefault - SpeedMax) * Math.Max(
-                                           maxSpeedTime[team] - Math.Max(LastVisibleTime - SpawnTime, 0),
-                                           0) / SpeedDefault;
+                                return ((SpeedDefault - SpeedMax) * Math.Max(
+                                            maxSpeedTime[team] - Math.Max(LastVisibleTime - SpawnTime, 0),
+                                            0)) / SpeedDefault;
                             }
                             break;
                         case LanePosition.Hard:
                             if (timeSinceSpawn >= minSpeedTime[team])
                             {
-                                return (SpeedDefault - SpeedMin) * Math.Max(
-                                           minSpeedTime[team] - Math.Max(LastVisibleTime - SpawnTime, 0),
-                                           0) / SpeedDefault;
+                                return ((SpeedDefault - SpeedMin) * Math.Max(
+                                            minSpeedTime[team] - Math.Max(LastVisibleTime - SpawnTime, 0),
+                                            0)) / SpeedDefault;
                             }
                             break;
                     }
@@ -114,8 +114,7 @@
                     return lastVisiblePosition;
                 }
 
-                lastVisiblePosition = creeps.Aggregate(new Vector3(), (vector3, creep) => vector3 + creep.Position)
-                                      / creeps.Count;
+                lastVisiblePosition = creeps.Aggregate(new Vector3(), (vector3, creep) => vector3 + creep.Position) / creeps.Count;
                 LastVisibleTime = Game.RawGameTime;
                 remainingPath = null;
 
