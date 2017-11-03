@@ -15,9 +15,9 @@
 
         private const float SpeedDefault = 325;
 
-        private const float SpeedMax = 422.5f;
+        private const float SpeedMax = 325;
 
-        private const float SpeedMin = 211.25f;
+        private const float SpeedMin = 325;
 
         public List<Creep> Creeps = new List<Creep>();
 
