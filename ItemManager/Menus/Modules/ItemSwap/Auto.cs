@@ -48,6 +48,31 @@
                 };
             SwapBackpackItems = backpackItems.IsActive();
 
+            var turboMenu = new Menu("Turbo game mode", "autoSwapperTurbo");
+
+            var turboStash = new MenuItem("autoInvItemsToStashTurbo", "Rapier/Gem to stash").SetValue(false)
+                .SetTooltip("Auto move rapier/gem to stash on low health");
+            turboMenu.AddItem(turboStash);
+            turboStash.ValueChanged += (sender, args) =>
+                {
+                    SwapInventoryItemsTurbo = args.GetNewValue<bool>();
+                    TurboModeMoveChange?.Invoke(null, new BoolEventArgs(SwapInventoryItemsTurbo));
+                };
+            SwapInventoryItemsTurbo = turboStash.IsActive();
+
+            var hpThreshold = new MenuItem("hpThresholdTurbo", "HP threshold").SetValue(new Slider(300, 100, 1000));
+            hpThreshold.SetTooltip("Move when hp is lower");
+            turboMenu.AddItem(hpThreshold);
+            hpThreshold.ValueChanged += (sender, args) => HpThresholdTurboItems = args.GetNewValue<Slider>().Value;
+            HpThresholdTurboItems = hpThreshold.GetValue<Slider>().Value;
+
+            var hpPctThreshold = new MenuItem("hpPctThresholdTurbo", "HP% threshold").SetValue(new Slider(25, 5, 80));
+            hpPctThreshold.SetTooltip("Move when hp% is lower");
+            turboMenu.AddItem(hpPctThreshold);
+            hpPctThreshold.ValueChanged += (sender, args) => HpPctThresholdTurboItems = args.GetNewValue<Slider>().Value;
+            HpPctThresholdTurboItems = hpPctThreshold.GetValue<Slider>().Value;
+
+            menu.AddSubMenu(turboMenu);
             mainMenu.AddSubMenu(menu);
         }
 
@@ -57,9 +82,17 @@
 
         public event EventHandler<BoolEventArgs> SwapBackpackItemsChange;
 
+        public event EventHandler<BoolEventArgs> TurboModeMoveChange;
+
+        public int HpPctThresholdTurboItems { get; private set; }
+
+        public int HpThresholdTurboItems { get; private set; }
+
         public bool SwapBackpackItems { get; private set; }
 
         public bool SwapCheeseAegis { get; private set; }
+
+        public bool SwapInventoryItemsTurbo { get; private set; }
 
         public bool SwapRaindrop { get; private set; }
 
