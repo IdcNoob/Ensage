@@ -73,30 +73,44 @@
                 };
             IsEnabled = enabled.IsActive();
 
+            var holdMenu = new Menu("Hold", "snatcherHold");
+
             var holdKey = new MenuItem("holdSnatchKey", "Hold key").SetValue(new KeyBind('O', KeyBindType.Press));
-            menu.AddItem(holdKey);
+            holdMenu.AddItem(holdKey);
             holdKey.ValueChanged += (sender, args) => HoldKey = args.GetNewValue<KeyBind>().Active;
             HoldKey = holdKey.IsActive();
 
             var holdItems =
                 new MenuItem("enabledStealHold", "Hold steal:").SetValue(new AbilityToggler(items.ToDictionary(x => x.Key, x => true)));
-            menu.AddItem(holdItems);
+            holdMenu.AddItem(holdItems);
             holdItems.ValueChanged += (sender, args) =>
                 {
                     SetEnabledItems(args.GetNewValue<AbilityToggler>().Dictionary, EnabledHoldItems);
                 };
 
+            var toggleMenu = new Menu("Toggle", "snatcherToggle");
+
             var toggleKey = new MenuItem("pressSnatchKey", "Toggle key").SetValue(new KeyBind('P', KeyBindType.Toggle));
-            menu.AddItem(toggleKey);
+            toggleMenu.AddItem(toggleKey);
             toggleKey.ValueChanged += (sender, args) => ToggleKey = args.GetNewValue<KeyBind>().Active;
             ToggleKey = toggleKey.IsActive();
 
             var toggleItems =
                 new MenuItem("enabledStealToggle", "Toggle steal:").SetValue(new AbilityToggler(items.ToDictionary(x => x.Key, x => true)));
-            menu.AddItem(toggleItems);
+            toggleMenu.AddItem(toggleItems);
             toggleItems.ValueChanged += (sender, args) => SetEnabledItems(
                 args.GetNewValue<AbilityToggler>().Dictionary,
                 EnabledToggleItems);
+
+            var fastMenu = new Menu("Fast rune snatch", "snatcherFast");
+
+            var fastHoldKey = new MenuItem("fastHoldSnatchKey", "Hold key").SetValue(new KeyBind('-', KeyBindType.Press));
+            fastHoldKey.SetTooltip("Hold to fast pick closest rune (all settings ignored)");
+            fastMenu.AddItem(fastHoldKey);
+            fastHoldKey.ValueChanged += (sender, args) =>
+                {
+                    OnFastSnatch?.Invoke(null, new BoolEventArgs(args.GetNewValue<KeyBind>().Active));
+                };
 
             var otherUnits = new MenuItem("snatcherOtherUnits", "Use other units").SetValue(false)
                 .SetTooltip("Like Spirit Bear, Meepo clones");
@@ -134,12 +148,18 @@
             SetEnabledItems(toggleItems.GetValue<AbilityToggler>().Dictionary, EnabledToggleItems);
 
             menu.AddSubMenu(notificationMenu);
+            menu.AddSubMenu(holdMenu);
+            menu.AddSubMenu(toggleMenu);
+            menu.AddSubMenu(fastMenu);
+
             mainMenu.AddSubMenu(menu);
         }
 
         public event EventHandler OnDebug;
 
         public event EventHandler<BoolEventArgs> OnEnabledChange;
+
+        public event EventHandler<BoolEventArgs> OnFastSnatch;
 
         public event EventHandler<BoolEventArgs> OnNotificationEnabledChange;
 

@@ -10,6 +10,7 @@
 
     using Ensage;
     using Ensage.Common.Objects.UtilityObjects;
+    using Ensage.SDK.Extensions;
     using Ensage.SDK.Handlers;
     using Ensage.SDK.Helpers;
 
@@ -61,6 +62,7 @@
             this.menu.OnEnabledChange += MenuOnEnabledChange;
             this.menu.OnNotificationEnabledChange += MenuOnNotificationEnabledChange;
             this.menu.OnDebug += MenuOnDebug;
+            this.menu.OnFastSnatch += MenuOnOnFastSnatch;
             if (this.menu.IsNotificationEnabled && this.menu.IsEnabled)
             {
                 Drawing.OnDraw += OnDraw;
@@ -73,11 +75,13 @@
             menu.OnEnabledChange -= MenuOnEnabledChange;
             menu.OnUseOtherUnitsChange -= MenuOnUseOtherUnitsChange;
             menu.OnUpdateRateChange -= MenuOnUpdateRateChange;
+            menu.OnFastSnatch += MenuOnOnFastSnatch;
             UpdateManager.Unsubscribe(OnUpdate);
             Player.OnExecuteOrder -= OnExecuteOrder;
             manager.OnUnitAdd -= OnUnitAdd;
             manager.OnUnitRemove -= OnUnitRemove;
             Drawing.OnDraw -= OnDraw;
+            Game.OnUpdate -= FastSnatchKappa;
         }
 
         private void AddOtherUnits()
@@ -96,6 +100,20 @@
             {
                 controllables.Add(new MeepoClone(meepo));
             }
+        }
+
+        private void FastSnatchKappa(EventArgs args)
+        {
+            var hero = manager.MyHero.Hero;
+            var rune = ObjectManager.GetEntities<Rune>().FirstOrDefault(x => x.Distance2D(hero) < 400);
+
+            if (rune == null)
+            {
+                return;
+            }
+
+            hero.PickUpRune(rune);
+            Game.OnUpdate -= FastSnatchKappa;
         }
 
         private void MenuOnDebug(object sender, EventArgs eventArgs)
@@ -135,6 +153,7 @@
         {
             if (boolEventArgs.Enabled)
             {
+                menu.OnFastSnatch += MenuOnOnFastSnatch;
                 updateHandler.IsEnabled = true;
                 if (menu.IsNotificationEnabled)
                 {
@@ -143,6 +162,7 @@
             }
             else
             {
+                menu.OnFastSnatch -= MenuOnOnFastSnatch;
                 updateHandler.IsEnabled = false;
                 Drawing.OnDraw -= OnDraw;
             }
@@ -157,6 +177,18 @@
             else
             {
                 Drawing.OnDraw -= OnDraw;
+            }
+        }
+
+        private void MenuOnOnFastSnatch(object sender, BoolEventArgs boolEventArgs)
+        {
+            if (boolEventArgs.Enabled)
+            {
+                Game.OnUpdate += FastSnatchKappa;
+            }
+            else
+            {
+                Game.OnUpdate -= FastSnatchKappa;
             }
         }
 
