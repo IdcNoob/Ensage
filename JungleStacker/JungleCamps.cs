@@ -18,14 +18,14 @@
                     new Camp
                     {
                         OverlayPosition = new Vector3(-1411, -4284, 256),
-                        CampPosition = new Vector3(-1812, -4302, 128),
+                        CampPosition = new Vector3(-1858, -4138, 256),
                         StackPosition = new Vector3(-1805, -2930, 256),
                         WaitPosition = new Vector3(-1829, -3834, 256),
                         Id = 1,
                         StackTime = 55,
                         Team = Team.Radiant,
                         Ancients = false,
-                        Name = "Medium Camp"
+                        Name = "Hard Camp"
                     });
                 GetCamps.Add(
                     new Camp
@@ -35,10 +35,10 @@
                         StackPosition = new Vector3(-726, -4275, 384),
                         WaitPosition = new Vector3(-859, -3217, 256),
                         Id = 2,
-                        StackTime = 54,
+                        StackTime = 55,
                         Team = Team.Radiant,
                         Ancients = false,
-                        Name = "Hard Camp"
+                        Name = "Medium Camp"
                     });
                 GetCamps.Add(
                     new Camp
@@ -57,9 +57,9 @@
                     new Camp
                     {
                         OverlayPosition = new Vector3(5152, -4384, 256),
-                        CampPosition = new Vector3(4679, -4293, 256),
-                        StackPosition = new Vector3(3064, -3733, 256),
-                        WaitPosition = new Vector3(4514, -4114, 256),
+                        CampPosition = new Vector3(4502, -4319, 256),
+                        StackPosition = new Vector3(3045, -3596, 269),
+                        WaitPosition = new Vector3(4165, -4129, 256),
                         Id = 4,
                         StackTime = 54,
                         Team = Team.Radiant,
@@ -106,7 +106,7 @@
                     new Camp
                     {
                         OverlayPosition = new Vector3(-5121, -239, 256),
-                        CampPosition = new Vector3(-4710, -287, 256),
+                        CampPosition = new Vector3(-4809, -408, 256),
                         StackPosition = new Vector3(-4658, 1403, 384),
                         WaitPosition = new Vector3(-4573, -111, 256),
                         Id = 7,
@@ -135,7 +135,7 @@
                     new Camp
                     {
                         OverlayPosition = new Vector3(567, -1908, 384),
-                        CampPosition = new Vector3(259, -2014, 384),
+                        CampPosition = new Vector3(142, -1947, 384),
                         StackPosition = new Vector3(945, -3544, 384),
                         WaitPosition = new Vector3(528, -2283, 384),
                         Id = 9,
@@ -154,14 +154,14 @@
                     new Camp
                     {
                         OverlayPosition = new Vector3(1700, 3400, 384),
-                        CampPosition = new Vector3(1174, 3453, 384),
+                        CampPosition = new Vector3(1339, 3356, 384),
                         StackPosition = new Vector3(364, 4898, 384),
-                        WaitPosition = new Vector3(960, 3688, 384),
+                        WaitPosition = new Vector3(1041, 3593, 383),
                         Id = 10,
                         StackTime = 54,
                         Team = Team.Dire,
                         Ancients = false,
-                        Name = "Medium Camp",
+                        Name = "Hard Camp",
                         StackCountTimeAdjustment = 2,
                         TimeAdjustment = 1,
                         MaxTimeAdjustment = 1
@@ -177,7 +177,7 @@
                         StackTime = 54,
                         Team = Team.Dire,
                         Ancients = false,
-                        Name = "Hard Camp",
+                        Name = "Medium Camp",
                         StackCountTimeAdjustment = 2,
                         TimeAdjustment = 1,
                         MaxTimeAdjustment = 3
@@ -186,7 +186,7 @@
                     new Camp
                     {
                         OverlayPosition = new Vector3(-1184, 2208, 384),
-                        CampPosition = new Vector3(-716, 2378, 384),
+                        CampPosition = new Vector3(-827, 2278, 384),
                         StackPosition = new Vector3(982, 2251, 384),
                         WaitPosition = new Vector3(-419, 2473, 384),
                         Id = 12,
@@ -201,10 +201,10 @@
                 GetCamps.Add(
                     new Camp
                     {
-                        OverlayPosition = new Vector3(-2512, 4900, 384),
-                        CampPosition = new Vector3(-2919, 4955, 384),
+                        OverlayPosition = new Vector3(-2498, 4921, 259),
+                        CampPosition = new Vector3(-2768, 4578, 256),
                         StackPosition = new Vector3(-1923, 6042, 384),
-                        WaitPosition = new Vector3(-3023, 5180, 384),
+                        WaitPosition = new Vector3(-3215, 4534, 256),
                         Id = 13,
                         StackTime = 53,
                         Team = Team.Dire,
@@ -260,10 +260,10 @@
                 GetCamps.Add(
                     new Camp
                     {
-                        OverlayPosition = new Vector3(-1864, 4300, 384),
-                        CampPosition = new Vector3(-1735, 4024, 256),
+                        OverlayPosition = new Vector3(-1940, 4669, 384),
+                        CampPosition = new Vector3(-1984, 4282, 256),
                         StackPosition = new Vector3(-961, 5011, 384),
-                        WaitPosition = new Vector3(-1526, 3855, 256),
+                        WaitPosition = new Vector3(-1619, 4058, 256),
                         Id = 17,
                         StackTime = 55,
                         Team = Team.Dire,

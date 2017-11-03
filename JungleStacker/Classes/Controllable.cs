@@ -49,13 +49,13 @@
 
         private readonly float attackAnimationPoint;
 
-        private readonly uint attackRange;
+        private readonly float attackRange;
 
         private readonly float attackRate;
 
         private readonly bool isRanged;
 
-        private readonly double projectileSpeed;
+        private readonly float projectileSpeed = float.MaxValue;
 
         private readonly Sleeper sleeper;
 
@@ -80,7 +80,24 @@
             Handle = unit.Handle;
             Unit = unit;
             IsHero = isHero;
+            attackRange = unit.GetAttackRange();
             sleeper = new Sleeper();
+
+            attackAnimationPoint = Game.FindKeyValues(
+                    unit.Name + "/AttackAnimationPoint",
+                    unit is Hero ? KeyValueSource.Hero : KeyValueSource.Unit)
+                .FloatValue;
+            attackRate = Game.FindKeyValues(
+                    unit.Name + "/AttackRate",
+                    unit is Hero ? KeyValueSource.Hero : KeyValueSource.Unit)
+                .FloatValue;
+            if (attackRate <= 0)
+            {
+                attackRate = Game.FindKeyValues(
+                        unit.Name + "/AttackRate",
+                        unit is Hero ? KeyValueSource.Hero : KeyValueSource.Unit)
+                    .IntValue;
+            }
 
             if (Unit.AttackCapability == AttackCapability.Ranged)
             {
@@ -89,22 +106,6 @@
                         unit.Name + "/ProjectileSpeed",
                         unit is Hero ? KeyValueSource.Hero : KeyValueSource.Unit)
                     .IntValue;
-                attackAnimationPoint = Game.FindKeyValues(
-                        unit.Name + "/AttackAnimationPoint",
-                        unit is Hero ? KeyValueSource.Hero : KeyValueSource.Unit)
-                    .FloatValue;
-                attackRate = Game.FindKeyValues(
-                        unit.Name + "/AttackRate",
-                        unit is Hero ? KeyValueSource.Hero : KeyValueSource.Unit)
-                    .FloatValue;
-                if (attackRate <= 0)
-                {
-                    attackRate = Game.FindKeyValues(
-                            unit.Name + "/AttackRate",
-                            unit is Hero ? KeyValueSource.Hero : KeyValueSource.Unit)
-                        .IntValue;
-                }
-                attackRange = unit.AttackRange;
             }
         }
 
@@ -328,7 +329,7 @@
                             x => x.Distance2D(Unit) <= 600 && x.IsSpawned && x.IsAlive && x.IsNeutral
                                  && !x.Equals(Unit));
 
-                    var attackTarget = isRanged && target != null;
+                    var attackTarget = (isRanged || Game.IsNight) && target != null;
                     targetPosition = target?.Position.Extend(Unit.Position, 50) ?? CurrentCamp.CampPosition;
 
                     if (seconds
@@ -379,7 +380,7 @@
                         Unit.Move(CurrentCamp.StackPosition);
                         CurrentStatus = Status.MovingToStackPosition;
                     }
-                    else if (isRanged)
+                    else if (isRanged || Game.IsNight)
                     {
                         if (attackTime <= 0 && Unit.IsAttacking())
                         {
