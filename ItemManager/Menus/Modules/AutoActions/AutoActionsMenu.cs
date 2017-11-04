@@ -17,6 +17,7 @@
             MidasMenu = new MidasMenu(menu);
             DewardingMenu = new DewardingMenu(menu);
             TechiesMinesDestroyerMenu = new TechiesMinesDestroyerMenu(menu);
+            DustMenu = new DustMenu(menu);
 
             mainMenu.AddSubMenu(menu);
         }
@@ -24,6 +25,8 @@
         public AutoHealsMenu AutoHealsMenu { get; }
 
         public DewardingMenu DewardingMenu { get; }
+
+        public DustMenu DustMenu { get; }
 
         public MidasMenu MidasMenu { get; }
 

@@ -54,6 +54,8 @@
 
         public static string DiffusalDebuff { get; } = "modifier_item_diffusal_blade_slow";
 
+        public static string DustOfAppearance { get; } = "modifier_item_dustofappearance";
+
         public static string FountainRegeneration { get; } = "modifier_fountain_aura_buff";
 
         public static HashSet<string> HexModifiers { get; } = new HashSet<string>

@@ -15,6 +15,7 @@
     [Ability(AbilityId.item_hand_of_midas)]
     [Ability(AbilityId.item_cheese)]
     [Ability(AbilityId.item_faerie_fire)]
+    [Ability(AbilityId.item_dust)]
     internal class UsableAbility
     {
         protected Ability Ability;

@@ -92,6 +92,7 @@
     <Compile Include="Core\Modules\AbilityHelper\TranquilDrop.cs" />
     <Compile Include="Core\Modules\AutoActions\AutoMidas.cs" />
     <Compile Include="Core\Modules\AutoActions\AutoPhaseBoots.cs" />
+    <Compile Include="Core\Modules\AutoActions\AutoDust.cs" />
     <Compile Include="Core\Modules\AutoActions\HpMpRestore\AutoTango.cs" />
     <Compile Include="Core\Modules\AutoActions\HpMpRestore\AutoArcaneBoots.cs" />
     <Compile Include="Core\Modules\AutoActions\HpMpRestore\AutoBottle.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="Menus\Modules\AbilityHelper\AbilityHelperMenu.cs" />
     <Compile Include="Menus\Modules\AbilityHelper\BlinkMenu.cs" />
     <Compile Include="Menus\Modules\AbilityHelper\TranquilMenu.cs" />
+    <Compile Include="Menus\Modules\AutoActions\Actions\DustMenu.cs" />
     <Compile Include="Menus\Modules\AutoActions\Actions\MidasMenu.cs" />
     <Compile Include="Menus\Modules\AutoActions\Actions\PhaseBootsMenu.cs" />
     <Compile Include="Menus\Modules\AutoActions\HpMpRestore\AutoArcaneBootsMenu.cs" />
