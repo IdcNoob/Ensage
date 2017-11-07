@@ -135,6 +135,7 @@
             item.AddLine("Unit name: " + unit.Name, unit.Name);
             item.AddLine("Unit network name: " + unit.NetworkName, unit.NetworkName);
             item.AddLine("Unit classID: " + unit.ClassId, unit.ClassId);
+            item.AddLine("Unit type: " + unit.UnitType, unit.UnitType);
             item.AddLine("Unit position: " + unit.Position, unit.Position);
             if (this.showLevel)
             {

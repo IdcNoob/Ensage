@@ -1,5 +1,6 @@
 ﻿namespace Debugger.Tools.Information
 {
+    using System;
     using System.ComponentModel;
     using System.ComponentModel.Composition;
     using System.Linq;
@@ -111,7 +112,7 @@
         private void InformationOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             var unit = (this.player.QueryUnit ?? this.player.Selection.FirstOrDefault()) as Unit;
-            if (unit?.IsValid != true || !unit.HasInventory)
+            if (unit?.IsValid != true)
             {
                 return;
             }
