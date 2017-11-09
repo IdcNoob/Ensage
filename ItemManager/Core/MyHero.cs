@@ -9,7 +9,6 @@ namespace ItemManager.Core
     using Abilities.Interfaces;
 
     using Ensage;
-    using Ensage.Common;
     using Ensage.Common.Extensions;
     using Ensage.Common.Objects.UtilityObjects;
     using Ensage.SDK.Helpers;
@@ -301,7 +300,7 @@ namespace ItemManager.Core
 
             Hero.Stop();
 
-            var sleep = DroppedItems.Count * Game.Ping;
+            var sleep = DroppedItems.Count * 50;
 
             foreach (var physicalItem in physicalItems)
             {
@@ -314,7 +313,7 @@ namespace ItemManager.Core
 
                     if (slot != null && item != null)
                     {
-                        DelayAction.Add(200 + (Hero.Distance2D(physicalItem) / Hero.MovementSpeed), () => { item.MoveItem(slot.Value); });
+                        UpdateManager.BeginInvoke(() => item.MoveItem(slot.Value), 200);
                     }
                 }
             }

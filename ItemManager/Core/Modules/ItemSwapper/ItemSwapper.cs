@@ -62,16 +62,11 @@
             {
                 Entity.OnInt32PropertyChange += OnChargeCountChange;
             }
-            if (this.menu.Auto.SwapInventoryItemsTurbo && Game.GameMode == GameMode.Turbo)
-            {
-                Entity.OnInt32PropertyChange += OnHealthChange;
-            }
             manager.OnItemAdd += OnItemAdd;
             manager.OnItemRemove += OnItemRemove;
             this.menu.Auto.AutoMoveTpScrollChange += OnAutoMoveTpScrollChange;
             this.menu.Auto.SwapBackpackItemsChange += OnSwapBackpackItemsChange;
             this.menu.Auto.AutoMoveRaindropChange += OnAutoMoveRaindropChange;
-            this.menu.Auto.TurboModeMoveChange += AutoOnTurboModeMoveChange;
         }
 
         public void Dispose()
@@ -79,7 +74,6 @@
             menu.Auto.AutoMoveTpScrollChange -= OnAutoMoveTpScrollChange;
             menu.Auto.AutoMoveRaindropChange -= OnAutoMoveRaindropChange;
             menu.Auto.SwapBackpackItemsChange -= OnSwapBackpackItemsChange;
-            menu.Auto.TurboModeMoveChange -= AutoOnTurboModeMoveChange;
             menu.Backpack.OnSwap -= BackpackOnSwap;
             menu.Stash.OnSwap -= StashOnSwap;
             menu.Courier.OnSwap -= CourierOnSwap;
@@ -87,22 +81,9 @@
             Entity.OnInt32PropertyChange -= OnCourierStateChange;
             Entity.OnInt32PropertyChange -= OnNetworkActivityChange;
             Entity.OnInt32PropertyChange -= OnChargeCountChange;
-            Entity.OnInt32PropertyChange -= OnHealthChange;
             manager.OnItemAdd -= OnItemAdd;
             manager.OnItemRemove -= OnItemRemove;
             UpdateManager.Unsubscribe(OnUpdate);
-        }
-
-        private void AutoOnTurboModeMoveChange(object sender, BoolEventArgs boolEventArgs)
-        {
-            if (boolEventArgs.Enabled && Game.GameMode == GameMode.Turbo)
-            {
-                Entity.OnInt32PropertyChange += OnHealthChange;
-            }
-            else
-            {
-                Entity.OnInt32PropertyChange -= OnHealthChange;
-            }
         }
 
         private void BackpackOnSwap(object sender, EventArgs eventArgs)
@@ -302,40 +283,6 @@
             }
 
             DisableCourierItemSwap();
-        }
-
-        private void OnHealthChange(Entity sender, Int32PropertyChangeEventArgs args)
-        {
-            if (sender.Handle != manager.MyHero.Handle || args.NewValue <= 0 || args.NewValue == args.OldValue
-                || args.PropertyName != "m_iHealth" || sleeper.Sleeping)
-            {
-                return;
-            }
-
-            var hp = args.NewValue;
-            var hpPercentage = (hp / manager.MyHero.MaximumHealth) * 100;
-
-            if (hp > menu.Auto.HpThresholdTurboItems && hpPercentage > menu.Auto.HpPctThresholdTurboItems)
-            {
-                return;
-            }
-
-            var items = manager.MyHero.GetItems(ItemStoredPlace.Inventory)
-                .Where(x => x.Id == AbilityId.item_rapier || x.Id == AbilityId.item_gem)
-                .Take(manager.MyHero.Inventory.FreeStashSlots.Count())
-                .ToArray();
-
-            if (items.Length <= 0)
-            {
-                return;
-            }
-
-            for (var i = 0; i < items.Length; i++)
-            {
-                items[i].MoveItem(manager.MyHero.Inventory.FreeStashSlots.ToArray()[i]);
-            }
-
-            sleeper.Sleep(1000);
         }
 
         private void OnItemAdd(object sender, ItemEventArgs itemEventArgs)
@@ -562,7 +509,7 @@
 
         private void StashOnSwap(object sender, EventArgs eventArgs)
         {
-            if (!manager.MyHero.IsAtBase() && Game.GameMode != GameMode.Turbo)
+            if (!manager.MyHero.IsAtBase())
             {
                 return;
             }
