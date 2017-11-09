@@ -174,8 +174,7 @@
                         if (string.IsNullOrEmpty(dotaAbilityName))
                         {
                             Game.PrintMessage(
-                                "<font color='#FF0000'>[Simple Ability Leveling] Ability " + abilityName.Groups[1].Value
-                                + " not found<br>[Simple Ability Leveling] Report this on forum please</font>");
+                                "<font color='#FF0000'>[Simple Ability Leveling] Ability " + abilityName.Groups[1].Value + " not found");
                             error = true;
                         }
 
