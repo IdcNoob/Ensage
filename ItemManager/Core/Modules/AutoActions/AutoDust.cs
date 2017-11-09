@@ -69,8 +69,8 @@
             }
 
             var invisibleHero = EntityManager<Hero>.Entities.FirstOrDefault(
-                x => x.IsValid && !x.IsIllusion && x.Distance2D(manager.MyHero.Position) <= dust.GetCastRange() && x.IsAlive
-                     && x.Team == manager.MyHero.EnemyTeam && x.InvisiblityLevel > 0 && !x.HasModifier(ModifierUtils.DustOfAppearance));
+                x => x.IsValid && x.IsVisible && x.IsAlive && !x.IsIllusion && x.Team == manager.MyHero.EnemyTeam && x.InvisiblityLevel > 0
+                     && x.Distance2D(manager.MyHero.Position) <= dust.GetCastRange() && !x.HasModifier(ModifierUtils.DustOfAppearance));
 
             if (invisibleHero == null)
             {

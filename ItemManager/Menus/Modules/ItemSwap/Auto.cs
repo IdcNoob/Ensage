@@ -22,11 +22,11 @@
                 };
             SwapTpScroll = autoScrollMove.IsActive();
 
-            var autoAegis = new MenuItem("autoAegisMoveBackpack", "Aegis/Cheese on death/use").SetValue(false)
-                .SetTooltip("Auto swap aegis and cheese with most valuable backpack item");
-            menu.AddItem(autoAegis);
-            autoAegis.ValueChanged += (sender, args) => SwapCheeseAegis = args.GetNewValue<bool>();
-            SwapCheeseAegis = autoAegis.IsActive();
+            var autoConsumables = new MenuItem("autoAegisMoveBackpack", "Aegis/Cheese/Shard on death/use").SetValue(true)
+                .SetTooltip("Auto swap aegis, cheese, refresher shard with most valuable backpack item");
+            menu.AddItem(autoConsumables);
+            autoConsumables.ValueChanged += (sender, args) => SwapConsumables = args.GetNewValue<bool>();
+            SwapConsumables = autoConsumables.IsActive();
 
             var autoRaindrop = new MenuItem("autoRaindropMoveBackpack", "Raindrop on low charge").SetValue(false)
                 .SetTooltip("Auto move raindrop to backpack when only 1 charge left");
@@ -90,7 +90,7 @@
 
         public bool SwapBackpackItems { get; private set; }
 
-        public bool SwapCheeseAegis { get; private set; }
+        public bool SwapConsumables { get; private set; }
 
         public bool SwapInventoryItemsTurbo { get; private set; }
 

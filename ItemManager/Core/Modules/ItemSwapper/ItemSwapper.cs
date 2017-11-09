@@ -62,7 +62,7 @@
             {
                 Entity.OnInt32PropertyChange += OnChargeCountChange;
             }
-            if (this.menu.Auto.SwapInventoryItemsTurbo && Game.GameMode == (GameMode)23)
+            if (this.menu.Auto.SwapInventoryItemsTurbo && Game.GameMode == GameMode.Turbo)
             {
                 Entity.OnInt32PropertyChange += OnHealthChange;
             }
@@ -95,7 +95,7 @@
 
         private void AutoOnTurboModeMoveChange(object sender, BoolEventArgs boolEventArgs)
         {
-            if (boolEventArgs.Enabled && Game.GameMode == (GameMode)23)
+            if (boolEventArgs.Enabled && Game.GameMode == GameMode.Turbo)
             {
                 Entity.OnInt32PropertyChange += OnHealthChange;
             }
@@ -359,7 +359,8 @@
 
             menu.RemoveItem(itemEventArgs.Item.Name);
 
-            if (!menu.Auto.SwapCheeseAegis || item.Id != AbilityId.item_cheese && item.Id != AbilityId.item_aegis)
+            if (!menu.Auto.SwapConsumables || item.Id != AbilityId.item_cheese && item.Id != AbilityId.item_aegis
+                && item.Id != AbilityId.item_refresher_shard)
             {
                 return;
             }
@@ -561,7 +562,7 @@
 
         private void StashOnSwap(object sender, EventArgs eventArgs)
         {
-            if (!manager.MyHero.IsAtBase())
+            if (!manager.MyHero.IsAtBase() && Game.GameMode != GameMode.Turbo)
             {
                 return;
             }
