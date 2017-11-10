@@ -139,7 +139,7 @@
         private void OnUpdate()
         {
             if (Game.IsPaused || recoveryMenu.IsActive || !bottle.CanBeAutoCasted() || !BottleCanBeRefilled()
-                || !manager.MyHero.CanUseItems())
+                || !manager.MyHero.CanUseItems() || sleeper.Sleeping(this))
             {
                 return;
             }
