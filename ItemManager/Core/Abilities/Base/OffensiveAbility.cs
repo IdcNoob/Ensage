@@ -10,8 +10,6 @@
 
     using Menus.Modules.OffensiveAbilities.AbilitySettings;
 
-    using Utils;
-
     [Ability(AbilityId.item_orchid)]
     [Ability(AbilityId.item_sheepstick)]
     [Ability(AbilityId.item_bloodthorn)]
@@ -21,7 +19,6 @@
     [Ability(AbilityId.item_heavens_halberd)]
     [Ability(AbilityId.item_rod_of_atos)]
     [Ability(AbilityId.item_ethereal_blade)]
-    [Ability(AbilityId.item_abyssal_blade)]
     [Ability(AbilityId.item_diffusal_blade)]
     [Ability(AbilityId.item_nullifier)]
     internal class OffensiveAbility : UsableAbility, IOffensiveAbility
@@ -46,17 +43,19 @@
                 return false;
             }
 
-            if (!Menu.BreakLinkens && target.IsLinkensProtected())
+            if (!Menu.BreakLinkens && target.IsBlockingAbilities())
             {
                 return false;
             }
 
-            if (!Menu.HexStack && target.IsReallyHexed())
+            var isHexed = target.IsHexed();
+
+            if (!Menu.HexStack && isHexed)
             {
                 return false;
             }
 
-            if (!Menu.SilenceStack && target.IsSilenced() && !target.IsReallyHexed())
+            if (!Menu.SilenceStack && target.IsSilenced() && !isHexed)
             {
                 return false;
             }
@@ -71,7 +70,7 @@
                 return false;
             }
 
-            if (!Menu.DisarmStack && target.IsDisarmed() && !target.IsReallyHexed())
+            if (!Menu.DisarmStack && target.IsDisarmed() && !isHexed)
             {
                 return false;
             }

@@ -65,6 +65,7 @@
     <Compile Include="Attributes\AbilityAttribute.cs" />
     <Compile Include="Attributes\AbilityBasedModuleAttribute.cs" />
     <Compile Include="Attributes\ModuleAttribute.cs" />
+    <Compile Include="Core\Abilities\Abyssal.cs" />
     <Compile Include="Core\Abilities\Armlet.cs" />
     <Compile Include="Core\Abilities\Base\DefensiveAbility.cs" />
     <Compile Include="Core\Abilities\Base\OffensiveAbility.cs" />
@@ -168,7 +169,6 @@
     <Compile Include="Utils\ItemUtils.cs" />
     <Compile Include="Utils\ModifierUtils.cs" />
     <Compile Include="Utils\ModuleUtils.cs" />
-    <Compile Include="Utils\UnitUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

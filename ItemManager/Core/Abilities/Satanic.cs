@@ -10,8 +10,6 @@
 
     using Menus.Modules.OffensiveAbilities.AbilitySettings;
 
-    using Utils;
-
     [Ability(AbilityId.item_satanic)]
     internal class Satanic : OffensiveAbility
     {
@@ -40,12 +38,14 @@
                 return false;
             }
 
-            if (!Menu.HexStack && target.IsReallyHexed())
+            var isHexed = target.IsHexed();
+
+            if (!Menu.HexStack && isHexed)
             {
                 return false;
             }
 
-            if (!Menu.SilenceStack && target.IsSilenced() && !target.IsReallyHexed())
+            if (!Menu.SilenceStack && target.IsSilenced() && !isHexed)
             {
                 return false;
             }
@@ -60,7 +60,7 @@
                 return false;
             }
 
-            if (!Menu.DisarmStack && target.IsDisarmed() && !target.IsReallyHexed())
+            if (!Menu.DisarmStack && target.IsDisarmed() && !isHexed)
             {
                 return false;
             }

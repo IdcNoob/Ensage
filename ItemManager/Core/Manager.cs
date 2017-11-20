@@ -155,7 +155,7 @@
             }
 
             var unit = args.Entity as Unit;
-            if (unit != null && unit.IsValid && UnitExtensions.IsRealUnit(unit))
+            if (unit != null && unit.IsValid && unit.IsRealUnit())
             {
                 OnUnitRemove?.Invoke(null, new UnitEventArgs(unit));
             }

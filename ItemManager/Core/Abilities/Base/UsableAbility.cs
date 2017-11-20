@@ -67,7 +67,7 @@
             Name = name;
         }
 
-        public float GetCastRange()
+        public virtual float GetCastRange()
         {
             return Ability.GetCastRange();
         }
