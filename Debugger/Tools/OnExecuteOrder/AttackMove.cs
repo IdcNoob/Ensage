@@ -41,13 +41,16 @@
 
         public void Activate()
         {
-            this.menu = this.mainMenu.OnExecuteOrderMenu.Menu("Attack/move");
+            this.menu = this.mainMenu.OnExecuteOrderMenu;
 
-            this.enabled = this.menu.Item("Enabled", false);
+            this.enabled = this.menu.Item("Attack/move", false);
             this.enabled.Item.SetTooltip("Player.OnExecuteOrder");
             this.enabled.PropertyChanged += this.EnabledOnPropertyChanged;
 
-            this.EnabledOnPropertyChanged(null, null);
+            if (this.enabled)
+            {
+                this.menu.AddAsterisk();
+            }
         }
 
         public void Dispose()

@@ -3,9 +3,11 @@
     using System;
     using System.ComponentModel;
     using System.ComponentModel.Composition;
+    using System.Linq;
 
     using Ensage;
     using Ensage.Common.Menu;
+    using Ensage.SDK.Helpers;
     using Ensage.SDK.Menu;
 
     using Menu;
@@ -68,8 +70,9 @@
 
         private string GetRandomHero()
         {
-            var heroes = Enum.GetValues(typeof(HeroId));
-            var randomHero = heroes.GetValue(this.random.Next(1, heroes.Length - 1));
+            var alreadyAdded = EntityManager<Hero>.Entities.Select(x => x.HeroId);
+            var heroes = Enum.GetValues(typeof(HeroId)).Cast<HeroId>().Except(alreadyAdded).ToList();
+            var randomHero = heroes[this.random.Next(1, heroes.Count - 1)];
 
             return randomHero.ToString();
         }
