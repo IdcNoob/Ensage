@@ -138,7 +138,7 @@
 
                 while (abilityBuild.Success)
                 {
-                    var winRate = Regex.Match(abilityBuild.Value, @"\>(\d{1,2}\.\d{1,2})\%\<").NextMatch();
+                    var winRate = Regex.Match(abilityBuild.Value, @"\>(\d{1,3}\.\d{1,2})\%\<").NextMatch();
                     var ability = Regex.Match(abilityBuild.Value, @"<div class=""skill"">.+?</div></div></div>");
 
                     var saveBuild = new Dictionary<uint, string>();
@@ -174,7 +174,7 @@
                         if (string.IsNullOrEmpty(dotaAbilityName))
                         {
                             Game.PrintMessage(
-                                "<font color='#FF0000'>[Simple Ability Leveling] Ability " + abilityName.Groups[1].Value + " not found");
+                                "<font color='#FF0000'>[Simple Ability Leveling] Ability " + abilityName.Groups[1].Value + " not found</font>");
                             error = true;
                         }
 
@@ -197,8 +197,7 @@
             catch (Exception)
             {
                 Game.PrintMessage(
-                    "<font color='#FF0000'>[Simple Ability Leveling] Something went wrong with " + hero.GetRealName()
-                    + " build<br>[Simple Ability Leveling] Report this on forum please</font>");
+                    "<font color='#FF0000'>[Simple Ability Leveling] Something went wrong with " + hero.GetRealName() + " build</font>");
                 error = true;
             }
         }
