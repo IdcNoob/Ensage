@@ -10,7 +10,7 @@
 
     using Tools;
 
-    [ExportPlugin("Debugger", StartupMode.Auto)]
+    [ExportPlugin("Debugger", StartupMode.Auto, priority: 1)]
     internal class Bootstrap : Plugin
     {
         [ImportMany]
