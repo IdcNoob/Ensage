@@ -9,6 +9,7 @@
     using Core;
 
     using Ensage;
+    using Ensage.Common;
     using Ensage.Common.Extensions;
 
     using Menus.Abilities;
@@ -43,7 +44,21 @@
 
         public float HealthPercentage => (float)Unit.Health / Unit.MaximumHealth;
 
-        public abstract Vector2 HpBarPosition { get; }
+        public abstract Vector2 HpBarPositionFix { get; }
+
+        public Vector2 HpBarPosition
+        {
+            get
+            {
+                var position = HUDInfo.GetHPbarPosition(Unit);
+                if (position.IsZero)
+                {
+                    return Vector2.Zero;
+                }
+
+                return position + HpBarPositionFix;
+            }
+        }
 
         public Vector2 HpBarSize { get; protected set; }
 

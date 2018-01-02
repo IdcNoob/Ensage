@@ -46,20 +46,26 @@
 
         public Vector2 GetHealthBarPosition(KillableUnit unit)
         {
+            var position = unit.HpBarPosition;
+            if (position.IsZero)
+            {
+                return Vector2.Zero;
+            }
+
             switch (unit.UnitType)
             {
                 case UnitType.Creep:
                 case UnitType.Courier:
                 {
-                    return unit.HpBarPosition + new Vector2(creepX, creepY);
+                    return position + new Vector2(creepX, creepY);
                 }
                 case UnitType.Tower:
                 {
-                    return unit.HpBarPosition + new Vector2(towerX, towerY);
+                    return position + new Vector2(towerX, towerY);
                 }
                 default:
                 {
-                    return unit.HpBarPosition;
+                    return position;
                 }
             }
         }

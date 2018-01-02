@@ -168,6 +168,11 @@
                 .OrderByDescending(x => x.Distance(Game.MousePosition)))
             {
                 var hpBarPosition = menu.AutoAttackMenu.AutoAttackHealthBar.GetHealthBarPosition(unit);
+                if (hpBarPosition.IsZero)
+                {
+                    continue;
+                }
+
                 var hpBarSize = menu.AutoAttackMenu.AutoAttackHealthBar.GetHealthBarSize(unit);
                 var myAutoAttackDamageDone = unit.MyAutoAttackDamageDone;
                 var health = unit.Health;

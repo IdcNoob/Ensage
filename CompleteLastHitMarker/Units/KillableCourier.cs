@@ -29,18 +29,16 @@
             AbilityId.bristleback_quill_spray
         };
 
-        private readonly Vector2 hpBarPositionFix;
 
         public KillableCourier(Unit unit)
             : base(unit)
         {
-            hpBarPositionFix = new Vector2(15, 19);
             HpBarSize = new Vector2(HUDInfo.GetHPBarSizeX(Unit) - 12, HUDInfo.GetHpBarSizeY(Unit) / 2);
             DefaultTextureY = -50;
             UnitType = UnitType.Courier;
         }
 
-        public override Vector2 HpBarPosition => HUDInfo.GetHPbarPosition(Unit) + hpBarPositionFix;
+        public override Vector2 HpBarPositionFix { get; } = new Vector2(15, 19);
 
         public override void CalculateAbilityDamageTaken(MyHero hero, AbilitiesMenu menu)
         {
