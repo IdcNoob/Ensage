@@ -22,7 +22,7 @@ namespace ItemManager.Core.Modules.GoldSpender
 
     using AbilityEventArgs = EventArgs.AbilityEventArgs;
 
-    //[Module]
+    [Module]
     internal class GoldSpender : IDisposable
     {
         private readonly List<Ability> invisAbilities = new List<Ability>();
@@ -75,7 +75,9 @@ namespace ItemManager.Core.Modules.GoldSpender
             if (quickBuy >= 0)
             {
                 enabledItems.RemoveAt(quickBuy);
-                enabledItems.InsertRange(quickBuy, Player.QuickBuyItems.OrderByDescending(x => Ability.GetAbilityDataById(x).Cost));
+                enabledItems.InsertRange(
+                    quickBuy,
+                    Player.QuickBuyItems.Where(x => x >= AbilityId.ability_base).OrderByDescending(x => Ability.GetAbilityDataById(x).Cost));
             }
 
             var itemsToBuy = new List<Tuple<Unit, AbilityId>>();
