@@ -22,7 +22,7 @@ namespace ItemManager.Core.Modules.GoldSpender
 
     using AbilityEventArgs = EventArgs.AbilityEventArgs;
 
-    [Module]
+    //[Module]
     internal class GoldSpender : IDisposable
     {
         private readonly List<Ability> invisAbilities = new List<Ability>();
