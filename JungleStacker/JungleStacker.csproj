@@ -5,11 +5,11 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{12EBC264-9C58-4865-8EB2-83C7AC04ECC5}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>JungleStacker</RootNamespace>
     <AssemblyName>JungleStacker</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ensage">
       <HintPath>C:\BanIsComing\References\Ensage.dll</HintPath>
@@ -42,12 +45,17 @@
       <HintPath>C:\BanIsComing\References\Ensage.Common.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Ensage.SDK">
+      <HintPath>C:\BanIsComing\References\Ensage.SDK.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="SharpDX.Mathematics">
       <HintPath>C:\BanIsComing\References\SharpDX.Mathematics.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrap.cs" />
@@ -56,13 +64,9 @@
     <Compile Include="Classes\Controllable.cs" />
     <Compile Include="JungleStacker.cs" />
     <Compile Include="Utils\DrawingUtils.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\JungleUtils.cs" />
     <Compile Include="MenuManager.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

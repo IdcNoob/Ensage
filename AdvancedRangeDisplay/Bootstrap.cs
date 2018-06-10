@@ -4,15 +4,29 @@
 
     using Ensage;
     using Ensage.Common;
+    using Ensage.SDK.Service;
+    using Ensage.SDK.Service.Metadata;
 
-    internal class Bootstrap
+    [ExportPlugin("Advanced ranges")]
+    internal class Bootstrap : Plugin
     {
-        private readonly Ranges ranges = new Ranges();
-
-        public void Initialize()
+        protected override void OnActivate()
         {
-            Events.OnLoad += OnLoad;
+            this.ranges = new Ranges();
+
+            ranges.OnLoad();
+            Game.OnUpdate += Game_OnUpdate;
+            Drawing.OnDraw += Drawing_OnDraw;
         }
+
+        protected override void OnDeactivate()
+        {
+            Game.OnUpdate -= Game_OnUpdate;
+            Drawing.OnDraw -= Drawing_OnDraw;
+            ranges.OnClose();
+        }
+
+        private Ranges ranges;
 
         private void Drawing_OnDraw(EventArgs args)
         {
@@ -22,24 +36,6 @@
         private void Game_OnUpdate(EventArgs args)
         {
             ranges.OnUpdate();
-        }
-
-        private void OnClose(object sender, EventArgs e)
-        {
-            Events.OnClose -= OnClose;
-            //GameDispatcher.OnIngameUpdate -= Game_OnUpdate;
-            Game.OnIngameUpdate -= Game_OnUpdate;
-            Drawing.OnDraw -= Drawing_OnDraw;
-            ranges.OnClose();
-        }
-
-        private void OnLoad(object sender, EventArgs e)
-        {
-            ranges.OnLoad();
-            Events.OnClose += OnClose;
-            // GameDispatcher.OnIngameUpdate += Game_OnUpdate;
-            Game.OnIngameUpdate += Game_OnUpdate;
-            Drawing.OnDraw += Drawing_OnDraw;
         }
     }
 }

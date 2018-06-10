@@ -4,34 +4,30 @@
 
     using Ensage;
     using Ensage.Common;
+    using Ensage.SDK.Service;
+    using Ensage.SDK.Service.Metadata;
 
-    internal class Bootstrap
+    [ExportPlugin("Jungle stacker")]
+    internal class Bootstrap : Plugin
     {
-        private readonly JungleStacker jungleStacker;
+        private JungleStacker jungleStacker;
 
-        public Bootstrap()
+        protected override void OnActivate()
         {
             jungleStacker = new JungleStacker();
-            Events.OnLoad += Events_OnLoad;
-        }
-
-        private void Events_OnClose(object sender, EventArgs e)
-        {
-            Events.OnClose -= Events_OnClose;
-            Game.OnIngameUpdate -= Game_OnUpdate;
-            ObjectManager.OnAddEntity -= ObjectManager_OnAddEntity;
-            Player.OnExecuteOrder -= Player_OnExecuteAction;
-            jungleStacker.OnClose();
-        }
-
-        private void Events_OnLoad(object sender, EventArgs e)
-        {
             jungleStacker.OnLoad();
-            Events.OnClose += Events_OnClose;
-            Game.OnIngameUpdate += Game_OnUpdate;
+            Game.OnUpdate += Game_OnUpdate;
             ObjectManager.OnAddEntity += ObjectManager_OnAddEntity;
             ObjectManager.OnRemoveEntity += ObjectManager_OnRemoveEntity;
             Player.OnExecuteOrder += Player_OnExecuteAction;
+        }
+
+        protected override void OnDeactivate()
+        {
+            Game.OnUpdate -= Game_OnUpdate;
+            ObjectManager.OnAddEntity -= ObjectManager_OnAddEntity;
+            Player.OnExecuteOrder -= Player_OnExecuteAction;
+            jungleStacker.OnClose();
         }
 
         private void Game_OnUpdate(EventArgs args)

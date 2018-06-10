@@ -4,16 +4,40 @@
 
     using Ensage;
     using Ensage.Common;
+    using Ensage.SDK.Service;
+    using Ensage.SDK.Service.Metadata;
 
-    internal class Bootstrap
+    [ExportPlugin("Evader")]
+    internal class Bootstrap : Plugin
     {
-        private readonly Evader evader = new Evader();
+        private Evader evader;
 
-        public void Initialize()
+        protected override void OnActivate()
         {
-            Events.OnLoad += OnLoad;
+            evader = new Evader();
+            evader.OnLoad();
+
+            Game.OnUpdate += Game_OnUpdate;
+            Player.OnExecuteOrder += Player_OnExecuteAction;
+            Drawing.OnDraw += Drawing_OnDraw;
+            ObjectManager.OnAddEntity += ObjectManager_OnAddEntity;
+            Unit.OnModifierAdded += Unit_OnModifierAdded;
+            Unit.OnModifierRemoved += Unit_OnModifierRemoved;
+            Entity.OnParticleEffectAdded += Entity_OnParticleEffectAdded;
         }
 
+        protected override void OnDeactivate()
+        {
+            Game.OnUpdate -= Game_OnUpdate;
+            Player.OnExecuteOrder -= Player_OnExecuteAction;
+            Drawing.OnDraw -= Drawing_OnDraw;
+            ObjectManager.OnAddEntity -= ObjectManager_OnAddEntity;
+            Unit.OnModifierAdded -= Unit_OnModifierAdded;
+            Unit.OnModifierRemoved -= Unit_OnModifierRemoved;
+            Entity.OnParticleEffectAdded -= Entity_OnParticleEffectAdded;
+            evader.OnClose();
+        }
+  
         private void Drawing_OnDraw(EventArgs args)
         {
             evader.OnDraw();
@@ -32,33 +56,6 @@
         private void ObjectManager_OnAddEntity(EntityEventArgs args)
         {
             evader.OnAddEntity(args);
-        }
-
-        private void OnClose(object sender, EventArgs e)
-        {
-            Events.OnClose -= OnClose;
-            Game.OnUpdate -= Game_OnUpdate;
-            Player.OnExecuteOrder -= Player_OnExecuteAction;
-            Drawing.OnDraw -= Drawing_OnDraw;
-            ObjectManager.OnAddEntity -= ObjectManager_OnAddEntity;
-            Unit.OnModifierAdded -= Unit_OnModifierAdded;
-            Unit.OnModifierRemoved -= Unit_OnModifierRemoved;
-            Entity.OnParticleEffectAdded -= Entity_OnParticleEffectAdded;
-            evader.OnClose();
-        }
-
-        private void OnLoad(object sender, EventArgs e)
-        {
-            evader.OnLoad();
-
-            Events.OnClose += OnClose;
-            Game.OnUpdate += Game_OnUpdate;
-            Player.OnExecuteOrder += Player_OnExecuteAction;
-            Drawing.OnDraw += Drawing_OnDraw;
-            ObjectManager.OnAddEntity += ObjectManager_OnAddEntity;
-            Unit.OnModifierAdded += Unit_OnModifierAdded;
-            Unit.OnModifierRemoved += Unit_OnModifierRemoved;
-            Entity.OnParticleEffectAdded += Entity_OnParticleEffectAdded;
         }
 
         private void Player_OnExecuteAction(Player sender, ExecuteOrderEventArgs args)

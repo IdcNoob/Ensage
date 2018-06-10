@@ -4,14 +4,30 @@
 
     using Ensage;
     using Ensage.Common;
+    using Ensage.SDK.Service;
+    using Ensage.SDK.Service.Metadata;
 
-    internal class Bootstrap
+    [ExportPlugin("Timbersaw?", HeroId.npc_dota_hero_shredder)]
+    internal class Bootstrap : Plugin
     {
-        private readonly Timbersaw timbersaw = new Timbersaw();
+        private Timbersaw timbersaw;
 
-        public void Initialize()
+        protected override void OnActivate()
         {
-            Events.OnLoad += OnLoad;
+            timbersaw = new Timbersaw();
+
+            timbersaw.OnLoad();
+            Game.OnIngameUpdate += Game_OnUpdate;
+            Player.OnExecuteOrder += Player_OnExecuteAction;
+            Drawing.OnDraw += Drawing_OnDraw;
+        }
+
+        protected override void OnDeactivate()
+        {
+            Game.OnIngameUpdate -= Game_OnUpdate;
+            Drawing.OnDraw -= Drawing_OnDraw;
+            Player.OnExecuteOrder -= Player_OnExecuteAction;
+            timbersaw.OnClose();
         }
 
         private void Drawing_OnDraw(EventArgs args)
@@ -22,29 +38,6 @@
         private void Game_OnUpdate(EventArgs args)
         {
             timbersaw.OnUpdate();
-        }
-
-        private void OnClose(object sender, EventArgs e)
-        {
-            Events.OnClose -= OnClose;
-            Game.OnIngameUpdate -= Game_OnUpdate;
-            Drawing.OnDraw -= Drawing_OnDraw;
-            Player.OnExecuteOrder -= Player_OnExecuteAction;
-            timbersaw.OnClose();
-        }
-
-        private void OnLoad(object sender, EventArgs e)
-        {
-            if (ObjectManager.LocalHero.ClassId != ClassId.CDOTA_Unit_Hero_Shredder)
-            {
-                return;
-            }
-
-            timbersaw.OnLoad();
-            Events.OnClose += OnClose;
-            Game.OnIngameUpdate += Game_OnUpdate;
-            Player.OnExecuteOrder += Player_OnExecuteAction;
-            Drawing.OnDraw += Drawing_OnDraw;
         }
 
         private void Player_OnExecuteAction(Player sender, ExecuteOrderEventArgs args)

@@ -4,14 +4,34 @@
 
     using Ensage;
     using Ensage.Common;
+    using Ensage.SDK.Service;
+    using Ensage.SDK.Service.Metadata;
 
-    internal class Bootstrap
+    [ExportPlugin("Kunkka helper", HeroId.npc_dota_hero_kunkka)]
+    internal class Bootstrap : Plugin
     {
-        private readonly Kunkka kunkka = new Kunkka();
+        private Kunkka kunkka = new Kunkka();
 
-        public void Initialize()
+        protected override void OnActivate()
         {
-            Events.OnLoad += OnLoad;
+            kunkka = new Kunkka();
+
+            kunkka.OnLoad();
+            Game.OnIngameUpdate += Game_OnUpdate;
+            Drawing.OnDraw += Drawing_OnDraw;
+            Entity.OnParticleEffectAdded += Entity_OnParticleEffectAdded;
+            Unit.OnModifierAdded += UnitOnModifierAdded;
+            Unit.OnModifierRemoved += UnitOnModifierRemoved;
+        }
+
+        protected override void OnDeactivate()
+        {
+            Entity.OnParticleEffectAdded -= Entity_OnParticleEffectAdded;
+            Game.OnIngameUpdate -= Game_OnUpdate;
+            Drawing.OnDraw -= Drawing_OnDraw;
+            Unit.OnModifierAdded -= UnitOnModifierAdded;
+            Unit.OnModifierRemoved -= UnitOnModifierRemoved;
+            kunkka.OnClose();
         }
 
         private void Drawing_OnDraw(EventArgs args)
@@ -27,33 +47,6 @@
         private void Game_OnUpdate(EventArgs args)
         {
             kunkka.OnUpdate();
-        }
-
-        private void OnClose(object sender, EventArgs e)
-        {
-            Entity.OnParticleEffectAdded -= Entity_OnParticleEffectAdded;
-            Events.OnClose -= OnClose;
-            Game.OnIngameUpdate -= Game_OnUpdate;
-            Drawing.OnDraw -= Drawing_OnDraw;
-            Unit.OnModifierAdded -= UnitOnModifierAdded;
-            Unit.OnModifierRemoved -= UnitOnModifierRemoved;
-            kunkka.OnClose();
-        }
-
-        private void OnLoad(object sender, EventArgs e)
-        {
-            if (ObjectManager.LocalHero.HeroId != HeroId.npc_dota_hero_kunkka)
-            {
-                return;
-            }
-
-            kunkka.OnLoad();
-            Events.OnClose += OnClose;
-            Game.OnIngameUpdate += Game_OnUpdate;
-            Drawing.OnDraw += Drawing_OnDraw;
-            Entity.OnParticleEffectAdded += Entity_OnParticleEffectAdded;
-            Unit.OnModifierAdded += UnitOnModifierAdded;
-            Unit.OnModifierRemoved += UnitOnModifierRemoved;
         }
 
         private void UnitOnModifierAdded(Unit sender, ModifierChangedEventArgs args)
