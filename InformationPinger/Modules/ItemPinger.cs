@@ -240,7 +240,7 @@
                     await Task.Delay(300);
                 }
 
-                informationPinger.AddPing(new ItemPing(queue.Dequeue(), doublePing));
+                informationPinger.AddPing(new AbilityPing(queue.Dequeue(), doublePing));
 
                 await Task.Delay(1000);
             }
