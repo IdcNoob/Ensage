@@ -5,11 +5,11 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{C6ACBDFB-3A2E-45E2-9B7F-DF9F19B64D0A}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LaneMarker</RootNamespace>
     <AssemblyName>LaneMarker</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <PreBuildEvent />
@@ -36,18 +36,24 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ensage">
       <HintPath>C:\BanIsComing\References\Ensage.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Ensage.Common">
-      <HintPath>C:\BanIsComing\References\Ensage.Common.dll</HintPath>
+    <Reference Include="Ensage.SDK">
+      <HintPath>C:\BanIsComing\References\Ensage.SDK.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="SharpDX">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\BanIsComing\References\SharpDX.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SharpDX.Direct2D1">
+      <HintPath>C:\BanIsComing\References\SharpDX.Direct2D1.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="SharpDX.Direct3D9">
@@ -60,14 +66,18 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Names.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Bootstrap.cs" />
+    <Compile Include="LaneMarker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
+    <Compile Include="Renderer\ISimpleRenderMode.cs" />
+    <Compile Include="Renderer\SimpleD3D11Renderer.cs" />
+    <Compile Include="Renderer\SimpleD3D9Renderer.cs" />
+    <Compile Include="Renderer\SimpleRenderer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
