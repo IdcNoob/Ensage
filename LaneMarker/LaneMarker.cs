@@ -101,6 +101,7 @@
         private void OnDraw(object sender, EventArgs eventArgs)
         {
             this.renderer.DrawText(new Vector2(20, Drawing.Height * 0.08f), "Lane: " + this.laneList[this.selectedLane], Color.Orange, 20);
+            this.renderer.DrawText(new Vector2(20, (Drawing.Height * 0.08f) + 20), "Change lane with Tab", Color.Orange, 20);
         }
 
         private void OnUpdate(EventArgs args)
@@ -110,7 +111,7 @@
                 return;
             }
 
-            UpdateManager.BeginInvoke(this.MarkLane, 275);
+            UpdateManager.BeginInvoke(this.MarkLane, 300);
             this.Dispose();
         }
 
