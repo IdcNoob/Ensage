@@ -198,7 +198,7 @@
 
                     var fountain = ObjectManager.GetEntities<Unit>()
                         .FirstOrDefault(
-                            x => x.Team == heroTeam && x.ClassId == ClassId.CDOTA_Unit_Fountain
+                            x => x.Team == heroTeam && x.NetworkName == "CDOTA_Unit_Fountain"
                                  && x.Distance2D(hero) > 2000);
 
                     if (fountain == null)
@@ -469,7 +469,7 @@
                 var gameTime = Game.RawGameTime;
 
                 var pudge = Heroes.GetByTeam(heroTeam)
-                    .FirstOrDefault(x => x.ClassId == ClassId.CDOTA_Unit_Hero_Pudge && x.IsAlive && !x.IsIllusion);
+                    .FirstOrDefault(x => x.HeroId == HeroId.npc_dota_hero_pudge && x.IsAlive && !x.IsIllusion);
 
                 if (pudge != null)
                 {
@@ -496,7 +496,7 @@
                 }
 
                 var mirana = Heroes.GetByTeam(heroTeam)
-                    .FirstOrDefault(x => x.ClassId == ClassId.CDOTA_Unit_Hero_Mirana && x.IsAlive && !x.IsIllusion);
+                    .FirstOrDefault(x => x.HeroId == HeroId.npc_dota_hero_mirana && x.IsAlive && !x.IsIllusion);
 
                 if (mirana != null)
                 {
@@ -621,7 +621,7 @@
         {
             return ObjectManager.GetEntities<Unit>()
                 .FirstOrDefault(
-                    x => x.ClassId == ClassId.CDOTA_BaseNPC
+                    x => x.NetworkName == "CDOTA_BaseNPC"
                          && x.Modifiers.Any(z => z.Name == "modifier_kunkka_torrent_thinker") && x.Team == heroTeam);
         }
     }

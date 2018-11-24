@@ -88,7 +88,7 @@
 
             var sentryOrTower = EntityManager<Unit>.Entities.Any(
                 x => x.IsValid && x.IsAlive && x.Team == manager.MyHero.Team
-                     && (x.ClassId == ClassId.CDOTA_BaseNPC_Tower || x.ClassId == ClassId.CDOTA_NPC_Observer_Ward_TrueSight)
+                     && (x.NetworkName == "CDOTA_BaseNPC_Tower" || x.NetworkName == "CDOTA_NPC_Observer_Ward_TrueSight")
                      && x.Distance2D(invisibleHero) < 800);
 
             if (sentryOrTower)

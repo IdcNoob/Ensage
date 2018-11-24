@@ -17,7 +17,7 @@
     {
         private readonly List<Controllable> controllableUnits = new List<Controllable>();
 
-        private readonly List<ClassId> ignoredUnits = new List<ClassId>();
+        private readonly List<string> ignoredUnits = new List<string>();
 
         private readonly MenuManager menu = new MenuManager();
 
@@ -38,9 +38,9 @@
             menu.OnForceAdd += OnForceAdd;
             menu.OnStacksReset += OnStacksReset;
 
-            ignoredUnits.Add(ClassId.CDOTA_Unit_Brewmaster_PrimalEarth);
-            ignoredUnits.Add(ClassId.CDOTA_Unit_Brewmaster_PrimalFire);
-            ignoredUnits.Add(ClassId.CDOTA_Unit_Brewmaster_PrimalStorm);
+            ignoredUnits.Add("CDOTA_Unit_Brewmaster_PrimalEarth");
+            ignoredUnits.Add("CDOTA_Unit_Brewmaster_PrimalFire");
+            ignoredUnits.Add("CDOTA_Unit_Brewmaster_PrimalStorm");
         }
 
         public void OnAddEntity(EntityEventArgs args)
@@ -48,8 +48,8 @@
             var unit = args.Entity as Unit;
 
             if (unit == null || !unit.IsValid || !unit.IsControllable || unit.Team != heroTeam
-                || unit.IsIllusion && unit.ClassId != hero.ClassId || unit.AttackCapability == AttackCapability.None
-                || ignoredUnits.Contains(unit.ClassId) || unit.Equals(hero))
+                || unit.IsIllusion && unit.Name != hero.Name || unit.AttackCapability == AttackCapability.None
+                || ignoredUnits.Contains(unit.NetworkName) || unit.Equals(hero))
             {
                 return;
             }
@@ -104,9 +104,9 @@
                 return;
             }
 
-            if (ability.StoredName() == "item_helm_of_the_dominator"
-                || ability.ClassId == ClassId.CDOTA_Ability_Chen_HolyPersuasion
-                || ability.ClassId == ClassId.CDOTA_Ability_Enchantress_Enchant)
+            if (ability.Id == AbilityId.item_helm_of_the_dominator
+                || ability.Id == AbilityId.chen_holy_persuasion
+                || ability.Id == AbilityId.enchantress_enchant)
             {
                 delayedUnit = target;
             }

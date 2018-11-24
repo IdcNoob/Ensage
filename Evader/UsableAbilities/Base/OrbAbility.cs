@@ -78,7 +78,7 @@
             switch (modifierName)
             {
                 case "modifier_axe_berserkers_call_armor":
-                    if (sender.ClassId == ClassId.CDOTA_Unit_Hero_Axe && sender.Team != HeroTeam)
+                    if (sender.NetworkName == "CDOTA_Unit_Hero_Axe" && sender.Team != HeroTeam)
                     {
                         callActive = added;
                     }
@@ -90,7 +90,7 @@
                     }
                     break;
                 case "modifier_item_blade_mail_reflect":
-                    if (sender.ClassId == ClassId.CDOTA_Unit_Hero_Axe && sender.Team != HeroTeam)
+                    if (sender.NetworkName == "CDOTA_Unit_Hero_Axe" && sender.Team != HeroTeam)
                     {
                         bladeMailActive = added;
                     }

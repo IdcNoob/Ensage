@@ -360,7 +360,7 @@
         private void OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
             if (!Menu.ArmletAutoToggle || !args.Entities.Contains(Hero) || args.OrderId != OrderId.ToggleAbility
-                || args.Ability?.ClassId != ClassId.CDOTA_Item_Armlet)
+                || args.Ability?.Id != AbilityId.item_armlet)
             {
                 return;
             }
@@ -473,25 +473,25 @@
                 var hpRestored = HpRestored(time - TogglePing / 1000 - 0.12f);
                 var damage = Hero.DamageTaken(unit.MaximumDamage + unit.BonusDamage, DamageType.Physical, unit) * 1.1f;
 
-                switch (unit.ClassId)
+                switch (unit.NetworkName)
                 {
-                    case ClassId.CDOTA_Unit_Hero_Silencer:
+                    case "CDOTA_Unit_Hero_Silencer":
                         if (!Hero.IsMagicImmune())
                         {
                             damage += ((Hero)unit).TotalIntelligence
                                       * (0.2f + (float)unit.Spellbook.SpellW.Level * 15 / 100);
                         }
                         break;
-                    case ClassId.CDOTA_Unit_Hero_Obsidian_Destroyer:
+                    case "CDOTA_Unit_Hero_Obsidian_Destroyer":
                         if (!Hero.IsMagicImmune())
                         {
                             damage += unit.MaximumMana * (0.05f + (float)unit.Spellbook.SpellQ.Level / 100);
                         }
                         break;
-                    case ClassId.CDOTA_Unit_Hero_Clinkz:
+                    case "CDOTA_Unit_Hero_Clinkz":
                         damage += Hero.DamageTaken(20 + unit.Spellbook.SpellW.Level * 10, DamageType.Physical, unit);
                         break;
-                    case ClassId.CDOTA_Unit_Hero_Viper:
+                    case "CDOTA_Unit_Hero_Viper":
                         damage *= 2.5f;
                         break;
                 }

@@ -26,7 +26,7 @@
             Ability = ability;
             CastPoint = (float)ability.FindCastPoint();
             Name = ability.Name;
-            OwnerClassId = AbilityOwner.ClassId;
+            OwnerName = AbilityOwner.Name;
             IsDisable = ability.IsDisable() || ability.IsSilence();
             PiercesMagicImmunity = ability.PiercesMagicImmunity();
             CreateTime = Game.RawGameTime;
@@ -89,7 +89,7 @@
 
         public bool ObstacleStays { get; protected set; }
 
-        public ClassId OwnerClassId { get; }
+        public string OwnerName { get; }
 
         public uint OwnerHandle { get; }
 

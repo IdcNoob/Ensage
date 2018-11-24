@@ -80,7 +80,7 @@
                 return;
             }
 
-            if (args.OrderId == OrderId.MoveTarget && args.Target?.ClassId == ClassId.CDOTA_BaseNPC_Healer
+            if (args.OrderId == OrderId.MoveTarget && args.Target?.NetworkName == "CDOTA_BaseNPC_Healer"
                 && manager.MyHero.HealthPercentage > menu.HpUseThreshold && manager.MyHero.ManaPercentage > menu.MpUseThreshold)
             {
                 args.Process = false;

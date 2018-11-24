@@ -101,7 +101,7 @@
             }
 
             if (EntityManager<Building>.Entities.Any(
-                x => x.Team == myTeam && x.ClassId == ClassId.CDOTA_Unit_Fountain
+                x => x.Team == myTeam && x.NetworkName == "CDOTA_Unit_Fountain"
                      && x.Position.Distance(item.Position) < 1000))
             {
                 return;

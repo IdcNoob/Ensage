@@ -88,7 +88,7 @@
 
             var happyKappaTree = EntityManager<Tree>.Entities.FirstOrDefault(
                 x => x.IsValid && x.IsVisible && x.Distance2D(manager.MyHero.Position) < 300
-                     && x.ClassId == ClassId.CDOTA_TempTree);
+                     && x.NetworkName == "CDOTA_TempTree");
 
             if (happyKappaTree == null)
             {

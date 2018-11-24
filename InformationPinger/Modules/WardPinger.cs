@@ -142,13 +142,13 @@
                 return;
             }
 
-            if (EntityManager<Unit>.Entities.Any(x => x.ClassId == ClassId.CDOTA_NPC_Observer_Ward && x.Team == myTeam))
+            if (EntityManager<Unit>.Entities.Any(x => x.NetworkName == "CDOTA_NPC_Observer_Ward" && x.Team == myTeam))
             {
                 return;
             }
 
             if (EntityManager<Unit>.Entities.Count(
-                    x => x.ClassId == ClassId.CDOTA_NPC_Treant_EyesInTheForest && x.Team == myTeam) >= 5)
+                    x => x.NetworkName == "CDOTA_NPC_Treant_EyesInTheForest" && x.Team == myTeam) >= 5)
             {
                 return;
             }

@@ -69,7 +69,7 @@
                 return;
             }
 
-            if (unit.ClassId != ClassId.CDOTA_BaseNPC || unit.AttackCapability != AttackCapability.None
+            if (unit.NetworkName != "CDOTA_BaseNPC" || unit.AttackCapability != AttackCapability.None
                 || unit.Team == HeroTeam)
             {
                 return;
@@ -229,7 +229,7 @@
             abilityModifiers = new AbilityModifiers();
 
             fountain = ObjectManager.GetEntities<Unit>()
-                .First(x => x.ClassId == ClassId.CDOTA_Unit_Fountain && x.Team == HeroTeam);
+                .First(x => x.NetworkName == "CDOTA_Unit_Fountain" && x.Team == HeroTeam);
         }
 
         public void OnModifierAdded(Unit sender, Modifier modifier)
@@ -327,7 +327,7 @@
             {
                 var rubick = ObjectManager.GetEntities<Hero>()
                     .FirstOrDefault(
-                        x => x.IsValid && !x.IsIllusion && x.ClassId == ClassId.CDOTA_Unit_Hero_Rubick
+                        x => x.IsValid && !x.IsIllusion && x.HeroId == HeroId.npc_dota_hero_rubick
                              && x.Team == HeroTeam);
 
                 if (rubick == null
@@ -568,7 +568,7 @@
             if (Menu.Hotkeys.ForceBlink)
             {
                 var blinkDagger =
-                    abilityUpdater.UsableAbilities.FirstOrDefault(x => x.ClassId == ClassId.CDOTA_Item_BlinkDagger) as
+                    abilityUpdater.UsableAbilities.FirstOrDefault(x => x.AbilityId == AbilityId.item_blink) as
                         BlinkDagger;
 
                 if (blinkDagger != null && blinkDagger.CanBeCasted(null, null))
@@ -622,7 +622,7 @@
 
                 var ability = abilityUpdater.EvadableAbilities.OfType<Projectile>()
                     .FirstOrDefault(
-                        x => x.OwnerClassId == source.ClassId && (int)x.GetProjectileSpeed() == projectile.Speed
+                        x => x.OwnerName == source.Name && (int)x.GetProjectileSpeed() == projectile.Speed
                              && x.TimeSinceCast() < 1.5 + x.AdditionalDelay);
 
                 ability?.SetProjectile(projectile.Position, (Hero)projectile.Target);

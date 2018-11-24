@@ -20,7 +20,7 @@
             : base(ability, type, target)
         {
             fountain = ObjectManager.GetEntities<Unit>()
-                .First(x => x.ClassId == ClassId.CDOTA_Unit_Fountain && x.Team == HeroTeam);
+                .First(x => x.NetworkName == "CDOTA_Unit_Fountain" && x.Team == HeroTeam);
         }
 
         public override void Use(EvadableAbility ability, Unit target)

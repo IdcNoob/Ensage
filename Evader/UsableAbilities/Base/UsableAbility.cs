@@ -34,7 +34,7 @@
             Name = ability.Name;
             Handle = ability.Handle;
             IsItem = ability is Item;
-            ClassId = ability.ClassId;
+            AbilityId = ability.Id;
             IgnoresLinkensSphere = ability.IsAbilityBehavior(AbilityBehavior.NoTarget)
                                    || ability.IsAbilityBehavior(AbilityBehavior.AreaOfEffect);
             PiercesMagicImmunity = ability.PiercesMagicImmunity();
@@ -55,7 +55,7 @@
 
         public bool CanBeUsedOnEnemy { get; }
 
-        public ClassId ClassId { get; }
+        public AbilityId AbilityId { get; }
 
         public uint Handle { get; protected set; }
 

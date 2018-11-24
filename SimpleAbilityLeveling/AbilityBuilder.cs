@@ -28,7 +28,7 @@
             this.hero = hero;
             abilityNames = new AbilityNames();
 
-            SaveAbilityBuild(GetDotabuffName(hero.ClassId));
+            SaveAbilityBuild(GetDotabuffName(hero.NetworkName));
         }
 
         public string BestBuildWinRate { get; private set; }
@@ -54,45 +54,45 @@
             return bestBuild.OrderBy(x => x.Key).Select(x => x.Value);
         }
 
-        private static string GetDotabuffName(ClassId classId)
+        private static string GetDotabuffName(string networkName)
         {
-            switch (classId)
+            switch (networkName)
             {
-                case ClassId.CDOTA_Unit_Hero_DoomBringer:
+                case "CDOTA_Unit_Hero_DoomBringer":
                     return "doom";
-                case ClassId.CDOTA_Unit_Hero_Furion:
+                case "CDOTA_Unit_Hero_Furion":
                     return "natures-prophet";
-                case ClassId.CDOTA_Unit_Hero_Magnataur:
+                case "CDOTA_Unit_Hero_Magnataur":
                     return "magnus";
-                case ClassId.CDOTA_Unit_Hero_Necrolyte:
+                case "CDOTA_Unit_Hero_Necrolyte":
                     return "necrophos";
-                case ClassId.CDOTA_Unit_Hero_Nevermore:
+                case "CDOTA_Unit_Hero_Nevermore":
                     return "shadow-fiend";
-                case ClassId.CDOTA_Unit_Hero_Obsidian_Destroyer:
+                case "CDOTA_Unit_Hero_Obsidian_Destroyer":
                     return "outworld-devourer";
-                case ClassId.CDOTA_Unit_Hero_Rattletrap:
+                case "CDOTA_Unit_Hero_Rattletrap":
                     return "clockwerk";
-                case ClassId.CDOTA_Unit_Hero_Shredder:
+                case "CDOTA_Unit_Hero_Shredder":
                     return "timbersaw";
-                case ClassId.CDOTA_Unit_Hero_SkeletonKing:
+                case "CDOTA_Unit_Hero_SkeletonKing":
                     return "wraith-king";
-                case ClassId.CDOTA_Unit_Hero_Wisp:
+                case "CDOTA_Unit_Hero_Wisp":
                     return "io";
-                case ClassId.CDOTA_Unit_Hero_Zuus:
+                case "CDOTA_Unit_Hero_Zuus":
                     return "zeus";
-                case ClassId.CDOTA_Unit_Hero_Windrunner:
+                case "CDOTA_Unit_Hero_Windrunner":
                     return "windranger";
-                case ClassId.CDOTA_Unit_Hero_Life_Stealer:
+                case "CDOTA_Unit_Hero_Life_Stealer":
                     return "lifestealer";
-                case ClassId.CDOTA_Unit_Hero_Treant:
+                case "CDOTA_Unit_Hero_Treant":
                     return "treant-protector";
-                case ClassId.CDOTA_Unit_Hero_MonkeyKing:
+                case "CDOTA_Unit_Hero_MonkeyKing":
                     return "monkey-king";
-                case ClassId.CDOTA_Unit_Hero_AbyssalUnderlord:
+                case "CDOTA_Unit_Hero_AbyssalUnderlord":
                     return "underlord";
             }
 
-            var name = classId.ToString().Substring("CDOTA_Unit_Hero_".Length).Replace("_", string.Empty);
+            var name = networkName.Substring("CDOTA_Unit_Hero_".Length).Replace("_", string.Empty);
             var newName = new StringBuilder(name[0].ToString());
 
             foreach (var ch in name.Skip(1))

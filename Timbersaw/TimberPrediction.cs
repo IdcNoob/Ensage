@@ -72,8 +72,8 @@
             }
 
             LastRotRDictionary[target.Handle] = target.RotationRad;
-            if ((target.ClassId == ClassId.CDOTA_Unit_Hero_StormSpirit
-                 || target.ClassId == ClassId.CDOTA_Unit_Hero_Rubick)
+            if ((target.HeroId == HeroId.npc_dota_hero_storm_spirit
+                 || target.HeroId == HeroId.npc_dota_hero_rubick)
                 && target.HasModifier("modifier_storm_spirit_ball_lightning"))
             {
                 var ballLightning = target.FindSpell("storm_spirit_ball_lightning", true);
@@ -119,12 +119,12 @@
             foreach (var unit in playerList.Where(x => x.IsValid))
             {
                 var data = tempTable.FirstOrDefault(
-                    unitData => unitData.UnitName == unit.StoredName() || unitData.UnitClassId == unit.ClassId);
+                    unitData => unitData.UnitName == unit.StoredName());
                 if (data == null && unit.IsAlive && unit.IsVisible)
                 {
                     data = new Prediction(
                         unit.StoredName(),
-                        unit.ClassId,
+                        unit.NetworkName,
                         new Vector3(0, 0, 0),
                         0,
                         new Vector3(0, 0, 0),

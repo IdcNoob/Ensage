@@ -146,7 +146,7 @@
                             }
                         }
                         else if (unit.Team != HeroTeam
-                                 || ability.ClassId == ClassId.CDOTA_Ability_FacelessVoid_Chronosphere)
+                                 || ability.Id == AbilityId.faceless_void_chronosphere)
                         {
                             Func<Ability, EvadableAbility> func;
                             if (enemyAbilitiesData.EvadableAbilities.TryGetValue(ability.Name, out func))

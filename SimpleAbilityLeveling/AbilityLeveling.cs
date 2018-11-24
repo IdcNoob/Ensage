@@ -212,9 +212,9 @@
                     {
                         return false;
                     }
-                    switch (hero.ClassId)
+                    switch (hero.HeroId)
                     {
-                        case ClassId.CDOTA_Unit_Hero_Meepo:
+                        case HeroId.npc_dota_hero_meepo:
                             switch (abilityLevel)
                             {
                                 case 0:

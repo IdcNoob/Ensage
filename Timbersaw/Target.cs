@@ -10,7 +10,7 @@
     {
         private float lastVisible;
 
-        public ClassId ClassId { get; private set; }
+        public HeroId HeroId { get; private set; }
 
         public uint Handle { get; private set; }
 
@@ -85,7 +85,7 @@
             }
 
             Handle = target.Handle;
-            ClassId = target.ClassId;
+            HeroId = target.HeroId;
         }
 
         public Vector3 Vector3FromPolarAngle()
