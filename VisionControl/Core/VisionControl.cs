@@ -345,7 +345,7 @@
 
             lastPingTime = Game.RawGameTime;
 
-            //Network.MapPing(ward.Position.ToVector2(), (PingType)5);
+            Network.MapPing(ward.Position.ToVector2(), (PingType)5);
 
             // client ping
             mapPingParticleEffect = new ParticleEffect("particles/ui_mouseactions/ping_enemyward.vpcf", ward.Position);

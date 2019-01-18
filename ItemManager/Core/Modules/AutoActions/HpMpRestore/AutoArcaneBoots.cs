@@ -114,12 +114,12 @@
                      && x.Distance2D(manager.MyHero.Position) > arcaneBoots.GetCastRange()
                      && x.MaximumMana - x.Mana > arcaneBoots.ManaRestore))
             {
-                //if (!notified && menu.NotifyAllies)
-                //{
-                //    Network.ItemAlert(manager.MyHero.Position, AbilityId);
-                //    UpdateManager.BeginInvoke(() => { Network.ItemAlert(manager.MyHero.Position, AbilityId); }, 200);
-                //    notified = true;
-                //}
+                if (!notified && menu.NotifyAllies)
+                {
+                    Network.ItemAlert(manager.MyHero.Position, AbilityId);
+                    UpdateManager.BeginInvoke(() => { Network.ItemAlert(manager.MyHero.Position, AbilityId); }, 200);
+                    notified = true;
+                }
 
                 return;
             }

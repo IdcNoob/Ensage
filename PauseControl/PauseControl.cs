@@ -11,7 +11,7 @@
     using Ensage.SDK.Service;
     using Ensage.SDK.Service.Metadata;
 
-    //[ExportPlugin("PauseControl", StartupMode.Auto, "IdcNoob")]
+    [ExportPlugin("PauseControl", StartupMode.Auto, "IdcNoob")]
     internal class PauseControl : Plugin
     {
         private static Team heroTeam;
