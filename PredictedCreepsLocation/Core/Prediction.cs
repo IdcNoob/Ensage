@@ -19,14 +19,14 @@
     [ExportPlugin("Predicted Creeps Location", StartupMode.Auto, "IdcNoob")]
     internal class Prediction : Plugin
     {
-        private readonly IRendererManager renderer;
+        private readonly IRenderManager renderer;
 
         private readonly IWaveManager waveManager;
 
         private Settings settings;
 
         [ImportingConstructor]
-        public Prediction([Import] IRendererManager renderer, [Import] IWaveManager waveManager)
+        public Prediction([Import] IRenderManager renderer, [Import] IWaveManager waveManager)
         {
             this.renderer = renderer;
             this.waveManager = waveManager;
@@ -52,7 +52,7 @@
             settings.Dispose();
         }
 
-        private void OnDraw(object sender, EventArgs eventArgs)
+        private void OnDraw(IRenderer renderer1)
         {
             if (!settings.AlwaysEnabled && !settings.ShowKey)
             {
@@ -65,7 +65,7 @@
 
                 if (settings.ShowOnMinimap)
                 {
-                    renderer.DrawText(wave.PredictedPosition.WorldToMinimap() - new Vector2(1, 15), text, Color.DarkOrange, 16, "Arial");
+                    renderer1.DrawText(wave.PredictedPosition.WorldToMinimap() - new Vector2(1, 15), text, Color.DarkOrange, 16, "Arial");
                 }
 
                 if (settings.ShowOnMap)
@@ -76,7 +76,7 @@
                         continue;
                     }
 
-                    renderer.DrawText(position, text, Color.DarkOrange, 25, "Arial");
+                    renderer1.DrawText(position, text, Color.DarkOrange, 25, "Arial");
                 }
             }
         }

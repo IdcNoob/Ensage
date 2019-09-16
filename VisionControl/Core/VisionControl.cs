@@ -34,7 +34,7 @@
 
         private readonly Team myTeam;
 
-        private readonly IRendererManager render;
+        private readonly IRenderManager render;
 
         private readonly List<IUnit> units = new List<IUnit>();
 
@@ -50,7 +50,7 @@
         public VisionControl([Import] IServiceContext context)
         {
             hero = context.Owner;
-            render = context.Renderer;
+            render = context.RenderManager;
             myTeam = context.Owner.Team;
 
             unitTypes = Assembly.GetExecutingAssembly()
@@ -217,13 +217,13 @@
             }
         }
 
-        private void OnMinimapDraw(object sender, EventArgs e)
+        private void OnMinimapDraw(IRenderer renderer)
         {
             foreach (var ward in units.OfType<IWard>().ToList())
             {
-                if (ward.ShowTexture)
+                if (ward.ShowTexture)   
                 {
-                    render.DrawText(ward.Position.WorldToMinimap() - new Vector2(8, 15), "*", ward.Color, 30, "Arial");
+                    renderer.DrawText(ward.Position.WorldToMinimap() - new Vector2(8, 15), "*", ward.Color, 30, "Arial");
                 }
             }
         }
