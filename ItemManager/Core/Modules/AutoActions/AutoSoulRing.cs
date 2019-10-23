@@ -16,7 +16,7 @@
     using Menus;
     using Menus.Modules.AutoActions.Actions;
 
-    [AbilityBasedModule(AbilityId.item_soul_ring)]
+    //[AbilityBasedModule(AbilityId.item_soul_ring)]
     internal class AutoSoulRing : IAbilityBasedModule
     {
         private readonly Manager manager;

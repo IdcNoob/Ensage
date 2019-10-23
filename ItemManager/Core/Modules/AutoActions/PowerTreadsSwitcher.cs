@@ -29,7 +29,7 @@
     using AbilityEventArgs = EventArgs.AbilityEventArgs;
     using Attribute = Ensage.Attribute;
 
-    [AbilityBasedModule(AbilityId.item_power_treads)]
+    //[AbilityBasedModule(AbilityId.item_power_treads)]
     internal class PowerTreadsSwitcher : IAbilityBasedModule
     {
         private readonly List<string> activeDelaySwitchModifiers = new List<string>();

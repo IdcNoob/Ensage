@@ -23,7 +23,7 @@
 
     using Utils;
 
-    [Module]
+   // [Module]
     internal class RecoveryAbuse : IDisposable
     {
         private readonly Manager manager;
