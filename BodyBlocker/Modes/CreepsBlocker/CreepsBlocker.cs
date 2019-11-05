@@ -107,7 +107,7 @@
             if (tower != null)
             {
                 // dont block near retarded dire mid t2 tower
-                hero.Move(creepsMovePosition);
+                hero.Move(hero.Position.Extend(creepsMovePosition, 200));
                 return;
             }
 
