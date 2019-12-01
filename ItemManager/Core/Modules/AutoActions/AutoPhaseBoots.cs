@@ -73,7 +73,7 @@
                 return;
             }
 
-            if (!phaseBoots.CanBeCasted() || !manager.MyHero.CanUseItems())
+            if (!phaseBoots.CanBeCasted() || !manager.MyHero.CanUseItems() || this.manager.MyHero.Hero.MovementSpeed <= 0)
             {
                 return;
             }
